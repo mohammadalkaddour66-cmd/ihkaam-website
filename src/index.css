@@ -1,0 +1,200 @@
+﻿@import "tailwindcss";
+
+/* ── Font ── */
+@theme {
+  --font-arabic: 'Tajawal', sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════
+   DESIGN TOKENS — Muted Dark Bento System
+   Canvas  : #010D0D  (deepest warm teal-black)
+   Surface 1: #011A1A  (bento box face)
+   Surface 2: #012424  (elevated inner panels)
+   Border  : rgba(2,115,104,0.16)
+   Accent  : #6ABDB2  (muted turquoise)
+   Rose    : #D9ACA3  (dusty rose)
+   Gradient: #E5D3B3 → #D9ACA3 → #A6756A
+   Text-1  : #EAE4DF  (warm off-white)
+   Text-2  : #7A9E96  (muted teal-grey)
+   Text-3  : #5A8A78  (deep muted)
+   ══════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+html  { scroll-behavior: smooth; }
+body  {
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  background-color: #010D0D;
+  color: #EAE4DF;
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+}
+#root { min-height: 100svh; display: flex; flex-direction: column; }
+
+/* ════════════════════════════════════════════
+   ORB ANIMATIONS
+   Very slow drift — barely-there depth on
+   the dark canvas. Opacity kept extremely low.
+   ════════════════════════════════════════════ */
+@keyframes orb-a {
+  0%   { transform: translate(0px,    0px)    scale(1);    opacity: .14; }
+  20%  { transform: translate(120px, -90px)   scale(1.15); opacity: .08; }
+  40%  { transform: translate(60px,   80px)   scale(0.90); opacity: .18; }
+  60%  { transform: translate(-80px,  40px)   scale(1.10); opacity: .07; }
+  80%  { transform: translate(30px,  -60px)   scale(1.05); opacity: .15; }
+  100% { transform: translate(0px,    0px)    scale(1);    opacity: .14; }
+}
+@keyframes orb-b {
+  0%   { transform: translate(0px,    0px)    scale(1);    opacity: .12; }
+  25%  { transform: translate(-110px, 80px)   scale(1.18); opacity: .06; }
+  50%  { transform: translate(70px,  -50px)   scale(0.88); opacity: .16; }
+  75%  { transform: translate(-40px, -80px)   scale(1.08); opacity: .09; }
+  100% { transform: translate(0px,    0px)    scale(1);    opacity: .12; }
+}
+@keyframes orb-c {
+  0%   { transform: translate(0px,   0px)    scale(1);    opacity: .08; }
+  33%  { transform: translate(90px,  100px)  scale(1.20); opacity: .14; }
+  66%  { transform: translate(-70px, -60px)  scale(0.85); opacity: .05; }
+  100% { transform: translate(0px,   0px)    scale(1);    opacity: .08; }
+}
+
+.orb-a { animation: orb-a 16s ease-in-out infinite; }
+.orb-b { animation: orb-b 20s ease-in-out infinite 3s; }
+.orb-c { animation: orb-c 14s ease-in-out infinite 7s; }
+
+/* ── Ripple click effect ── */
+@keyframes ripple-out {
+  0%   { transform: scale(0);   opacity: 0.55; }
+  100% { transform: scale(1);   opacity: 0; }
+}
+.animate-ripple {
+  animation: ripple-out 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Floating particle dots ── */
+@keyframes float-particle {
+  0%,100% { transform: translateY(0px)   translateX(0px);   opacity: 0.5; }
+  33%      { transform: translateY(-24px) translateX(12px);  opacity: 1;   }
+  66%      { transform: translateY(12px)  translateX(-10px); opacity: 0.4; }
+}
+.particle { animation: float-particle var(--dur, 8s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+
+/* ── Snake border — glowing arc travels around the SVG rect ── */
+@keyframes snake-move {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -100; }
+}
+@keyframes snake-pulse {
+  0%,100% { opacity: 0.75; }
+  50%      { opacity: 1; }
+}
+.snake-rect {
+  animation:
+    snake-move  var(--snake-dur, 4s) linear  infinite,
+    snake-pulse var(--snake-dur, 4s) ease-in-out infinite;
+}
+
+
+/* ════════════════════════════════════════════
+   BENTO BOX — the core UI atom
+   Solid dark surface (#011A1A), 1px teal
+   border, 20px radius. Hover: border glows,
+   box lifts 3px. No blur — true bento,
+   not glassmorphism.
+   ════════════════════════════════════════════ */
+.bento {
+  background   : #011A1A;
+  border       : 1px solid rgba(2, 115, 104, 0.16);
+  border-radius: 20px;
+  transition   : border-color 400ms ease-out,
+                 box-shadow   400ms ease-out,
+                 transform    400ms ease-out;
+}
+.bento:hover {
+  border-color : rgba(106, 189, 178, 0.28);
+  box-shadow   : 0 0 0 1px rgba(106, 189, 178, 0.06),
+                 0 24px 64px rgba(0, 0, 0, 0.50);
+  transform    : translateY(-3px);
+}
+
+/* card-glass → bento alias — keeps all
+   unmodified components visually consistent */
+.card-glass {
+  background   : #011A1A;
+  border       : 1px solid rgba(2, 115, 104, 0.16);
+  border-radius: 20px;
+  transition   : border-color 400ms ease-out,
+                 box-shadow   400ms ease-out,
+                 transform    400ms ease-out;
+}
+.card-glass:hover {
+  border-color : rgba(106, 189, 178, 0.28);
+  box-shadow   : 0 0 0 1px rgba(106, 189, 178, 0.06),
+                 0 24px 64px rgba(0, 0, 0, 0.50);
+  transform    : translateY(-3px);
+}
+
+/* ── Warm Sand → Dusty Rose headline gradient ── */
+.text-rose-grad {
+  background: linear-gradient(135deg, #E5D3B3 10%, #D9ACA3 55%, #A6756A 95%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Subtle dot grid texture ── */
+.pattern-dots {
+  background-image: radial-gradient(circle, rgba(2,115,104,0.14) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ── Divider — teal gradient line ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(to left, transparent, rgba(2,115,104,0.24), transparent);
+}
+
+/* ── Primary CTA — muted turquoise fill ── */
+.btn-cta {
+  background : #6ABDB2;
+  color      : #010D0D;
+  font-weight: 700;
+  transition : all 400ms ease-out;
+}
+.btn-cta:hover {
+  background : #7ECDC3;
+  box-shadow : 0 8px 32px rgba(106, 189, 178, 0.28);
+  transform  : translateY(-2px);
+}
+
+/* ── Ghost / outline button ── */
+.btn-outline {
+  border     : 1.5px solid rgba(106, 189, 178, 0.30);
+  color      : #6ABDB2;
+  transition : all 400ms ease-out;
+}
+.btn-outline:hover {
+  border-color: rgba(106, 189, 178, 0.65);
+  background  : rgba(106, 189, 178, 0.07);
+  transform   : translateY(-2px);
+}
+
+/* ════════════════════════════════════════════
+   KEYFRAMES USED BY UNMODIFIED SECTIONS
+   IhkaamDetailedFeatures, IhkaamPricing,
+   IhkaamShowcase, ClientReviewForm.
+   Keeping these ensures no regressions.
+   ════════════════════════════════════════════ */
+@keyframes fadeInFeature {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes fadeInScreen {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+@keyframes pulse-btn {
+  0%,100% { box-shadow: 0 0 0 0   rgba(106, 189, 178, 0.40); }
+  50%     { box-shadow: 0 0 0 12px rgba(106, 189, 178, 0.00); }
+}
