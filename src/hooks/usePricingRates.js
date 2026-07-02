@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 // Fallback values used when Supabase is unreachable or returns empty data.
 // Mirrors the example DB row: {"1":0,"3":10,"6":15,"12":20}

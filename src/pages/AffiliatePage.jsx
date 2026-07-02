@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
   Users, TrendingUp, Share2, DollarSign, CheckCircle2,
-  ChevronDown, ChevronUp, ArrowLeft, Star, Copy, Check,
+  ChevronDown, ChevronUp, Star, Copy, Check,
   Search, Clock, AlertCircle, Link as LinkIcon, Mail, KeyRound,
 } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 function generateCode(name = '') {
   const prefix = name.trim().split(/\s+/)[0].toUpperCase().replace(/[^A-Z؀-ۿ]/g, '').slice(0, 4)
@@ -129,7 +129,6 @@ export default function AffiliatePage() {
   const [recoveryResult,     setRecoveryResult]     = useState(null)
   const [recoveryLinkCopied, setRecoveryLinkCopied] = useState(false)
   const [trackLinkCopied,   setTrackLinkCopied]   = useState(false)
-  const [trackCodeCopied,   setTrackCodeCopied]   = useState(false)
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
@@ -225,7 +224,6 @@ export default function AffiliatePage() {
     lookupCode(code)
   }
 
-  const referrals = trackRes?.referrals ?? []
   const [expandedClient, setExpandedClient] = useState(null)
 
   /* Translate billing_cycle to Arabic label */
@@ -276,6 +274,7 @@ export default function AffiliatePage() {
 
   /* Group flat referral events by institute name */
   const clientGroups = useMemo(() => {
+    const referrals = trackRes?.referrals ?? []
     const map = new Map()
     referrals.forEach(r => {
       const key = r.name  /* group by institute name */
@@ -297,7 +296,7 @@ export default function AffiliatePage() {
       g.events.reverse() /* show newest first in UI */
     })
     return Array.from(map.values())
-  }, [referrals])
+  }, [trackRes])
 
   /* ── Shared input base style ───────────────────────────────── */
   const inputBase = {

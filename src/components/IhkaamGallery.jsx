@@ -34,6 +34,46 @@ function ChromeBar({ dark = false }) {
   )
 }
 
+/* ── Lightbox nav arrow ── */
+function NavBtn({ dir, canGo, zoom, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={!canGo && zoom === 1}
+      style={{
+        flexShrink:0, width:52, height:52, borderRadius:'50%',
+        border:`1px solid ${(canGo||zoom>1)?'rgba(0,168,150,0.45)':'rgba(255,255,255,0.06)'}`,
+        background:(canGo||zoom>1)?'rgba(0,168,150,0.14)':'rgba(255,255,255,0.02)',
+        color:(canGo||zoom>1)?'#6ABDB2':'rgba(255,255,255,0.12)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        cursor:(canGo||zoom>1)?'pointer':'not-allowed', transition:'all 180ms ease',
+      }}
+      onMouseEnter={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(0,168,150,0.28)')}
+      onMouseLeave={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(0,168,150,0.14)')}
+    >
+      {dir === -1 ? <ChevronRight size={22} strokeWidth={2}/> : <ChevronLeft size={22} strokeWidth={2}/>}
+    </button>
+  )
+}
+
+/* ── Lightbox zoom control button ── */
+function ZoomBtn({ icon: Icon, onClick: handle, disabled: dis }) {
+  return (
+    <button onClick={handle} disabled={dis} style={{
+      width:34, height:34, borderRadius:'50%', border:'none',
+      background: dis ? 'rgba(255,255,255,0.04)' : 'rgba(0,168,150,0.14)',
+      color: dis ? 'rgba(255,255,255,0.20)' : '#6ABDB2',
+      display:'flex', alignItems:'center', justifyContent:'center',
+      cursor: dis ? 'not-allowed' : 'pointer', transition:'background 180ms ease',
+    }}
+      onMouseEnter={e => { if(!dis) e.currentTarget.style.background='rgba(0,168,150,0.28)' }}
+      onMouseLeave={e => { if(!dis) e.currentTarget.style.background='rgba(0,168,150,0.14)' }}
+    >
+      <Icon size={15} strokeWidth={2}/>
+    </button>
+  )
+}
+
 /* ── Lightbox ── */
 function Lightbox({ items, index, onClose, onNav }) {
   const item      = items[index]
@@ -49,8 +89,13 @@ function Lightbox({ items, index, onClose, onNav }) {
 
   const resetZoom = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }) }, [])
 
-  /* reset on image change */
-  useEffect(() => { resetZoom() }, [index, resetZoom])
+  /* reset zoom/pan when the displayed image changes (adjusting state during render) */
+  const [lastIndex, setLastIndex] = useState(index)
+  if (index !== lastIndex) {
+    setLastIndex(index)
+    setZoom(1)
+    setPan({ x: 0, y: 0 })
+  }
 
   /* keyboard */
   useEffect(() => {
@@ -109,43 +154,6 @@ function Lightbox({ items, index, onClose, onNav }) {
 
   const cursor = zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'zoom-in'
 
-  const NavBtn = ({ dir }) => {
-    const canGo = dir === -1 ? canPrev : canNext
-    return (
-      <button
-        onClick={() => { if (zoom > 1) resetZoom(); else canGo && onNav(dir) }}
-        disabled={!canGo && zoom === 1}
-        style={{
-          flexShrink:0, width:52, height:52, borderRadius:'50%',
-          border:`1px solid ${(canGo||zoom>1)?'rgba(0,168,150,0.45)':'rgba(255,255,255,0.06)'}`,
-          background:(canGo||zoom>1)?'rgba(0,168,150,0.14)':'rgba(255,255,255,0.02)',
-          color:(canGo||zoom>1)?'#6ABDB2':'rgba(255,255,255,0.12)',
-          display:'flex', alignItems:'center', justifyContent:'center',
-          cursor:(canGo||zoom>1)?'pointer':'not-allowed', transition:'all 180ms ease',
-        }}
-        onMouseEnter={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(0,168,150,0.28)')}
-        onMouseLeave={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(0,168,150,0.14)')}
-      >
-        {dir === -1 ? <ChevronRight size={22} strokeWidth={2}/> : <ChevronLeft size={22} strokeWidth={2}/>}
-      </button>
-    )
-  }
-
-  const ZoomBtn = ({ icon: Icon, onClick: handle, disabled: dis }) => (
-    <button onClick={handle} disabled={dis} style={{
-      width:34, height:34, borderRadius:'50%', border:'none',
-      background: dis ? 'rgba(255,255,255,0.04)' : 'rgba(0,168,150,0.14)',
-      color: dis ? 'rgba(255,255,255,0.20)' : '#6ABDB2',
-      display:'flex', alignItems:'center', justifyContent:'center',
-      cursor: dis ? 'not-allowed' : 'pointer', transition:'background 180ms ease',
-    }}
-      onMouseEnter={e => { if(!dis) e.currentTarget.style.background='rgba(0,168,150,0.28)' }}
-      onMouseLeave={e => { if(!dis) e.currentTarget.style.background='rgba(0,168,150,0.14)' }}
-    >
-      <Icon size={15} strokeWidth={2}/>
-    </button>
-  )
-
   return (
     <motion.div className="fixed inset-0 z-[99999] flex items-center justify-center"
       style={{ background:'rgba(0,0,0,0.94)', backdropFilter:'blur(18px)', WebkitBackdropFilter:'blur(18px)' }}
@@ -194,7 +202,7 @@ function Lightbox({ items, index, onClose, onNav }) {
 
         {/* ── Nav + image ── */}
         <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-          <NavBtn dir={-1}/>
+          <NavBtn dir={-1} canGo={canPrev} zoom={zoom} onClick={() => { if (zoom > 1) resetZoom(); else canPrev && onNav(-1) }}/>
 
           <div ref={imgWrap} style={{
             flex:1, borderRadius:18, overflow:'hidden',
@@ -240,7 +248,7 @@ function Lightbox({ items, index, onClose, onNav }) {
             </div>
           </div>
 
-          <NavBtn dir={1}/>
+          <NavBtn dir={1} canGo={canNext} zoom={zoom} onClick={() => { if (zoom > 1) resetZoom(); else canNext && onNav(1) }}/>
         </div>
 
         {/* ── Meta ── */}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 const STORAGE_BASE = 'https://kulpesdycuwdemjwzjyx.supabase.co/storage'
 
@@ -32,8 +32,14 @@ function PartnerCard({ partner }) {
   const accent  = raw && raw !== '#000000' ? raw : '#00A896'
   const [imgOk, setImgOk] = useState(false)
 
-  useEffect(() => {
+  /* reset the "loaded" flag when the logo url changes (adjusting state during render) */
+  const [lastLogoSrc, setLastLogoSrc] = useState(logoSrc)
+  if (logoSrc !== lastLogoSrc) {
+    setLastLogoSrc(logoSrc)
     setImgOk(false)
+  }
+
+  useEffect(() => {
     if (!logoSrc) return
     const img = new Image()
     img.onload  = () => setImgOk(true)

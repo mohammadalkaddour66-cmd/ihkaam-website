@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, ChevronDown } from 'lucide-react'
 import { usePricingRates } from '../hooks/usePricingRates'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 const TIERS = [
   { max: 200,  name: 'المراكز الناشئة'   },

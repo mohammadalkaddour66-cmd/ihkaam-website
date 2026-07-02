@@ -4,7 +4,7 @@ import {
   Search, TrendingUp, Clock, CheckCircle2,
   DollarSign, AlertCircle, Users, Link as LinkIcon,
 } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 /* ─── Status badge ────────────────────────────────────────────── */
 function StatusBadge({ status }) {

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import {
   Smartphone, Zap, ShieldCheck, RefreshCw,
-  Database, Bell, FileDown, Palette, UserCog,
+  FileDown, UserCog,
 } from 'lucide-react'
 
 const FEATURES = [

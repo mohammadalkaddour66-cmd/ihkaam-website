@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Users, BookOpen, Mic, UserCheck, ArrowLeft, Activity } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 const fadeUp = {
   hidden : { opacity: 0, y: 24 },

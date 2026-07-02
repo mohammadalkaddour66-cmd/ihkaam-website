@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, Mic, ShieldCheck, Users, FileText } from 'lucide-react'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../config/supabaseClient'
 
 function Insight({ icon: Icon, color, title, body, stat, statLabel, index }) {
   return (
@@ -55,9 +55,7 @@ function Skeleton() {
   )
 }
 
-export default function SectorReport({ raw, loading: parentLoading }) {
-  const { institutes } = raw
-
+export default function SectorReport({ loading: parentLoading }) {
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(true)
 

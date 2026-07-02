@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronRight, ChevronLeft, MapPin, ShieldCheck } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 const EXCLUDED     = ['demo', 'superadmin', 'ihkaam', 'ihkam']
 const INTERVAL_MS  = 2000
@@ -67,7 +67,7 @@ function CountUp({ value, style, className }) {
   const [display, setDisplay] = useState(() => info.ok ? fmtVal(0, info) : value)
   const raf = useRef(null)
   useEffect(() => {
-    if (!info.ok) { setDisplay(value); return }
+    if (!info.ok) return
     const t0 = performance.now()
     const dur = Math.min(1400, Math.max(700, info.target * 0.8))
     const tick = now => {
@@ -78,15 +78,15 @@ function CountUp({ value, style, className }) {
     cancelAnimationFrame(raf.current)
     raf.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf.current)
-  }, [value])
-  return <span className={className} style={style}>{display}</span>
+  }, [value, info])
+  return <span className={className} style={style}>{info.ok ? display : value}</span>
 }
 
 // ---------------------------------------------------------------------------
 // Metrics helpers
 // ---------------------------------------------------------------------------
 function deriveMetrics(m) {
-  const { students=0, groups=0, recs=0, present=0, absent=0, tardiness=0, recentRec=0, earlyRec=0, avgGrade=null } = m
+  const { students=0, groups=0, recs=0, absent=0, tardiness=0, recentRec=0, earlyRec=0, avgGrade=null } = m
   const raw    = earlyRec >= 15 ? Math.round((recentRec - earlyRec) / earlyRec * 100) : null
   const growth = (raw !== null && raw >= 40 && raw <= 600) ? raw : null
   // attendance: جدول attendance يحفظ الغياب/التأخر فقط — الحاضر لا يُخزَّن
@@ -523,7 +523,7 @@ export default function IhkaamSuccessStories() {
             const nums = gr.map(r => parseFloat(r.grade)).filter(n => !isNaN(n) && n > 0 && n <= 10)
             if (nums.length >= 10) avgGrade = nums.reduce((a,b) => a+b, 0) / nums.length
           }
-        } catch(_){}
+        } catch { /* avgGrade is a best-effort enhancement, safe to skip on failure */ }
         return {
           inst: { ...s, country: loc.country ?? null, city: loc.city ?? null },
           metrics: { students: rS.count??0, groups: rG.count??0, recs: rR.count??0, present:0, absent: rAbs.count??0, tardiness: rLate.count??0, recentRec: rRec.count??0, earlyRec: rEar.count??0, avgGrade },

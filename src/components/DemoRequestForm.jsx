@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { X, Loader2, CheckCircle2, ChevronDown } from 'lucide-react'
 import { supabase } from '../config/supabaseClient'
 
@@ -45,10 +45,10 @@ const iFocus = e => (e.target.style.borderColor = 'rgba(106,189,178,0.55)')
 const iBlur  = e => (e.target.style.borderColor = 'rgba(106,189,178,0.18)')
 
 /* ── Text field ── */
-function Field({ label, children }) {
+function Field({ label, htmlFor, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold" style={{ color: '#8AAFA8' }}>{label}</label>
+      <label htmlFor={htmlFor} className="text-xs font-semibold" style={{ color: '#8AAFA8' }}>{label}</label>
       {children}
     </div>
   )
@@ -85,17 +85,21 @@ export default function DemoRequestForm({ onClose }) {
     const formattedPhone = `${effectiveCode}${phone.trim().replace(/^0+/, '')}`
 
     try {
-      await supabase.from('demo_requests').insert([{
+      const { error: dbError } = await supabase.from('demo_requests').insert([{
         name     : name.trim(),
         institute: institute.trim(),
         phone    : formattedPhone,
         page     : window.location.pathname,
         status   : 'pending',
       }])
-    } catch (_) {}
 
-    setLoading(false)
-    setDone(true)
+      if (dbError) throw dbError
+      setDone(true)
+    } catch (err) {
+      setError(err?.message || 'حدث خطأ في الاتصال. يرجى المحاولة مجدداً.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -165,21 +169,21 @@ export default function DemoRequestForm({ onClose }) {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
               {/* Name */}
-              <Field label="اسمك الكريم">
-                <input type="text" dir="rtl" placeholder="محمد أحمد"
+              <Field label="اسمك الكريم" htmlFor="demo-name">
+                <input id="demo-name" type="text" dir="rtl" placeholder="محمد أحمد"
                   value={name} onChange={e => setName(e.target.value)}
                   style={inputStyle} onFocus={iFocus} onBlur={iBlur} />
               </Field>
 
               {/* Institute */}
-              <Field label="اسم المعهد">
-                <input type="text" dir="rtl" placeholder="معهد النور للتحفيظ"
+              <Field label="اسم المعهد" htmlFor="demo-institute">
+                <input id="demo-institute" type="text" dir="rtl" placeholder="معهد النور للتحفيظ"
                   value={institute} onChange={e => setInstitute(e.target.value)}
                   style={inputStyle} onFocus={iFocus} onBlur={iBlur} />
               </Field>
 
               {/* Phone with country code */}
-              <Field label="رقم الواتساب">
+              <Field label="رقم الواتساب" htmlFor="demo-phone">
                 <div className="flex gap-2">
 
                   {/* Country selector / custom code */}
@@ -255,6 +259,7 @@ export default function DemoRequestForm({ onClose }) {
 
                   {/* Number input */}
                   <input
+                    id="demo-phone"
                     type="tel"
                     dir="ltr"
                     value={phone}

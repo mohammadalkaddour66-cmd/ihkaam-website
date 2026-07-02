@@ -1,9 +1,9 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useMagnetic } from '../hooks/useMagnetic'
 
 export default function RippleButton({ children, className = '', style = {}, onClick, as: Tag = 'button', ...props }) {
-  const ripplesRef = useRef([])
+  const [ripples, setRipples] = useState([])
   const containerRef = useRef(null)
   const { ref: magRef, x, y, onMouseMove, onMouseLeave } = useMagnetic(0.28)
 
@@ -22,9 +22,9 @@ export default function RippleButton({ children, className = '', style = {}, onC
       y: e.clientY - rect.top  - size / 2,
       size,
     }
-    ripplesRef.current = [...ripplesRef.current, ripple]
+    setRipples(rs => [...rs, ripple])
     setTimeout(() => {
-      ripplesRef.current = ripplesRef.current.filter(r => r.id !== ripple.id)
+      setRipples(rs => rs.filter(r => r.id !== ripple.id))
     }, 700)
 
     onClick?.(e)
@@ -43,7 +43,7 @@ export default function RippleButton({ children, className = '', style = {}, onC
         {...props}
       >
         {children}
-        {ripplesRef.current.map(r => (
+        {ripples.map(r => (
           <span
             key={r.id}
             className="absolute rounded-full pointer-events-none animate-ripple"

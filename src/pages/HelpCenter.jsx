@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Search, ChevronLeft } from 'lucide-react'
-import { CATEGORIES, ARTICLES, getAllArticles } from '../data/helpContent'
+import { CATEGORIES, getAllArticles } from '../data/helpContent'
 import PageMeta from '../components/PageMeta'
 
 /* ─── animation variants ─────────────────────────────────── */
@@ -79,52 +79,6 @@ function ArticleRow({ article, cat }) {
       </div>
       <ChevronLeft size={16} className="text-white/30 flex-shrink-0" />
     </Link>
-  )
-}
-
-/* ─── Category section ───────────────────────────────────── */
-function CategorySection({ cat }) {
-  const Icon = cat.icon
-  return (
-    <div id={cat.id} className="scroll-mt-24">
-      {/* Section header */}
-      <div className="flex items-center gap-3 mb-5">
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: cat.color + '20' }}
-        >
-          <Icon size={18} style={{ color: cat.color }} />
-        </div>
-        <div>
-          <h2 className="text-white font-bold text-lg">{cat.label}</h2>
-          <p className="text-white/45 text-xs">{cat.description}</p>
-        </div>
-      </div>
-
-      {/* Article cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {cat.articles.map(slug => {
-          const art = ARTICLES[slug]
-          if (!art) return null
-          return (
-            <Link
-              key={slug}
-              to={`/help/${slug}`}
-              className="p-4 rounded-xl border border-white/7 hover:border-white/18 hover:bg-white/4 transition-all group"
-            >
-              <p className="text-white font-semibold text-sm mb-1.5 group-hover:text-[#6ABDB2] transition-colors">
-                {art.title}
-              </p>
-              <p className="text-white/45 text-xs leading-relaxed line-clamp-2">{art.description}</p>
-              <div className="mt-3 flex items-center gap-1 text-white/30 group-hover:text-white/60 transition-colors">
-                <span className="text-xs">اقرأ المقالة</span>
-                <ChevronLeft size={12} />
-              </div>
-            </Link>
-          )
-        })}
-      </div>
-    </div>
   )
 }
 

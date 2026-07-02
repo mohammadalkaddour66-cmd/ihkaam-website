@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { Clock, ArrowRight, ChevronLeft, ArrowLeft, BookOpen, Zap, Bell, Loader2, CheckCircle } from 'lucide-react'
 import { getPost, getCategoryById, BLOG_POSTS } from '../data/blogContent'
 import PageMeta from '../components/PageMeta'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('ar-SA', {

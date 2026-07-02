@@ -36,10 +36,11 @@ const inputFocus = {
   boxShadow  : '0 0 0 3px rgba(217,172,163,0.08)',
 }
 
-function Field({ label, children }) {
+function Field({ label, htmlFor, children }) {
   return (
     <div className="flex flex-col gap-2 text-start">
       <label
+        htmlFor={htmlFor}
         className="text-xs font-semibold"
         style={{ color: '#A6756A', letterSpacing: '0.07em' }}
       >
@@ -191,8 +192,9 @@ export default function ClientReviewForm() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
 
               {/* Name */}
-              <Field label="الاسم الكريم">
+              <Field label="الاسم الكريم" htmlFor="review-name">
                 <input
+                  id="review-name"
                   type="text"
                   placeholder="الشيخ عبد الرحمن"
                   value={form.name}
@@ -205,8 +207,9 @@ export default function ClientReviewForm() {
               </Field>
 
               {/* Role */}
-              <Field label="المسمى الوظيفي والمؤسسة">
+              <Field label="المسمى الوظيفي والمؤسسة" htmlFor="review-role">
                 <input
+                  id="review-role"
                   type="text"
                   placeholder="مدير مجمع إقرأ"
                   value={form.role}
@@ -219,8 +222,9 @@ export default function ClientReviewForm() {
               </Field>
 
               {/* Service select */}
-              <Field label="نوع الخدمة المنفذة">
+              <Field label="نوع الخدمة المنفذة" htmlFor="review-service">
                 <select
+                  id="review-service"
                   value={form.service}
                   required
                   onChange={e => update('service', e.target.value)}
@@ -251,8 +255,9 @@ export default function ClientReviewForm() {
               </Field>
 
               {/* Feedback textarea */}
-              <Field label="كيف ساهمت حلولنا في تحسين سير العمل لديكم؟">
+              <Field label="كيف ساهمت حلولنا في تحسين سير العمل لديكم؟" htmlFor="review-feedback">
                 <textarea
+                  id="review-feedback"
                   rows={5}
                   placeholder="شاركنا تجربتك بصدق وتفصيل، كلماتك ستلهم مؤسسات أخرى للتحول الرقمي..."
                   value={form.feedback}

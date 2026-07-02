@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Download, Loader2, CheckCircle, Mail, TrendingUp, Bell } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 /* ── Read UTM params + referrer from URL (client-side only) ── */
 function getTrackingData() {

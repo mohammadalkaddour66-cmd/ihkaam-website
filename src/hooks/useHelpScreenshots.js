@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 /**
  * Fetches gallery screenshots tagged for a help article.
@@ -11,22 +11,23 @@ import { supabase } from '../lib/supabase'
  */
 export function useHelpScreenshots(slug) {
   const [images, setImages]   = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!!slug)
 
   useEffect(() => {
-    if (!slug) { setLoading(false); return }
+    if (!slug) return
 
-    setLoading(true)
-    supabase
-      .from('gallery_items')
-      .select('id, title, image_url, order_index')
-      .eq('is_active', true)
-      .eq('category', `help:${slug}`)
-      .order('order_index', { ascending: true })
-      .then(({ data, error }) => {
-        if (!error && data) setImages(data)
-        setLoading(false)
-      })
+    async function load() {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('gallery_items')
+        .select('id, title, image_url, order_index')
+        .eq('is_active', true)
+        .eq('category', `help:${slug}`)
+        .order('order_index', { ascending: true })
+      if (!error && data) setImages(data)
+      setLoading(false)
+    }
+    load()
   }, [slug])
 
   return { images, loading }

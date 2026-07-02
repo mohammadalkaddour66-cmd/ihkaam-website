@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import DemoRequestForm from './DemoRequestForm'
@@ -40,7 +40,6 @@ export default function Navbar() {
   const [open,       setOpen]       = useState(false)
   const [formOpen,   setFormOpen]   = useState(false)
   const { pathname } = useLocation()
-  const navigate = useNavigate()
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50)
@@ -48,7 +47,12 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  useEffect(() => { setOpen(false) }, [pathname])
+  /* close mobile menu when the route changes (adjusting state during render) */
+  const [lastPathname, setLastPathname] = useState(pathname)
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname)
+    setOpen(false)
+  }
 
   /* Active check — pricing hash link shouldn't activate /ihkaam */
   const isActive = (to) => {

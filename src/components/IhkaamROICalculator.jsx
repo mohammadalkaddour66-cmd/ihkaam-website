@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Clock, DollarSign, TrendingUp, Users, ArrowLeft, Zap } from 'lucide-react'
+import { Clock, DollarSign, TrendingUp, ArrowLeft, Zap } from 'lucide-react'
 
 /* ── Calculation engine ── */
 function calcROI(students) {

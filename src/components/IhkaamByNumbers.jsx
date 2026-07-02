@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 // ── Animated counter — starts only when `trigger` becomes true ────────────────
 // Glow effect uses textShadow (not absolute positioning) so it never gets clipped
@@ -12,8 +12,6 @@ function CountUp({ to, duration = 1600, trigger, color }) {
   useEffect(() => {
     if (!trigger || !to) return
     cancelAnimationFrame(raf.current)
-    setVal(0)
-    setGlowing(false)
     const t0 = performance.now()
     const tick = now => {
       const p     = Math.min((now - t0) / duration, 1)

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 
 /* ── Animated count-up ── */
 function CountUp({ to, duration = 1800 }) {

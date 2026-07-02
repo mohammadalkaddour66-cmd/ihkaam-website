@@ -64,6 +64,19 @@ function Arrow({ icon: Icon, onClick, disabled }) {
   )
 }
 
+/* ── Lightbox nav arrow ── */
+function NavBtn({ dir, canGo, onClick }) {
+  return (
+    <button onClick={onClick} disabled={!canGo}
+      style={{ flexShrink:0,width:44,height:44,borderRadius:'50%',border:`1px solid ${canGo?'rgba(106,189,178,0.40)':'rgba(255,255,255,0.08)'}`,background:canGo?'rgba(106,189,178,0.12)':'rgba(255,255,255,0.03)',color:canGo?'#6ABDB2':'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',cursor:canGo?'pointer':'not-allowed',transition:'all 180ms ease' }}
+      onMouseEnter={e => canGo && (e.currentTarget.style.background='rgba(106,189,178,0.24)')}
+      onMouseLeave={e => canGo && (e.currentTarget.style.background='rgba(106,189,178,0.12)')}
+    >
+      {dir === -1 ? <ChevronRight size={20} strokeWidth={2} /> : <ChevronLeft size={20} strokeWidth={2} />}
+    </button>
+  )
+}
+
 /* ── Lightbox ── */
 function MobileLightbox({ items, index, onClose, onNav }) {
   const item    = items[index]
@@ -80,19 +93,6 @@ function MobileLightbox({ items, index, onClose, onNav }) {
     window.addEventListener('keydown', onKey)
     return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
   }, [onClose, onNav, canPrev, canNext])
-
-  const NavBtn = ({ dir }) => {
-    const canGo = dir === -1 ? canPrev : canNext
-    return (
-      <button onClick={() => canGo && onNav(dir)} disabled={!canGo}
-        style={{ flexShrink:0,width:44,height:44,borderRadius:'50%',border:`1px solid ${canGo?'rgba(106,189,178,0.40)':'rgba(255,255,255,0.08)'}`,background:canGo?'rgba(106,189,178,0.12)':'rgba(255,255,255,0.03)',color:canGo?'#6ABDB2':'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',cursor:canGo?'pointer':'not-allowed',transition:'all 180ms ease' }}
-        onMouseEnter={e => canGo && (e.currentTarget.style.background='rgba(106,189,178,0.24)')}
-        onMouseLeave={e => canGo && (e.currentTarget.style.background='rgba(106,189,178,0.12)')}
-      >
-        {dir === -1 ? <ChevronRight size={20} strokeWidth={2} /> : <ChevronLeft size={20} strokeWidth={2} />}
-      </button>
-    )
-  }
 
   return (
     <motion.div className="fixed inset-0 z-[99999] flex items-center justify-center"
@@ -117,7 +117,7 @@ function MobileLightbox({ items, index, onClose, onNav }) {
 
         {/* Nav + phone */}
         <div style={{ display:'flex',alignItems:'center',gap:20 }}>
-          <NavBtn dir={-1} />
+          <NavBtn dir={-1} canGo={canPrev} onClick={() => canPrev && onNav(-1)} />
           <div style={{ width:'min(240px,60vw)' }}>
             <AnimatePresence mode="wait">
               <motion.div key={item.id}
@@ -130,7 +130,7 @@ function MobileLightbox({ items, index, onClose, onNav }) {
               </motion.div>
             </AnimatePresence>
           </div>
-          <NavBtn dir={1} />
+          <NavBtn dir={1} canGo={canNext} onClick={() => canNext && onNav(1)} />
         </div>
       </motion.div>
     </motion.div>

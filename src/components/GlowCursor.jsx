@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 
 export default function GlowCursor() {
@@ -13,10 +13,10 @@ export default function GlowCursor() {
   const dotSY   = useSpring(dotY,   { stiffness: 280, damping: 22, mass: 0.2 })
 
   const glowRef = useRef(null)
-  const isTouch = useRef(typeof window !== 'undefined' && window.matchMedia('(pointer:coarse)').matches)
+  const [isTouch] = useState(() => typeof window !== 'undefined' && window.matchMedia('(pointer:coarse)').matches)
 
   useEffect(() => {
-    if (isTouch.current) return
+    if (isTouch) return
     const move = (e) => {
       mouseX.set(e.clientX)
       mouseY.set(e.clientY)
@@ -34,9 +34,9 @@ export default function GlowCursor() {
       document.removeEventListener('mouseenter', enter)
       document.removeEventListener('mouseleave', leave)
     }
-  }, [])
+  }, [isTouch, mouseX, mouseY, dotX, dotY])
 
-  if (isTouch.current) return null
+  if (isTouch) return null
 
   return (
     <>

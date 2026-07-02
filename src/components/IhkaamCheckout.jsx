@@ -5,7 +5,7 @@ import {
   CheckCircle2, Loader2, ChevronDown,
   Server, MessageCircle, LayoutDashboard, ArrowRight, TrendingUp,
 } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../config/supabaseClient'
 import { usePricingRates } from '../hooks/usePricingRates'
 import { getStoredRef } from '../hooks/useAffiliateRef'
 
@@ -359,7 +359,7 @@ export default function IhkaamCheckout() {
 
   /* Add-ons state — pre-populate from pricing page selections if available */
   const [storeFeatures,    setStoreFeatures]    = useState([])
-  const [selectedFeatures, setSelectedFeatures] = useState(
+  const [selectedFeatures] = useState(
     () => new Set(location.state?.selectedFeatureIds ?? [])
   )
 

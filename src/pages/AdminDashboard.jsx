@@ -119,7 +119,6 @@ function SubscribersTab() {
   const [filter,  setFilter]  = useState('all')
 
   useEffect(() => {
-    setLoading(true)
     supabase
       .from('lead_magnet_subscribers')
       .select('*')
@@ -612,6 +611,7 @@ function AffiliatesTab() {
           .not('referral_code', 'is', null),
       ])
       if (e1) { setError(e1.message); setLoading(false); return }
+      if (e2) { setError(e2.message); setLoading(false); return }
       /* group tenants by referral_code */
       const map = {}
       ;(tenants ?? []).forEach(t => {
@@ -658,7 +658,6 @@ function AffiliatesTab() {
         {rows.map(r => {
           const tenants = tenantMap[r.referral_code] ?? []
           const active  = tenants.filter(t => t.status === 'active')
-          const pending = tenants.filter(t => t.status === 'pending')
           const earned  = active.reduce((s, t) => s + (t.total_amount || 0) * 0.20, 0)
           const isOpen  = expanded === r.id
 
@@ -1095,6 +1094,30 @@ const pInputFocus = {
   boxShadow  : '0 0 0 3px rgba(217,172,163,0.08)',
 }
 
+/* ── File input helper (used by InterfacesTab) ── */
+function FileInput({ label, icon, name, onFile, fileName }) {
+  return (
+    <PField label={label}>
+      <label
+        className="flex items-center gap-3 cursor-pointer rounded-xl px-4 py-3 transition-all duration-300"
+        style={{
+          background  : 'rgba(255,255,255,0.03)',
+          border      : `1px solid ${fileName ? 'rgba(106,189,178,0.40)' : 'rgba(217,172,163,0.18)'}`,
+          borderRadius: '0.875rem',
+        }}
+      >
+        <span style={{ color: fileName ? '#6ABDB2' : '#D9ACA3', fontSize: '1.05rem' }}>{icon}</span>
+        <span className="text-sm flex-1 text-right truncate"
+          style={{ color: fileName ? '#6ABDB2' : 'rgba(127,166,158,0.65)' }}>
+          {fileName || `اختر صورة ${name} (JPG, PNG, WEBP)`}
+        </span>
+        <input type="file" accept="image/*" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f) }} />
+      </label>
+    </PField>
+  )
+}
+
 function PField({ label, children }) {
   return (
     <div className="flex flex-col gap-2 text-right">
@@ -1275,30 +1298,6 @@ function InterfacesTab() {
     } finally {
       setSaving(false)
     }
-  }
-
-  /* ── File input helper ── */
-  function FileInput({ label, icon, name, onFile, fileName }) {
-    return (
-      <PField label={label}>
-        <label
-          className="flex items-center gap-3 cursor-pointer rounded-xl px-4 py-3 transition-all duration-300"
-          style={{
-            background  : 'rgba(255,255,255,0.03)',
-            border      : `1px solid ${fileName ? 'rgba(106,189,178,0.40)' : 'rgba(217,172,163,0.18)'}`,
-            borderRadius: '0.875rem',
-          }}
-        >
-          <span style={{ color: fileName ? '#6ABDB2' : '#D9ACA3', fontSize: '1.05rem' }}>{icon}</span>
-          <span className="text-sm flex-1 text-right truncate"
-            style={{ color: fileName ? '#6ABDB2' : 'rgba(127,166,158,0.65)' }}>
-            {fileName || `اختر صورة ${name} (JPG, PNG, WEBP)`}
-          </span>
-          <input type="file" accept="image/*" className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f) }} />
-        </label>
-      </PField>
-    )
   }
 
   return (
@@ -1613,6 +1612,9 @@ export default function AdminDashboard() {
         ])
         if (e1) throw e1
         if (e2) throw e2
+        if (e3) throw e3
+        if (e4) throw e4
+        if (e5) throw e5
         setConsultations(cons ?? [])
         setTestimonials(tests ?? [])
         setSubscriberCount(subC ?? 0)

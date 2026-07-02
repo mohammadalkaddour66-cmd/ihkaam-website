@@ -97,7 +97,6 @@ function HelpSidebar({ article, catColor }) {
           </h3>
           <div className="space-y-3">
             {related.map(a => {
-              const cat = getCategoryForArticle(a.slug)
               return (
                 <Link
                   key={a.slug}
