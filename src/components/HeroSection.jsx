@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Users, Building, GraduationCap } from 'lucide-react'
 import { supabase } from '../config/supabaseClient'
+import { useIsMobile } from '../hooks/useIsMobile'
 import DemoRequestForm from './DemoRequestForm'
 
 
@@ -36,6 +37,7 @@ function PhonePlaceholderScreen() {
    Hero Mockup — الصور تتبدل كل 2 ثانية
 ───────────────────────────────────────── */
 function HeroMockup({ liveStats }) {
+  const isMobile = useIsMobile()
   const [laptopImages, setLaptopImages] = useState([])
   const [phoneImages,  setPhoneImages]  = useState([])
   const [laptopIdx,    setLaptopIdx]    = useState(0)
@@ -142,128 +144,153 @@ function HeroMockup({ liveStats }) {
           </div>
         </div>
 
-        {/* ── 2. Floating Data Cards ── */}
-
-        {/* Card 1: Students */}
-        <motion.div
-          className="absolute z-20"
-          style={{ top: '8%', right: '-8%' }}
-          initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }}
-        >
+        {/* ── Mobile: clean stat strip instead of floating/overlapping cards ── */}
+        {isMobile && (
           <motion.div
-            animate={{ y: [-4, 4, -4] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-            className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl shadow-[0_0_30px_rgba(2,115,104,0.15)] border border-[#1A2E2E] p-3 flex flex-col items-center gap-1"
+            className="relative z-20 grid grid-cols-3 gap-2 mt-5"
+            initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
           >
-            <div className="flex items-center gap-2 text-[#7A9E96] mb-1">
-              <Users size={14} className="text-[#6ABDB2]" />
-              <span className="text-xs font-semibold">إجمالي الطلاب</span>
-            </div>
-            <span className="text-2xl font-bold text-white">{liveStats.students ? liveStats.students.toLocaleString() : '1,800'}</span>
-            <svg className="w-16 h-4 mt-1 text-[#6ABDB2]" viewBox="0 0 100 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M0 15 Q 25 5, 50 10 T 100 5"/></svg>
+            {[
+              { icon: Users, label: 'إجمالي الطلاب', value: liveStats.students ? liveStats.students.toLocaleString() : '1,800' },
+              { icon: Building, label: 'المعاهد النشطة', value: liveStats.institutes || '96' },
+              { icon: GraduationCap, label: 'الكوادر التعليمية', value: '+100' },
+            ].map(({ icon: Icon, label, value }) => (
+              <div key={label}
+                className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl border border-[#1A2E2E] px-2 py-3 flex flex-col items-center gap-1 text-center"
+              >
+                <Icon size={14} className="text-[#6ABDB2]" />
+                <span className="text-base font-bold text-white">{value}</span>
+                <span className="text-[10px] leading-tight font-semibold text-[#7A9E96]">{label}</span>
+              </div>
+            ))}
           </motion.div>
-        </motion.div>
+        )}
 
-        {/* Card 2: Institutes */}
-        <motion.div
-          className="absolute z-20"
-          style={{ bottom: '25%', left: '-12%' }}
-          initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.8 }}
-        >
-          <motion.div
-            animate={{ y: [-3, 3, -3] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl shadow-[0_0_30px_rgba(2,115,104,0.15)] border border-[#1A2E2E] p-3 flex flex-col items-center gap-1"
-          >
-            <div className="flex items-center gap-2 text-[#7A9E96] mb-1">
-              <Building size={14} className="text-[#6ABDB2]" />
-              <span className="text-xs font-semibold">المعاهد النشطة</span>
-            </div>
-            <span className="text-2xl font-bold text-white">{liveStats.institutes || '96'}</span>
-          </motion.div>
-        </motion.div>
-
-        {/* Card 3: Teachers */}
-        <motion.div
-          className="absolute z-20"
-          style={{ top: '-5%', left: '10%' }}
-          initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 1.0 }}
-        >
-          <motion.div
-            animate={{ y: [-4, 4, -4] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-            className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl shadow-[0_0_30px_rgba(2,115,104,0.15)] border border-[#1A2E2E] p-3 flex flex-col items-center gap-1"
-          >
-            <div className="flex items-center gap-2 text-[#7A9E96] mb-1">
-              <GraduationCap size={14} className="text-[#6ABDB2]" />
-              <span className="text-xs font-semibold">الكوادر التعليمية</span>
-            </div>
-            <span className="text-xl font-bold text-white">+100</span>
-          </motion.div>
-        </motion.div>
-
-        {/* ── 3. Phone (Bottom Right overlap) ── */}
-        <motion.div
-          className="absolute z-30"
-          style={{ bottom: '-5%', right: '8%' }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <motion.div
-            animate={{ y: [-5, 5, -5] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="relative w-[130px] bg-[#060D0D] border-[4px] border-[#2A3A3A] rounded-[28px] overflow-hidden shadow-2xl ring-1 ring-black/50"
-          >
-            {/* Top Notch (Dynamic Island style) */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-black rounded-full z-10" />
-
-            {/* Screen — crossfade بين صور الهاتف */}
-            <div className="w-full h-[260px] bg-[#060D0D] relative overflow-hidden pt-2">
-              <AnimatePresence mode="wait">
-                {phoneImg ? (
-                  <motion.img
-                    key={`phone-${phoneIdx}`}
-                    src={phoneImg.image_url}
-                    alt={phoneImg.title}
-                    className="absolute inset-0 w-full h-full object-cover object-top"
-                    draggable={false}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  />
-                ) : (
-                  <motion.div
-                    key="phone-placeholder"
-                    className="absolute inset-0"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  >
-                    <PhonePlaceholderScreen />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* نقاط مؤشر الهاتف */}
-              {phoneImages.length > 1 && (
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                  {phoneImages.map((_, i) => (
-                    <div key={i} style={{
-                      width      : i === phoneIdx ? 12 : 4,
-                      height     : 4,
-                      borderRadius: 2,
-                      background : i === phoneIdx ? '#6ABDB2' : 'rgba(106,189,178,0.30)',
-                      transition : 'width 300ms ease',
-                    }} />
-                  ))}
+        {/* ── Desktop/tablet: floating overlap cards + phone mockup ── */}
+        {!isMobile && (
+          <>
+            {/* Card 1: Students */}
+            <motion.div
+              className="absolute z-20"
+              style={{ top: '8%', right: '-8%' }}
+              initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }}
+            >
+              <motion.div
+                animate={{ y: [-4, 4, -4] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl shadow-[0_0_30px_rgba(2,115,104,0.15)] border border-[#1A2E2E] p-3 flex flex-col items-center gap-1"
+              >
+                <div className="flex items-center gap-2 text-[#7A9E96] mb-1">
+                  <Users size={14} className="text-[#6ABDB2]" />
+                  <span className="text-xs font-semibold">إجمالي الطلاب</span>
                 </div>
-              )}
-            </div>
+                <span className="text-2xl font-bold text-white">{liveStats.students ? liveStats.students.toLocaleString() : '1,800'}</span>
+                <svg className="w-16 h-4 mt-1 text-[#6ABDB2]" viewBox="0 0 100 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M0 15 Q 25 5, 50 10 T 100 5"/></svg>
+              </motion.div>
+            </motion.div>
 
-            {/* Home indicator */}
-            <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/30" />
-          </motion.div>
-        </motion.div>
+            {/* Card 2: Institutes */}
+            <motion.div
+              className="absolute z-20"
+              style={{ bottom: '25%', left: '-12%' }}
+              initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.8 }}
+            >
+              <motion.div
+                animate={{ y: [-3, 3, -3] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl shadow-[0_0_30px_rgba(2,115,104,0.15)] border border-[#1A2E2E] p-3 flex flex-col items-center gap-1"
+              >
+                <div className="flex items-center gap-2 text-[#7A9E96] mb-1">
+                  <Building size={14} className="text-[#6ABDB2]" />
+                  <span className="text-xs font-semibold">المعاهد النشطة</span>
+                </div>
+                <span className="text-2xl font-bold text-white">{liveStats.institutes || '96'}</span>
+              </motion.div>
+            </motion.div>
+
+            {/* Card 3: Teachers */}
+            <motion.div
+              className="absolute z-20"
+              style={{ top: '-5%', left: '10%' }}
+              initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 1.0 }}
+            >
+              <motion.div
+                animate={{ y: [-4, 4, -4] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+                className="bg-[#0A1414]/90 backdrop-blur-md rounded-xl shadow-[0_0_30px_rgba(2,115,104,0.15)] border border-[#1A2E2E] p-3 flex flex-col items-center gap-1"
+              >
+                <div className="flex items-center gap-2 text-[#7A9E96] mb-1">
+                  <GraduationCap size={14} className="text-[#6ABDB2]" />
+                  <span className="text-xs font-semibold">الكوادر التعليمية</span>
+                </div>
+                <span className="text-xl font-bold text-white">+100</span>
+              </motion.div>
+            </motion.div>
+
+            {/* ── 3. Phone (Bottom Right overlap) ── */}
+            <motion.div
+              className="absolute z-30"
+              style={{ bottom: '-5%', right: '8%' }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.div
+                animate={{ y: [-5, 5, -5] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="relative w-[130px] bg-[#060D0D] border-[4px] border-[#2A3A3A] rounded-[28px] overflow-hidden shadow-2xl ring-1 ring-black/50"
+              >
+                {/* Top Notch (Dynamic Island style) */}
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-black rounded-full z-10" />
+
+                {/* Screen — crossfade بين صور الهاتف */}
+                <div className="w-full h-[260px] bg-[#060D0D] relative overflow-hidden pt-2">
+                  <AnimatePresence mode="wait">
+                    {phoneImg ? (
+                      <motion.img
+                        key={`phone-${phoneIdx}`}
+                        src={phoneImg.image_url}
+                        alt={phoneImg.title}
+                        className="absolute inset-0 w-full h-full object-cover object-top"
+                        draggable={false}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5, ease: 'easeInOut' }}
+                      />
+                    ) : (
+                      <motion.div
+                        key="phone-placeholder"
+                        className="absolute inset-0"
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      >
+                        <PhonePlaceholderScreen />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* نقاط مؤشر الهاتف */}
+                  {phoneImages.length > 1 && (
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                      {phoneImages.map((_, i) => (
+                        <div key={i} style={{
+                          width      : i === phoneIdx ? 12 : 4,
+                          height     : 4,
+                          borderRadius: 2,
+                          background : i === phoneIdx ? '#6ABDB2' : 'rgba(106,189,178,0.30)',
+                          transition : 'width 300ms ease',
+                        }} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Home indicator */}
+                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/30" />
+              </motion.div>
+            </motion.div>
+          </>
+        )}
 
       </div>
     </motion.div>

@@ -357,9 +357,12 @@ function GalleryCard({ item, onClick }) {
 
 /* ── Arrow button ── */
 function Arrow({ icon: Icon, onClick, disabled }) {
+  const isMobile = useIsMobile()
   return (
-    <button onClick={onClick} disabled={disabled} style={{
-      width:52, height:52, borderRadius:'50%', flexShrink:0,
+    <button onClick={onClick} disabled={disabled}
+      className="w-8 h-8 sm:w-[52px] sm:h-[52px]"
+      style={{
+      borderRadius:'50%', flexShrink:0,
       border:`1px solid ${disabled ? 'rgba(255,255,255,0.05)' : 'rgba(0,168,150,0.40)'}`,
       background: disabled ? 'rgba(255,255,255,0.02)' : 'rgba(0,168,150,0.10)',
       color: disabled ? 'rgba(255,255,255,0.15)' : '#6ABDB2',
@@ -377,7 +380,7 @@ function Arrow({ icon: Icon, onClick, disabled }) {
         e.currentTarget.style.boxShadow='none'
       }}}
     >
-      <Icon size={22} strokeWidth={2}/>
+      <Icon size={isMobile ? 15 : 22} strokeWidth={2}/>
     </button>
   )
 }
@@ -457,16 +460,15 @@ export default function IhkaamGallery() {
               whileInView={{ opacity:1, scale:1, y:0 }}
               viewport={{ once:true }}
               transition={{ duration:0.55, ease:[0.22,1,0.36,1], delay:0.15 }}
-              className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl px-8 py-5"
+              className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl px-5 py-3 sm:px-8 sm:py-5 self-center md:self-auto"
               style={{
                 background:'linear-gradient(135deg, rgba(0,168,150,0.10) 0%, rgba(1,26,26,0.80) 100%)',
                 border:'1px solid rgba(0,168,150,0.28)',
                 boxShadow:'0 0 40px rgba(0,168,150,0.08)',
-                minWidth:180,
               }}
             >
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="font-black" style={{ fontSize:'clamp(2.4rem,5vw,3.2rem)', color:'#6AFFF5', lineHeight:1 }}>
+                <span className="font-black" style={{ fontSize:'clamp(1.8rem,7vw,3.2rem)', color:'#6AFFF5', lineHeight:1 }}>
                   +{displayCount}
                 </span>
               </div>
@@ -481,8 +483,8 @@ export default function IhkaamGallery() {
         </div>
 
         {/* ── Carousel ── */}
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center gap-5 w-full mb-8">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-5 w-full mb-8">
             <Arrow icon={ChevronRight} onClick={() => go(-1)} disabled={currentPage <= 0}/>
 
             <div className="flex-1 overflow-hidden" {...swipe}>

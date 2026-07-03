@@ -1,9 +1,11 @@
 ﻿import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, ChevronDown } from 'lucide-react'
 import { usePricingRates } from '../hooks/usePricingRates'
 import { supabase } from '../config/supabaseClient'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const TIERS = [
   { max: 200,  name: 'المراكز الناشئة'   },
@@ -253,7 +255,7 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
       {/* ── Trigger action bar ── */}
       <button
         onClick={onToggle}
-        className="w-full flex flex-row items-center justify-between p-5 rounded-2xl cursor-pointer"
+        className="w-full flex flex-row items-center justify-between p-3.5 sm:p-5 rounded-2xl cursor-pointer"
         style={{
           background : 'rgba(255,255,255,0.02)',
           border     : '1px solid rgba(255,255,255,0.10)',
@@ -270,11 +272,11 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
         }}
       >
         {/* Right: headline + subtitle */}
-        <div className="flex flex-col gap-1 text-right">
+        <div className="flex flex-col gap-1 text-right min-w-0">
           <span style={{ color: '#D4EAE7', fontSize: '0.88rem', fontWeight: 700, lineHeight: 1.3 }}>
             تريد ترقية وتخصيص معهدك بميزات متقدمة؟
           </span>
-          <span style={{ color: '#5A8A78', fontSize: '0.70rem', lineHeight: 1.5 }}>
+          <span className="hidden sm:block" style={{ color: '#5A8A78', fontSize: '0.70rem', lineHeight: 1.5 }}>
             أضف حزم الإدارة المالية، الاختبارات، والمصادر الإضافية حسب رغبتك
           </span>
         </div>
@@ -319,19 +321,19 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
             transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: 'hidden' }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 mt-4 w-full">
               {storeFeatures.map(feature => {
                 const isActive = selectedFeatures.has(feature.id)
                 return (
                   <button
                     key={feature.id}
                     onClick={() => onToggleFeature(feature.id)}
-                    className="flex flex-col justify-between p-4 rounded-xl cursor-pointer text-right"
+                    className="flex flex-col justify-between p-2.5 sm:p-4 rounded-xl cursor-pointer text-right"
                     style={{
                       background : isActive ? 'rgba(0,168,150,0.07)' : 'rgba(255,255,255,0.03)',
                       border     : `1px solid ${isActive ? 'rgba(0,168,150,0.30)' : 'rgba(255,255,255,0.05)'}`,
                       outline    : 'none',
-                      minHeight  : '108px',
+                      minHeight  : '92px',
                       transition : 'background 200ms ease, border-color 200ms ease',
                     }}
                     onMouseEnter={e => {
@@ -704,6 +706,7 @@ export default function IhkaamPricing() {
   const [storeFeatures, setStoreFeatures]     = useState([])
   const [selectedFeatures, setSelectedFeatures] = useState(new Set())
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const { baseFee, perStudent, discounts } = usePricingRates()
   const tier = getTier(students)
@@ -730,7 +733,7 @@ export default function IhkaamPricing() {
     .reduce((sum, f) => sum + (f.price_usd_monthly || 0), 0)
 
   return (
-    <section className="relative z-10 py-14 px-6" dir="rtl">
+    <section className="relative z-10 py-14 px-6" style={isMobile ? { paddingBottom: '6.5rem' } : undefined} dir="rtl">
 
       {/* Slider thumb/track pseudo-element styles — scoped by class name */}
       <style>{`
@@ -867,6 +870,43 @@ export default function IhkaamPricing() {
         </div>
 
       </div>
+
+      {/* ── Mobile: persistent floating action bar so the CTA is always reachable ──
+           Rendered via portal to escape Layout's motion.main (Framer Motion leaves a
+           lingering transform on it, which would otherwise break position:fixed here). */}
+      {isMobile && createPortal(
+        <div
+          className="fixed inset-x-0 bottom-0 z-40 px-4 pt-3"
+          style={{
+            paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))',
+            background: 'linear-gradient(to top, #010D0D 60%, transparent)',
+          }}
+        >
+          <button
+            onClick={tier.enterprise ? () => navigate('/contact') : () => navigate('/checkout', {
+              state: {
+                tierName          : tier.name,
+                students,
+                duration,
+                selectedFeatureIds: [...selectedFeatures],
+              },
+            })}
+            className="w-full font-black rounded-xl cursor-pointer flex items-center justify-center gap-2"
+            style={{
+              padding      : '0.9rem',
+              background   : '#00A896',
+              color        : '#011A1A',
+              border       : 'none',
+              fontSize     : '0.95rem',
+              letterSpacing: '0.05em',
+              boxShadow    : '0 -4px 16px rgba(0,0,0,0.30), 0 8px 24px rgba(0,168,150,0.25)',
+            }}
+          >
+            {tier.enterprise ? (<><MessageCircle size={16} /> تواصل معنا</>) : 'فعّل مركزك الآن'}
+          </button>
+        </div>,
+        document.body
+      )}
     </section>
   )
 }

@@ -4,6 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import FloatingBg  from './FloatingBg'
 import Navbar      from './Navbar'
 import Footer      from './Footer'
+import { useIsMobile } from '../hooks/useIsMobile'
+
+/* Pages that render their own persistent mobile bottom action bar —
+   the WhatsApp button needs to lift above it there so they don't overlap. */
+const PAGES_WITH_MOBILE_STICKY_BAR = ['/request']
 
 /* Scroll to top on route change — skip when hash present */
 function ScrollReset() {
@@ -32,6 +37,9 @@ const WA_MESSAGE = encodeURIComponent('السلام عليكم، أريد الا
 function WhatsAppButton() {
   const [visible, setVisible] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const isMobile = useIsMobile()
+  const { pathname } = useLocation()
+  const liftForStickyBar = isMobile && PAGES_WITH_MOBILE_STICKY_BAR.includes(pathname)
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 1200)
@@ -48,7 +56,7 @@ function WhatsAppButton() {
       onMouseLeave={() => setHovered(false)}
       style={{
         position  : 'fixed',
-        bottom    : '1.75rem',
+        bottom    : liftForStickyBar ? '5.5rem' : '1.75rem',
         left      : '1.75rem',
         zIndex    : 999,
         display   : 'flex',

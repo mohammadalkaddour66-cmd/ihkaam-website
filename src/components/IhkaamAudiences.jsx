@@ -286,7 +286,7 @@ export default function IhkaamAudiences() {
             <AudienceCard key={item.title} item={item} index={i} />
           ))}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-[66%] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:max-w-[66%] mx-auto">
           {AUDIENCES.slice(3).map((item, i) => (
             <AudienceCard key={item.title} item={item} index={i + 3} />
           ))}
