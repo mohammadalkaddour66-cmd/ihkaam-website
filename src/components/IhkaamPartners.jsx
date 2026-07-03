@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../config/supabaseClient'
+import { useIsMobile } from '../hooks/useIsMobile'
+
+/* Below this count, a marquee looks sparse/awkward (too few logos to feel
+   like a continuous strip) — show them as a simple static row instead. */
+const MARQUEE_MIN_PARTNERS = 7
 
 const STORAGE_BASE = 'https://kulpesdycuwdemjwzjyx.supabase.co/storage'
 
@@ -62,7 +67,7 @@ function PartnerCard({ partner }) {
 
 function MarqueeRow({ partners, direction }) {
   const items    = [...partners, ...partners, ...partners]
-  const duration = Math.max(30, partners.length * 4)
+  const duration = Math.max(16, partners.length * 2.5)
   return (
     <div className="ihk-marquee-vp">
       <div
@@ -75,8 +80,18 @@ function MarqueeRow({ partners, direction }) {
   )
 }
 
+/* Too few partners to marquee nicely — just lay them out, centered, no animation. */
+function StaticRow({ partners }) {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3 px-6">
+      {partners.map(p => <PartnerCard key={p.institute_id} partner={p} />)}
+    </div>
+  )
+}
+
 export default function IhkaamPartners() {
   const [partners, setPartners] = useState([])
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     supabase
@@ -91,6 +106,7 @@ export default function IhkaamPartners() {
 
   if (!partners.length) return null
 
+  const useMarquee = partners.length >= MARQUEE_MIN_PARTNERS
   const mid  = Math.ceil(partners.length / 2)
   const row1 = partners.slice(0, mid)
   const row2 = partners.slice(mid).length >= 2 ? partners.slice(mid) : [...partners].reverse()
@@ -101,10 +117,14 @@ export default function IhkaamPartners() {
         شركاء النجاح
       </p>
 
-      <div className="flex flex-col gap-4">
-        <MarqueeRow partners={row1} direction="left"  />
-        <MarqueeRow partners={row2} direction="right" />
-      </div>
+      {!useMarquee ? (
+        <StaticRow partners={partners} />
+      ) : (
+        <div className="flex flex-col gap-4">
+          <MarqueeRow partners={isMobile ? partners : row1} direction="left" />
+          {!isMobile && <MarqueeRow partners={row2} direction="right" />}
+        </div>
+      )}
 
       <style>{`
         .ihk-marquee-vp {
