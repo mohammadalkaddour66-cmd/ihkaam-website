@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../config/supabaseClient'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { useSwipe } from '../hooks/useSwipe'
 
 const PHONE_W = 220
-const VISIBLE = 3
 
 /* ── Phone card ── */
 function PhoneCard({ item, onClick, isCenter }) {
@@ -55,7 +56,8 @@ function PhoneCard({ item, onClick, isCenter }) {
 function Arrow({ icon: Icon, onClick, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      style={{ width:52,height:52,borderRadius:'50%',border:`1px solid ${disabled?'rgba(106,189,178,0.08)':'rgba(106,189,178,0.35)'}`,background:disabled?'rgba(255,255,255,0.02)':'rgba(106,189,178,0.10)',color:disabled?'rgba(106,189,178,0.20)':'#6ABDB2',display:'flex',alignItems:'center',justifyContent:'center',cursor:disabled?'not-allowed':'pointer',flexShrink:0,transition:'all 200ms ease' }}
+      className="w-11 h-11 sm:w-[52px] sm:h-[52px]"
+      style={{ borderRadius:'50%',border:`1px solid ${disabled?'rgba(106,189,178,0.08)':'rgba(106,189,178,0.35)'}`,background:disabled?'rgba(255,255,255,0.02)':'rgba(106,189,178,0.10)',color:disabled?'rgba(106,189,178,0.20)':'#6ABDB2',display:'flex',alignItems:'center',justifyContent:'center',cursor:disabled?'not-allowed':'pointer',flexShrink:0,transition:'all 200ms ease' }}
       onMouseEnter={e => { if(!disabled){ e.currentTarget.style.background='rgba(106,189,178,0.22)'; e.currentTarget.style.borderColor='rgba(106,189,178,0.60)' }}}
       onMouseLeave={e => { if(!disabled){ e.currentTarget.style.background='rgba(106,189,178,0.10)'; e.currentTarget.style.borderColor='rgba(106,189,178,0.35)' }}}
     >
@@ -82,6 +84,7 @@ function MobileLightbox({ items, index, onClose, onNav }) {
   const item    = items[index]
   const canPrev = index > 0
   const canNext = index < items.length - 1
+  const swipe   = useSwipe(() => canNext && onNav(1), () => canPrev && onNav(-1))
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -116,7 +119,7 @@ function MobileLightbox({ items, index, onClose, onNav }) {
         </div>
 
         {/* Nav + phone */}
-        <div style={{ display:'flex',alignItems:'center',gap:20 }}>
+        <div style={{ display:'flex',alignItems:'center',gap:20 }} {...swipe}>
           <NavBtn dir={-1} canGo={canPrev} onClick={() => canPrev && onNav(-1)} />
           <div style={{ width:'min(240px,60vw)' }}>
             <AnimatePresence mode="wait">
@@ -143,6 +146,15 @@ export default function IhkaamMobileShowcase() {
   const [idx,     setIdx]     = useState(0)
   const [dir,     setDir]     = useState(1)
   const [lbIndex, setLbIndex] = useState(null)
+  const isMobile = useIsMobile()
+  const VISIBLE = isMobile ? 1 : 3
+
+  const maxIdx = Math.max(0, items.length - VISIBLE)
+  const go = (delta) => {
+    setDir(delta)
+    setIdx(i => Math.min(maxIdx, Math.max(0, i + delta)))
+  }
+  const swipe = useSwipe(() => go(1), () => go(-1))
 
   useEffect(() => {
     supabase.from('gallery_items').select('id,title,category,image_url,order_index')
@@ -151,12 +163,6 @@ export default function IhkaamMobileShowcase() {
   }, [])
 
   if (!items.length) return null
-
-  const maxIdx = Math.max(0, items.length - VISIBLE)
-  const go = (delta) => {
-    setDir(delta)
-    setIdx(i => Math.min(maxIdx, Math.max(0, i + delta)))
-  }
 
   /* Always show exactly VISIBLE phones; pad with null at end if needed */
   const visible = items.slice(idx, idx + VISIBLE)
@@ -185,12 +191,12 @@ export default function IhkaamMobileShowcase() {
         {/* Carousel */}
         <div className="flex flex-col items-center gap-10">
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             {/* RTL: right arrow = prev */}
             <Arrow icon={ChevronRight} onClick={() => go(-1)} disabled={idx <= 0} />
 
             {/* Phones */}
-            <div style={{ overflow:'hidden', paddingBlock:32 }}>
+            <div style={{ overflow:'hidden', paddingBlock:32 }} {...swipe}>
               <AnimatePresence mode="wait" custom={dir}>
                 <motion.div
                   key={idx}
@@ -206,7 +212,7 @@ export default function IhkaamMobileShowcase() {
                 >
                   {visible.map((item, i) =>
                     item
-                      ? <PhoneCard key={item.id} item={item} isCenter={i === 1} onClick={() => setLbIndex(items.indexOf(item))} />
+                      ? <PhoneCard key={item.id} item={item} isCenter={i === Math.floor(VISIBLE / 2)} onClick={() => setLbIndex(items.indexOf(item))} />
                       : <div key={`ph-${i}`} style={{ flexShrink:0, width:PHONE_W }} />
                   )}
                 </motion.div>

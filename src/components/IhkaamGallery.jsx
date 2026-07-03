@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Maximize2, ChevronLeft, ChevronRight, Layers, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
 import { supabase } from '../config/supabaseClient'
-
-const VISIBLE = 2
+import { useIsMobile } from '../hooks/useIsMobile'
+import { useSwipe } from '../hooks/useSwipe'
 
 /* ── Browser chrome bar ── */
 function ChromeBar({ dark = false }) {
@@ -35,13 +35,14 @@ function ChromeBar({ dark = false }) {
 }
 
 /* ── Lightbox nav arrow ── */
-function NavBtn({ dir, canGo, zoom, onClick }) {
+function NavBtn({ dir, canGo, zoom, onClick, size = 52 }) {
+  const iconSize = size <= 40 ? 18 : 22
   return (
     <button
       onClick={onClick}
       disabled={!canGo && zoom === 1}
       style={{
-        flexShrink:0, width:52, height:52, borderRadius:'50%',
+        flexShrink:0, width:size, height:size, borderRadius:'50%',
         border:`1px solid ${(canGo||zoom>1)?'rgba(0,168,150,0.45)':'rgba(255,255,255,0.06)'}`,
         background:(canGo||zoom>1)?'rgba(0,168,150,0.14)':'rgba(255,255,255,0.02)',
         color:(canGo||zoom>1)?'#6ABDB2':'rgba(255,255,255,0.12)',
@@ -51,7 +52,7 @@ function NavBtn({ dir, canGo, zoom, onClick }) {
       onMouseEnter={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(0,168,150,0.28)')}
       onMouseLeave={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(0,168,150,0.14)')}
     >
-      {dir === -1 ? <ChevronRight size={22} strokeWidth={2}/> : <ChevronLeft size={22} strokeWidth={2}/>}
+      {dir === -1 ? <ChevronRight size={iconSize} strokeWidth={2}/> : <ChevronLeft size={iconSize} strokeWidth={2}/>}
     </button>
   )
 }
@@ -79,6 +80,7 @@ function Lightbox({ items, index, onClose, onNav }) {
   const item      = items[index]
   const canPrev   = index > 0
   const canNext   = index < items.length - 1
+  const isMobile  = useIsMobile()
 
   const [zoom,     setZoom]     = useState(1)
   const [pan,      setPan]      = useState({ x: 0, y: 0 })
@@ -154,6 +156,11 @@ function Lightbox({ items, index, onClose, onNav }) {
 
   const cursor = zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'zoom-in'
 
+  const swipe = useSwipe(
+    () => { if (zoom === 1) canNext && onNav(1) },
+    () => { if (zoom === 1) canPrev && onNav(-1) }
+  )
+
   return (
     <motion.div className="fixed inset-0 z-[99999] flex items-center justify-center"
       style={{ background:'rgba(0,0,0,0.94)', backdropFilter:'blur(18px)', WebkitBackdropFilter:'blur(18px)' }}
@@ -169,7 +176,10 @@ function Lightbox({ items, index, onClose, onNav }) {
         onClick={e => e.stopPropagation()}
       >
         {/* ── Top bar ── */}
-        <div style={{ position:'absolute', top:-52, inset:'auto 0 auto 0', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={isMobile
+          ? { position:'relative', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'space-between' }
+          : { position:'absolute', top:-52, inset:'auto 0 auto 0', display:'flex', alignItems:'center', justifyContent:'space-between' }
+        }>
           {/* Counter */}
           <span style={{ color:'rgba(229,211,179,0.35)', fontSize:'0.75rem', fontWeight:700, letterSpacing:'0.06em', lineHeight:'40px' }}>
             {index+1} / {items.length}
@@ -201,8 +211,8 @@ function Lightbox({ items, index, onClose, onNav }) {
         </div>
 
         {/* ── Nav + image ── */}
-        <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-          <NavBtn dir={-1} canGo={canPrev} zoom={zoom} onClick={() => { if (zoom > 1) resetZoom(); else canPrev && onNav(-1) }}/>
+        <div style={{ display:'flex', alignItems:'center', gap: isMobile ? 8 : 16 }} {...swipe}>
+          <NavBtn dir={-1} canGo={canPrev} zoom={zoom} size={isMobile ? 40 : 52} onClick={() => { if (zoom > 1) resetZoom(); else canPrev && onNav(-1) }}/>
 
           <div ref={imgWrap} style={{
             flex:1, borderRadius:18, overflow:'hidden',
@@ -248,11 +258,11 @@ function Lightbox({ items, index, onClose, onNav }) {
             </div>
           </div>
 
-          <NavBtn dir={1} canGo={canNext} zoom={zoom} onClick={() => { if (zoom > 1) resetZoom(); else canNext && onNav(1) }}/>
+          <NavBtn dir={1} canGo={canNext} zoom={zoom} size={isMobile ? 40 : 52} onClick={() => { if (zoom > 1) resetZoom(); else canNext && onNav(1) }}/>
         </div>
 
         {/* ── Meta ── */}
-        <div style={{ marginTop:20, display:'flex', alignItems:'center', gap:12, paddingInline:68 }}>
+        <div style={{ marginTop:20, display:'flex', alignItems:'center', gap:12, paddingInline: isMobile ? 8 : 68 }}>
           <span style={{
             background:'rgba(0,168,150,0.15)', border:'1px solid rgba(0,168,150,0.30)',
             color:'#00A896', fontSize:'0.68rem', fontWeight:700, padding:'3px 12px',
@@ -379,6 +389,19 @@ export default function IhkaamGallery() {
   const [idx,     setIdx]     = useState(0)
   const [dir,     setDir]     = useState(1)
   const [lbIndex, setLbIndex] = useState(null)
+  const isMobile = useIsMobile()
+  const VISIBLE = isMobile ? 1 : 2
+
+  const pageCount   = Math.ceil(items.length / VISIBLE)
+  const currentPage = Math.floor(idx / VISIBLE)
+
+  const go = (delta) => {
+    const nextPage = Math.max(0, Math.min(pageCount - 1, currentPage + delta))
+    setDir(delta)
+    setIdx(nextPage * VISIBLE)
+  }
+
+  const swipe = useSwipe(() => go(1), () => go(-1))
 
   useEffect(() => {
     supabase.from('gallery_items').select('id,title,category,image_url,order_index')
@@ -390,15 +413,6 @@ export default function IhkaamGallery() {
   }, [])
 
   if (loading || !items.length) return null
-
-  const pageCount   = Math.ceil(items.length / VISIBLE)
-  const currentPage = Math.floor(idx / VISIBLE)
-
-  const go = (delta) => {
-    const nextPage = Math.max(0, Math.min(pageCount - 1, currentPage + delta))
-    setDir(delta)
-    setIdx(nextPage * VISIBLE)
-  }
 
   const visible = items.slice(idx, idx + VISIBLE)
   while (visible.length < VISIBLE && items.length > VISIBLE) visible.push(null)
@@ -471,7 +485,7 @@ export default function IhkaamGallery() {
           <div className="flex items-center gap-5 w-full mb-8">
             <Arrow icon={ChevronRight} onClick={() => go(-1)} disabled={currentPage <= 0}/>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden" {...swipe}>
               <AnimatePresence mode="wait" custom={dir}>
                 <motion.div
                   key={idx}

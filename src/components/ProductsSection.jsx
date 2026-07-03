@@ -191,7 +191,7 @@ export default function ProductsSection() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-3 content-start">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 content-start">
                 {[
                   { v: '+1,800', l: 'طالب' },
                   { v: '108',    l: 'حلقة مؤتمتة' },
@@ -199,7 +199,7 @@ export default function ProductsSection() {
                 ].map(({ v, l }) => (
                   <div
                     key={l}
-                    className="rounded-2xl p-4 text-center transition-all duration-500 ease-out cursor-default"
+                    className="rounded-2xl p-2.5 sm:p-4 text-center transition-all duration-500 ease-out cursor-default"
                     style={{
                       background: 'rgba(1,38,38,0.55)',
                       border: '1px solid rgba(2,115,104,0.18)',
@@ -213,8 +213,8 @@ export default function ProductsSection() {
                       e.currentTarget.style.transform   = 'translateY(0)'
                     }}
                   >
-                    <div className="text-rose-grad text-xl font-black">{v}</div>
-                    <div className="text-[10px] mt-0.5" style={{ color: '#7A9E96' }}>{l}</div>
+                    <div className="text-rose-grad text-base sm:text-xl font-black">{v}</div>
+                    <div className="text-[9px] sm:text-[10px] mt-0.5" style={{ color: '#7A9E96' }}>{l}</div>
                   </div>
                 ))}
               </div>

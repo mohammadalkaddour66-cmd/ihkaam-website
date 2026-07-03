@@ -133,7 +133,8 @@ export default function Navbar() {
         {/* ── Mobile burger ───────────────────────────── */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden cursor-pointer transition-colors duration-300"
+          aria-label={open ? 'إغلاق القائمة' : 'فتح القائمة'}
+          className="md:hidden cursor-pointer transition-colors duration-300 -m-2.5 p-2.5 flex items-center justify-center"
           style={{ color: '#7A9E96' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#EAE4DF')}
           onMouseLeave={e => (e.currentTarget.style.color = '#7A9E96')}
@@ -170,7 +171,7 @@ export default function Navbar() {
               key={l.to}
               to={l.to}
               onClick={handleClick}
-              className="py-1 transition-colors duration-300 text-sm flex items-center gap-1.5"
+              className="py-3 transition-colors duration-300 text-sm flex items-center gap-1.5"
               style={{
                 color     : isActive(l.to) ? '#EAE4DF' : '#7A9E96',
                 fontWeight: isActive(l.to) ? '600'     : '500',

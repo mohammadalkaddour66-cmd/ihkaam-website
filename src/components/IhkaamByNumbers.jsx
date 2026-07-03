@@ -109,31 +109,15 @@ function GroupLabel({ children, color }) {
   )
 }
 
-// ── Smart grid: auto-spans last orphan card to fill the row ───────────────────
-// cols = desired columns on large screens
-function SmartGrid({ cards, cols, loading, trigger }) {
-  const count   = loading ? cols : cards.length
-  const orphans = count % cols
-
+// ── Smart grid: 1 col mobile, 2 cols tablet, 3 cols desktop ────────────────────
+function SmartGrid({ cards, loading, trigger }) {
   return (
-    <div
-      className="grid gap-4"
-      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-    >
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {loading
-        ? Array.from({ length: cols }).map((_, i) => <SkeletonCard key={i} />)
-        : cards.map((card, i) => {
-            const isLast   = i === cards.length - 1
-            const spanFull = isLast && orphans === 1
-            return (
-              <div
-                key={i}
-                style={spanFull ? { gridColumn: '1 / -1' } : undefined}
-              >
-                <StatCard index={i} trigger={trigger} {...card} />
-              </div>
-            )
-          })
+        ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
+        : cards.map((card, i) => (
+            <StatCard key={i} index={i} trigger={trigger} {...card} />
+          ))
       }
     </div>
   )
@@ -289,18 +273,18 @@ export default function IhkaamByNumbers() {
         {/* Group 1 — التسميع والحفظ */}
         <GroupLabel color="#6ABDB2">التسميع والحفظ</GroupLabel>
         <div className="mb-4">
-          <SmartGrid cards={group1} cols={3} loading={loading} trigger={trigger} />
+          <SmartGrid cards={group1} loading={loading} trigger={trigger} />
         </div>
 
         {/* Group 2 — الإنجاز والتميز */}
         <GroupLabel color="#F5D87A">الإنجاز والتميز</GroupLabel>
         <div className="mb-4">
-          <SmartGrid cards={group2} cols={3} loading={loading} trigger={trigger} />
+          <SmartGrid cards={group2} loading={loading} trigger={trigger} />
         </div>
 
         {/* Group 3 — إدارة المعهد */}
         <GroupLabel color="#D9ACA3">إدارة المعهد</GroupLabel>
-        <SmartGrid cards={group3} cols={3} loading={loading} trigger={trigger} />
+        <SmartGrid cards={group3} loading={loading} trigger={trigger} />
 
       </div>
     </section>

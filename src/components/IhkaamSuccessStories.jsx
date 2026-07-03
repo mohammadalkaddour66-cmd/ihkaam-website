@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion'
 import { ChevronRight, ChevronLeft, MapPin, ShieldCheck } from 'lucide-react'
 import { supabase } from '../config/supabaseClient'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { useSwipe } from '../hooks/useSwipe'
 
 const EXCLUDED     = ['demo', 'superadmin', 'ihkaam', 'ihkam']
 const INTERVAL_MS  = 2000
@@ -464,10 +466,12 @@ export default function IhkaamSuccessStories() {
   const [activeIndex, setActiveIndex] = useState(0)
   const timerRef = useRef(null)
 
+  const isMobile = useIsMobile()
   const n       = allCards.length
   const goNext  = useCallback(() => setActiveIndex(i => (i + 1) % n), [n])
   const goPrev  = useCallback(() => setActiveIndex(i => (i - 1 + n) % n), [n])
   const goTo    = useCallback(idx  => setActiveIndex(idx), [])
+  const swipe   = useSwipe(goNext, goPrev)
 
   // Auto-rotate — continuous, never pauses
   useEffect(() => {
@@ -567,48 +571,59 @@ export default function IhkaamSuccessStories() {
           </p>
         </div>
 
-        {/* ── 3D Fan Carousel ── */}
-        <div
-          className="relative mx-auto"
-          style={{ maxWidth: 900, height: 420, perspective: '1300px' }}
-        >
-          {visibleRange.map(({ position, globalIndex, card }) => {
-            const p        = POS[String(position)]
-            const isCenter = position === 0
+        {/* ── Carousel: single card on mobile, 3D fan on larger screens ── */}
+        {isMobile ? (
+          <div className="relative mx-auto max-w-[420px] pt-6" {...swipe}>
+            <RankBadge rank={activeIndex} size={44} />
+            <CenterCard
+              inst={allCards[activeIndex].inst}
+              metrics={allCards[activeIndex].metrics}
+              rank={activeIndex}
+            />
+          </div>
+        ) : (
+          <div
+            className="relative mx-auto"
+            style={{ maxWidth: 900, height: 420, perspective: '1300px' }}
+          >
+            {visibleRange.map(({ position, globalIndex, card }) => {
+              const p        = POS[String(position)]
+              const isCenter = position === 0
 
-            return (
-              <motion.div
-                key={card.inst.institute_id}
-                style={{
-                  position : 'absolute',
-                  top      : '50%',
-                  left     : '50%',
-                  width    : CARD_W,
-                  height   : isCenter ? 'auto' : CARD_H,
-                  marginLeft : -CARD_W / 2,
-                  zIndex   : p.z,
-                  cursor   : isCenter ? 'default' : 'pointer',
-                  overflow : 'visible',
-                }}
-                animate={{
-                  x       : p.x,
-                  y       : '-50%',
-                  rotateY : p.ry,
-                  scale   : p.scale,
-                  opacity : p.opacity,
-                }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                onClick={() => !isCenter && goTo(globalIndex)}
-              >
-                <RankBadge rank={globalIndex} size={isCenter ? 44 : 34} />
-                {isCenter
-                  ? <CenterCard inst={card.inst} metrics={card.metrics} rank={globalIndex} />
-                  : <SideCard   inst={card.inst} metrics={card.metrics} position={position} rank={globalIndex} />
-                }
-              </motion.div>
-            )
-          })}
-        </div>
+              return (
+                <motion.div
+                  key={card.inst.institute_id}
+                  style={{
+                    position : 'absolute',
+                    top      : '50%',
+                    left     : '50%',
+                    width    : CARD_W,
+                    height   : isCenter ? 'auto' : CARD_H,
+                    marginLeft : -CARD_W / 2,
+                    zIndex   : p.z,
+                    cursor   : isCenter ? 'default' : 'pointer',
+                    overflow : 'visible',
+                  }}
+                  animate={{
+                    x       : p.x,
+                    y       : '-50%',
+                    rotateY : p.ry,
+                    scale   : p.scale,
+                    opacity : p.opacity,
+                  }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  onClick={() => !isCenter && goTo(globalIndex)}
+                >
+                  <RankBadge rank={globalIndex} size={isCenter ? 44 : 34} />
+                  {isCenter
+                    ? <CenterCard inst={card.inst} metrics={card.metrics} rank={globalIndex} />
+                    : <SideCard   inst={card.inst} metrics={card.metrics} position={position} rank={globalIndex} />
+                  }
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
 
         {/* ── Controls ── */}
         <div className="flex items-center justify-center gap-6 mt-10" dir="ltr">

@@ -66,7 +66,7 @@ const inputBase = {
   caretColor  : '#6ABDB2',
   width       : '100%',
   outline     : 'none',
-  fontSize    : '0.875rem',
+  fontSize    : '1rem',
   fontFamily  : 'Tajawal, sans-serif',
   transition  : 'border-color 200ms ease',
   textAlign   : 'right',
@@ -583,7 +583,7 @@ export default function IhkaamCheckout() {
                               border            : '1px solid rgba(229,211,179,0.20)',
                               color             : '#E5D3B3',
                               fontWeight        : '700',
-                              fontSize          : '0.82rem',
+                              fontSize          : '1rem',
                               paddingInlineStart: '0.5rem',
                               paddingInlineEnd  : '0.5rem',
                             }}
@@ -615,14 +615,18 @@ export default function IhkaamCheckout() {
                               WebkitAppearance  : 'none',
                               MozAppearance     : 'none',
                               cursor            : 'pointer',
-                              width             : 'auto',
-                              paddingInlineEnd  : '1.8rem',
-                              paddingInlineStart: '0.75rem',
+                              width             : '5.25rem',
+                              flexShrink        : 0,
+                              overflow          : 'hidden',
+                              textOverflow      : 'ellipsis',
+                              whiteSpace        : 'nowrap',
+                              paddingInlineEnd  : '1.6rem',
+                              paddingInlineStart: '0.6rem',
                               background        : 'rgba(2,89,81,0.18)',
                               border            : '1px solid rgba(2,115,104,0.22)',
                               color             : '#6ABDB2',
                               fontWeight        : '700',
-                              fontSize          : '0.8rem',
+                              fontSize          : '1rem',
                             }}
                             onFocus={iFocus}
                             onBlur={iBlur}
@@ -656,7 +660,7 @@ export default function IhkaamCheckout() {
                           : (ARAB_COUNTRIES.find(c => c.code === form.countryCode)?.placeholder ?? 'XXXXXXXXX')
                       }
                       dir="ltr"
-                      style={{ ...inputBase, textAlign: 'left' }}
+                      style={{ ...inputBase, textAlign: 'left', flex: '1 1 0%', minWidth: 0 }}
                       onFocus={iFocus}
                       onBlur={iBlur}
                     />

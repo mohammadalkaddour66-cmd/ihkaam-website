@@ -307,7 +307,7 @@ export default function IhkaamROICalculator() {
               style={{ border: '1px solid rgba(229,211,179,0.08)' }}
             >
               <div
-                className="grid grid-cols-3 px-5 py-3 text-[11px] font-bold uppercase tracking-widest"
+                className="grid grid-cols-3 px-3 sm:px-5 py-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest"
                 style={{ background: 'rgba(255,255,255,0.03)', color: '#5A8A7E' }}
               >
                 <span>المهمة</span>
@@ -322,7 +322,7 @@ export default function IhkaamROICalculator() {
               ].map((row, i) => (
                 <div
                   key={row.task}
-                  className="grid grid-cols-3 px-5 py-3.5 text-xs items-center"
+                  className="grid grid-cols-3 px-3 sm:px-5 py-3.5 text-[11px] sm:text-xs items-center gap-1"
                   style={{
                     background    : i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
                     borderTop     : '1px solid rgba(255,255,255,0.04)',

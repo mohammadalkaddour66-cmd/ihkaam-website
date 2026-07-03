@@ -34,11 +34,11 @@ function StatsBand({ stats, color }) {
   return (
     <motion.div variants={stagger()} initial="hidden" whileInView="visible"
       viewport={{ once:true, margin:'-50px' }}
-      className="grid grid-cols-3 gap-0 rounded-2xl overflow-hidden"
+      className="grid grid-cols-1 sm:grid-cols-3 gap-0 rounded-2xl overflow-hidden"
       style={{ border:`1px solid ${color}18`, background:'rgba(1,18,18,0.60)' }}>
       {stats.map((s, i) => (
         <motion.div key={i} variants={fadeUp}
-          className={`flex flex-col items-center justify-center py-7 px-4 text-center${i < stats.length-1 ? ' border-l border-l-white/5' : ''}`}>
+          className={`flex flex-col items-center justify-center py-7 px-4 text-center${i < stats.length-1 ? ' border-b sm:border-b-0 sm:border-l border-white/5' : ''}`}>
           <span className="font-black text-2xl sm:text-3xl mb-2 leading-none" style={{ color }}>{s.value}</span>
           <span className="text-xs leading-snug" style={{ color:'#4A7A72' }}>{s.label}</span>
         </motion.div>

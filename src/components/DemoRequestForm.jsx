@@ -35,7 +35,7 @@ const inputStyle = {
   caretColor : '#6ABDB2',
   borderRadius: 12,
   padding    : '0.75rem 1rem',
-  fontSize   : '0.875rem',
+  fontSize   : '1rem',
   outline    : 'none',
   width      : '100%',
   fontFamily : 'inherit',
@@ -139,7 +139,7 @@ export default function DemoRequestForm({ onClose }) {
             <div>
               <h2 className="font-black text-lg mb-2" style={{ color: '#EAE4DF' }}>وصل طلبك — بارك الله في معهدك!</h2>
               <p className="text-sm leading-relaxed" style={{ color: '#4A7A72' }}>
-                سنتواصل معك قريباً على الواتساب لترتيب جرّب مجاناً.
+                سنتواصل معك قريباً على الواتساب لترتيب تجربة مجاناً.
               </p>
             </div>
             <button onClick={onClose}
@@ -229,9 +229,13 @@ export default function DemoRequestForm({ onClose }) {
                             ...inputStyle,
                             appearance        : 'none',
                             WebkitAppearance  : 'none',
-                            width             : 'auto',
-                            paddingInlineEnd  : '1.8rem',
-                            paddingInlineStart: '0.75rem',
+                            width             : '5.25rem',
+                            flexShrink        : 0,
+                            overflow          : 'hidden',
+                            textOverflow      : 'ellipsis',
+                            whiteSpace        : 'nowrap',
+                            paddingInlineEnd  : '1.6rem',
+                            paddingInlineStart: '0.6rem',
                             background        : 'rgba(2,89,81,0.18)',
                             border            : '1px solid rgba(2,115,104,0.22)',
                             color             : '#6ABDB2',
@@ -265,7 +269,7 @@ export default function DemoRequestForm({ onClose }) {
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder={isOther ? 'XXXXXXXXX' : (currentCountry?.placeholder ?? 'XXXXXXXXX')}
-                    style={{ ...inputStyle, textAlign: 'left' }}
+                    style={{ ...inputStyle, textAlign: 'left', flex: '1 1 0%', minWidth: 0 }}
                     onFocus={iFocus} onBlur={iBlur}
                   />
                 </div>

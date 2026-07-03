@@ -148,7 +148,7 @@ export default function QualityScore() {
             </div>
 
             {/* Mini stats */}
-            <div className="grid grid-cols-3 gap-3 w-full">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3 w-full">
               {[
                 { val: '٩١٪', lbl: 'انتظام' },
                 { val: '٨٥٪', lbl: 'استبقاء' },

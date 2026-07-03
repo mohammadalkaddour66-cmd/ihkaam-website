@@ -536,15 +536,15 @@ function SmartCard({
             className="flex flex-col"
           >
 
-            {/* ── Horizontal breakdown columns (RTL: right → left) ── */}
-            <div className="flex flex-row items-start justify-between w-full gap-3">
+            {/* ── Breakdown columns — stacked rows on mobile, horizontal columns from sm ── */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between w-full">
 
               {/* Col 1 (rightmost): Platform fee */}
-              <div className="flex flex-col gap-1.5 min-w-0">
+              <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
                 <span style={{ color: '#5A8A84', fontSize: '0.72rem', lineHeight: 1.4 }}>
                   رسوم المنصة الثابتة
                 </span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-baseline gap-0.5 flex-shrink-0">
                   <span
                     dir="ltr"
                     className="tabular-nums font-semibold"
@@ -557,11 +557,11 @@ function SmartCard({
               </div>
 
               {/* Col 2: Student fee */}
-              <div className="flex flex-col gap-1.5 min-w-0">
+              <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
                 <span style={{ color: '#5A8A84', fontSize: '0.72rem', lineHeight: 1.4 }}>
                   رسوم الطلاب ({students} طالب)
                 </span>
-                <div className="flex items-baseline gap-0.5">
+                <div className="flex items-baseline gap-0.5 flex-shrink-0">
                   <span
                     dir="ltr"
                     className="tabular-nums font-semibold"
@@ -575,11 +575,11 @@ function SmartCard({
 
               {/* Col 2.5: Active add-ons aggregate — shown only when total > 0 */}
               {addonsMonthlyTotal > 0 && (
-                <div className="flex flex-col gap-1.5 min-w-0">
+                <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
                   <span style={{ color: '#5A8A84', fontSize: '0.72rem', lineHeight: 1.4 }}>
                     الميزات المضافة
                   </span>
-                  <div className="flex items-baseline gap-0.5">
+                  <div className="flex items-baseline gap-0.5 flex-shrink-0">
                     <span
                       dir="ltr"
                       className="tabular-nums font-semibold"
@@ -594,7 +594,7 @@ function SmartCard({
 
               {/* Col 3: Original subtotal — only when a discount applies */}
               {discountPct > 0 && (
-                <div className="flex flex-col gap-1.5 min-w-0">
+                <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
                   <span style={{ color: '#3A5050', fontSize: '0.72rem', lineHeight: 1.4 }}>
                     {originalLabel}
                   </span>
@@ -614,40 +614,45 @@ function SmartCard({
               )}
 
               {/* Col 4 (leftmost): Grand total hero */}
-              <div className="flex flex-col gap-1.5 min-w-0">
+              <div
+                className="flex flex-row items-center justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0 border-t sm:border-t-0 pt-3 sm:pt-0 mt-1 sm:mt-0"
+                style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+              >
                 <span style={{ color: '#7A9E96', fontSize: '0.72rem', fontWeight: 600, lineHeight: 1.4 }}>
                   {totalLabel}
                 </span>
-                <span
-                  dir="ltr"
-                  className="font-black tabular-nums"
-                  style={{
-                    color        : duration === 1 ? '#00A896' : '#D4EAE7',
-                    fontSize     : 'clamp(1.3rem, 2.5vw, 1.7rem)',
-                    lineHeight   : 1,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  ${periodTotal.toFixed(2)}
-                </span>
-                {discountPct > 0 && (
+                <div className="flex items-center gap-2 sm:flex-col sm:items-start sm:gap-0.5 flex-shrink-0">
                   <span
-                    className="self-start rounded-full mt-0.5"
+                    dir="ltr"
+                    className="font-black tabular-nums"
                     style={{
-                      padding   : '0.18rem 0.55rem',
-                      background: 'rgba(0,168,150,0.11)',
-                      border    : '1px solid rgba(0,168,150,0.22)',
-                      color     : '#5AADA4',
-                      fontSize  : '0.60rem',
-                      fontWeight: 700,
-                      lineHeight: 1,
+                      color        : duration === 1 ? '#00A896' : '#D4EAE7',
+                      fontSize     : 'clamp(1.3rem, 2.5vw, 1.7rem)',
+                      lineHeight   : 1,
+                      letterSpacing: '-0.02em',
                     }}
                   >
-                    <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
-                      وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
-                    </span>
+                    ${periodTotal.toFixed(2)}
                   </span>
-                )}
+                  {discountPct > 0 && (
+                    <span
+                      className="rounded-full"
+                      style={{
+                        padding   : '0.18rem 0.55rem',
+                        background: 'rgba(0,168,150,0.11)',
+                        border    : '1px solid rgba(0,168,150,0.22)',
+                        color     : '#5AADA4',
+                        fontSize  : '0.60rem',
+                        fontWeight: 700,
+                        lineHeight: 1,
+                      }}
+                    >
+                      <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
+                        وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
+                      </span>
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 

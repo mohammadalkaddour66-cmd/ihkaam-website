@@ -388,7 +388,7 @@ export default function AffiliatePage() {
 
           {/* Numbers */}
           <section className="max-w-5xl mx-auto px-6 py-12">
-            <div className="grid grid-cols-3 gap-4 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-8">
               {[
                 { value: rates.loading ? '...' : `${rates.first}%`,     label: 'عمولة الاشتراك الأول', sub: 'عند كل تحويل ناجح' },
                 { value: rates.loading ? '...' : `${rates.recurring}%`, label: 'عمولة شهرية مستمرة',   sub: 'طالما العميل مشترك' },
@@ -878,7 +878,7 @@ export default function AffiliatePage() {
                 )}
 
                 {/* Stats — 3 cards only */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <StatCard icon={Users}        label="مجموع العملاء"  value={clientGroups.length}      accent="#6ABDB2" />
                   <StatCard icon={CheckCircle2} label="اشتراكات نشطة"  value={trackRes.active}  sub="مفعّلة ومدفوعة" accent="#10B981" />
                   <StatCard icon={Clock}        label="قيد المراجعة"   value={trackRes.pending} sub="بانتظار التفعيل"  accent="#F59E0B" />

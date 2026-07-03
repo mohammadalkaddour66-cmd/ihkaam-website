@@ -20,7 +20,7 @@ const inputBase = {
   borderColor         : 'rgba(217,172,163,0.18)',
   borderRadius        : '0.875rem',
   color               : '#F0E8E5',
-  fontSize            : '0.875rem',
+  fontSize            : '1rem',
   padding             : '0.9rem 1.125rem',
   width               : '100%',
   outline             : 'none',
