@@ -353,8 +353,11 @@ export default function HeroSection() {
         backgroundSize: '40px 40px',
       }} />
 
-      {/* Curved abstract background lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+      {/* Curved abstract background lines — square viewBox looks right only once the
+          section is wider than it is tall (the lg row layout); on the tall mobile/tablet
+          stacked layout, stretching it with preserveAspectRatio="none" distorts the
+          gentle wave into a steep diagonal streak, so it's hidden until lg. */}
+      <svg className="hidden lg:block absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
         <motion.path
           fill="none" stroke="#6ABDB2" strokeWidth="0.2"
           initial={{ d: "M0,50 Q25,25 50,50 T100,50" }}
