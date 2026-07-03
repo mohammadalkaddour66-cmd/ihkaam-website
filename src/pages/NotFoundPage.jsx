@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 export default function NotFoundPage() {
   return (
     <section
-      className="relative z-10 min-h-[80vh] flex flex-col items-center justify-center px-6 py-24 text-center"
+      className="relative z-10 min-h-[80vh] flex flex-col items-center justify-center px-6 py-24 text-center overflow-hidden"
       dir="rtl"
     >
       {/* Ambient glow */}

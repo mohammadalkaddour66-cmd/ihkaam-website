@@ -94,7 +94,7 @@ export default function Layout() {
   const location = useLocation()
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ overflowX: 'hidden' }}>
       <FloatingBg />
       <ScrollReset />
       <div className="relative" style={{ zIndex: 10 }}>
