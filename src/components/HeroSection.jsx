@@ -37,14 +37,18 @@ function PhonePlaceholderScreen() {
    Phone device chrome — reused for both the mobile in-flow
    placement and the desktop floating overlap placement
 ───────────────────────────────────────── */
-function PhoneMockup({ phoneImg, phoneIdx, phoneImages }) {
+function PhoneMockup({ phoneImg, phoneIdx, phoneImages, compact = false }) {
+  const dims = compact
+    ? { w: 'w-[70px]', border: 'border-[2px]', rounding: 'rounded-[15px]', screenH: 'h-[140px]', notch: 'w-8 h-2 top-1', home: 'w-5 h-0.5 bottom-0.5', dotBig: 6, dotSmall: 2 }
+    : { w: 'w-[130px]', border: 'border-[4px]', rounding: 'rounded-[28px]', screenH: 'h-[260px]', notch: 'w-16 h-4 top-2', home: 'w-10 h-1 bottom-1.5', dotBig: 12, dotSmall: 4 }
+
   return (
-    <div className="relative w-[130px] bg-[#060D0D] border-[4px] border-[#2A3A3A] rounded-[28px] overflow-hidden shadow-2xl ring-1 ring-black/50">
+    <div className={`relative ${dims.w} bg-[#060D0D] ${dims.border} border-[#2A3A3A] ${dims.rounding} overflow-hidden shadow-2xl ring-1 ring-black/50`}>
       {/* Top Notch (Dynamic Island style) */}
-      <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-black rounded-full z-10" />
+      <div className={`absolute left-1/2 -translate-x-1/2 bg-black rounded-full z-10 ${dims.notch}`} />
 
       {/* Screen — crossfade بين صور الهاتف */}
-      <div className="w-full h-[260px] bg-[#060D0D] relative overflow-hidden pt-2">
+      <div className={`w-full ${dims.screenH} bg-[#060D0D] relative overflow-hidden pt-2`}>
         <AnimatePresence mode="wait">
           {phoneImg ? (
             <motion.img
@@ -58,6 +62,8 @@ function PhoneMockup({ phoneImg, phoneIdx, phoneImages }) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
             />
+          ) : compact ? (
+            <div className="absolute inset-0 animate-pulse bg-teal-900/10" />
           ) : (
             <motion.div
               key="phone-placeholder"
@@ -70,12 +76,12 @@ function PhoneMockup({ phoneImg, phoneIdx, phoneImages }) {
         </AnimatePresence>
 
         {/* نقاط مؤشر الهاتف */}
-        {phoneImages.length > 1 && (
+        {!compact && phoneImages.length > 1 && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
             {phoneImages.map((_, i) => (
               <div key={i} style={{
-                width      : i === phoneIdx ? 12 : 4,
-                height     : 4,
+                width      : i === phoneIdx ? dims.dotBig * 3 : dims.dotSmall,
+                height     : dims.dotSmall,
                 borderRadius: 2,
                 background : i === phoneIdx ? '#6ABDB2' : 'rgba(106,189,178,0.30)',
                 transition : 'width 300ms ease',
@@ -86,7 +92,7 @@ function PhoneMockup({ phoneImg, phoneIdx, phoneImages }) {
       </div>
 
       {/* Home indicator */}
-      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/30" />
+      <div className={`absolute left-1/2 -translate-x-1/2 rounded-full bg-white/30 ${dims.home}`} />
     </div>
   )
 }
@@ -146,7 +152,8 @@ function HeroMockup({ liveStats }) {
 
       <div className="relative w-full max-w-[600px]" style={{ zIndex: 1 }}>
 
-        {/* ── 1. Main Monitor (Desktop Screen) ── */}
+        {/* ── 1. Main Monitor (Desktop Screen), with a small phone accent on mobile ── */}
+        <div className="relative">
         <motion.div
           className="relative bg-[#0A1414] rounded-xl shadow-2xl border border-[#1A2E2E] overflow-hidden z-10"
           style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
@@ -192,6 +199,18 @@ function HeroMockup({ liveStats }) {
           </div>
         </motion.div>
 
+        {/* Mobile: small phone accent, overlapping the monitor's bottom-right corner */}
+        {isMobile && (
+          <motion.div
+            className="absolute z-20"
+            style={{ bottom: '-14px', right: '10px' }}
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          >
+            <PhoneMockup phoneImg={phoneImg} phoneIdx={phoneIdx} phoneImages={phoneImages} compact />
+          </motion.div>
+        )}
+        </div>
+
         {/* ── Monitor Stand ── */}
         <div className="flex flex-col items-center relative z-0 -mt-1">
           {/* رقبة الشاشة */}
@@ -201,16 +220,6 @@ function HeroMockup({ liveStats }) {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-white/5 rounded-full"></div>
           </div>
         </div>
-
-        {/* ── Mobile: phone mockup below the laptop, centered, no overlap ── */}
-        {isMobile && (
-          <motion.div
-            className="relative z-20 flex justify-center mt-6"
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-          >
-            <PhoneMockup phoneImg={phoneImg} phoneIdx={phoneIdx} phoneImages={phoneImages} />
-          </motion.div>
-        )}
 
         {/* ── Mobile: clean stat strip instead of floating/overlapping cards ── */}
         {isMobile && (
