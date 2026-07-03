@@ -34,6 +34,64 @@ function PhonePlaceholderScreen() {
 }
 
 /* ─────────────────────────────────────────
+   Phone device chrome — reused for both the mobile in-flow
+   placement and the desktop floating overlap placement
+───────────────────────────────────────── */
+function PhoneMockup({ phoneImg, phoneIdx, phoneImages }) {
+  return (
+    <div className="relative w-[130px] bg-[#060D0D] border-[4px] border-[#2A3A3A] rounded-[28px] overflow-hidden shadow-2xl ring-1 ring-black/50">
+      {/* Top Notch (Dynamic Island style) */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-black rounded-full z-10" />
+
+      {/* Screen — crossfade بين صور الهاتف */}
+      <div className="w-full h-[260px] bg-[#060D0D] relative overflow-hidden pt-2">
+        <AnimatePresence mode="wait">
+          {phoneImg ? (
+            <motion.img
+              key={`phone-${phoneIdx}`}
+              src={phoneImg.image_url}
+              alt={phoneImg.title}
+              className="absolute inset-0 w-full h-full object-cover object-top"
+              draggable={false}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+            />
+          ) : (
+            <motion.div
+              key="phone-placeholder"
+              className="absolute inset-0"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            >
+              <PhonePlaceholderScreen />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* نقاط مؤشر الهاتف */}
+        {phoneImages.length > 1 && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+            {phoneImages.map((_, i) => (
+              <div key={i} style={{
+                width      : i === phoneIdx ? 12 : 4,
+                height     : 4,
+                borderRadius: 2,
+                background : i === phoneIdx ? '#6ABDB2' : 'rgba(106,189,178,0.30)',
+                transition : 'width 300ms ease',
+              }} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Home indicator */}
+      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/30" />
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────
    Hero Mockup — الصور تتبدل كل 2 ثانية
 ───────────────────────────────────────── */
 function HeroMockup({ liveStats }) {
@@ -144,6 +202,16 @@ function HeroMockup({ liveStats }) {
           </div>
         </div>
 
+        {/* ── Mobile: phone mockup below the laptop, centered, no overlap ── */}
+        {isMobile && (
+          <motion.div
+            className="relative z-20 flex justify-center mt-6"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+          >
+            <PhoneMockup phoneImg={phoneImg} phoneIdx={phoneIdx} phoneImages={phoneImages} />
+          </motion.div>
+        )}
+
         {/* ── Mobile: clean stat strip instead of floating/overlapping cards ── */}
         {isMobile && (
           <motion.div
@@ -238,55 +306,8 @@ function HeroMockup({ liveStats }) {
               <motion.div
                 animate={{ y: [-5, 5, -5] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative w-[130px] bg-[#060D0D] border-[4px] border-[#2A3A3A] rounded-[28px] overflow-hidden shadow-2xl ring-1 ring-black/50"
               >
-                {/* Top Notch (Dynamic Island style) */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-black rounded-full z-10" />
-
-                {/* Screen — crossfade بين صور الهاتف */}
-                <div className="w-full h-[260px] bg-[#060D0D] relative overflow-hidden pt-2">
-                  <AnimatePresence mode="wait">
-                    {phoneImg ? (
-                      <motion.img
-                        key={`phone-${phoneIdx}`}
-                        src={phoneImg.image_url}
-                        alt={phoneImg.title}
-                        className="absolute inset-0 w-full h-full object-cover object-top"
-                        draggable={false}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5, ease: 'easeInOut' }}
-                      />
-                    ) : (
-                      <motion.div
-                        key="phone-placeholder"
-                        className="absolute inset-0"
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      >
-                        <PhonePlaceholderScreen />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* نقاط مؤشر الهاتف */}
-                  {phoneImages.length > 1 && (
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                      {phoneImages.map((_, i) => (
-                        <div key={i} style={{
-                          width      : i === phoneIdx ? 12 : 4,
-                          height     : 4,
-                          borderRadius: 2,
-                          background : i === phoneIdx ? '#6ABDB2' : 'rgba(106,189,178,0.30)',
-                          transition : 'width 300ms ease',
-                        }} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Home indicator */}
-                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/30" />
+                <PhoneMockup phoneImg={phoneImg} phoneIdx={phoneIdx} phoneImages={phoneImages} />
               </motion.div>
             </motion.div>
           </>
@@ -344,7 +365,7 @@ export default function HeroSection() {
         {/* ════════════════════════════════════
             TEXT BLOCK (Right Column)
         ════════════════════════════════════ */}
-        <div className="w-full lg:w-1/2 flex flex-col items-start text-right">
+        <div className="w-full lg:w-1/2 flex flex-col items-center text-center lg:items-start lg:text-right">
 
           {/* H1 */}
           <motion.h1
@@ -366,7 +387,7 @@ export default function HeroSection() {
           {/* CTAs */}
           <motion.div
             initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.6, delay: 0.2 }}
-            className="flex flex-wrap items-center gap-4"
+            className="flex flex-wrap items-center justify-center lg:justify-start gap-4"
           >
             <Link
               to="/request"

@@ -93,7 +93,7 @@ export default function IhkaamTrustStats() {
   ]
 
   return (
-    <div id="stats" className="relative z-10 px-6 -mt-16">
+    <div id="stats" className="relative z-10 px-6 mt-8 sm:-mt-16">
       <div className="max-w-6xl mx-auto">
 
         <motion.div
