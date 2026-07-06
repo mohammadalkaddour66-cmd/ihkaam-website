@@ -79,7 +79,7 @@ const AUDIENCES = [
   },
 ]
 
-function AudienceCard({ item, index }) {
+function AudienceCard({ item, index, className = '' }) {
   const [hov, setHov] = useState(false)
   const Icon = item.icon
 
@@ -91,7 +91,7 @@ function AudienceCard({ item, index }) {
       transition={{ duration: 0.60, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      className="relative flex flex-col rounded-[22px] overflow-hidden"
+      className={`relative flex flex-col rounded-[22px] overflow-hidden ${className}`}
       style={{
         background          : 'rgba(4,16,16,0.88)',
         border              : `1px solid ${hov ? item.borderColor : 'rgba(255,255,255,0.05)'}`,
@@ -280,10 +280,17 @@ export default function IhkaamAudiences() {
           </p>
         </motion.div>
 
-        {/* Cards — 5 cards: 3 top + 2 bottom centered */}
+        {/* Cards — 5 cards: 3 top + 2 bottom centered.
+            The 3rd card would otherwise strand alone next to an empty gap
+            at the sm 2-column breakpoint, so it spans both columns there. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
           {AUDIENCES.slice(0, 3).map((item, i) => (
-            <AudienceCard key={item.title} item={item} index={i} />
+            <AudienceCard
+              key={item.title}
+              item={item}
+              index={i}
+              className={i === 2 ? 'sm:col-span-2 lg:col-span-1' : ''}
+            />
           ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:max-w-[66%] mx-auto">

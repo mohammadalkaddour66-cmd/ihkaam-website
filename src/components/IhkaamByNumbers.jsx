@@ -109,15 +109,22 @@ function GroupLabel({ children, color }) {
   )
 }
 
-// ── Smart grid: 1 col mobile, 2 cols tablet, 3 cols desktop ────────────────────
+// ── Smart grid: 1 col mobile, 2 cols tablet, 3 cols desktop.
+// A leftover card at the 2-col tablet breakpoint (odd count) spans both
+// columns so it doesn't strand itself next to an empty gap.
 function SmartGrid({ cards, loading, trigger }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {loading
         ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-        : cards.map((card, i) => (
-            <StatCard key={i} index={i} trigger={trigger} {...card} />
-          ))
+        : cards.map((card, i) => {
+            const isOrphanAt2Col = i === cards.length - 1 && cards.length % 2 === 1
+            return (
+              <div key={i} className={isOrphanAt2Col ? 'sm:col-span-2 lg:col-span-1' : undefined}>
+                <StatCard index={i} trigger={trigger} {...card} />
+              </div>
+            )
+          })
       }
     </div>
   )
