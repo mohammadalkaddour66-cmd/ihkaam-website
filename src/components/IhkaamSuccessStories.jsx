@@ -172,10 +172,6 @@ function scoreMetrics(d) {
   return recs * 1.2 + students * 8 + groups * 4 + (attPct ?? 0) * 1.8 + Math.min(growth ?? 0, 5) * 60
 }
 
-function daysAgoStr(n) {
-  const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().split('T')[0]
-}
-
 // ---------------------------------------------------------------------------
 // Rank Badge — circle above card showing #1 #2 #3 …
 // ---------------------------------------------------------------------------
@@ -490,6 +486,10 @@ export default function IhkaamSuccessStories() {
   }, [allCards, activeIndex, n])
 
   // ── Data fetch ──
+  // Fetches metrics for every candidate institute in a single RPC call
+  // (get_success_story_metrics) instead of the old N-institutes x 8-queries
+  // pattern, which fired 200+ simultaneous requests on real data and stalled
+  // every other query on the page (including the hero's own screenshot fetch).
   useEffect(() => {
     async function load() {
       const { data: settings } = await supabase
@@ -500,39 +500,35 @@ export default function IhkaamSuccessStories() {
 
       const filtered = settings.filter(s => !EXCLUDED.includes(s.institute_id))
       const ids      = filtered.map(s => s.institute_id)
+      if (!ids.length) { setReady(true); return }
 
-      const { data: locations } = await supabase
-        .rpc('get_institute_locations', { p_ids: ids })
+      const [{ data: locations }, { data: metrics }] = await Promise.all([
+        supabase.rpc('get_institute_locations', { p_ids: ids }),
+        supabase.rpc('get_success_story_metrics', { p_ids: ids }),
+      ])
 
-      const locMap = Object.fromEntries((locations || []).map(l => [l.id, l]))
-      const d60    = daysAgoStr(60)
-      const d120   = daysAgoStr(120)
+      const locMap    = Object.fromEntries((locations || []).map(l => [l.id, l]))
+      const metricMap = Object.fromEntries((metrics || []).map(m => [m.institute_id, m]))
 
-      const enriched = await Promise.all(filtered.map(async s => {
+      const enriched = filtered.map(s => {
         const id  = s.institute_id
         const loc = locMap[id] ?? {}
-        const [rS, rG, rR, rRec, rEar, rAbs, rLate] = await Promise.all([
-          supabase.from('students').select('*',{count:'exact',head:true}).eq('institute_id',id).eq('is_deleted',false),
-          supabase.from('groups').select('*',{count:'exact',head:true}).eq('institute_id',id).eq('is_deleted',false),
-          supabase.from('recitations').select('*',{count:'exact',head:true}).eq('institute_id',id),
-          supabase.from('recitations').select('*',{count:'exact',head:true}).eq('institute_id',id).gte('record_date',d60),
-          supabase.from('recitations').select('*',{count:'exact',head:true}).eq('institute_id',id).gte('record_date',d120).lt('record_date',d60),
-          supabase.from('attendance').select('*',{count:'exact',head:true}).eq('institute_id',id).eq('record_type','غياب').eq('is_deleted',false),
-          supabase.from('attendance').select('*',{count:'exact',head:true}).eq('institute_id',id).in('record_type',['تأخر','إذن تأخر دائم']).eq('is_deleted',false),
-        ])
-        let avgGrade = null
-        try {
-          const { data: gr } = await supabase.from('recitations').select('grade').eq('institute_id',id).not('grade','is',null).limit(200)
-          if (gr?.length) {
-            const nums = gr.map(r => parseFloat(r.grade)).filter(n => !isNaN(n) && n > 0 && n <= 10)
-            if (nums.length >= 10) avgGrade = nums.reduce((a,b) => a+b, 0) / nums.length
-          }
-        } catch { /* avgGrade is a best-effort enhancement, safe to skip on failure */ }
+        const m   = metricMap[id]
         return {
           inst: { ...s, country: loc.country ?? null, city: loc.city ?? null },
-          metrics: { students: rS.count??0, groups: rG.count??0, recs: rR.count??0, present:0, absent: rAbs.count??0, tardiness: rLate.count??0, recentRec: rRec.count??0, earlyRec: rEar.count??0, avgGrade },
+          metrics: {
+            students : m?.students  ?? 0,
+            groups   : m?.groups    ?? 0,
+            recs     : m?.recs      ?? 0,
+            present  : 0,
+            absent   : m?.absent    ?? 0,
+            tardiness: m?.tardiness ?? 0,
+            recentRec: m?.recent_rec ?? 0,
+            earlyRec : m?.early_rec  ?? 0,
+            avgGrade : m?.avg_grade ?? null,
+          },
         }
-      }))
+      })
 
       const ranked = enriched
         .filter(({ metrics: m }) => m.students > 0 || m.recs > 0)

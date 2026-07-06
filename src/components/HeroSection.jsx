@@ -51,6 +51,9 @@ function PhoneMockup({ phoneImg, phoneIdx, phoneImages }) {
               key={`phone-${phoneIdx}`}
               src={phoneImg.image_url}
               alt={phoneImg.title}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover object-top"
               draggable={false}
               initial={{ opacity: 0 }}
@@ -101,12 +104,14 @@ function HeroMockup({ liveStats }) {
   const [laptopIdx,    setLaptopIdx]    = useState(0)
   const [phoneIdx,     setPhoneIdx]     = useState(0)
 
-  /* جلب جميع الصور دفعة واحدة ثم تصنيفها */
+  /* جلب الصور دفعة واحدة ثم تصنيفها — محدود بعدد قليل لأن الهيرو
+     يعرض صورة واحدة بالتناوب فقط، لا داعي لتحميل معرض كامل هنا */
   useEffect(() => {
     supabase.from('gallery_items')
       .select('id,image_url,title,category')
       .eq('is_active', true)
       .order('order_index', { ascending: true })
+      .limit(12)
       .then(({ data }) => {
         if (!data) return
         setLaptopImages(data.filter(d => d.category !== 'هاتف'))
@@ -173,6 +178,9 @@ function HeroMockup({ liveStats }) {
                   key={`laptop-${laptopIdx}`}
                   src={laptopImg.image_url}
                   alt={laptopImg.title}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-contain object-left"
                   draggable={false}
                   initial={{ opacity: 0 }}
