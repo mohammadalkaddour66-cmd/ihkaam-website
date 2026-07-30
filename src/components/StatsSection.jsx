@@ -14,12 +14,12 @@ const STATS = [
     number: '+1 M',
     label : 'مشاهدة لأعمالي ومحتواي التقني على السوشيال ميديا',
     symbol: '◉',
-    accent: '#6ABDB2',
-    bg    : 'rgba(2,115,104,0.08)',
-    border: 'rgba(2,115,104,0.20)',
-    hoverBorder: 'rgba(106,189,178,0.42)',
-    hoverBg    : 'rgba(2,115,104,0.14)',
-    glow  : 'rgba(2,115,104,0.06)',
+    accent: '#48D6CD',
+    bg    : 'rgba(26,148,155,0.08)',
+    border: 'rgba(26,148,155,0.20)',
+    hoverBorder: 'rgba(72,214,205,0.42)',
+    hoverBg    : 'rgba(26,148,155,0.14)',
+    glow  : 'rgba(26,148,155,0.06)',
   },
   {
     number: '+5,500',
@@ -94,7 +94,7 @@ function StatCard({ stat }) {
       {/* Label */}
       <p
         className="text-sm leading-[1.85]"
-        style={{ color: '#7A9E96', maxWidth: '200px' }}
+        style={{ color: '#96BCBE', maxWidth: '200px' }}
       >
         {stat.label}
       </p>
@@ -110,7 +110,7 @@ export default function StatsSection() {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 80% 50% at 50% 50%, rgba(2,115,104,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 80% 50% at 50% 50%, rgba(26,148,155,0.04) 0%, transparent 70%)',
         }}
         aria-hidden
       />

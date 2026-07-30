@@ -1,23 +1,23 @@
-﻿import { motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Building2, UsersRound, CircleCheck } from 'lucide-react'
 
 const STEPS = [
   {
     num   : '01',
-    icon  : '🚀',
+    Icon  : Building2,
     title : 'سجّل معهدك خلال 5 دقائق',
-    body  : 'أدخل اسم معهدك، اختر باقتك، وفريقنا يتولى الإعداد معك .',
+    body  : 'أدخل اسم معهدك، اختر باقتك، وفريقنا يتولى الإعداد معك.',
   },
   {
     num   : '02',
-    icon  : '👥',
+    Icon  : UsersRound,
     title : 'أضف الشيوخ والطلاب والحلقات',
     body  : 'أدخل بيانات الشيوخ، وزّع الطلاب على حلقاتهم. كل شيء منظّم قبل أن تنتهي من قهوة الصباح.',
   },
   {
     num   : '03',
-    icon  : '✅',
+    Icon  : CircleCheck,
     title : 'شغّل المعهد رقمياً — من اليوم الأول',
     body  : 'حضور بضغطة. تسميع موثّق. النظام بديهي من أول استخدام — لا تدريب مطلوب.',
   },
@@ -48,9 +48,9 @@ export default function HowItWorksSection() {
           <span
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold tracking-widest uppercase"
             style={{
-              background: 'rgba(0,168,150,0.08)',
-              border    : '1px solid rgba(0,168,150,0.20)',
-              color     : '#00A896',
+              background: 'rgba(72, 214, 205,0.08)',
+              border    : '1px solid rgba(72, 214, 205,0.20)',
+              color     : 'var(--accent)',
             }}
           >
             كيف يعمل
@@ -60,7 +60,7 @@ export default function HowItWorksSection() {
         {/* Heading */}
         <motion.h2
           className="text-center font-black mb-3"
-          style={{ color: '#EAE4DF', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', lineHeight: 1.35 }}
+          style={{ color: 'var(--text-1)', fontSize: 'clamp(1.9rem, 4vw, 3.1rem)', lineHeight: 1.28 }}
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
@@ -69,8 +69,8 @@ export default function HowItWorksSection() {
           ثلاث خطوات — وتبدأ في نفس اليوم
         </motion.h2>
         <motion.p
-          className="text-center text-sm mb-14 mx-auto"
-          style={{ color: '#5A8A78', maxWidth: 400, lineHeight: 1.85 }}
+          className="text-center text-base mb-14 mx-auto"
+          style={{ color: 'var(--text-2)', maxWidth: 600, lineHeight: 1.9, fontWeight: 300 }}
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
@@ -93,14 +93,13 @@ export default function HowItWorksSection() {
               variants={itemVariants}
               className="relative flex flex-col gap-5"
             >
-              {/* Connector line between cards (desktop only) */}
+              {/* الخطّ الواصل بين البطاقات (سطح المكتب فقط).
+                  كان zIndex:-1 يدفعه خلف خلفية القسم فيختفي أصلاً؛
+                  والاتجاه left في صفحة RTL يشير للخطوة السابقة لا التالية. */}
               {i < STEPS.length - 1 && (
                 <div
-                  className="hidden md:block absolute top-7 left-0 -translate-x-1/2 w-full h-px pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(to left, transparent, rgba(0,168,150,0.20), transparent)',
-                    zIndex: -1,
-                  }}
+                  className="hidden md:block absolute top-[2.625rem] right-full w-6 h-px pointer-events-none"
+                  style={{ background: 'linear-gradient(to left, rgba(72, 214, 205,0.30), transparent)' }}
                   aria-hidden
                 />
               )}
@@ -109,29 +108,29 @@ export default function HowItWorksSection() {
               <div
                 className="relative rounded-2xl p-6 flex flex-col gap-4 h-full"
                 style={{
-                  background: 'linear-gradient(145deg, rgba(1,30,30,0.70) 0%, rgba(1,14,14,0.95) 100%)',
-                  border    : '1px solid rgba(0,168,150,0.15)',
+                  background: 'linear-gradient(145deg, rgba(9,32,30,0.70) 0%, rgba(2,15,14,0.95) 100%)',
+                  border    : '1px solid rgba(72, 214, 205,0.15)',
                 }}
               >
                 {/* Step number badge */}
                 <div className="flex items-center gap-3">
                   <span
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0 tabular-nums"
                     style={{
-                      background: 'rgba(0,168,150,0.12)',
-                      border    : '1px solid rgba(0,168,150,0.25)',
-                      color     : '#00A896',
+                      background: 'rgba(72, 214, 205,0.12)',
+                      border    : '1px solid rgba(72, 214, 205,0.25)',
+                      color     : 'var(--accent)',
                     }}
                   >
                     {step.num}
                   </span>
-                  <span className="text-xl">{step.icon}</span>
+                  <step.Icon size={20} strokeWidth={1.75} style={{ color: 'var(--text-2)' }} aria-hidden />
                 </div>
 
-                <h3 className="font-black text-base leading-snug" style={{ color: '#D4EAE7' }}>
+                <h3 className="font-bold text-base leading-snug" style={{ color: 'var(--text-1)' }}>
                   {step.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#5A8A78' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>
                   {step.body}
                 </p>
               </div>
@@ -150,39 +149,17 @@ export default function HowItWorksSection() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/request"
-              className="inline-flex items-center gap-2.5 rounded-xl font-black px-8 py-4 transition-all duration-250"
-              style={{
-                background: 'linear-gradient(135deg, #00A896 0%, #027368 100%)',
-                color     : '#EAE4DF',
-                fontSize  : '0.92rem',
-                boxShadow : '0 6px 28px rgba(0,168,150,0.25)',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,168,150,0.38)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 6px 28px rgba(0,168,150,0.25)')}
+              className="btn-cta inline-flex items-center gap-2.5 rounded-xl px-8 py-4"
+              style={{ fontSize: '0.92rem' }}
             >
-              ابدأ الآن — صمّم باقتك
+              اطلب نسخة
               <ArrowLeft size={16} strokeWidth={2.5} />
             </Link>
 
             <Link
               to="/ihkaam"
-              className="inline-flex items-center gap-2.5 rounded-xl font-bold px-8 py-4 transition-all duration-250"
-              style={{
-                background: 'rgba(106,189,178,0.08)',
-                border    : '1px solid rgba(106,189,178,0.28)',
-                color     : '#6ABDB2',
-                fontSize  : '0.92rem',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background   = 'rgba(106,189,178,0.14)'
-                e.currentTarget.style.borderColor  = 'rgba(106,189,178,0.50)'
-                e.currentTarget.style.boxShadow    = '0 0 0 3px rgba(106,189,178,0.10)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background   = 'rgba(106,189,178,0.08)'
-                e.currentTarget.style.borderColor  = 'rgba(106,189,178,0.28)'
-                e.currentTarget.style.boxShadow    = 'none'
-              }}
+              className="btn-outline inline-flex items-center gap-2.5 rounded-xl px-8 py-4"
+              style={{ fontSize: '0.92rem' }}
             >
               اكتشف الميزات أولاً
               <ArrowLeft size={16} strokeWidth={2.5} />

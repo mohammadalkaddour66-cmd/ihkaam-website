@@ -1,13 +1,25 @@
-const PARTICLES = [
-  { top: '10%',  left: '7%',  size: 5,  dur: '9s',  delay: '0s',   color: 'rgba(106,189,178,0.70)' },
-  { top: '25%',  left: '91%', size: 4,  dur: '12s', delay: '1.5s', color: 'rgba(217,172,163,0.65)' },
-  { top: '52%',  left: '4%',  size: 4,  dur: '7s',  delay: '3s',   color: 'rgba(106,189,178,0.55)' },
-  { top: '68%',  left: '84%', size: 5,  dur: '11s', delay: '0.8s', color: 'rgba(217,172,163,0.60)' },
-  { top: '38%',  left: '47%', size: 3,  dur: '14s', delay: '2s',   color: 'rgba(106,189,178,0.45)' },
-  { top: '80%',  left: '21%', size: 4,  dur: '8s',  delay: '4s',   color: 'rgba(166,117,106,0.55)' },
-  { top: '16%',  left: '63%', size: 3,  dur: '10s', delay: '1s',   color: 'rgba(106,189,178,0.50)' },
-  { top: '88%',  left: '68%', size: 5,  dur: '13s', delay: '2.5s', color: 'rgba(217,172,163,0.50)' },
-]
+/* ══════════════════════════════════════════════════════
+   الخلفية الثابتة — طبقتا وهجٍ وحبيباتُ فيلم.
+
+   كانت ثلاثة أوهاجٍ وثمانيَ نقاطٍ طافية: أي **إحدى عشرة حلقة
+   حركةٍ لا نهائية** تعمل ما دام الزائر في الصفحة، فوق ما في
+   الهيرو من خمس. والنقاط الملوّنة المتناثرة هي أكثر ما يقول
+   «قالب» في التصميم الداكن، وكانت تحمل ألواناً (الورديّ والطينيّ)
+   خرجت من الرئيسية أصلاً.
+
+   وحلّ محلّها ما يعطي العمقَ بلا حركة: حبيباتُ فيلم ساكنة.
+   الأسود الرقميّ المسطّح هو ما يجعل السطحَ الداكن يبدو رخيصاً،
+   والحبيباتُ تكسره فيُقرأ «مادّةً» — بلا إطارِ رسمٍ واحد.
+   ══════════════════════════════════════════════════════ */
+
+/* ضجيجٌ رماديّ مولَّد في SVG — لا ملفَّ صورةٍ يُحمَّل، ولا طلبَ شبكة.
+   feTurbulence بترددٍ عالٍ (0.85) يعطي حبيبةً ناعمة لا نقشاً ظاهراً،
+   وfeColorMatrix يجرّده من اللون فلا يزاحم اللوحة. */
+const GRAIN =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E" +
+  "%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' " +
+  "stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E" +
+  "%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"
 
 export default function FloatingBg() {
   return (
@@ -16,42 +28,30 @@ export default function FloatingBg() {
       style={{ zIndex: 0 }}
       aria-hidden
     >
-      {/* Warm rose orb — top-right */}
+      {/* وهجٌ ذهبيّ — أعلى اليمين.
+          كان ورديّاً (D9ACA3): لونٌ موروثٌ خرج من الرئيسية، فبقي
+          يصبغ خلفيتها وحده. الذهب هو ثانويّ اللوحة المعتمد. */}
       <div
         className="orb-a absolute -top-1/3 -right-1/4 w-[900px] h-[900px] rounded-full"
-        style={{ background: 'radial-gradient(circle at center, rgba(217,172,163,0.10) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(circle at center, rgba(227,169,63,0.07) 0%, transparent 65%)' }}
       />
 
-      {/* Teal depth orb — bottom-left */}
+      {/* وهجٌ تركوازيّ — أسفل اليسار */}
       <div
         className="orb-b absolute -bottom-1/3 -left-1/4 w-[750px] h-[750px] rounded-full"
-        style={{ background: 'radial-gradient(circle at center, rgba(2,115,104,0.12) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(circle at center, rgba(26,148,155,0.12) 0%, transparent 65%)' }}
       />
 
-      {/* Turquoise mid orb — center */}
+      {/* الحبيبات — ساكنة تماماً. 3% هو الحدّ الذي يُحَسّ ولا يُرى:
+          فوقه يصير «تشويشاً»، وتحته لا يفعل شيئاً. */}
       <div
-        className="orb-c absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-        style={{ background: 'radial-gradient(circle at center, rgba(106,189,178,0.06) 0%, transparent 70%)' }}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url("${GRAIN}")`,
+          backgroundSize : '160px 160px',
+          opacity        : 0.03,
+        }}
       />
-
-      {/* Floating particles — fixed px units */}
-      {PARTICLES.map((p, i) => (
-        <div
-          key={i}
-          className="particle absolute rounded-full"
-          style={{
-            top       : p.top,
-            left      : p.left,
-            width     : `${p.size}px`,
-            height    : `${p.size}px`,
-            background: p.color,
-            boxShadow : `0 0 ${p.size * 4}px ${p.color}, 0 0 ${p.size * 8}px ${p.color}`,
-            '--dur'   : p.dur,
-            '--delay' : p.delay,
-          }}
-        />
-      ))}
-
     </div>
   )
 }

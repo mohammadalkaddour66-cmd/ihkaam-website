@@ -21,31 +21,31 @@ function MetricRow({ icon: Icon, label, ideal, unit, userVal, networkAvg, lowerI
         : (userVal >= networkAvg * 1.1 ? 'أفضل من متوسط الشبكة' : userVal < networkAvg * 0.9 ? 'دون المتوسط' : 'ضمن المتوسط'))
     : null
 
-  const statusColor = !hasVal ? '#3D5050'
-    : (lowerIsBetter ? userVal <= networkAvg * 0.9 : userVal >= networkAvg * 1.1) ? '#6ABDB2'
+  const statusColor = !hasVal ? '#374D56'
+    : (lowerIsBetter ? userVal <= networkAvg * 0.9 : userVal >= networkAvg * 1.1) ? '#48D6CD'
     : (lowerIsBetter ? userVal > networkAvg * 1.1 : userVal < networkAvg * 0.9) ? '#D9ACA3'
     : '#D9C8A3'
 
   return (
     <div className="rounded-2xl p-5"
-      style={{ background: 'rgba(1,30,30,0.5)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      style={{ background: 'rgba(9,32,30,0.5)', border: '1px solid rgba(255,255,255,0.07)' }}>
 
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center"
-            style={{ background: color + '18' }}>
+            style={{ background: `color-mix(in srgb, ${color} 9%, transparent)` }}>
             <Icon size={16} style={{ color }} />
           </div>
           <div>
             <p className="text-sm font-bold leading-none mb-0.5" style={{ color: '#C8B8B0' }}>{label}</p>
-            <p className="text-[10px]" style={{ color: '#3D5050' }}>المثالي: {ideal}</p>
+            <p className="text-[10px]" style={{ color: '#374D56' }}>المثالي: {ideal}</p>
           </div>
         </div>
         <div className="text-right">
           <p className="font-black tabular-nums leading-none" style={{ fontSize: 18, color }}>
             {userVal > 0 ? userVal.toFixed(1) : '—'}
           </p>
-          <p className="text-[10px]" style={{ color: '#3D5050' }}>{unit}</p>
+          <p className="text-[10px]" style={{ color: '#374D56' }}>{unit}</p>
         </div>
       </div>
 
@@ -58,13 +58,13 @@ function MetricRow({ icon: Icon, label, ideal, unit, userVal, networkAvg, lowerI
           {/* User fill */}
           <motion.div
             className="h-full rounded-full"
-            style={{ background: `linear-gradient(90deg, ${color}99, ${color})`, maxWidth: '100%' }}
+            style={{ background: `linear-gradient(90deg, color-mix(in srgb, ${color} 60%, transparent), ${color})`, maxWidth: '100%' }}
             initial={{ width: 0 }}
             animate={{ width: hasVal ? `${pct}%` : '0%' }}
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
-        <div className="flex justify-between mt-1 text-[10px]" style={{ color: '#2A4040' }}>
+        <div className="flex justify-between mt-1 text-[10px]" style={{ color: '#1C423A' }}>
           <span>{lowerIsBetter ? 'أفضل' : 'أضعف'}</span>
           <span>شبكة إحكام: {networkAvg > 0 ? networkAvg.toFixed(1) : '…'} {unit}</span>
           <span>{lowerIsBetter ? 'أضعف' : 'أفضل'}</span>
@@ -75,7 +75,7 @@ function MetricRow({ icon: Icon, label, ideal, unit, userVal, networkAvg, lowerI
       {statusLabel && (
         <p className="text-xs font-semibold mt-2" style={{ color: statusColor }}>{statusLabel}</p>
       )}
-      <p className="text-[11px] mt-1 leading-relaxed" style={{ color: '#3D5050' }}>{desc}</p>
+      <p className="text-[11px] mt-1 leading-relaxed" style={{ color: '#374D56' }}>{desc}</p>
     </div>
   )
 }
@@ -119,7 +119,7 @@ export default function BenchmarkCalculator({ raw }) {
             style={{ fontSize: 'clamp(1.3rem,2.2vw,1.9rem)', color: '#EAE4DF' }}>
             قارن مركزك بمراكز الشبكة
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: '#7A9E96', maxWidth: 520 }}>
+          <p className="text-sm leading-relaxed" style={{ color: '#96BCBE', maxWidth: 520 }}>
             أدخل أرقام مركزك الأربعة في الحقول أدناه وستظهر لك على الفور مقارنة بمتوسطات شبكة إحكام —
             ترى أين أنت قوي وأين تحتاج تحسيناً. المقارنة تتم محلياً في متصفحك ولا يُحفظ أي شيء.
           </p>
@@ -134,12 +134,12 @@ export default function BenchmarkCalculator({ raw }) {
             { key: 'sessions', label: 'جلسات تسميع / شهر', ph: '٣٢٠',  icon: Mic       },
           ].map(({ key, label, ph, icon: Icon }) => (
             <div key={key}>
-              <label className="text-[11px] font-bold block mb-1.5" style={{ color: '#7A9E96' }}>
+              <label className="text-[11px] font-bold block mb-1.5" style={{ color: '#96BCBE' }}>
                 {label}
               </label>
               <div className="relative">
                 <Icon size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: '#3D5050' }} />
+                  style={{ color: '#374D56' }} />
                 <input
                   type="number"
                   value={inputs[key]}
@@ -149,7 +149,7 @@ export default function BenchmarkCalculator({ raw }) {
                   className="w-full rounded-xl py-2.5 pr-8 pl-3 text-sm font-bold tabular-nums text-right
                              appearance-none focus:outline-none"
                   style={{
-                    background    : '#011E1E',
+                    background    : '#09201E',
                     border        : '1px solid rgba(255,255,255,0.09)',
                     color         : '#EAE4DF',
                     WebkitAppearance: 'none',
@@ -172,8 +172,8 @@ export default function BenchmarkCalculator({ raw }) {
               className="rounded-2xl flex flex-col items-center justify-center gap-3 py-14"
               style={{ background: 'rgba(255,255,255,0.012)', border: '1px dashed rgba(255,255,255,0.07)' }}
             >
-              <BarChart3 size={28} style={{ color: '#2A4040' }} />
-              <p className="text-sm" style={{ color: '#2A4040' }}>
+              <BarChart3 size={28} style={{ color: '#1C423A' }} />
+              <p className="text-sm" style={{ color: '#1C423A' }}>
                 أدخل بيانات مركزك أعلاه لرؤية مقارنتك بالشبكة
               </p>
             </motion.div>
@@ -194,7 +194,7 @@ export default function BenchmarkCalculator({ raw }) {
                 userVal={ur.studentsPerGroup}
                 networkAvg={nr.studentsPerGroup}
                 lowerIsBetter={false}
-                color="#6ABDB2"
+                color="#48D6CD"
                 desc="الحلقات بين 6-15 طالباً تُحقق أعلى نسب استكمال خطط الحفظ وفق بيانات الشبكة."
               />
               <MetricRow
@@ -216,7 +216,7 @@ export default function BenchmarkCalculator({ raw }) {
                 userVal={ur.sessionsPerStudent}
                 networkAvg={nr.sessionsPerStudent}
                 lowerIsBetter={false}
-                color="#A3C4D9"
+                color="var(--cat-4)"
                 desc="8+ جلسات/طالب/شهر تُشير إلى توثيق منتظم يُمكّن من رصد التقدم بدقة عالية."
               />
             </motion.div>

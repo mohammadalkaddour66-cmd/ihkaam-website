@@ -5,7 +5,9 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // ds-bundle/.design-sync أدواتُ تصميمٍ محلّية لا تُبنى ولا تُنشر، وكانت
+  // وحدها تُنتج 720+ خطأ فيُغرق `npm run lint` أخطاءَ src الحقيقية.
+  globalIgnores(['dist', 'dist-analyze', 'ds-bundle', '.design-sync', 'supabase/functions']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [

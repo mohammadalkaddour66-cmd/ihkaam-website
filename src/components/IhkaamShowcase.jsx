@@ -1,31 +1,45 @@
 ﻿import { useState, useEffect } from 'react'
 import { supabase } from '../config/supabaseClient'
+import { galleryImage } from '../config/imageUrl'
+import { fetchLandingStats } from '../config/landingStats'
 
-/* ─── Stats Banner data ───────────────────────────────────────── */
-const STATS = [
-  { number: '1,800+',label: 'طالب مُسجّل يُدار سحابياً',          accent: '#D9ACA3' },
-  { number: '150+',   label: 'كادر إداري وتعليمي',                  accent: '#6ABDB2' },
-  { number: '108',    label: 'حلقة قرآنية مؤتمتة بالكامل',          accent: '#D9ACA3' },
-  { number: '6',      label: 'معاهد ومؤسسات كبرى تثق بنا',          accent: '#A6756A' },
+/* ─── Stats Banner data ───────────────────────────────────────────
+   الأرقام تُجلب حيّة من قاعدة البيانات (get_public_landing_stats) بدل
+   قيم مكتوبة يدوياً كانت تتقادم: كانت تعرض 1,800 طالباً و6 معاهد بينما
+   الواقع تجاوزها. الصيغ أدناه تُبنى من الأرقام الفعلية. */
+const STAT_LABELS = [
+  { key: 'students',   label: 'طالب مُسجّل يُدار سحابياً',   accent: '#D9ACA3' },
+  { key: 'staff',      label: 'كادر إداري وتعليمي',           accent: '#48D6CD' },
+  { key: 'groups',     label: 'حلقة قرآنية مؤتمتة بالكامل',   accent: '#D9ACA3' },
+  { key: 'institutes', label: 'معاهد ومؤسسات كبرى تثق بنا',   accent: '#A6756A' },
 ]
 
 /* ─── Stats Banner component ───────────────────────────────────── */
 function StatsBanner() {
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => { fetchLandingStats().then(setStats) }, [])
+
+  const STATS = STAT_LABELS.map(s => ({
+    ...s,
+    number: stats ? stats[s.key].toLocaleString('en-US') : '—',
+  }))
+
   return (
     <div
       className="grid grid-cols-2 lg:grid-cols-4 mb-14 rounded-2xl overflow-hidden"
-      style={{ border: '1px solid rgba(2,115,104,0.18)' }}
+      style={{ border: '1px solid rgba(26,148,155,0.18)' }}
     >
       {STATS.map((s, i) => (
         <div
-          key={s.number}
+          key={s.key}
           className="flex flex-col items-center justify-center text-center px-5 py-7 gap-2"
           style={{
-            background  : 'rgba(2,89,81,0.12)',
+            background  : 'rgba(17,49,44,0.12)',
             backdropFilter: 'blur(10px)',
             /* Divider between cells */
-            borderRight : i < STATS.length - 1 ? '1px solid rgba(2,115,104,0.14)' : 'none',
-            borderBottom: i < 2 ? '1px solid rgba(2,115,104,0.14)' : 'none', /* mobile row separator */
+            borderRight : i < STATS.length - 1 ? '1px solid rgba(26,148,155,0.14)' : 'none',
+            borderBottom: i < 2 ? '1px solid rgba(26,148,155,0.14)' : 'none', /* mobile row separator */
           }}
         >
           <p
@@ -40,7 +54,7 @@ function StatsBanner() {
           </p>
           <p
             className="text-xs leading-[1.7]"
-            style={{ color: '#7A9E96', maxWidth: '110px' }}
+            style={{ color: '#96BCBE', maxWidth: '110px' }}
           >
             {s.label}
           </p>
@@ -57,8 +71,8 @@ function LaptopMockup({ imageUrl, title }) {
       {/* Lid — image fills edge-to-edge, no fake bar */}
       <div className="relative rounded-t-2xl overflow-hidden"
         style={{
-          background  : 'rgba(1,22,22,0.97)',
-          border      : '1px solid rgba(2,115,104,0.32)',
+          background  : 'rgba(2,15,14,0.97)',
+          border      : '1px solid rgba(26,148,155,0.32)',
           borderBottom: 'none',
         }}
       >
@@ -76,8 +90,8 @@ function LaptopMockup({ imageUrl, title }) {
       <div className="rounded-b-xl"
         style={{
           height    : '12px',
-          background: 'linear-gradient(180deg, rgba(1,22,22,0.97) 0%, rgba(1,14,14,0.85) 100%)',
-          border    : '1px solid rgba(2,115,104,0.22)',
+          background: 'linear-gradient(180deg, rgba(2,15,14,0.97) 0%, rgba(2,15,14,0.85) 100%)',
+          border    : '1px solid rgba(26,148,155,0.22)',
           borderTop : 'none',
         }}
       />
@@ -85,16 +99,16 @@ function LaptopMockup({ imageUrl, title }) {
       <div className="mx-auto"
         style={{
           width       : '34%', height: '16px',
-          background  : 'rgba(1,18,18,0.90)',
-          borderLeft  : '1px solid rgba(2,115,104,0.16)',
-          borderRight : '1px solid rgba(2,115,104,0.16)',
-          borderBottom: '1px solid rgba(2,115,104,0.16)',
+          background  : 'rgba(2,15,14,0.90)',
+          borderLeft  : '1px solid rgba(26,148,155,0.16)',
+          borderRight : '1px solid rgba(26,148,155,0.16)',
+          borderBottom: '1px solid rgba(26,148,155,0.16)',
           borderRadius: '0 0 6px 6px',
         }}
       />
       {/* Base plate */}
       <div className="mx-auto rounded-full"
-        style={{ width: '54%', height: '5px', background: 'rgba(1,14,14,0.88)', border: '1px solid rgba(2,115,104,0.14)' }}
+        style={{ width: '54%', height: '5px', background: 'rgba(2,15,14,0.88)', border: '1px solid rgba(26,148,155,0.14)' }}
       />
     </div>
   )
@@ -106,23 +120,23 @@ function PhoneMockup({ imageUrl, title }) {
     <div className="relative flex-shrink-0"
       style={{
         width        : '200px',
-        background   : 'rgba(1,14,14,0.97)',
-        border       : '10px solid rgba(1,20,20,0.99)',
+        background   : 'rgba(2,15,14,0.97)',
+        border       : '10px solid rgba(2,15,14,0.99)',
         borderRadius : '40px',
-        boxShadow    : '0 24px 64px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(2,115,104,0.28)',
+        boxShadow    : '0 24px 64px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(26,148,155,0.28)',
       }}
     >
       {/* Side buttons */}
       <div className="absolute -right-3 rounded-l-full"
-        style={{ top: '80px', width: '5px', height: '40px', background: 'rgba(2,89,81,0.55)' }} />
+        style={{ top: '80px', width: '5px', height: '40px', background: 'rgba(17,49,44,0.55)' }} />
       <div className="absolute -left-3 rounded-r-full"
-        style={{ top: '72px', width: '5px', height: '30px', background: 'rgba(2,89,81,0.55)' }} />
+        style={{ top: '72px', width: '5px', height: '30px', background: 'rgba(17,49,44,0.55)' }} />
       <div className="absolute -left-3 rounded-r-full"
-        style={{ top: '116px', width: '5px', height: '30px', background: 'rgba(2,89,81,0.55)' }} />
+        style={{ top: '116px', width: '5px', height: '30px', background: 'rgba(17,49,44,0.55)' }} />
 
       {/* Notch */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
-        style={{ width: '72px', height: '26px', background: 'rgba(1,20,20,0.99)', borderRadius: '0 0 18px 18px' }}
+        style={{ width: '72px', height: '26px', background: 'rgba(2,15,14,0.99)', borderRadius: '0 0 18px 18px' }}
       />
 
       {/* Screen — scrollable so tall mobile screenshots are not cropped */}
@@ -132,7 +146,7 @@ function PhoneMockup({ imageUrl, title }) {
           borderRadius : '31px',
           maxHeight    : '380px',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(2,115,104,0.30) transparent',
+          scrollbarColor: 'rgba(26,148,155,0.30) transparent',
         }}
       >
         <img
@@ -146,7 +160,7 @@ function PhoneMockup({ imageUrl, title }) {
 
       {/* Home indicator */}
       <div className="mx-auto mt-1.5 mb-1 rounded-full"
-        style={{ width: '52px', height: '4px', background: 'rgba(2,89,81,0.40)' }}
+        style={{ width: '52px', height: '4px', background: 'rgba(17,49,44,0.40)' }}
       />
     </div>
   )
@@ -182,10 +196,10 @@ export default function IhkaamShowcase() {
 
       {/* Teal ambient glow */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(2,115,104,0.25), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(26,148,155,0.25), transparent)' }}
         aria-hidden />
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(2,115,104,0.07) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(26,148,155,0.07) 0%, transparent 70%)' }}
         aria-hidden />
 
       <div className="max-w-6xl mx-auto">
@@ -202,7 +216,7 @@ export default function IhkaamShowcase() {
           <h2 className="font-black leading-tight mx-auto"
             style={{ color: '#D9ACA3', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', maxWidth: '600px' }}>
             شاهد كيف ننهي الفوضى..{' '}
-            <span style={{ color: '#F0E8E5' }}>بساطة الواجهات وقوة الأداء</span>
+            <span style={{ color: '#EAE4DF' }}>بساطة الواجهات وقوة الأداء</span>
           </h2>
         </div>
 
@@ -210,8 +224,8 @@ export default function IhkaamShowcase() {
         <div
           className="rounded-3xl overflow-hidden"
           style={{
-            background: 'rgba(2,89,81,0.12)',
-            border: '1px solid rgba(2,115,104,0.18)',
+            background: 'rgba(17,49,44,0.12)',
+            border: '1px solid rgba(26,148,155,0.18)',
             backdropFilter: 'blur(16px)',
           }}
         >
@@ -220,12 +234,12 @@ export default function IhkaamShowcase() {
             {/* RIGHT — Tab list */}
             <div
               className="flex flex-row lg:flex-col gap-0 lg:border-e border-b lg:border-b-0"
-              style={{ borderColor: 'rgba(2,115,104,0.18)' }}
+              style={{ borderColor: 'rgba(26,148,155,0.18)' }}
             >
               {/* Panel header */}
               <div className="hidden lg:flex items-center px-6 py-5 border-b"
-                style={{ borderColor: 'rgba(2,115,104,0.18)' }}>
-                <span className="text-[11px] font-bold tracking-[0.16em] uppercase" style={{ color: '#3D5E55' }}>
+                style={{ borderColor: 'rgba(26,148,155,0.18)' }}>
+                <span className="text-[11px] font-bold tracking-[0.16em] uppercase" style={{ color: '#3C555F' }}>
                   اختر الواجهة
                 </span>
               </div>
@@ -239,8 +253,8 @@ export default function IhkaamShowcase() {
                     onClick={() => setActiveId(item.id)}
                     className="flex-1 lg:flex-none flex flex-col lg:flex-row items-center lg:items-start gap-1.5 lg:gap-3 px-4 lg:px-6 py-4 lg:py-5 text-center lg:text-right transition-all duration-300 cursor-pointer relative"
                     style={{
-                      background  : isActive ? 'rgba(2,115,104,0.22)' : 'transparent',
-                      borderBottom: isActive ? 'none' : '1px solid rgba(2,115,104,0.08)',
+                      background  : isActive ? 'rgba(26,148,155,0.22)' : 'transparent',
+                      borderBottom: isActive ? 'none' : '1px solid rgba(26,148,155,0.08)',
                     }}
                   >
                     {isActive && (
@@ -252,7 +266,7 @@ export default function IhkaamShowcase() {
                         style={{ background: '#D9ACA3' }} />
                     )}
                     <span className="text-xs font-bold leading-snug"
-                      style={{ color: isActive ? '#D9ACA3' : '#5A8A78' }}>
+                      style={{ color: isActive ? '#D9ACA3' : '#6FA5A8' }}>
                       {item.title}
                     </span>
                   </button>
@@ -265,7 +279,7 @@ export default function IhkaamShowcase() {
 
               {/* Description */}
               <div className="text-right">
-                <p className="text-sm leading-[1.9]" style={{ color: '#7A9E96' }}>
+                <p className="text-sm leading-[1.9]" style={{ color: '#96BCBE' }}>
                   {active.description}
                 </p>
               </div>
@@ -284,7 +298,7 @@ export default function IhkaamShowcase() {
                   }}
                 >
                   {active?.desktop_image && (
-                    <LaptopMockup imageUrl={active.desktop_image} title={active.title} />
+                    <LaptopMockup imageUrl={galleryImage(active.desktop_image, 800)} title={active.title} />
                   )}
                   {active?.mobile_image && (
                     <div
@@ -296,7 +310,7 @@ export default function IhkaamShowcase() {
                         filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.65))',
                       }}
                     >
-                      <PhoneMockup imageUrl={active.mobile_image} title={active.title} />
+                      <PhoneMockup imageUrl={galleryImage(active.mobile_image, 450)} title={active.title} />
                     </div>
                   )}
                 </div>

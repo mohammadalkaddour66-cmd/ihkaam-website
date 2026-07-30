@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { supabase } from '../config/supabaseClient'
+import { fetchLandingStats } from '../config/landingStats'
 
 /* ── Animated count-up ── */
 function CountUp({ to, duration = 1800 }) {
@@ -20,44 +20,51 @@ function CountUp({ to, duration = 1800 }) {
   }, [to])
 
   if (to == null) return (
-    <span className="inline-block w-20 h-9 rounded-lg animate-pulse" style={{ background: 'rgba(0,168,150,0.15)' }} />
+    <span className="inline-block w-20 h-9 rounded-lg animate-pulse" style={{ background: 'rgba(72, 214, 205,0.15)' }} />
   )
   return <>{to >= 1000 ? '+' + val.toLocaleString('en-US') : '+' + val}</>
 }
 
 /* ── Single stat ── */
-function StatItem({ stat, index, inView }) {
+function StatItem({ stat, index, inView, className = '' }) {
   return (
     <motion.div
-      className="relative flex flex-col items-center text-center gap-2"
-      initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(6px)' }}
-      animate={inView ? { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' } : {}}
-      transition={{ duration: 0.65, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+      className={`relative flex flex-col items-center text-center gap-2 ${className}`}
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Glow behind number */}
       <div
         className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(0,168,150,0.07) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(72, 214, 205,0.07) 0%, transparent 70%)' }}
+        aria-hidden
       />
 
-      <motion.span
+      {/* textShadow حركةٌ تُعيد رسم النص في كل إطار — والوهج هنا
+         لا يعني شيئاً، الرقم يعدّ أصلاً. أُبقي الوهج ثابتاً. */}
+      <span
         className="font-black leading-none tabular-nums relative"
-        style={{ color: '#00A896', fontSize: 'clamp(1.75rem, 3.5vw, 2.6rem)' }}
-        animate={inView ? { textShadow: ['0 0 0px #00A896', '0 0 20px #00A89688', '0 0 8px #00A89644'] } : {}}
-        transition={{ duration: 1.2, delay: index * 0.12 + 0.3 }}
+        style={{
+          color     : 'var(--accent)',
+          fontSize  : 'clamp(1.75rem, 3.5vw, 2.6rem)',
+          textShadow: '0 0 24px rgba(72, 214, 205,0.28)',
+        }}
       >
         {inView ? <CountUp to={stat.value} duration={1600 + index * 100} /> : '0'}
-      </motion.span>
+      </span>
 
-      <span className="text-sm font-medium" style={{ color: '#C8B8B0' }}>
+      <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
         {stat.label}
       </span>
 
-      {/* Divider (not last) */}
+      {/* Divider (not last) — كان بيجاً. أربعة فواصل زخرفية تأكل من
+          نصيب الثانويّ ما لا تعطي مقابله دلالةً: الفاصل بنيةٌ لا
+          إنجاز، فلونُه لون البنية. */}
       {index < 4 && (
         <div
           className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-px h-10"
-          style={{ background: 'linear-gradient(to bottom, transparent, rgba(229,211,179,0.12), transparent)' }}
+          style={{ background: 'linear-gradient(to bottom, transparent, var(--border-hi), transparent)' }}
         />
       )}
     </motion.div>
@@ -73,14 +80,14 @@ export default function IhkaamTrustStats() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   useEffect(() => {
-    Promise.all([
-      supabase.from('institutes').select('*',   { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('students').select('*',     { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('staff').select('*',        { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('groups').select('*',       { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('recitations').select('*',  { count: 'exact', head: true }),
-    ]).then(([r1, r2, r3, r4, r5]) => {
-      setCounts({ institutes: r1.count, students: r2.count, staff: r3.count, circles: r4.count, recitations: r5.count })
+    fetchLandingStats().then(s => {
+      setCounts({
+        institutes : s.institutes,
+        students   : s.students,
+        staff      : s.staff,
+        circles    : s.groups,
+        recitations: s.recitations,
+      })
     })
   }, [])
 
@@ -100,14 +107,14 @@ export default function IhkaamTrustStats() {
           ref={ref}
           className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 rounded-2xl px-8 py-10 overflow-hidden"
           style={{
-            background          : 'rgba(1,38,38,0.62)',
+            background          : 'rgba(9,32,30,0.62)',
             backdropFilter      : 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
           }}
-          initial={{ opacity: 0, y: 50, scale: 0.94 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.70, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Luxury glowing border */}
           <svg
@@ -132,36 +139,46 @@ export default function IhkaamTrustStats() {
               width="calc(100% - 2px)" height="calc(100% - 2px)"
               rx="15" ry="15"
               fill="none"
-              stroke="rgba(0,168,150,0.18)"
+              stroke="rgba(72, 214, 205,0.18)"
               strokeWidth="1"
               pathLength="100"
             />
 
-            {/* Glowing arc — travels the full perimeter */}
+            {/* القوس الزاحف — كان #E5D3B3 نيوناً صريحاً على لوحة
+               وُصفت بأنها «muted»، ويدور بلا توقّف بجوار أرقامٍ
+               تعدّ. ضوءان متنافسان على العين في آنٍ واحد.
+               صار بلون اللوحة، وبدورة أبطأ، وشدّة أقلّ. */}
             <rect
               x="1" y="1"
               width="calc(100% - 2px)" height="calc(100% - 2px)"
               rx="15" ry="15"
               fill="none"
-              stroke="#6AFFF5"
-              strokeWidth="2"
+              stroke="var(--accent)"
+              strokeWidth="1.5"
               pathLength="100"
-              strokeDasharray="55 45"
+              strokeDasharray="40 60"
               strokeLinecap="round"
               filter="url(#glow-stats)"
               className="snake-rect"
-              style={{ '--snake-dur': '4s', opacity: 0.85 }}
+              style={{ '--snake-dur': '7s', opacity: 0.5 }}
             />
           </svg>
 
           {/* Ambient glow inside */}
           <div
             className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 0%, rgba(0,168,150,0.05) 0%, transparent 70%)' }}
+            style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 0%, rgba(72, 214, 205,0.05) 0%, transparent 70%)' }}
+            aria-hidden
           />
 
+          {/* خمسة عناصر في شبكةٍ من عمودين تترك الخامس يتيماً في
+              آخر صف. يمتدّ على العمودين فيتوسّط بدل أن يعلَق جانباً.
+              نفس العلّة عولجت في الشبكة الثلاثية قبل ذلك. */}
           {STATS.map((stat, i) => (
-            <StatItem key={stat.key} stat={stat} index={i} inView={inView} />
+            <StatItem
+              key={stat.key} stat={stat} index={i} inView={inView}
+              className={i === STATS.length - 1 ? 'col-span-2 md:col-span-1' : ''}
+            />
           ))}
         </motion.div>
       </div>

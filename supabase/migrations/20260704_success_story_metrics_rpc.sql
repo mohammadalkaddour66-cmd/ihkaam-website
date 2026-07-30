@@ -1,5 +1,5 @@
 -- ══════════════════════════════════════════════════════════════════
--- get_success_story_metrics(p_ids uuid[])
+-- get_success_story_metrics(p_ids text[])
 --
 -- Replaces the N-institutes × 8-queries-per-institute pattern that
 -- IhkaamSuccessStories.jsx used to build its "success stories"
@@ -10,11 +10,17 @@
 --
 -- This does the same aggregation server-side in one query per
 -- institute batch (one RPC call total, not one per institute).
+--
+-- ⚠️ صُحِّحت الأنواع (2026-07-13): كانت النسخة الأولى تأخذ uuid[] وتقارن
+-- record_date بـ date، وكلاهما خطأ — معرّفات المعاهد نصّية ('hasana')
+-- و record_date نصّي بصيغة ISO. لذلك كانت الدالة تفشل عند الإنشاء ولم
+-- تُطبَّق على القاعدة إطلاقاً، فكانت قصص النجاح تعرض أصفاراً. شغّل هذا
+-- الملف في Supabase SQL Editor.
 -- ══════════════════════════════════════════════════════════════════
 
-CREATE OR REPLACE FUNCTION get_success_story_metrics(p_ids uuid[])
+CREATE OR REPLACE FUNCTION get_success_story_metrics(p_ids text[])
 RETURNS TABLE (
-  institute_id uuid,
+  institute_id text,
   students     bigint,
   groups       bigint,
   recs         bigint,
@@ -24,13 +30,15 @@ RETURNS TABLE (
   tardiness    bigint,
   avg_grade    numeric
 )
-LANGUAGE sql SECURITY DEFINER AS $$
+LANGUAGE sql SECURITY DEFINER
+SET search_path = public
+AS $$
   WITH ids AS (
     SELECT unnest(p_ids) AS institute_id
   ),
   bounds AS (
-    SELECT (current_date - interval '60 days')::date  AS d60,
-           (current_date - interval '120 days')::date AS d120
+    SELECT (current_date - 60)::text  AS d60,
+           (current_date - 120)::text AS d120
   ),
   student_counts AS (
     SELECT institute_id, count(*) AS students
@@ -47,9 +55,9 @@ LANGUAGE sql SECURITY DEFINER AS $$
   rec_counts AS (
     SELECT institute_id,
            count(*) AS recs,
-           count(*) FILTER (WHERE record_date >= (SELECT d60 FROM bounds))  AS recent_rec,
-           count(*) FILTER (WHERE record_date >= (SELECT d120 FROM bounds)
-                               AND record_date <  (SELECT d60 FROM bounds)) AS early_rec
+           count(*) FILTER (WHERE record_date::text >= (SELECT d60 FROM bounds))  AS recent_rec,
+           count(*) FILTER (WHERE record_date::text >= (SELECT d120 FROM bounds)
+                               AND record_date::text <  (SELECT d60 FROM bounds)) AS early_rec
     FROM recitations
     WHERE institute_id = ANY(p_ids)
     GROUP BY institute_id
@@ -93,4 +101,5 @@ LANGUAGE sql SECURITY DEFINER AS $$
   LEFT JOIN attendance_counts ac ON ac.institute_id = ids.institute_id;
 $$;
 
-GRANT EXECUTE ON FUNCTION get_success_story_metrics(uuid[]) TO anon;
+REVOKE ALL     ON FUNCTION get_success_story_metrics(text[]) FROM PUBLIC;
+GRANT  EXECUTE ON FUNCTION get_success_story_metrics(text[]) TO anon, authenticated;

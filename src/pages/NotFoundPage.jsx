@@ -10,7 +10,7 @@ export default function NotFoundPage() {
       {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px]"
-        style={{ background: 'radial-gradient(ellipse, rgba(2,115,104,0.07) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse, rgba(26,148,155,0.07) 0%, transparent 70%)' }}
         aria-hidden
       />
 
@@ -23,7 +23,7 @@ export default function NotFoundPage() {
             fontSize  : 'clamp(6rem, 18vw, 11rem)',
             lineHeight: 1,
             color     : 'transparent',
-            WebkitTextStroke: '2px rgba(2,115,104,0.35)',
+            WebkitTextStroke: '2px rgba(26,148,155,0.35)',
             letterSpacing   : '0.05em',
           }}
         >
@@ -54,7 +54,7 @@ export default function NotFoundPage() {
 
         <p
           className="text-sm max-w-sm"
-          style={{ color: '#5A8A78', lineHeight: 1.9 }}
+          style={{ color: '#6FA5A8', lineHeight: 1.9 }}
         >
           الصفحة التي تبحث عنها ربما حُذفت أو تغيّر عنوانها. يمكنك العودة للرئيسية أو التواصل معنا.
         </p>
@@ -73,13 +73,13 @@ export default function NotFoundPage() {
             to="/contact"
             className="inline-flex items-center gap-2 rounded-xl text-sm font-semibold transition-colors duration-300"
             style={{
-              color     : '#7A9E96',
-              background: 'rgba(2,89,81,0.18)',
-              border    : '1px solid rgba(2,115,104,0.22)',
+              color     : '#96BCBE',
+              background: 'rgba(17,49,44,0.18)',
+              border    : '1px solid rgba(26,148,155,0.22)',
               padding   : '0.85rem 1.6rem',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = '#EAE4DF')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#7A9E96')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#96BCBE')}
           >
             تواصل معنا
           </Link>

@@ -25,7 +25,7 @@ const PILLARS = [
           "تحويل الطالب إلى وضع 'جاهز للاختبار' بضغطة زر وإصدار تذكرة رقمية.",
           "حفظ أسبقية الدور بالختم الزمني الدقيق لمنع الجدل والتخبط التنظيمي.",
           "لوحة مختبر ذكية بـ Real-time تحديث لمتابعة قوائم الانتظار ورصد النتائج.",
-          "عداد الرقابة الذكي لإشعار الإدارة والمشرفين عند تأخر أي طالب في الانتظار."
+          "عدّاد انتظار مرئي لكل طالب في الطابور ('ينتظر منذ…') يكشف التأخر أمام الإدارة والمشرفين فوراً."
         ]
       }
     ]
@@ -113,28 +113,28 @@ export default function IhkaamDetailedFeatures() {
   const IconComponent = currentPillar.icon;
 
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#012626] relative overflow-hidden">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#09201E] relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
         
         {/* العناوين الرئيسية التايبوغرافية الراقية */}
         <div className="text-center mb-16">
-          <span className="text-xs font-semibold tracking-widest text-[#00A896] uppercase bg-[#00A896]/10 px-3 py-1 rounded-full">
+          <span className="text-xs font-semibold tracking-widest text-[#48D6CD] uppercase bg-[#48D6CD]/10 px-3 py-1 rounded-full">
             المزايا الشاملة
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-[#F0E8E5] leading-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-[#EAE4DF] leading-tight">
             ٤ منظومات كبرى <span className="bg-gradient-to-l from-[#D9ACA3] to-[#A6756A] bg-clip-text text-transparent">تُغطي كل جانب</span> من إدارة التعليم
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-[#7A9E96] max-w-2xl mx-auto">
+          <p className="mt-4 text-sm sm:text-base text-[#96BCBE] max-w-2xl mx-auto">
             اختر ركيزة لاستعراض تفاصيل الحلول البرمجية والهندسية التي يقدمها نظام إحكام لإنهاء الفوضى الإدارية.
           </p>
         </div>
 
         {/* الحاوية الرئيسية الكبرى بأسلوب الـ Bento Box الفاخر */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-[#011F1F] border border-[#E5D3B3]/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm shadow-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-[#09201E] border border-[#E5D3B3]/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm shadow-2xl">
           
           {/* القائمة الجانبية للتنقل - تظهر كأزرار عريضة فخمة */}
           <div className="lg:col-span-4 flex flex-col gap-3 border-b lg:border-b-0 lg:border-l border-[#E5D3B3]/10 pb-6 lg:pb-0 lg:pl-6">
-            <span className="text-xs font-bold text-[#7A9E96]/60 tracking-wider mb-2 block px-4">
+            <span className="text-xs font-bold text-[#96BCBE]/60 tracking-wider mb-2 block px-4">
               الركائز الأساسية ({PILLARS.length})
             </span>
             {PILLARS.map((pillar, index) => {
@@ -146,21 +146,21 @@ export default function IhkaamDetailedFeatures() {
                   onClick={() => setActiveTab(pillar.id)}
                   className={`group relative flex items-center gap-4 text-right p-4 rounded-2xl transition-all duration-300 ${
                     isActive 
-                      ? 'bg-[#012626] border border-[#E5D3B3]/10 shadow-lg' 
-                      : 'hover:bg-[#012626]/40 border border-transparent'
+                      ? 'bg-[#09201E] border border-[#E5D3B3]/10 shadow-lg' 
+                      : 'hover:bg-[#09201E]/40 border border-transparent'
                   }`}
                 >
                   {/* خط التركواز الجانبي المؤشر للقسم النشط */}
                   {isActive && (
                     <motion.div 
                       layoutId="activeIndicator"
-                      className="absolute right-0 top-4 bottom-4 w-1 bg-[#00A896] rounded-l-full"
+                      className="absolute right-0 top-4 bottom-4 w-1 bg-[#48D6CD] rounded-l-full"
                     />
                   )}
 
                   {/* الأيقونة التفاعلية */}
                   <div className={`p-3 rounded-xl transition-all duration-300 ${
-                    isActive ? 'bg-[#00A896]/20 text-[#00A896]' : 'bg-white/5 text-[#7A9E96] group-hover:text-[#F0E8E5]'
+                    isActive ? 'bg-[#48D6CD]/20 text-[#48D6CD]' : 'bg-white/5 text-[#96BCBE] group-hover:text-[#EAE4DF]'
                   }`}>
                     <TabIcon className="w-5 h-5" />
                   </div>
@@ -168,18 +168,18 @@ export default function IhkaamDetailedFeatures() {
                   {/* النصوص وعنوان القسم الرقمي الشفاف في الخلفية */}
                   <div className="flex-1 min-w-0">
                     <h3 className={`text-base font-bold transition-all duration-300 ${
-                      isActive ? 'text-transparent bg-clip-text bg-gradient-to-l from-[#D9ACA3] to-[#A6756A]' : 'text-[#C8B8B0] group-hover:text-[#F0E8E5]'
+                      isActive ? 'text-transparent bg-clip-text bg-gradient-to-l from-[#D9ACA3] to-[#A6756A]' : 'text-[#C8B8B0] group-hover:text-[#EAE4DF]'
                     }`}>
                       {pillar.title}
                     </h3>
-                    <p className="text-xs text-[#7A9E96]/60 mt-0.5 truncate uppercase tracking-wider">
+                    <p className="text-xs text-[#96BCBE]/60 mt-0.5 truncate uppercase tracking-wider">
                       {pillar.subtitle}
                     </p>
                   </div>
 
                   {/* الرقم الشفاف الفاخر */}
                   <span className={`text-2xl font-black font-sans select-none transition-all duration-300 opacity-10 ${
-                    isActive ? 'text-[#00A896] opacity-25' : 'text-[#7A9E96]'
+                    isActive ? 'text-[#48D6CD] opacity-25' : 'text-[#96BCBE]'
                   }`}>
                     {String(index + 1).padStart(2, '0')}
                   </span>
@@ -202,12 +202,12 @@ export default function IhkaamDetailedFeatures() {
                 {currentPillar.groups.map((group, groupIdx) => (
                   <div 
                     key={groupIdx} 
-                    className="bg-[#012626]/40 border border-[#E5D3B3]/5 rounded-2xl p-5 hover:border-[#E5D3B3]/10 transition-all duration-300"
+                    className="bg-[#09201E]/40 border border-[#E5D3B3]/5 rounded-2xl p-5 hover:border-[#E5D3B3]/10 transition-all duration-300"
                   >
                     {/* ترويسة بطاقة البينتو الداخلية المدمجة */}
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00A896] shadow-[0_0_8px_#00A896]" />
-                      <h4 className="text-base font-bold text-[#00A896]">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#48D6CD] shadow-[0_0_8px_#48D6CD]" />
+                      <h4 className="text-base font-bold text-[#48D6CD]">
                         {group.title}
                       </h4>
                     </div>
@@ -227,9 +227,9 @@ export default function IhkaamDetailedFeatures() {
             </AnimatePresence>
 
             {/* الفوتر السفلي الخفيف للمستند لتعزيز الطابع المعماري النظيف */}
-            <div className="mt-8 pt-4 border-t border-[#E5D3B3]/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#7A9E96]/50">
+            <div className="mt-8 pt-4 border-t border-[#E5D3B3]/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#96BCBE]/50">
               <div className="flex items-center gap-2">
-                <IconComponent className="w-4 h-4 text-[#00A896]/40" />
+                <IconComponent className="w-4 h-4 text-[#48D6CD]/40" />
                 <span className="uppercase tracking-widest">{currentPillar.id.replace('_', ' ')} architecture locked</span>
               </div>
               <span>نظام إحكام لإدارة المعاهد والمنصات التعليمية · ٢٠٢٦</span>

@@ -15,7 +15,7 @@ function WhatsAppIcon() {
 function ScoreRing({ score, networkAvg = 64, size = 140 }) {
   const r     = size * 0.372
   const circ  = 2 * Math.PI * r
-  const color = score >= 80 ? '#6ABDB2' : score >= 65 ? '#D9C8A3' : '#D9ACA3'
+  const color = score >= 80 ? '#48D6CD' : score >= 65 ? '#D9C8A3' : '#D9ACA3'
   const level = score >= 80 ? 'مستوى ممتاز' : score >= 70 ? 'مستوى متقدم' : score >= 55 ? 'مستوى متوسط' : 'يحتاج تحسيناً'
 
   return (
@@ -50,18 +50,18 @@ function ScoreRing({ score, networkAvg = 64, size = 140 }) {
         />
         <text x={size / 2} y={size / 2 - size * 0.045}
           textAnchor="middle" fill={color}
-          style={{ fontSize: size * 0.2, fontWeight: 900, fontFamily: 'Tajawal,sans-serif' }}>
+          style={{ fontSize: size * 0.2, fontWeight: 900, fontFamily: 'Cairo,sans-serif' }}>
           {score}
         </text>
         <text x={size / 2} y={size / 2 + size * 0.13}
           textAnchor="middle" fill="rgba(255,255,255,0.28)"
-          style={{ fontSize: size * 0.08, fontFamily: 'Tajawal,sans-serif' }}>
+          style={{ fontSize: size * 0.08, fontFamily: 'Cairo,sans-serif' }}>
           / 100
         </text>
       </svg>
       <div className="text-center">
         <p className="font-black text-sm" style={{ color }}>{level}</p>
-        <p className="text-[11px] mt-0.5" style={{ color: '#3D5050' }}>
+        <p className="text-[11px] mt-0.5" style={{ color: '#374D56' }}>
           متوسط الشبكة: <span style={{ color: 'rgba(255,255,255,0.2)' }}>▌</span> {networkAvg}
         </p>
       </div>
@@ -115,8 +115,8 @@ function RadarChart({ factorScores, networkScores, size = 200 }) {
       {/* User polygon */}
       <polygon
         points={poly(factorScores.map(v => v / 100))}
-        fill="rgba(106,189,178,0.12)"
-        stroke="#6ABDB2"
+        fill="rgba(72,214,205,0.12)"
+        stroke="#48D6CD"
         strokeWidth={1.2}
       />
       {/* Labels */}
@@ -125,8 +125,8 @@ function RadarChart({ factorScores, networkScores, size = 200 }) {
         return (
           <text key={i} x={p.x} y={p.y}
             textAnchor="middle" dominantBaseline="middle"
-            fill="#5A8A78" fontSize={size < 200 ? 7.5 : 9}
-            fontFamily="Tajawal,sans-serif">
+            fill="#6FA5A8" fontSize={size < 200 ? 7.5 : 9}
+            fontFamily="Cairo,sans-serif">
             {l}
           </text>
         )
@@ -142,7 +142,7 @@ const FACTORS = [
     icon       : Mic,
     label      : 'انتظام التسميع',
     weight     : 35,
-    color      : '#6ABDB2',
+    color      : 'var(--cat-5)',
     desc       : 'جلسات تسميع لكل طالب في الشهر',
     min        : 0, max: 20, step: 1,
     init       : 6,
@@ -156,7 +156,7 @@ const FACTORS = [
     icon       : BookOpen,
     label      : 'كثافة الحلقات',
     weight     : 25,
-    color      : '#D9ACA3',
+    color      : 'var(--cat-2)',
     desc       : 'متوسط الطلاب في الحلقة الواحدة',
     min        : 3, max: 25, step: 1,
     init       : 12,
@@ -170,7 +170,7 @@ const FACTORS = [
     icon       : Bell,
     label      : 'تفاعل أولياء الأمور',
     weight     : 20,
-    color      : '#A3C4D9',
+    color      : 'var(--cat-4)',
     desc       : '% من أولياء الأمور راجعوا تقرير ابنهم',
     min        : 0, max: 100, step: 5,
     init       : 40,
@@ -184,7 +184,7 @@ const FACTORS = [
     icon       : TrendingUp,
     label      : 'الاحتفاظ بالطلاب',
     weight     : 15,
-    color      : '#D9C8A3',
+    color      : 'var(--cat-3)',
     desc       : '% من الطلاب باقون بعد 3 أشهر',
     min        : 50, max: 100, step: 5,
     init       : 75,
@@ -198,7 +198,7 @@ const FACTORS = [
     icon       : ClipboardCheck,
     label      : 'استكمال الخطط',
     weight     : 5,
-    color      : '#B5A3D9',
+    color      : 'var(--cat-1)',
     desc       : '% من الطلاب أنجزوا هدف حفظهم الشهري',
     min        : 0, max: 100, step: 5,
     init       : 55,
@@ -231,7 +231,7 @@ export default function QualityScoreCalc({ raw }) {
   ))
 
   const whatsappUrl = useMemo(() => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ihkaam.sa'
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://ihkaam.app'
     const level  = total >= 80 ? 'ممتاز' : total >= 70 ? 'متقدم' : total >= 55 ? 'متوسط' : 'يحتاج تحسيناً'
     const text   = `حسبت نقطة جودة مركزي على مرصد إحكام وحصلت على ${total}/100 — مستوى ${level}\n\nجرّب احسب نقطة مركزك مجاناً (بدون تسجيل):\n${origin}/insights`
     return `https://wa.me/?text=${encodeURIComponent(text)}`
@@ -243,14 +243,16 @@ export default function QualityScoreCalc({ raw }) {
       <div className="max-w-6xl mx-auto px-6">
 
         <div className="mb-10">
-          <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#B5A3D9' }}>
+          {/* لكنة القسم كانت بنفسجية var(--warm) — خارج اللوحة. صارت
+              --warm، وهي نفسها هدف المرحلة ٣ فلا يُعاد لمسها. */}
+          <span className="text-xs font-bold tracking-widest uppercase" style={{ color: 'var(--warm)' }}>
             حاسبة الجودة التفاعلية
           </span>
           <h2 className="font-black mt-1 mb-2"
             style={{ fontSize: 'clamp(1.3rem,2.2vw,1.9rem)', color: '#EAE4DF' }}>
             احسب نقطة جودة مركزك الآن
           </h2>
-          <p className="text-sm" style={{ color: '#7A9E96', maxWidth: 500 }}>
+          <p className="text-sm" style={{ color: '#96BCBE', maxWidth: 500 }}>
             حرّك السلايدرات بأرقامك الفعلية — النقطة تتغير لحظياً · لا يُحفظ شيء
           </p>
         </div>
@@ -259,7 +261,7 @@ export default function QualityScoreCalc({ raw }) {
 
           {/* Left: sliders */}
           <div className="rounded-2xl p-6 lg:p-8 flex flex-col gap-7"
-            style={{ background: '#011E1E', border: '1px solid rgba(181,163,217,0.10)' }}>
+            style={{ background: '#09201E', border: '1px solid color-mix(in srgb, var(--warm) 10%, transparent)' }}>
 
             {factors.map((f) => {
               const rawScore  = Math.round(f.score(vals[f.key]))
@@ -270,24 +272,24 @@ export default function QualityScoreCalc({ raw }) {
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center"
-                        style={{ background: f.color + '18' }}>
+                        style={{ background: `color-mix(in srgb, ${f.color} 9%, transparent)` }}>
                         <f.icon size={14} style={{ color: f.color }} />
                       </div>
                       <div>
                         <p className="text-sm font-bold leading-none mb-0.5" style={{ color: '#C8B8B0' }}>
                           {f.label}
-                          <span className="font-normal text-[10px] mr-2" style={{ color: '#3D5050' }}>
+                          <span className="font-normal text-[10px] mr-2" style={{ color: '#374D56' }}>
                             ({f.weight}٪ من النقطة)
                           </span>
                         </p>
-                        <p className="text-[10px]" style={{ color: '#2A4040' }}>{f.desc}</p>
+                        <p className="text-[10px]" style={{ color: '#1C423A' }}>{f.desc}</p>
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <span className="font-black tabular-nums" style={{ fontSize: 17, color: f.color }}>
                         {vals[f.key]}
                       </span>
-                      <span className="text-[9px] block" style={{ color: '#3D5050' }}>{f.unit}</span>
+                      <span className="text-[9px] block" style={{ color: '#374D56' }}>{f.unit}</span>
                     </div>
                   </div>
 
@@ -305,14 +307,14 @@ export default function QualityScoreCalc({ raw }) {
                   />
 
                   <div className="flex justify-between mt-1.5 text-[10px]">
-                    <span style={{ color: '#2A4040' }}>{f.min}</span>
-                    <span style={{ color: rawScore >= 70 ? f.color : '#D9ACA3' }}>
+                    <span style={{ color: '#1C423A' }}>{f.min}</span>
+                    <span style={{ color: rawScore >= 70 ? f.color : 'var(--rose)' }}>
                       {f.hint(vals[f.key])}
                     </span>
                     {f.networkAvg != null && (
-                      <span style={{ color: '#2A4040' }}>شبكة: {f.networkAvg}</span>
+                      <span style={{ color: '#1C423A' }}>شبكة: {f.networkAvg}</span>
                     )}
-                    <span style={{ color: '#2A4040' }}>{f.max}</span>
+                    <span style={{ color: '#1C423A' }}>{f.max}</span>
                   </div>
                 </div>
               )
@@ -324,14 +326,14 @@ export default function QualityScoreCalc({ raw }) {
           <div className="flex flex-col gap-5">
 
             <div className="rounded-2xl p-7 flex flex-col items-center gap-1"
-              style={{ background: '#011E1E', border: '1px solid rgba(181,163,217,0.10)' }}>
+              style={{ background: '#09201E', border: '1px solid color-mix(in srgb, var(--warm) 10%, transparent)' }}>
               <ScoreRing score={total} networkAvg={NETWORK_TOTAL} size={150} />
 
               {/* Factor breakdown (mini bars) */}
               <div className="w-full mt-5 flex flex-col gap-2.5">
                 {factors.map((f, i) => (
                   <div key={f.key} className="flex items-center gap-2">
-                    <span className="text-[10px] w-24 text-right flex-shrink-0" style={{ color: '#5A8A78' }}>
+                    <span className="text-[10px] w-24 text-right flex-shrink-0" style={{ color: '#6FA5A8' }}>
                       {f.label}
                     </span>
                     <div className="flex-1 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
@@ -352,9 +354,9 @@ export default function QualityScoreCalc({ raw }) {
 
             {/* Radar */}
             <div className="rounded-2xl p-4 flex flex-col items-center gap-2"
-              style={{ background: '#011E1E', border: '1px solid rgba(255,255,255,0.05)' }}>
+              style={{ background: '#09201E', border: '1px solid rgba(255,255,255,0.05)' }}>
               <div className="flex items-center gap-3 text-[10px] self-start">
-                <span><span style={{ color: '#6ABDB2' }}>◆</span> مركزك</span>
+                <span><span style={{ color: '#48D6CD' }}>◆</span> مركزك</span>
                 <span><span style={{ color: 'rgba(255,255,255,0.2)' }}>◆</span> متوسط الشبكة</span>
               </div>
               <RadarChart factorScores={factorScores} networkScores={networkScores} size={190} />
@@ -362,13 +364,13 @@ export default function QualityScoreCalc({ raw }) {
 
             {/* CTA */}
             <div className="rounded-2xl p-5 text-center"
-              style={{ background: 'rgba(181,163,217,0.05)', border: '1px solid rgba(181,163,217,0.12)' }}>
-              <p className="text-[11px] mb-3 leading-relaxed" style={{ color: '#5A8A78' }}>
+              style={{ background: 'color-mix(in srgb, var(--warm) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--warm) 12%, transparent)' }}>
+              <p className="text-[11px] mb-3 leading-relaxed" style={{ color: '#6FA5A8' }}>
                 هذه تقديرية — نقطتك الحقيقية تُحسب تلقائياً كل شهر من بيانات مركزك الفعلية في إحكام
               </p>
               <Link to="/request"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
-                style={{ background: 'rgba(181,163,217,0.14)', border: '1px solid rgba(181,163,217,0.22)', color: '#B5A3D9' }}>
+                style={{ background: 'color-mix(in srgb, var(--warm) 14.000000000000002%, transparent)', border: '1px solid color-mix(in srgb, var(--warm) 22%, transparent)', color: 'var(--warm)' }}>
                 <Award size={13} />
                 احصل على نقطتك الفعلية
               </Link>
@@ -382,7 +384,7 @@ export default function QualityScoreCalc({ raw }) {
               className="rounded-2xl p-4 flex flex-col items-center gap-3 text-center"
               style={{ background: 'rgba(37,211,102,0.04)', border: '1px solid rgba(37,211,102,0.16)' }}
             >
-              <p className="text-[11px] leading-relaxed" style={{ color: '#5A8A78' }}>
+              <p className="text-[11px] leading-relaxed" style={{ color: '#6FA5A8' }}>
                 شارك نتيجة مركزك مع زملائك المديرين
               </p>
               <a

@@ -17,9 +17,9 @@ const services = [
     title   : 'أتمتة المهام اليومية',
     body    : 'أربط التطبيقات التي تستخدمها يومياً ببعضها لتعمل معاً دون تدخل بشري. أقوم ببرمجة مسارات تنفذ المهام الروتينية المتكررة وإدخال البيانات تلقائياً، لنوفر وقت فريقك ليتفرغ للمهام الأهم.',
     tags    : ['Business Automation', 'Workflow', 'Efficiency'],
-    tagBg   : 'rgba(2,115,104,0.14)',
-    tagColor: '#6ABDB2',
-    iconBg  : 'rgba(2,115,104,0.10)',
+    tagBg   : 'rgba(26,148,155,0.14)',
+    tagColor: '#48D6CD',
+    iconBg  : 'rgba(26,148,155,0.10)',
   },
 ]
 
@@ -31,7 +31,7 @@ export default function ServicesSection() {
       <div
         className="pointer-events-none absolute bottom-0 right-0 w-[500px] h-[500px]"
         style={{
-          background: 'radial-gradient(circle at bottom right, rgba(2,115,104,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(circle at bottom right, rgba(26,148,155,0.07) 0%, transparent 70%)',
         }}
         aria-hidden
       />
@@ -58,7 +58,7 @@ export default function ServicesSection() {
           </div>
           <p
             className="text-sm leading-relaxed max-w-xs text-start"
-            style={{ color: '#7A9E96' }}
+            style={{ color: '#96BCBE' }}
           >
             عملي يتركز في مجالين رئيسيين: أبرمج أنظمتك لتنهي الفوضى،
             وأُؤتمت مهامك الروتينية لنوفر وقت فريقك.
@@ -78,7 +78,7 @@ export default function ServicesSection() {
                   className="font-black select-none leading-none"
                   style={{
                     fontSize: '4.5rem',
-                    color   : 'rgba(2,115,104,0.18)',
+                    color   : 'rgba(26,148,155,0.18)',
                     lineHeight: 1,
                   }}
                 >
@@ -103,7 +103,7 @@ export default function ServicesSection() {
               {/* Body */}
               <p
                 className="text-sm leading-relaxed mb-6 flex-1"
-                style={{ color: '#7A9E96' }}
+                style={{ color: '#96BCBE' }}
               >
                 {body}
               </p>

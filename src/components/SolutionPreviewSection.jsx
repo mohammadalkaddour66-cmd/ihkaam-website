@@ -1,4 +1,5 @@
-﻿import { motion } from 'framer-motion'
+import { motion } from 'framer-motion'
+import { Zap, BookOpenCheck, Users } from 'lucide-react'
 import { useTilt } from '../hooks/useTilt'
 
 function TiltCard({ children, style, className }) {
@@ -17,27 +18,26 @@ function TiltCard({ children, style, className }) {
   )
 }
 
+/* كانت البطاقات الثلاث بثلاثة تيلات متقاربة (#48D6CD / #48D6CD / #D9ACA3) —
+   فرقٌ لا يُقرأ كنيّة، بل كخطأ في أخذ اللون. لونٌ واحد، والتمييز بالأيقونة. */
 const SOLUTIONS = [
   {
-    icon: '⚡',
+    Icon: Zap,
     tag: 'الحضور والغياب',
-    title: 'حضور رقمي فوري ',
+    title: 'حضور رقمي فوري',
     body: 'سجّل حضور الحلقة كاملاً بلمسة واحدة. كل غياب يظهر فوراً في بوابة ولي الأمر دون جهد إضافي.',
-    color: '#6ABDB2',
   },
   {
-    icon: '📊',
+    Icon: BookOpenCheck,
     tag: 'متابعة التسميع',
     title: 'كل جلسة تسميع — محفوظة للأبد',
     body: 'ماذا قرأ، وكم مرة كرّر، وماذا قال شيخه. لو سألك أحد عن أي طالب — الجواب أمامك في 3 ثوانٍ.',
-    color: '#00A896',
   },
   {
-    icon: '🔗',
+    Icon: Users,
     tag: 'تواصل الأسرة',
-    title: 'أولياء الاأمور على متابعة دائمة',
+    title: 'أولياء الأمور على متابعة دائمة',
     body: 'بوابة لأولياء الأمور تُظهر الحضور والمستوى والملاحظات. تُقلّل اتصالات الاستفسار 80% — وتبني ثقة أعمق بمعهدك.',
-    color: '#5BA89E',
   },
 ]
 
@@ -46,9 +46,9 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.18, delayChildren: 0.05 } },
 }
 const itemVariants = {
-  hidden : { opacity: 0, y: 60, scale: 0.88, filter: 'blur(8px)' },
-  visible: { opacity: 1, y: 0,  scale: 1,    filter: 'blur(0px)',
-    transition: { duration: 0.70, ease: [0.22, 1, 0.36, 1] } },
+  hidden : { opacity: 0, y: 24, scale: 0.96 },
+  visible: { opacity: 1, y: 0,  scale: 1,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 }
 
 export default function SolutionPreviewSection() {
@@ -67,9 +67,9 @@ export default function SolutionPreviewSection() {
           <span
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold tracking-widest uppercase"
             style={{
-              background: 'rgba(106,189,178,0.08)',
-              border    : '1px solid rgba(106,189,178,0.20)',
-              color     : '#6ABDB2',
+              background: 'rgba(72, 214, 205,0.08)',
+              border    : '1px solid rgba(72, 214, 205,0.20)',
+              color     : 'var(--accent)',
             }}
           >
             الجواب
@@ -79,7 +79,7 @@ export default function SolutionPreviewSection() {
         {/* Heading */}
         <motion.h2
           className="text-center font-black mb-3"
-          style={{ color: '#EAE4DF', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', lineHeight: 1.35 }}
+          style={{ color: 'var(--text-1)', fontSize: 'clamp(1.9rem, 4vw, 3.1rem)', lineHeight: 1.28 }}
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
@@ -88,8 +88,8 @@ export default function SolutionPreviewSection() {
           كل مشكلة ذكرتها — لها جواب في إحكام
         </motion.h2>
         <motion.p
-          className="text-center text-sm mb-12 mx-auto"
-          style={{ color: '#5A8A78', maxWidth: 440, lineHeight: 1.85 }}
+          className="text-center text-base mb-12 mx-auto"
+          style={{ color: 'var(--text-2)', maxWidth: 640, lineHeight: 1.9, fontWeight: 300 }}
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
@@ -106,53 +106,62 @@ export default function SolutionPreviewSection() {
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
         >
-          {SOLUTIONS.map((s) => (
-            <motion.div key={s.title} variants={itemVariants}>
+          {SOLUTIONS.map(({ Icon, tag, title, body }) => (
+            <motion.div key={title} variants={itemVariants}>
             <TiltCard
               className="relative rounded-2xl p-6 flex flex-col gap-4 overflow-hidden h-full"
               style={{
-                background: 'linear-gradient(145deg, rgba(1,28,28,0.75) 0%, rgba(1,16,16,0.95) 100%)',
-                border    : `1px solid ${s.color}28`,
+                background: 'linear-gradient(145deg, rgba(9,32,30,0.75) 0%, rgba(2,15,14,0.95) 100%)',
+                border    : '1px solid rgba(72, 214, 205,0.16)',
               }}
             >
               {/* Ambient glow top-right */}
               <div
                 className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full"
-                style={{ background: `radial-gradient(circle, ${s.color}12, transparent 70%)` }}
+                style={{ background: 'radial-gradient(circle, rgba(72, 214, 205,0.07), transparent 70%)' }}
                 aria-hidden
               />
 
-              {/* Tag */}
-              <span
-                className="self-start text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full"
-                style={{
-                  background: `${s.color}12`,
-                  border    : `1px solid ${s.color}25`,
-                  color     : s.color,
-                }}
-              >
-                {s.tag}
-              </span>
+              {/* الأيقونة والشارة في صفٍّ واحد.
+                  كانتا سطرين مستقلّين، فتأكلان ~45px من ارتفاع كل
+                  بطاقة بلا معنى يقابله — والشارة تسمّي ما تصوّره
+                  الأيقونة، فاجتماعهما أصحّ دلالةً كذلك. */}
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'rgba(72, 214, 205,0.07)',
+                    border    : '1px solid rgba(72, 214, 205,0.16)',
+                    color     : 'var(--accent)',
+                  }}
+                >
+                  <Icon size={20} strokeWidth={1.75} aria-hidden />
+                </div>
 
-              {/* Icon */}
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                style={{ background: `${s.color}10`, border: `1px solid ${s.color}22` }}
-              >
-                {s.icon}
+                {/* كان 10px، وهو دون حدّ القراءة (12px) */}
+                <span
+                  className="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full"
+                  style={{
+                    background: 'rgba(72, 214, 205,0.08)',
+                    border    : '1px solid rgba(72, 214, 205,0.18)',
+                    color     : 'var(--accent)',
+                  }}
+                >
+                  {tag}
+                </span>
               </div>
 
-              <h3 className="font-black text-base leading-snug" style={{ color: '#D4EAE7' }}>
-                {s.title}
+              <h3 className="font-bold text-base leading-snug" style={{ color: 'var(--text-1)' }}>
+                {title}
               </h3>
-              <p className="text-sm leading-relaxed" style={{ color: '#5A8A78' }}>
-                {s.body}
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>
+                {body}
               </p>
 
               {/* Bottom accent line */}
               <div
                 className="absolute bottom-0 right-0 left-0 h-[2px] rounded-b-2xl"
-                style={{ background: `linear-gradient(to left, ${s.color}40, transparent)` }}
+                style={{ background: 'linear-gradient(to left, rgba(72, 214, 205,0.25), transparent)' }}
                 aria-hidden
               />
             </TiltCard>

@@ -1,11 +1,12 @@
-﻿import { useState, useEffect } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, ChevronDown } from 'lucide-react'
+import { MessageCircle, ChevronDown, Plus } from 'lucide-react'
 import { usePricingRates } from '../hooks/usePricingRates'
 import { supabase } from '../config/supabaseClient'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { readPricingDraft, writePricingDraft } from '../config/pricingDraft'
 
 const TIERS = [
   { max: 200,  name: 'المراكز الناشئة'   },
@@ -15,6 +16,27 @@ const TIERS = [
 
 function getTier(students) {
   return TIERS.find(t => students <= t.max)
+}
+
+/* Hairline rule between the panel's steps */
+function Rule() {
+  return <div style={{ height: 1, background: 'rgba(255,255,255,0.055)' }} aria-hidden />
+}
+
+/* Arabic count agreement: 1 مفردة، 2 مثنّى، 3–10 جمع، 11+ مفرد */
+function featureCount(n) {
+  if (n === 1) return 'ميزة'
+  if (n === 2) return 'ميزتان'
+  if (n <= 10) return `${n} ميزات`
+  return `${n} ميزة`
+}
+
+/* No diacritics here on purpose — a damma+shadda ("مُفعَّلة") smears into an
+   unreadable glyph at the pill's 0.7rem. */
+function selectedCountLabel(n) {
+  if (n === 1) return 'ميزة مختارة'
+  if (n === 2) return 'ميزتان مختارتان'
+  return `${featureCount(n)} مختارة`
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -37,22 +59,33 @@ const PERIOD_LABEL = { 1: 'شهر', 3: '3 أشهر', 6: '6 أشهر', 12: 'سن�
    The 12-month pill carries an amber glow-dot to signal best value.
    ───────────────────────────────────────────────────────────────────────── */
 
-function DurationSelector({ duration, onChange, discounts }) {
+function DurationSelector({ duration, onChange, discounts, enabledDurations }) {
+  /* المدد التي يبيعها السوبر أدمن فعلاً. المفتاح غائب أو تالف →
+     الأربعة كلها، وهو سلوك ما قبل الميزة حرفاً بحرف. */
+  const options = DURATION_OPTIONS.filter(o => enabledDurations.includes(o.months))
   return (
-    <div className="flex justify-center mb-5">
+    <div>
+      <span className="block mb-2.5" style={{ color: '#6FA5A8', fontSize: '0.75rem', fontWeight: 500 }}>
+        مدة الاشتراك
+      </span>
       {/*
         dir="rtl" + DOM order [1,3,6,12] → visual right-to-left:
         [شهر] [3أشهر] [6أشهر] [سنة]  — 1 month on the right, 12 on the left.
+        4-col grid (not inline-flex) so the pills share the width evenly and
+        never crowd each other on narrow phones.
       */}
       <div
         dir="rtl"
-        className="inline-flex rounded-2xl p-1"
+        className="grid gap-1 rounded-2xl p-1"
         style={{
-          background: 'rgba(0,8,8,0.65)',
-          border    : '1px solid rgba(0,168,150,0.07)',
+          /* كان grid-cols-4 مثبّتاً — فتعطيلُ مدّتين يترك زرّين
+             في نصف صفّ وفراغاً بجانبهما. */
+          gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
+          background: 'rgba(2,15,14,0.60)',
+          border    : '1px solid rgba(72,214,205,0.07)',
         }}
       >
-        {DURATION_OPTIONS.map(({ months, label }) => {
+        {options.map(({ months, label }) => {
           const discountPct = Math.round((discounts[months] ?? 0) * 100)
           const isActive    = duration === months
 
@@ -60,15 +93,14 @@ function DurationSelector({ duration, onChange, discounts }) {
             <button
               key={months}
               onClick={() => onChange(months)}
-              className="flex flex-col items-center justify-center rounded-xl cursor-pointer"
+              className="flex flex-col items-center justify-center rounded-xl cursor-pointer w-full"
               style={{
-                paddingTop   : '0.38rem',
-                paddingBottom: discountPct > 0 ? '0.25rem' : '0.38rem',
-                paddingLeft  : '0.90rem',
-                paddingRight : '0.90rem',
-                minWidth     : '66px',
-                background   : isActive ? 'rgba(0,168,150,0.15)' : 'transparent',
-                boxShadow    : isActive ? 'inset 0 1px 0 rgba(0,168,150,0.18)' : 'none',
+                paddingTop   : '0.45rem',
+                paddingBottom: discountPct > 0 ? '0.30rem' : '0.45rem',
+                paddingLeft  : '0.3rem',
+                paddingRight : '0.3rem',
+                background   : isActive ? 'rgba(72,214,205,0.15)' : 'transparent',
+                boxShadow    : isActive ? 'inset 0 1px 0 rgba(72,214,205,0.18)' : 'none',
                 border       : 'none',
                 outline      : 'none',
                 transition   : 'background 250ms cubic-bezier(0.4,0,0.2,1), box-shadow 250ms ease',
@@ -77,11 +109,12 @@ function DurationSelector({ duration, onChange, discounts }) {
               <span
                 style={{
                   display      : 'block',
-                  fontSize     : '0.875rem',
+                  fontSize     : '0.85rem',
                   fontWeight   : isActive ? 700 : 500,
                   letterSpacing: '-0.01em',
                   lineHeight   : 1.2,
-                  color        : isActive ? '#D4EAE7' : '#5A8A78',
+                  whiteSpace   : 'nowrap',
+                  color        : isActive ? '#D4EAE7' : '#6FA5A8',
                   transition   : 'color 250ms ease',
                 }}
               >
@@ -96,7 +129,7 @@ function DurationSelector({ duration, onChange, discounts }) {
                     fontWeight: 500,
                     marginTop : '0.20rem',
                     lineHeight: 1,
-                    color     : isActive ? '#5AADA4' : '#1A3828',
+                    color     : isActive ? '#5AADA4' : '#1C423A',
                     transition: 'color 250ms ease',
                   }}
                 >
@@ -137,23 +170,30 @@ function StudentSlider({ value, onChange, tier }) {
   const pct = sliderPct(value)
 
   return (
-    <div
-      className="max-w-3xl mx-auto mb-4 px-5 py-4 rounded-2xl"
-      style={{ background: 'rgba(1,38,38,0.45)', border: '1px solid rgba(2,115,104,0.18)' }}
-    >
-      {/* Header row */}
-      <div className="flex items-center justify-between mb-3" dir="rtl">
-        <span className="text-sm font-medium" style={{ color: '#7A9E96' }}>
-          عدد الطلاب النشطين
-        </span>
-        <div className="flex items-baseline gap-1.5">
+    <div>
+      {/* Header row — one line: label + tier name on the right, live count on the left */}
+      <div className="flex items-center justify-between gap-3 mb-3.5" dir="rtl">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="flex-shrink-0" style={{ color: '#6FA5A8', fontSize: '0.75rem', fontWeight: 500 }}>
+            عدد الطلاب
+          </span>
+          {tier && (
+            <span className="flex items-center gap-1.5 min-w-0">
+              <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#2C5C58' }} />
+              <span className="text-[0.7rem] font-bold truncate" style={{ color: '#48D6CD' }}>
+                {tier.name}
+              </span>
+            </span>
+          )}
+        </div>
+        <div className="flex items-baseline gap-1.5 flex-shrink-0">
           <span
             className="font-black tabular-nums"
-            style={{ color: '#00A896', fontSize: '1.3rem', lineHeight: 1 }}
+            style={{ color: '#48D6CD', fontSize: '1.45rem', lineHeight: 1 }}
           >
             {value}
           </span>
-          <span style={{ color: '#5A8A78', fontSize: '0.8rem' }}>طالب</span>
+          <span style={{ color: '#6FA5A8', fontSize: '0.8rem' }}>طالب</span>
         </div>
       </div>
 
@@ -169,21 +209,23 @@ function StudentSlider({ value, onChange, tier }) {
             onChange={e => onChange(Number(e.target.value))}
             className="ihkaam-slider"
             style={{
-              background: `linear-gradient(to right, #00A896 0%, #00A896 ${pct}%, rgba(1,26,26,0.70) ${pct}%, rgba(1,26,26,0.70) 100%)`,
+              background: `linear-gradient(to right, #48D6CD 0%, #48D6CD ${pct}%, rgba(9,32,30,0.70) ${pct}%, rgba(9,32,30,0.70) 100%)`,
             }}
           />
-          {/* Tier boundary ticks — sit beneath the track */}
+          {/* Tier boundary ticks — sit beneath the track.
+              Hidden on mobile: the price is linear in student count, so the
+              boundaries carry no cost consequence and only add clutter. */}
           {BOUNDARIES.map(b => (
             <div
               key={b}
-              className="absolute pointer-events-none"
+              className="hidden sm:block absolute pointer-events-none"
               style={{
                 left      : `calc(${sliderPct(b)}% - 0.5px)`,
                 bottom    : -8,
                 width     : 1,
                 height    : 6,
                 background: value >= b
-                  ? 'rgba(0,168,150,0.50)'
+                  ? 'rgba(72,214,205,0.50)'
                   : 'rgba(229,211,179,0.22)',
                 transition: 'background 300ms ease',
               }}
@@ -192,17 +234,18 @@ function StudentSlider({ value, onChange, tier }) {
         </div>
 
         {/* Min / max + boundary labels */}
-        <div className="relative mt-5 flex items-center justify-between text-[0.68rem]" style={{ color: '#5A8A78' }}>
+        <div className="relative mt-2.5 sm:mt-5 flex items-center justify-between text-[0.68rem]" style={{ color: '#6FA5A8' }}>
           <span>10</span>
           {BOUNDARIES.map(b => (
             <span
               key={b}
+              className="hidden sm:inline"
               style={{
                 position  : 'absolute',
                 left      : `${sliderPct(b)}%`,
                 transform : 'translateX(-50%)',
                 color     : value <= b && value > (b === 200 ? 0 : b === 500 ? 200 : 500)
-                  ? '#00A896' : '#5A8A78',
+                  ? '#48D6CD' : '#6FA5A8',
                 transition: 'color 300ms ease',
                 fontWeight: value <= b && value > (b === 200 ? 0 : b === 500 ? 200 : 500)
                   ? 700 : 400,
@@ -214,27 +257,6 @@ function StudentSlider({ value, onChange, tier }) {
           <span>1000</span>
         </div>
       </div>
-
-      {/* Tier badge row */}
-      {tier && (
-        <div className="flex items-center gap-2 mt-4 pt-3" dir="rtl"
-          style={{ borderTop: '1px solid rgba(0,168,150,0.10)' }}>
-          <div
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
-            style={{
-              background: 'rgba(0,168,150,0.10)',
-              border    : '1px solid rgba(0,168,150,0.25)',
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{ background: '#00A896', boxShadow: '0 0 5px rgba(0,168,150,0.65)' }} />
-            <span className="text-[0.72rem] font-bold" style={{ color: '#00A896' }}>
-              {tier.name}
-            </span>
-          </div>
-          <span style={{ color: '#5A8A78', fontSize: '0.72rem' }}>تدفع حسب الاستخدام</span>
-        </div>
-      )}
     </div>
   )
 }
@@ -250,58 +272,72 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
   const selectedCount = storeFeatures.filter(f => selectedFeatures.has(f.id)).length
 
   return (
-    <div className="max-w-3xl mx-auto mb-4" dir="rtl">
+    <div dir="rtl">
 
-      {/* ── Trigger action bar ── */}
+      {/* ── Trigger row ───────────────────────────────────────────────
+           This row kept reading as a section heading, so people scrolled
+           past it. Three changes make it read as an action instead:
+           a verb-led label ("أضف" not "ميزات…"), a + tile at the head of
+           the row, and a tinted surface that separates it from the passive
+           rows above and below. */}
       <button
         onClick={onToggle}
-        className="w-full flex flex-row items-center justify-between p-3.5 sm:p-5 rounded-2xl cursor-pointer"
+        aria-expanded={isOpen}
+        className="w-full flex flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3.5 cursor-pointer text-right"
         style={{
-          background : 'rgba(255,255,255,0.02)',
-          border     : '1px solid rgba(255,255,255,0.10)',
+          background : selectedCount > 0 ? 'rgba(72,214,205,0.075)' : 'rgba(72,214,205,0.042)',
+          border     : 'none',
           outline    : 'none',
-          transition : 'background 200ms ease, border-color 200ms ease',
+          transition : 'background 200ms ease',
         }}
-        onMouseEnter={e => {
-          e.currentTarget.style.background   = 'rgba(255,255,255,0.04)'
-          e.currentTarget.style.borderColor  = 'rgba(255,255,255,0.15)'
-        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(72,214,205,0.10)' }}
         onMouseLeave={e => {
-          e.currentTarget.style.background   = 'rgba(255,255,255,0.02)'
-          e.currentTarget.style.borderColor  = 'rgba(255,255,255,0.10)'
+          e.currentTarget.style.background = selectedCount > 0
+            ? 'rgba(72,214,205,0.075)' : 'rgba(72,214,205,0.042)'
         }}
       >
-        {/* Right: headline + subtitle */}
-        <div className="flex flex-col gap-1 text-right min-w-0">
-          <span style={{ color: '#D4EAE7', fontSize: '0.88rem', fontWeight: 700, lineHeight: 1.3 }}>
-            تريد ترقية وتخصيص معهدك بميزات متقدمة؟
+        {/* Right: + tile then the action label */}
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span
+            className="flex items-center justify-center rounded-lg flex-shrink-0"
+            style={{
+              width     : 26,
+              height    : 26,
+              background: 'rgba(72,214,205,0.14)',
+              border    : '1px solid rgba(72,214,205,0.28)',
+            }}
+          >
+            <Plus size={14} strokeWidth={2.6} style={{ color: '#48D6CD' }} />
           </span>
-          <span className="hidden sm:block" style={{ color: '#5A8A78', fontSize: '0.70rem', lineHeight: 1.5 }}>
-            أضف حزم الإدارة المالية، الاختبارات، والمصادر الإضافية حسب رغبتك
+          <span className="truncate" style={{ color: '#D4EAE7', fontSize: '0.85rem', fontWeight: 700 }}>
+            أضف ميزات متقدمة
           </span>
         </div>
 
-        {/* Left: action pill + rotating arrow */}
-        <div className="flex items-center gap-2.5 flex-shrink-0 mr-4">
+        {/* Left: state pill + rotating arrow */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           <span
-            className="inline-flex items-center gap-1.5 rounded-full"
+            className="inline-flex items-center rounded-full"
             style={{
-              padding   : '0.38rem 0.90rem',
-              background: selectedCount > 0 ? 'rgba(0,168,150,0.18)' : 'rgba(0,168,150,0.08)',
-              border    : `1px solid ${selectedCount > 0 ? 'rgba(0,168,150,0.40)' : 'rgba(0,168,150,0.20)'}`,
-              color     : selectedCount > 0 ? '#6ABDB2' : '#5A8A78',
-              fontSize  : '0.72rem',
+              padding   : '0.28rem 0.7rem',
+              background: selectedCount > 0 ? 'rgba(72,214,205,0.20)' : 'transparent',
+              border    : `1px solid ${selectedCount > 0 ? 'rgba(72,214,205,0.42)' : 'rgba(72,214,205,0.22)'}`,
+              color     : selectedCount > 0 ? '#48D6CD' : '#7FB8B4',
+              fontSize  : '0.7rem',
               fontWeight: 700,
               whiteSpace: 'nowrap',
               transition: 'background 200ms ease, border-color 200ms ease, color 200ms ease',
             }}
           >
-            {selectedCount > 0 ? `${selectedCount} ميزات مُفعَّلة ✨` : 'تخصيص الحزمة ✨'}
+            {selectedCount > 0
+              ? selectedCountLabel(selectedCount)
+              : featureCount(storeFeatures.length)}
           </span>
           <ChevronDown
-            size={15}
+            size={16}
+            strokeWidth={2.4}
             style={{
-              color     : '#5A8A78',
+              color     : '#48D6CD',
               transform : isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
               transition: 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)',
               flexShrink: 0,
@@ -319,32 +355,34 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
-            style={{ overflow: 'hidden' }}
+            /* Same tint as the trigger, so open trigger + grid read as one block */
+            style={{ overflow: 'hidden', background: 'rgba(72,214,205,0.042)' }}
           >
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 mt-4 w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 px-4 sm:px-6 pb-5 pt-1 w-full">
               {storeFeatures.map(feature => {
                 const isActive = selectedFeatures.has(feature.id)
                 return (
                   <button
                     key={feature.id}
                     onClick={() => onToggleFeature(feature.id)}
-                    className="flex flex-col justify-between p-2.5 sm:p-4 rounded-xl cursor-pointer text-right"
+                    title={feature.description || undefined}
+                    className="flex flex-col justify-between gap-2 p-2.5 sm:p-3.5 rounded-xl cursor-pointer text-right"
                     style={{
-                      background : isActive ? 'rgba(0,168,150,0.07)' : 'rgba(255,255,255,0.03)',
-                      border     : `1px solid ${isActive ? 'rgba(0,168,150,0.30)' : 'rgba(255,255,255,0.05)'}`,
+                      background : isActive ? 'rgba(72,214,205,0.07)' : 'rgba(255,255,255,0.03)',
+                      border     : `1px solid ${isActive ? 'rgba(72,214,205,0.30)' : 'rgba(255,255,255,0.05)'}`,
                       outline    : 'none',
-                      minHeight  : '92px',
+                      minHeight  : '72px',
                       transition : 'background 200ms ease, border-color 200ms ease',
                     }}
                     onMouseEnter={e => {
-                      if (!isActive) e.currentTarget.style.borderColor = 'rgba(0,168,150,0.22)'
+                      if (!isActive) e.currentTarget.style.borderColor = 'rgba(72,214,205,0.22)'
                     }}
                     onMouseLeave={e => {
                       if (!isActive) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'
                     }}
                   >
                     {/* Card top: name (right) + checkbox (left) */}
-                    <div className="flex items-start justify-between gap-2 mb-2.5">
+                    <div className="flex items-start justify-between gap-2">
                       <span style={{
                         color     : isActive ? '#D4EAE7' : '#8AADA8',
                         fontSize  : '0.80rem',
@@ -363,8 +401,8 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
                           marginTop : '0.08rem',
                           width     : 16,
                           height    : 16,
-                          background: isActive ? 'rgba(0,168,150,0.20)' : 'transparent',
-                          border    : `1.5px solid ${isActive ? '#00A896' : 'rgba(74,112,96,0.32)'}`,
+                          background: isActive ? 'rgba(72,214,205,0.20)' : 'transparent',
+                          border    : `1.5px solid ${isActive ? '#48D6CD' : 'rgba(65,121,119,0.32)'}`,
                           transition: 'background 200ms ease, border-color 200ms ease',
                         }}
                       >
@@ -372,7 +410,7 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
                           <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
                             <path
                               d="M1 3L3 5L7 1"
-                              stroke="#00A896"
+                              stroke="#48D6CD"
                               strokeWidth="1.6"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -382,22 +420,15 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
                       </div>
                     </div>
 
-                    {/* Card middle: truncated single-line description */}
-                    <p
-                      className="truncate mb-3"
-                      style={{ color: '#5A8A78', fontSize: '0.67rem', lineHeight: 1.5 }}
-                      title={feature.description}
-                    >
-                      {feature.description || '—'}
-                    </p>
-
-                    {/* Card bottom: price */}
+                    {/* Card bottom: price. The description lives in the card's
+                        title attribute only — at this width it could never show
+                        more than a truncated fragment. */}
                     <div className="flex items-baseline gap-0.5">
                       <span
                         dir="ltr"
                         className="tabular-nums"
                         style={{
-                          color     : isActive ? '#6ABDB2' : '#2E5048',
+                          color     : isActive ? '#48D6CD' : '#6FA5A8',
                           fontSize  : '0.82rem',
                           fontWeight: 600,
                           transition: 'color 200ms ease',
@@ -405,7 +436,7 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
                       >
                         +${(feature.price_usd_monthly || 0).toFixed(0)}
                       </span>
-                      <span style={{ color: '#243830', fontSize: '0.62rem' }}>&nbsp;/ شهر</span>
+                      <span style={{ color: '#3D6B6B', fontSize: '0.62rem' }}>&nbsp;/ شهر</span>
                     </div>
                   </button>
                 )
@@ -426,7 +457,7 @@ function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, o
 
 function SmartCard({
   students, duration, onSubscribe, onContact, baseFee, perStudent, discounts,
-  addonsMonthlyTotal = 0,
+  addonsMonthlyTotal = 0, ctaRef,
 }) {
   const tier            = getTier(students)
   const discountFrac    = discounts[duration] ?? 0
@@ -448,14 +479,10 @@ function SmartCard({
     : `المجموع الأصلي لـ ${PERIOD_LABEL[duration]}`
 
   return (
+    /* Deeper surface than the rest of the panel — reads as the receipt total */
     <div
-      className="max-w-3xl mx-auto mt-4 rounded-2xl"
-      style={{
-        background: '#011A1A',
-        border    : '1px solid rgba(229,211,179,0.10)',
-        padding   : '1.1rem 1.4rem',
-        boxShadow : '0 24px 48px rgba(0,0,0,0.32), inset 0 1px 0 rgba(229,211,179,0.04)',
-      }}
+      className="px-4 sm:px-6 pt-5 pb-5"
+      style={{ background: 'rgba(2,15,14,0.55)' }}
     >
       <AnimatePresence mode="wait">
 
@@ -491,13 +518,13 @@ function SmartCard({
 
             <p
               className="mx-auto mb-2"
-              style={{ color: '#7A9E96', fontSize: '0.90rem', maxWidth: 520, lineHeight: 1.9 }}
+              style={{ color: '#96BCBE', fontSize: '0.90rem', maxWidth: 520, lineHeight: 1.9 }}
             >
               بنية تحتية مخصصة، SLA موثوق، وفريق دعم متخصص لمؤسستك.
             </p>
             <p
               className="mx-auto mb-8"
-              style={{ color: '#5A8A78', fontSize: '0.82rem', maxWidth: 480, lineHeight: 1.9 }}
+              style={{ color: '#6FA5A8', fontSize: '0.82rem', maxWidth: 480, lineHeight: 1.9 }}
             >
               نسعد بتصميم حزمة تناسب حجمك تماماً — تواصل معنا وسنعدّ لك عرضاً في 24 ساعة.
             </p>
@@ -538,149 +565,91 @@ function SmartCard({
             className="flex flex-col"
           >
 
-            {/* ── Breakdown columns — stacked rows on mobile, horizontal columns from sm ── */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between w-full">
+            {/* ── Single price block — no line-item breakdown, just the number ── */}
+            <div className="flex flex-col items-center text-center py-2">
 
-              {/* Col 1 (rightmost): Platform fee */}
-              <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
-                <span style={{ color: '#5A8A84', fontSize: '0.72rem', lineHeight: 1.4 }}>
-                  رسوم المنصة الثابتة
+              <span style={{ color: '#96BCBE', fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.4 }}>
+                {totalLabel}
+              </span>
+
+              <div className="flex items-center justify-center gap-2.5 mt-2">
+                <span
+                  dir="ltr"
+                  className="font-black tabular-nums"
+                  style={{
+                    color        : duration === 1 ? '#48D6CD' : '#D4EAE7',
+                    fontSize     : 'clamp(2.1rem, 5vw, 2.9rem)',
+                    lineHeight   : 1,
+                    letterSpacing: '-0.03em',
+                  }}
+                >
+                  ${periodTotal.toFixed(2)}
                 </span>
-                <div className="flex items-baseline gap-0.5 flex-shrink-0">
+                {discountPct > 0 && (
                   <span
-                    dir="ltr"
-                    className="tabular-nums font-semibold"
-                    style={{ color: '#B0C4BE', fontSize: '0.95rem' }}
+                    className="rounded-full flex-shrink-0"
+                    style={{
+                      padding   : '0.22rem 0.62rem',
+                      background: 'rgba(72,214,205,0.11)',
+                      border    : '1px solid rgba(72,214,205,0.22)',
+                      color     : '#5AADA4',
+                      fontSize  : '0.62rem',
+                      fontWeight: 700,
+                      lineHeight: 1.4,
+                    }}
                   >
-                    ${baseFee.toFixed(2)}
-                  </span>
-                  <span style={{ color: '#5A8A78', fontSize: '0.65rem' }}>&nbsp;/ شهر</span>
-                </div>
-              </div>
-
-              {/* Col 2: Student fee */}
-              <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
-                <span style={{ color: '#5A8A84', fontSize: '0.72rem', lineHeight: 1.4 }}>
-                  رسوم الطلاب ({students} طالب)
-                </span>
-                <div className="flex items-baseline gap-0.5 flex-shrink-0">
-                  <span
-                    dir="ltr"
-                    className="tabular-nums font-semibold"
-                    style={{ color: '#00A896', fontSize: '0.95rem' }}
-                  >
-                    ${studentFeeM.toFixed(2)}
-                  </span>
-                  <span style={{ color: '#5A8A78', fontSize: '0.65rem' }}>&nbsp;/ شهر</span>
-                </div>
-              </div>
-
-              {/* Col 2.5: Active add-ons aggregate — shown only when total > 0 */}
-              {addonsMonthlyTotal > 0 && (
-                <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
-                  <span style={{ color: '#5A8A84', fontSize: '0.72rem', lineHeight: 1.4 }}>
-                    الميزات المضافة
-                  </span>
-                  <div className="flex items-baseline gap-0.5 flex-shrink-0">
-                    <span
-                      dir="ltr"
-                      className="tabular-nums font-semibold"
-                      style={{ color: '#6ABDB2', fontSize: '0.95rem' }}
-                    >
-                      +${addonsMonthlyTotal.toFixed(2)}
+                    <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
+                      وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
                     </span>
-                    <span style={{ color: '#5A8A78', fontSize: '0.65rem' }}>&nbsp;/ شهر</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Col 3: Original subtotal — only when a discount applies */}
-              {discountPct > 0 && (
-                <div className="flex flex-row items-baseline justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0">
-                  <span style={{ color: '#3A5050', fontSize: '0.72rem', lineHeight: 1.4 }}>
-                    {originalLabel}
                   </span>
+                )}
+              </div>
+
+              {/* Struck original — only when a duration discount applies */}
+              {discountPct > 0 && (
+                <span
+                  className="mt-2"
+                  style={{ color: '#364C54', fontSize: '0.74rem', lineHeight: 1.5 }}
+                >
+                  {originalLabel}:&nbsp;
                   <span
                     dir="ltr"
                     className="tabular-nums"
-                    style={{
-                      color         : '#3A5050',
-                      fontSize      : '0.82rem',
-                      textDecoration: 'line-through',
-                      opacity       : 0.30,
-                    }}
+                    style={{ textDecoration: 'line-through', opacity: 0.45 }}
                   >
                     ${undiscounted.toFixed(2)}
                   </span>
-                </div>
+                </span>
               )}
 
-              {/* Col 4 (leftmost): Grand total hero */}
-              <div
-                className="flex flex-row items-center justify-between gap-2 w-full sm:w-auto sm:flex-col sm:gap-1.5 sm:items-start min-w-0 border-t sm:border-t-0 pt-3 sm:pt-0 mt-1 sm:mt-0"
-                style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-              >
-                <span style={{ color: '#7A9E96', fontSize: '0.72rem', fontWeight: 600, lineHeight: 1.4 }}>
-                  {totalLabel}
-                </span>
-                <div className="flex items-center gap-2 sm:flex-col sm:items-start sm:gap-0.5 flex-shrink-0">
-                  <span
-                    dir="ltr"
-                    className="font-black tabular-nums"
-                    style={{
-                      color        : duration === 1 ? '#00A896' : '#D4EAE7',
-                      fontSize     : 'clamp(1.3rem, 2.5vw, 1.7rem)',
-                      lineHeight   : 1,
-                      letterSpacing: '-0.02em',
-                    }}
-                  >
-                    ${periodTotal.toFixed(2)}
-                  </span>
-                  {discountPct > 0 && (
-                    <span
-                      className="rounded-full"
-                      style={{
-                        padding   : '0.18rem 0.55rem',
-                        background: 'rgba(0,168,150,0.11)',
-                        border    : '1px solid rgba(0,168,150,0.22)',
-                        color     : '#5AADA4',
-                        fontSize  : '0.60rem',
-                        fontWeight: 700,
-                        lineHeight: 1,
-                      }}
-                    >
-                      <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
-                        وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
-                      </span>
-                    </span>
-                  )}
-                </div>
-              </div>
+              {/* Scope line — what the number already covers. No per-item pricing. */}
+              <span className="mt-2" style={{ color: '#6FA5A8', fontSize: '0.70rem', lineHeight: 1.6 }}>
+                شامل {students} طالب
+                {addonsMonthlyTotal > 0 && ' + الميزات المضافة'}
+              </span>
             </div>
 
-            {/* Subtle divider */}
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', margin: '0.75rem 0' }} />
-
             {/* ── CTA — full-width, anchored to bottom ── */}
-            <div className="flex flex-col">
+            <div className="flex flex-col mt-4">
               <button
+                ref={ctaRef}
                 onClick={onSubscribe}
                 className="w-full font-black rounded-xl cursor-pointer"
                 style={{
-                  padding      : '0.75rem',
-                  background   : '#00A896',
-                  color        : '#011A1A',
+                  padding      : '0.85rem',
+                  background   : '#48D6CD',
+                  color        : '#09201E',
                   border       : 'none',
                   fontSize     : '0.95rem',
                   letterSpacing: '0.05em',
                   transition   : 'background 200ms ease, transform 150ms ease',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#00C4B4'
+                  e.currentTarget.style.background = '#48D6CD'
                   e.currentTarget.style.transform  = 'scale(1.01)'
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = '#00A896'
+                  e.currentTarget.style.background = '#48D6CD'
                   e.currentTarget.style.transform  = 'scale(1)'
                 }}
               >
@@ -700,16 +669,73 @@ function SmartCard({
    ───────────────────────────────────────────────────────────────────────── */
 
 export default function IhkaamPricing() {
-  const [duration, setDuration]               = useState(1)
-  const [students, setStudents]               = useState(150)
-  const [isAddonsOpen, setAddonsOpen]         = useState(false)
+  /* Restore the plan the user built before going to checkout, so coming back
+     doesn't reset them to 150 students / monthly / no add-ons. */
+  const [draft] = useState(readPricingDraft)
+
+  const [rawDuration, setDuration]            = useState(() => draft?.duration ?? 1)
+  const [students, setStudents]               = useState(() => draft?.students ?? 150)
+  const [isAddonsOpen, setAddonsOpen]         = useState(() => (draft?.selectedFeatureIds?.length ?? 0) > 0)
   const [storeFeatures, setStoreFeatures]     = useState([])
-  const [selectedFeatures, setSelectedFeatures] = useState(new Set())
+  const [selectedFeatures, setSelectedFeatures] = useState(() => new Set(draft?.selectedFeatureIds ?? []))
   const navigate = useNavigate()
   const isMobile = useIsMobile()
 
-  const { baseFee, perStudent, discounts } = usePricingRates()
+  const { baseFee, perStudent, discounts, enabledDurations } = usePricingRates()
+
+  /* المدة الفعلية مشتقّة لا محفوظة.
+     المصدر (rawDuration) قد يحمل مدةً عطّلها السوبر أدمن بعد أن حُفظت في
+     مسوّدة المتصفّح — فزائرٌ بنى خطته على «6 أشهر» يعود إلى خيارٍ لا زرَّ له
+     في الشريط. والاشتقاق يعالج معه الفارقَ بين أول رسمٍ (الأربعة الافتراضية)
+     ووصولِ الإعداد من القاعدة.
+     واخترناه على تصحيحٍ داخل useEffect لأن الحالة المشتقّة لا تُخزَّن: تصحيحُ
+     الحالة في الأثر يرسم مرّتين، وقاعدة set-state-in-effect تمنعه. */
+  const duration = enabledDurations.includes(rawDuration)
+    ? rawDuration
+    : (enabledDurations[0] ?? 1)
+
+  /* Persist on every change — covers the in-app back button and the browser's
+     own back gesture alike.
+     يحفظ المدة **الفعلية** لا الخام، فالمسوّدة التي تحمل مدةً معطّلة تُشفى
+     من نفسها بمجرّد فتح الصفحة بدل أن تبقى تحمل خياراً لا يُباع. */
+  useEffect(() => {
+    writePricingDraft({ duration, students, selectedFeatureIds: [...selectedFeatures] })
+  }, [duration, students, selectedFeatures])
+
   const tier = getTier(students)
+
+  /* The floating mobile CTA is a stand-in for the real one — it appears only
+     while we're inside this section AND the real button is off-screen, so the
+     two are never on screen together. */
+  const sectionRef = useRef(null)
+  const ctaRef     = useRef(null)
+  const [inSection, setInSection] = useState(false)
+  const [ctaOnScreen, setCtaOnScreen] = useState(true)
+
+  useEffect(() => {
+    if (!isMobile) return
+    const watch = (el, set, opts) => {
+      if (!el) return () => {}
+      const io = new IntersectionObserver(([entry]) => set(entry.isIntersecting), opts)
+      io.observe(el)
+      return () => io.disconnect()
+    }
+    /* -84px bottom inset ≈ the floating bar's own height, so it fades in
+       before it would cover the real button. */
+    const offSection = watch(sectionRef.current, setInSection)
+    const offCta     = watch(ctaRef.current, setCtaOnScreen, { rootMargin: '0px 0px -84px 0px' })
+    return () => { offSection(); offCta() }
+  }, [isMobile])
+
+  const showFloatingCta = isMobile && inSection && !ctaOnScreen
+
+  /* Lift Layout's WhatsApp button clear of the bar — only while it's up. */
+  useEffect(() => {
+    const root = document.documentElement
+    if (showFloatingCta) root.style.setProperty('--wa-lift', '5.5rem')
+    else                 root.style.removeProperty('--wa-lift')
+    return () => root.style.removeProperty('--wa-lift')
+  }, [showFloatingCta])
 
   useEffect(() => {
     supabase
@@ -733,7 +759,7 @@ export default function IhkaamPricing() {
     .reduce((sum, f) => sum + (f.price_usd_monthly || 0), 0)
 
   return (
-    <section className="relative z-10 py-14 px-6" style={isMobile ? { paddingBottom: '6.5rem' } : undefined} dir="rtl">
+    <section ref={sectionRef} className="relative z-10 py-12 sm:py-16 px-5 sm:px-6" dir="rtl">
 
       {/* Slider thumb/track pseudo-element styles — scoped by class name */}
       <style>{`
@@ -753,28 +779,28 @@ export default function IhkaamPricing() {
           width              : 22px;
           height             : 22px;
           border-radius      : 50%;
-          background         : #00A896;
+          background         : #48D6CD;
           cursor             : pointer;
-          border             : 3px solid #011A1A;
-          box-shadow         : 0 0 0 2px rgba(0,168,150,0.35), 0 2px 8px rgba(0,0,0,0.45);
+          border             : 3px solid #09201E;
+          box-shadow         : 0 0 0 2px rgba(72,214,205,0.35), 0 2px 8px rgba(0,0,0,0.45);
           transition         : box-shadow 150ms ease, transform 150ms ease;
         }
         .ihkaam-slider::-webkit-slider-thumb:hover {
-          box-shadow : 0 0 0 5px rgba(0,168,150,0.22), 0 2px 8px rgba(0,0,0,0.45);
+          box-shadow : 0 0 0 5px rgba(72,214,205,0.22), 0 2px 8px rgba(0,0,0,0.45);
           transform  : scale(1.10);
         }
         .ihkaam-slider:active::-webkit-slider-thumb {
-          box-shadow : 0 0 0 7px rgba(0,168,150,0.14), 0 2px 8px rgba(0,0,0,0.45);
+          box-shadow : 0 0 0 7px rgba(72,214,205,0.14), 0 2px 8px rgba(0,0,0,0.45);
           transform  : scale(1.15);
         }
         .ihkaam-slider::-moz-range-thumb {
           width         : 22px;
           height        : 22px;
           border-radius : 50%;
-          background    : #00A896;
+          background    : #48D6CD;
           cursor        : pointer;
-          border        : 3px solid #011A1A;
-          box-shadow    : 0 0 0 2px rgba(0,168,150,0.35), 0 2px 8px rgba(0,0,0,0.45);
+          border        : 3px solid #09201E;
+          box-shadow    : 0 0 0 2px rgba(72,214,205,0.35), 0 2px 8px rgba(0,0,0,0.45);
         }
         .ihkaam-slider::-moz-range-track {
           height        : 6px;
@@ -791,120 +817,147 @@ export default function IhkaamPricing() {
       />
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(0,168,150,0.05) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(72,214,205,0.05) 0%, transparent 70%)' }}
         aria-hidden
       />
 
       <div className="max-w-5xl mx-auto">
 
-        {/* Section header */}
-        <div className="text-center mb-6">
+        {/* Section header — the eyebrow repeats what the headline already says,
+            so it only earns its space where space is plentiful. */}
+        <div className="text-center mb-6 sm:mb-8">
           <span
-            className="text-xs font-semibold tracking-[0.22em] uppercase block mb-3"
+            className="hidden sm:block text-xs font-semibold tracking-[0.22em] uppercase mb-3"
             style={{ color: '#A6756A' }}
           >
             باقات الاشتراك
           </span>
           <h2
             className="font-black leading-tight mx-auto"
-            style={{ color: '#D9ACA3', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', maxWidth: 600 }}
+            style={{ color: '#D9ACA3', fontSize: 'clamp(1.4rem, 3vw, 2.1rem)', maxWidth: 600 }}
           >
-           صمم باقتك،{' '}
-            <span style={{ color: '#F0E8E5' }}>على حجم معهدك تماما</span>
+            صمم باقتك،{' '}
+            <span style={{ color: '#EAE4DF' }}>على حجم معهدك تماماً</span>
           </h2>
         </div>
 
-        {/* Duration selector */}
-        <DurationSelector
-          duration={duration}
-          onChange={setDuration}
-          discounts={discounts}
-        />
+        {/* ── One panel, four steps, hairline dividers ──────────────────
+             Previously each step carried its own border + background, so on
+             a phone three competing frames stacked up. A single surface with
+             internal rules reads as one form instead of three cards. */}
+        <div
+          className="max-w-2xl mx-auto rounded-3xl overflow-hidden"
+          style={{
+            background: 'rgba(9,32,30,0.55)',
+            border    : '1px solid rgba(255,255,255,0.07)',
+            boxShadow : '0 24px 56px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
+          }}
+        >
+          {/* 1 — duration */}
+          <div className="px-4 sm:px-6 pt-5 pb-5">
+            <DurationSelector
+              duration={duration}
+              onChange={setDuration}
+              discounts={discounts}
+              enabledDurations={enabledDurations}
+            />
+          </div>
 
-        {/* Student count slider */}
-        <StudentSlider value={students} onChange={setStudents} tier={tier} />
+          <Rule />
 
-        {/* Add-ons selector — prominent bar + animated feature grid */}
-        <AddonsBar
-          isOpen={isAddonsOpen}
-          onToggle={() => setAddonsOpen(prev => !prev)}
-          storeFeatures={storeFeatures}
-          selectedFeatures={selectedFeatures}
-          onToggleFeature={toggleFeature}
-        />
+          {/* 2 — student count */}
+          <div className="px-4 sm:px-6 py-5">
+            <StudentSlider value={students} onChange={setStudents} tier={tier} />
+          </div>
 
-        {/* Dynamic smart card */}
-        <SmartCard
-          students={students}
-          duration={duration}
-          baseFee={baseFee}
-          perStudent={perStudent}
-          discounts={discounts}
-          addonsMonthlyTotal={addonsMonthlyTotal}
-          onSubscribe={() =>
-            navigate('/checkout', {
-              state: {
-                tierName          : tier.name,
-                students,
-                duration,
-                selectedFeatureIds: [...selectedFeatures],
-              },
-            })
-          }
-          onContact={() => navigate('/contact')}
-        />
+          {/* 3 — optional add-ons (absent until store_features loads) */}
+          {storeFeatures.length > 0 && (
+            <>
+              <Rule />
+              <AddonsBar
+                isOpen={isAddonsOpen}
+                onToggle={() => setAddonsOpen(prev => !prev)}
+                storeFeatures={storeFeatures}
+                selectedFeatures={selectedFeatures}
+                onToggleFeature={toggleFeature}
+              />
+            </>
+          )}
 
-        {/* Math footnote */}
-        <div className="text-center mt-4 space-y-1" dir="rtl">
-          <p style={{ color: '#5A8A78', fontSize: '0.72rem', lineHeight: 1.9 }}>
-            السعر الشهري: ${baseFee} + عدد الطلاب × ${perStudent} شهرياً
-          </p>
-          <p style={{ color: '#5A8A78', fontSize: '0.72rem', lineHeight: 1.9 }}>
-            الخصومات:{' '}
-            3 أشهر وفّر {Math.round((discounts[3] ?? 0) * 100)}%
-            {' · '}
-            6 أشهر وفّر {Math.round((discounts[6] ?? 0) * 100)}%
-            {' · '}
-            سنوياً وفّر {Math.round((discounts[12] ?? 0) * 100)}%
-          </p>
+          <Rule />
+
+          {/* 4 — total + CTA */}
+          <SmartCard
+            students={students}
+            duration={duration}
+            baseFee={baseFee}
+            perStudent={perStudent}
+            discounts={discounts}
+            addonsMonthlyTotal={addonsMonthlyTotal}
+            ctaRef={ctaRef}
+            onSubscribe={() =>
+              navigate('/checkout', {
+                state: {
+                  tierName          : tier.name,
+                  students,
+                  duration,
+                  selectedFeatureIds: [...selectedFeatures],
+                },
+              })
+            }
+            onContact={() => navigate('/contact')}
+          />
         </div>
+
+        <p className="text-center mt-4" style={{ color: '#3D6B6B', fontSize: '0.7rem' }}>
+          بدون عقود ملزمة · تدفع حسب الاستخدام
+        </p>
 
       </div>
 
-      {/* ── Mobile: persistent floating action bar so the CTA is always reachable ──
+      {/* ── Mobile: floating CTA — only while the real button is off-screen ──
            Rendered via portal to escape Layout's motion.main (Framer Motion leaves a
            lingering transform on it, which would otherwise break position:fixed here). */}
-      {isMobile && createPortal(
-        <div
-          className="fixed inset-x-0 bottom-0 z-40 px-4 pt-3"
-          style={{
-            paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))',
-            background: 'linear-gradient(to top, #010D0D 60%, transparent)',
-          }}
-        >
-          <button
-            onClick={tier.enterprise ? () => navigate('/contact') : () => navigate('/checkout', {
-              state: {
-                tierName          : tier.name,
-                students,
-                duration,
-                selectedFeatureIds: [...selectedFeatures],
-              },
-            })}
-            className="w-full font-black rounded-xl cursor-pointer flex items-center justify-center gap-2"
-            style={{
-              padding      : '0.9rem',
-              background   : '#00A896',
-              color        : '#011A1A',
-              border       : 'none',
-              fontSize     : '0.95rem',
-              letterSpacing: '0.05em',
-              boxShadow    : '0 -4px 16px rgba(0,0,0,0.30), 0 8px 24px rgba(0,168,150,0.25)',
-            }}
-          >
-            {tier.enterprise ? (<><MessageCircle size={16} /> تواصل معنا</>) : 'فعّل مركزك الآن'}
-          </button>
-        </div>,
+      {createPortal(
+        <AnimatePresence>
+          {showFloatingCta && (
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0  }}
+              exit={{ opacity: 0, y: 24 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed inset-x-0 bottom-0 z-40 px-4 pt-4"
+              style={{
+                paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))',
+                background: 'linear-gradient(to top, #020F0E 55%, transparent)',
+              }}
+            >
+              {/* Mirrors the in-panel total so the floating bar isn't a blind CTA */}
+              <button
+                onClick={tier.enterprise ? () => navigate('/contact') : () => navigate('/checkout', {
+                  state: {
+                    tierName          : tier.name,
+                    students,
+                    duration,
+                    selectedFeatureIds: [...selectedFeatures],
+                  },
+                })}
+                className="w-full font-black rounded-xl cursor-pointer flex items-center justify-center gap-2"
+                style={{
+                  padding      : '0.9rem',
+                  background   : '#48D6CD',
+                  color        : '#09201E',
+                  border       : 'none',
+                  fontSize     : '0.95rem',
+                  letterSpacing: '0.05em',
+                  boxShadow    : '0 -4px 16px rgba(0,0,0,0.30), 0 8px 24px rgba(72,214,205,0.25)',
+                }}
+              >
+                {tier.enterprise ? (<><MessageCircle size={16} /> تواصل معنا</>) : 'فعّل مركزك الآن'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </section>

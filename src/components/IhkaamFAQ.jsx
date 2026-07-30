@@ -4,16 +4,7 @@ import { ChevronDown } from 'lucide-react'
 
 const FAQS = [
   /* ── إدارية وتشغيلية ── */
-  {
-    id: 1,
-    q : 'كيف يتم احتساب قيمة اشتراك معهدي؟',
-    a : 'تعتمد منصة إحكام نموذج تسعير مرن وقائم بالكامل على "حصة الطلاب". تدفع المؤسسة رسوم منصة ثابتة بالإضافة إلى تكلفة صغيرة  تُحتسب فقط بناءً على سقف الطلاب الفعلي المختار، دون أي رسوم مخفية.',
-  },
-  {
-    id: 2,
-    q : 'ماذا يحدث إذا تجاوز معهدنا الحد الأقصى لعدد الطلاب في الباقة الحالية؟',
-    a : 'ترتبط كل باقة بسقف محدد من الطلاب . في حال رغبتكم في تجاوز هذا السقف وإضافة طلاب جدد، يتيح لكم النظام ترقية الحصة بكل سهولة وسداد الفارق لتوسيع السعة ديناميكياً.',
-  },
+ 
   /* ── مالية وتحقق ── */
   {
     id: 3,
@@ -51,7 +42,7 @@ export default function IhkaamFAQ() {
       {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[240px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(2,115,104,0.05) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(26,148,155,0.05) 0%, transparent 70%)' }}
         aria-hidden
       />
 
@@ -82,8 +73,8 @@ export default function IhkaamFAQ() {
                 key={faq.id}
                 className="rounded-[18px] overflow-hidden"
                 style={{
-                  background  : '#011A1A',
-                  border      : `1px solid ${isOpen ? 'rgba(106,189,178,0.28)' : 'rgba(229,211,179,0.09)'}`,
+                  background  : '#09201E',
+                  border      : `1px solid ${isOpen ? 'rgba(72,214,205,0.28)' : 'rgba(229,211,179,0.09)'}`,
                   transition  : 'border-color 240ms ease',
                 }}
               >
@@ -103,7 +94,7 @@ export default function IhkaamFAQ() {
                     strokeWidth={2.2}
                     className="flex-shrink-0"
                     style={{
-                      color    : '#6ABDB2',
+                      color    : '#48D6CD',
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                       transition: 'transform 280ms ease',
                     }}
@@ -124,11 +115,11 @@ export default function IhkaamFAQ() {
                       <div
                         className="mx-6 mb-5"
                         style={{
-                          borderTop : '1px solid rgba(106,189,178,0.12)',
+                          borderTop : '1px solid rgba(72,214,205,0.12)',
                           paddingTop: '1rem',
                         }}
                       >
-                        <p className="text-sm" style={{ color: '#7A9E96', lineHeight: '1.95' }}>
+                        <p className="text-sm" style={{ color: '#96BCBE', lineHeight: '1.95' }}>
                           {faq.a}
                         </p>
                       </div>
@@ -141,16 +132,16 @@ export default function IhkaamFAQ() {
         </div>
 
         {/* Bottom contact note */}
-        <p className="text-center mt-10 text-sm" style={{ color: '#3D5E55' }}>
+        <p className="text-center mt-10 text-sm" style={{ color: '#3C555F' }}>
          
           <a
-            href="https://wa.me/963951590406"
+            href="https://wa.me/963947409106"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold transition-colors duration-200"
-            style={{ color: '#6ABDB2' }}
+            style={{ color: '#48D6CD' }}
             onMouseEnter={e => e.currentTarget.style.color = '#A3D9D3'}
-            onMouseLeave={e => e.currentTarget.style.color = '#6ABDB2'}
+            onMouseLeave={e => e.currentTarget.style.color = '#48D6CD'}
           >
             تواصل معنا مباشرة عبر الواتساب
           </a>

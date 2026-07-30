@@ -16,11 +16,11 @@ const ADDONS = [
     badge  : 'المالية',
     title  : 'الإدارة المالية',
     desc   : 'تتسرب أموال المعهد بين ملفات الإكسل والأقساط المنسية؟ تحكم كامل بالميزانية، القيود، والكفالات.',
-    accent : '#C9A84C',
-    bgTop  : 'linear-gradient(155deg, #1A1200 0%, #120D00 60%, #09080A 100%)',
-    bgBody : '#09060A',
-    border : 'rgba(201,168,76,0.22)',
-    glow   : 'rgba(201,168,76,0.25)',
+    accent : 'var(--cat-3)',
+    bgTop  : 'linear-gradient(155deg, #09201E 0%, #09201E 60%, #020F0E 100%)',
+    bgBody : 'var(--canvas)',
+    border : 'color-mix(in srgb, var(--cat-3) 22%, transparent)',
+    glow   : 'color-mix(in srgb, var(--cat-3) 25%, transparent)',
   },
   {
     id     : 3,
@@ -29,11 +29,11 @@ const ADDONS = [
     badge  : 'التعليم',
     title  : 'إدارة المواد الرديفة',
     desc   : 'الفقه، العقيدة، والتجويد تعاني من التهميش؟ نظام رصد ذكي يشمل كل مادة بنفس دقة القرآن.',
-    accent : '#6ABDB2',
-    bgTop  : 'linear-gradient(155deg, #001E1A 0%, #001410 60%, #030E0D 100%)',
-    bgBody : '#030D0C',
-    border : 'rgba(106,189,178,0.22)',
-    glow   : 'rgba(106,189,178,0.22)',
+    accent : 'var(--cat-5)',
+    bgTop  : 'linear-gradient(155deg, #09201E 0%, #09201E 60%, #020F0E 100%)',
+    bgBody : 'var(--canvas)',
+    border : 'color-mix(in srgb, var(--cat-5) 22%, transparent)',
+    glow   : 'color-mix(in srgb, var(--cat-5) 25%, transparent)',
   },
   {
     id     : 4,
@@ -42,11 +42,11 @@ const ADDONS = [
     badge  : 'التحفيز',
     title  : 'نجم الحلقة',
     desc   : 'محرك ذكي يستخرج المتفوق آلياً ويولد بطاقات تكريم فخمة جاهزة للنشر فوراً.',
-    accent : '#F0C040',
-    bgTop  : 'linear-gradient(155deg, #1E1600 0%, #141000 60%, #0C0A02 100%)',
-    bgBody : '#0A0902',
-    border : 'rgba(240,192,64,0.22)',
-    glow   : 'rgba(240,192,64,0.28)',
+    accent : 'var(--cat-1)',
+    bgTop  : 'linear-gradient(155deg, #09201E 0%, #09201E 60%, #020F0E 100%)',
+    bgBody : 'var(--canvas)',
+    border : 'color-mix(in srgb, var(--cat-1) 22%, transparent)',
+    glow   : 'color-mix(in srgb, var(--cat-1) 25%, transparent)',
     featured: true,
   },
   {
@@ -56,11 +56,11 @@ const ADDONS = [
     badge  : 'المكتبة',
     title  : 'المكتبة الصوتية والمعلم الافتراضي',
     desc   : 'وفر وقت المعلم. ربط ذكي لصفحات القرآن بمقاطع تلقينية ومكتبة مرجعية متكاملة.',
-    accent : '#A78FD4',
-    bgTop  : 'linear-gradient(155deg, #0E0820 0%, #08041A 60%, #060310 100%)',
-    bgBody : '#050310',
-    border : 'rgba(167,143,212,0.22)',
-    glow   : 'rgba(167,143,212,0.25)',
+    accent : 'var(--cat-6)',
+    bgTop  : 'linear-gradient(155deg, #09201E 0%, #09201E 60%, #020F0E 100%)',
+    bgBody : 'var(--canvas)',
+    border : 'color-mix(in srgb, var(--cat-6) 22%, transparent)',
+    glow   : 'color-mix(in srgb, var(--cat-6) 25%, transparent)',
   },
   {
     id     : 6,
@@ -69,11 +69,11 @@ const ADDONS = [
     badge  : 'الاختبارات',
     title  : 'طابور الاختبارات الذكي',
     desc   : 'لوحة حية تنهي فوضى التنقل. راقب سير الطلاب واكتشف المتأخرين فوراً عبر رادار ذكي.',
-    accent : '#7FB4D4',
-    bgTop  : 'linear-gradient(155deg, #031220 0%, #020C18 60%, #020A14 100%)',
-    bgBody : '#020A14',
-    border : 'rgba(127,180,212,0.22)',
-    glow   : 'rgba(127,180,212,0.22)',
+    accent : 'var(--cat-4)',
+    bgTop  : 'linear-gradient(155deg, #09201E 0%, #09201E 60%, #020F0E 100%)',
+    bgBody : 'var(--canvas)',
+    border : 'color-mix(in srgb, var(--cat-4) 22%, transparent)',
+    glow   : 'color-mix(in srgb, var(--cat-4) 25%, transparent)',
   },
   {
     id     : 7,
@@ -82,11 +82,11 @@ const ADDONS = [
     badge  : 'التواصل',
     title  : 'ملاحظات أولياء الأمور',
     desc   : 'تخلص من فوضى الواتساب. قناة إرسال منظمة وسرية بين أولياء الأمور والإدارة.',
-    accent : '#D4908A',
-    bgTop  : 'linear-gradient(155deg, #1A0808 0%, #120404 60%, #0E0404 100%)',
-    bgBody : '#0A0404',
-    border : 'rgba(212,144,138,0.22)',
-    glow   : 'rgba(212,144,138,0.22)',
+    accent : 'var(--cat-2)',
+    bgTop  : 'linear-gradient(155deg, #09201E 0%, #09201E 60%, #020F0E 100%)',
+    bgBody : 'var(--canvas)',
+    border : 'color-mix(in srgb, var(--cat-2) 22%, transparent)',
+    glow   : 'color-mix(in srgb, var(--cat-2) 25%, transparent)',
   },
 ]
 
@@ -132,7 +132,7 @@ function AddonCard({ addon, center }) {
         <div
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(${addon.accent}20 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(color-mix(in srgb, ${addon.accent} 13%, transparent) 1px, transparent 1px)`,
             backgroundSize : '18px 18px',
           }}
           aria-hidden
@@ -157,8 +157,8 @@ function AddonCard({ addon, center }) {
           className="absolute top-4 right-5 text-[9px] font-bold tracking-[0.18em] uppercase px-2 py-0.5 rounded-full"
           style={{
             color     : addon.accent,
-            background: `${addon.accent}18`,
-            border    : `1px solid ${addon.accent}35`,
+            background: `color-mix(in srgb, ${addon.accent} 9%, transparent)`,
+            border    : `1px solid color-mix(in srgb, ${addon.accent} 21%, transparent)`,
           }}
         >
           {addon.badge}
@@ -183,8 +183,8 @@ function AddonCard({ addon, center }) {
           animate={hov ? { scale: 1.12, rotate: 4 } : { scale: 1, rotate: 0 }}
           transition={{ duration: 0.28, ease: 'easeOut' }}
           style={{
-            background: `${addon.accent}18`,
-            border    : `1.5px solid ${addon.accent}45`,
+            background: `color-mix(in srgb, ${addon.accent} 9%, transparent)`,
+            border    : `1.5px solid color-mix(in srgb, ${addon.accent} 27%, transparent)`,
             boxShadow : hov ? `0 0 28px ${addon.glow}, 0 0 56px ${addon.glow}` : `0 0 12px ${addon.glow}`,
             transition: 'box-shadow 280ms ease',
           }}
@@ -197,7 +197,7 @@ function AddonCard({ addon, center }) {
       <div
         style={{
           height    : 1,
-          background: `linear-gradient(90deg, transparent, ${addon.accent}35, transparent)`,
+          background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${addon.accent} 21%, transparent), transparent)`,
         }}
       />
 
@@ -215,7 +215,7 @@ function AddonCard({ addon, center }) {
 
         <p
           className="text-sm flex-1"
-          style={{ color: '#7A9E96', lineHeight: '1.95' }}
+          style={{ color: '#96BCBE', lineHeight: '1.95' }}
         >
           {addon.desc}
         </p>
@@ -225,10 +225,10 @@ function AddonCard({ addon, center }) {
           className="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold w-fit"
           style={{
             background: hov
-              ? `${addon.accent}22`
-              : `${addon.accent}0D`,
-            border    : `1px solid ${addon.accent}${hov ? '55' : '28'}`,
-            color     : hov ? addon.accent : `${addon.accent}70`,
+              ? `color-mix(in srgb, ${addon.accent} 13%, transparent)`
+              : `color-mix(in srgb, ${addon.accent} 5%, transparent)`,
+            border    : `1px solid color-mix(in srgb, ${addon.accent} ${hov ? 33 : 16}%, transparent)`,
+            color     : hov ? addon.accent : `color-mix(in srgb, ${addon.accent} 44%, transparent)`,
             boxShadow : hov ? `0 0 14px ${addon.glow}` : 'none',
             transition: 'all 240ms ease',
           }}
@@ -256,7 +256,7 @@ export default function IhkaamConfigurator() {
       {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(2,115,104,0.06) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(26,148,155,0.06) 0%, transparent 70%)' }}
         aria-hidden
       />
 
@@ -285,7 +285,7 @@ export default function IhkaamConfigurator() {
           </h2>
           <p
             className="text-sm mx-auto"
-            style={{ color: '#5A8A7E', maxWidth: '520px', lineHeight: '2' }}
+            style={{ color: '#509492', maxWidth: '520px', lineHeight: '2' }}
           >
             أدوات هندسية دقيقة مصممة لحل أعمق المشاكل الإدارية. يمكنك إضافتها لباقتك أثناء إتمام الطلب.
           </p>

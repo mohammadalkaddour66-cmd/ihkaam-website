@@ -1,22 +1,160 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 /* ── Font ── */
 @theme {
-  --font-arabic: 'Tajawal', sans-serif;
+  --font-arabic: 'Cairo', sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════
+   SEMANTIC TOKENS
+   الهوية تركوازية. انحرفت مرّتين لأنّ القيم كانت تُستبدَل
+   في مكانها بينما التعليقات تبقى تقول «تركوازي»: آخر مرّة
+   صار الـaccent ذهبياً والـrose أخضر، و319 استعمالاً عبر
+   18 ملفاً تبعتهما. التعليق لا يُلزم أحداً — المتغيّر يُلزم.
+   كل لون جديد من الآن يمرّ من هنا، ودرجته (hue) خارج 70–166.
+   ══════════════════════════════════════════════════════ */
+:root {
+  /* ── Surfaces — سلّم A المضبوط (2026-07-30) ──────────────────
+     اللوحة المعتمدة هي A: الدرجة تبقى في 168°–176° فتبقى «الروح».
+     والتخفيف جاء من التشبّع لا من الدرجة، بقاعدة واحدة:
+     **التشبّع ينزل كلما كبرت المساحة** — لأن الطغيان يجيء من
+     التشبّع. الأخضرية المدرَكة (فارق G عن B مرجَّحاً بـ0.7152)
+     نزلت 59% على surface-1 و44% على surface-2، وهما السطحان
+     اللذان يغطّيان مساحة الصفحة فعلاً.
+
+     قبل هذا كانت أسطح الموقع الداكنة **54 قيمة مختلفة في 275
+     موضعاً** — لا أربعاً. جُمعت كلّها على هذه الأربع بالإضاءة. */
+  --canvas    : #020F0E;   /* hue 176° · تشبّع 72% · خلفية الصفحة */
+  --canvas-2  : #09201E;   /* hue 174° · تشبّع 58% · واجهة البطاقة */
+  --surface-1 : #11312C;   /* hue 171° · تشبّع 48% · لوحٌ داخليّ   */
+  --surface-2 : #1C423A;   /* hue 168° · تشبّع 40% · لوحٌ بارز     */
+
+  /* Brand — أساسيّ واحد */
+  --accent      : #48D6CD; /* muted turquoise — the ONLY teal */
+  --accent-hover: #6FE7DE;
+  --accent-deep : #2FAEB4; /* تركوازي أغمق — تنويع داخل العائلة نفسها */
+
+  /* ── الثانويّ: ذهب اللوغو وبيجه ──
+     نسبةٌ لا نيّة. «ثانويّ» تعني ألّا يزيد نصيبه على عُشر ألوان
+     الصفحة، لا أن نصفه بذلك ثم نوزّعه على تسع بطاقات. حدّه أعلاه.
+     المدى اللوني 35°–41° كلّه — عائلة واحدة لا أربع عشرة درجة
+     مرتجلة كما كانت (E0B15E و F0C97A و E0C79A و C9A67E و B98A63
+     و C97F5A و C97F45 و D98841 و E8B93E و D9A03A … كلّها ذهبٌ
+     ظنّ كاتبُه أنه يختار لوناً جديداً).
+     الأرقام تباينٌ مقيس على --canvas. */
+  --gold      : #E3A93F; /*  9.4:1 — ذهب الحرف في اللوغو. النصّ والرقم */
+  --gold-soft : #F0CE8A; /* 14.1:1 — لمعة الحرف. للتدرّجات والوهج */
+  --gold-deep : #B8781F; /*  4.6:1 — ظلّ الحرف. حدودٌ وأطرافُ تدرّج، لا نصّ */
+  --sand      : #E5D3B3; /* 13.5:1 — بيج تذييل اللوغو. نصّ ثانويّ دافئ */
+
+  /* موروثتان: لا وجود لهما في اللوغو، وقد خرجتا من الرئيسية.
+     تبقيان لأن ثماني صفحاتٍ أخرى تستعملهما بعد. لا تُزادا. */
+  --rose        : #D9ACA3;
+  --clay        : #A6756A;
+
+  /* ══ عائلتا اللوحة المعتمدة (2026-07-30) ══════════════════════
+     اللوحة الجديدة لونان لا أكثر: صنوبرٌ ودفءٌ طينيّ. وأدوارهما
+     تتبادل حسب الوسط، والتباين هو الذي فرض ذلك لا الذوق:
+
+       #24735C  →  3.5:1 على الداكن  ·  5.7:1 على الأبيض
+       #D9B29C  → 10.2:1 على الداكن  ·  1.9:1 على الأبيض
+
+     أي: على الداكن يحمل الدفءُ النصَّ والصنوبرُ الحشوَ، وعلى
+     الأبيض ينقلب الأمر. ولهذا لا يحمل الأخضر حرفاً على خلفيةٍ
+     داكنة أبداً — فلا يقع في «الحشيش» الذي رُفض مرّتين. */
+  --pine-lit  : #41AA8C; /*  6.9:1 — حشوٌ فقط. فاقعٌ مقصود حصرُه */
+  --pine      : #24735C; /*  3.5:1 — حشوٌ وسطح. لا نصّ على الداكن */
+  --pine-deep : #0D4F41; /*  2.1:1 — حشوٌ أعمق. مساحةٌ صغيرة، فيبقى
+                              تشبّعه عالياً: قاعدةُ «التشبّع ينزل
+                              كلما كبرت المساحة» تعمل في الاتجاهين */
+  --warm-lit  : #EBD3C2; /* 13.8:1 */
+  --warm      : #D9B29C; /* 10.2:1 — لكنة الداكن ونصّه المميّز */
+  --warm-deep : #B98A63; /*  6.5:1 */
+
+  /* ══ المقياس التصنيفيّ ══════════════════════════════════════
+     ستّ درجات لِما يحتاج لوناً لكل بندٍ: مؤشّر الجودة، حاسبة
+     العائد، تصنيفات المقالات، بطاقات لوحة الإدارة.
+
+     غيابُه هو ما وَلَّد البنفسجيّ #B5A3D9 والأزرق #A3C4D9: ستّة
+     مكوّنات احتاجت مقياساً فاخترع كلٌّ منها واحداً. القاعدة معه:
+     اللونُ في النقطة والحشو، والعنوانُ نصٌّ من --text-* دائماً.
+     فتكفي ستّ درجاتٍ لأيّ عدد تصنيفات.
+
+     القيم الآن من عائلة التركواز القائمة + الدفء، حتى لا يُقحَم
+     الأخضر على أسطحٍ تركوازية فيقرأ اشتباكاً. عند قلب الأسطح
+     (المرحلة ٣) تُبدَّل الثلاث الأخيرة إلى --pine-lit و--pine
+     و--pine-deep، وهذا كل ما يلزم — ثلاثة أسطر في مكانٍ واحد. */
+  --cat-1: #EBD3C2;
+  --cat-2: #D9B29C;
+  --cat-3: #B98A63;
+  --cat-4: #6FE7DE;
+  --cat-5: #48D6CD;
+  --cat-6: #2FAEB4;
+
+  /* Text — كلها ≥4.5:1 على --canvas (مقيسة، لا مقدَّرة) */
+  --text-1: #EAE4DF;       /* 16.8:1 */
+  --text-2: #96BCBE;       /*  6.7:1 */
+  --text-3: #6FA5A8;       /*  5.0:1 — الحدّ الأدنى، لا تُعتِمه أكثر */
+
+  /* Borders */
+  --border    : rgba(26, 148, 155, 0.16);
+  --border-hi : rgba(72, 214, 205, 0.28);
+
+  /* Motion — نغمة واحدة لكل الحركة (motion-consistency) */
+  --ease-out : cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast : 150ms;
+  --dur-base : 240ms;
+  --dur-slow : 400ms;
+}
+
+/* ══════════════════════════════════════════════════════
+   FOCUS — لم يكن في الموقع كلّه حلقة تركيز واحدة.
+   التنقّل بلوحة المفاتيح كان أعمى تماماً.
+   ══════════════════════════════════════════════════════ */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline       : 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius : 6px;
+}
+
+/* ══════════════════════════════════════════════════════
+   تسلسل رقمي داخل نصّ عربي  ‏(1 / 37)
+
+   خوارزمية الاتجاه ثنائي الاتجاه تعدّ «/» محرفاً محايداً، فترثه
+   من اتجاه الفقرة. وفي صفحة RTL ينقلب المقطع بصرياً: يُكتب في
+   الشيفرة «1 / 37» ويُقرأ على الشاشة «37 / 1» — وهذا ما ظهر في
+   المعرض. العدّ تسلسلٌ منطقيّ اتجاهه LTR دائماً مهما كانت لغة
+   الصفحة، فيُعزَل ويُثبَّت.
+
+   isolate يمنع المقطع من التأثير في ترتيب ما حوله كذلك.
+   ══════════════════════════════════════════════════════ */
+.num-seq {
+  direction           : ltr;
+  unicode-bidi        : isolate;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ══════════════════════════════════════════════════════
+   REDUCED MOTION
+   الصفحة فيها ثمانِ حركات لا نهائية تعمل في آنٍ واحد.
+   من يطلب تقليل الحركة يطلبها لسبب — دوار أو صرع أو بطارية.
+   الحركات الدلالية تبقى، لكن بلا تكرار وبلا زحف.
+   ══════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration       : 0.01ms !important;
+    animation-iteration-count: 1       !important;
+    transition-duration      : 0.01ms !important;
+    scroll-behavior          : auto    !important;
+  }
+  .orb-a, .orb-b, .snake-rect { animation: none !important; }
 }
 
 /* ══════════════════════════════════════════════════════
    DESIGN TOKENS — Muted Dark Bento System
-   Canvas  : #010D0D  (deepest warm teal-black)
-   Surface 1: #011A1A  (bento box face)
-   Surface 2: #012424  (elevated inner panels)
-   Border  : rgba(2,115,104,0.16)
-   Accent  : #6ABDB2  (muted turquoise)
-   Rose    : #D9ACA3  (dusty rose)
-   Gradient: #E5D3B3 → #D9ACA3 → #A6756A
-   Text-1  : #EAE4DF  (warm off-white)
-   Text-2  : #7A9E96  (muted teal-grey)
-   Text-3  : #5A8A78  (deep muted)
+   القيم كلّها في :root أعلى الملف — لا تُعاد كتابتها هنا.
+   نسخة ثانية من اللوحة في تعليق هي ما سمح للانحراف أن يمرّ
+   مرّتين: القيم تتبدّل والوصف يبقى يقول «تركوازي».
    ══════════════════════════════════════════════════════ */
 
 /* ── Reset ── */
@@ -24,8 +162,8 @@
 html  { scroll-behavior: smooth; }
 body  {
   margin: 0;
-  font-family: 'Tajawal', sans-serif;
-  background-color: #010D0D;
+  font-family: 'Cairo', sans-serif;
+  background-color: #020F0E;
   color: #EAE4DF;
   direction: rtl;
   -webkit-font-smoothing: antialiased;
@@ -52,16 +190,11 @@ body  {
   75%  { transform: translate(-40px, -80px)   scale(1.08); opacity: .09; }
   100% { transform: translate(0px,    0px)    scale(1);    opacity: .12; }
 }
-@keyframes orb-c {
-  0%   { transform: translate(0px,   0px)    scale(1);    opacity: .08; }
-  33%  { transform: translate(90px,  100px)  scale(1.20); opacity: .14; }
-  66%  { transform: translate(-70px, -60px)  scale(0.85); opacity: .05; }
-  100% { transform: translate(0px,   0px)    scale(1);    opacity: .08; }
-}
+/* orb-c حُذف: ثالثُ وهجٍ في المنتصف لا يُميَّز عن الاثنين حوله،
+   وكان الوهجَ الوحيد بلونٍ ثالث. */
 
 .orb-a { animation: orb-a 16s ease-in-out infinite; }
 .orb-b { animation: orb-b 20s ease-in-out infinite 3s; }
-.orb-c { animation: orb-c 14s ease-in-out infinite 7s; }
 
 /* ── Ripple click effect ── */
 @keyframes ripple-out {
@@ -72,13 +205,9 @@ body  {
   animation: ripple-out 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* ── Floating particle dots ── */
-@keyframes float-particle {
-  0%,100% { transform: translateY(0px)   translateX(0px);   opacity: 0.5; }
-  33%      { transform: translateY(-24px) translateX(12px);  opacity: 1;   }
-  66%      { transform: translateY(12px)  translateX(-10px); opacity: 0.4; }
-}
-.particle { animation: float-particle var(--dur, 8s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+/* النقاط الطافية (.particle) حُذفت مع مستعمِلها الوحيد FloatingBg:
+   ثماني حلقاتِ حركةٍ لا نهائية مقابل زينةٍ لا تحمل معنى، وبألوانٍ
+   (ورديّ · طينيّ) خرجت من الرئيسية أصلاً. */
 
 /* ── Snake border — glowing arc travels around the SVG rect ── */
 @keyframes snake-move {
@@ -98,22 +227,22 @@ body  {
 
 /* ════════════════════════════════════════════
    BENTO BOX — the core UI atom
-   Solid dark surface (#011A1A), 1px teal
+   Solid dark surface (#09201E), 1px teal
    border, 20px radius. Hover: border glows,
    box lifts 3px. No blur — true bento,
    not glassmorphism.
    ════════════════════════════════════════════ */
 .bento {
-  background   : #011A1A;
-  border       : 1px solid rgba(2, 115, 104, 0.16);
+  background   : #09201E;
+  border       : 1px solid rgba(26, 148, 155, 0.16);
   border-radius: 20px;
   transition   : border-color 400ms ease-out,
                  box-shadow   400ms ease-out,
                  transform    400ms ease-out;
 }
 .bento:hover {
-  border-color : rgba(106, 189, 178, 0.28);
-  box-shadow   : 0 0 0 1px rgba(106, 189, 178, 0.06),
+  border-color : rgba(72, 214, 205, 0.28);
+  box-shadow   : 0 0 0 1px rgba(72, 214, 205, 0.06),
                  0 24px 64px rgba(0, 0, 0, 0.50);
   transform    : translateY(-3px);
 }
@@ -121,21 +250,181 @@ body  {
 /* card-glass → bento alias — keeps all
    unmodified components visually consistent */
 .card-glass {
-  background   : #011A1A;
-  border       : 1px solid rgba(2, 115, 104, 0.16);
+  background   : #09201E;
+  border       : 1px solid rgba(26, 148, 155, 0.16);
   border-radius: 20px;
   transition   : border-color 400ms ease-out,
                  box-shadow   400ms ease-out,
                  transform    400ms ease-out;
 }
 .card-glass:hover {
-  border-color : rgba(106, 189, 178, 0.28);
-  box-shadow   : 0 0 0 1px rgba(106, 189, 178, 0.06),
+  border-color : rgba(72, 214, 205, 0.28);
+  box-shadow   : 0 0 0 1px rgba(72, 214, 205, 0.06),
                  0 24px 64px rgba(0, 0, 0, 0.50);
   transform    : translateY(-3px);
 }
 
-/* ── Warm Sand → Dusty Rose headline gradient ── */
+/* ════════════════════════════════════════════
+   بطاقة رقم — .stat-card  (إحكام بالأرقام)
+
+   كانت صندوقاً مسطّحاً: سطحٌ شبه شفّاف وحدٌّ باهت بلون المجموعة
+   (‏`${color}20`) ووهجُ زاوية. فلم يكن فيها إلا رقمٌ ملوّن، فصار
+   اللونُ هو كلَّ التصميم — ومتى حمل اللونُ العملَ كلَّه فضَحه أيُّ
+   لونٍ صاخب. ولا حالةَ تمريرٍ فيها أصلاً.
+
+   البناء الآن بناءُ بطاقات الموقع: حدٌّ + وهجُ زاوية + هلالٌ سفليّ
+   + رفعةٌ عند التمرير. والتمييز **شريطٌ أفقيّ علويّ** بلون المجموعة:
+   الأفقيّ يُقرأ «تصنيفاً» كلسانِ ملف، والرأسيّ يُقرأ «اقتباساً» —
+   فبقي الرأسيّ للشهادات وحدها.
+
+   لون المجموعة يُمرَّر بمتغيّر `--gc` على البطاقة، فلا تُكرَّر
+   الطبقات inline ولا يُلصَق سُدسٌ سداسيّ على قيمة.
+
+   والسطح تدرّجٌ لا مصمت (2026-07-30، مع الشهادات): كان `--canvas-2`
+   مبسوطاً مصمتاً فيُقرأ أخضر — والدرجة 174° بريئة، الجاني بسْطُ
+   درجةٍ واحدة على مساحةٍ كاملة. فصار ينحدر إلى `--canvas` كما في
+   بطاقة «كيف يعمل»، والدرجة تخبو مع العمق. انظر تعليق بطاقة
+   الشهادة تحت.
+   ════════════════════════════════════════════ */
+.stat-card {
+  position      : relative;
+  isolation     : isolate;
+  overflow      : hidden;
+  border-radius : 16px;
+  background    : linear-gradient(145deg,
+                    color-mix(in srgb, var(--canvas-2) 70%, transparent) 0%,
+                    color-mix(in srgb, var(--canvas)   95%, transparent) 100%);
+  border        : 1px solid color-mix(in srgb, var(--gc) 15%, transparent);
+  transition    : transform    400ms var(--ease-out),
+                  border-color 400ms var(--ease-out),
+                  box-shadow   400ms var(--ease-out);
+}
+.stat-card:hover {
+  transform   : translateY(-4px);
+  border-color: color-mix(in srgb, var(--gc) 34%, transparent);
+  box-shadow  : 0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+/* الشريط العلويّ — علامةُ المجموعة. يخبو نحو النهاية فلا يصير خطاً
+   مصمتاً يُثقل صفّاً من ثلاث بطاقات. */
+.stat-card::before {
+  content     : '';
+  position    : absolute;
+  inset-inline: 0;
+  top         : 0;
+  height      : 2px;
+  background  : linear-gradient(to left,
+                  var(--gc) 0%,
+                  color-mix(in srgb, var(--gc) 30%, transparent) 55%,
+                  transparent 100%);
+}
+
+.stat-card::after {
+  content      : '';
+  position     : absolute;
+  inset-inline : 0;
+  bottom       : 0;
+  height       : 1px;
+  background   : linear-gradient(to right, transparent,
+                   color-mix(in srgb, var(--gc) 18%, transparent), transparent);
+}
+
+/* ════════════════════════════════════════════
+   بطاقة شهادة — .testimonial-card
+
+   كانت .crystal-card: السطح الزجاجيّ الوحيد في الموقع كلّه، بينما
+   كل بطاقةٍ أخرى سطحٌ مصمتٌ بحدٍّ من اللوحة. فكان الشذوذ في
+   المادّة لا في اللون — ولا يُصلحه تغييرُ درجة.
+
+   ثم في 2026-07-30 سأل المستخدم: «الأخضر في بطاقات الشهادات من
+   أين؟» — وكان من موضعين: `--canvas-2` (#09201E · درجة 174° ·
+   تشبّع 58% · إضاءة 8%) مبسوطاً **مصمتاً** على كامل البطاقة،
+   و`--pine` (#24735C · درجة **162°**) في شريحة الشعار ووهج القسم.
+   و162° داخل النطاق المحرَّم 70–166 أصلاً. والمصمت هو الجاني
+   الأكبر: نفس `--canvas-2` موجودٌ في بطاقة «كيف يعمل» ولا يُقرأ
+   أخضر — لأنه هناك 70% شفافية تهبط إلى `--canvas` 95%، فالدرجة
+   تخبو مع العمق ولا تجلس درجةٌ واحدة على مساحةٍ كاملة.
+
+   فصارت البطاقة على وصفة بطاقة «كيف يعمل» حرفاً بحرف — نفس
+   التدرّج 145deg ونفس الحدّ التركوازي — والعائلة اللونية كلها
+   تركوازية: --accent-hover / --accent / --accent-deep بدل الدفء.
+
+   والإضاءة ثلاث طبقاتٍ على **مادّةٍ واحدة**، لا مادّة جديدة:
+     1) خطٌّ داخليٌّ 1px على الحرف الأعلى → «مضاءٌ من أعلى»
+     2) وهجُ الزاوية العليا (في المكوّن) → مصدرُ الضوء
+     3) هلالٌ سفليٌّ يخبو من الطرفين     → انعكاسُه على الحرف
+   والتمييزُ عنصرٌ بنيويٌّ واحد كما استُقرّ: **قاعدةٌ رأسية** على
+   الحرف الابتدائي، وهي علامةُ الاقتباس المتعارَفة.
+   ════════════════════════════════════════════ */
+.testimonial-card {
+  position      : relative;
+  isolation     : isolate;
+  overflow      : hidden;
+  border-radius : 16px;
+  background    : linear-gradient(145deg,
+                    color-mix(in srgb, var(--canvas-2) 70%, transparent) 0%,
+                    color-mix(in srgb, var(--canvas)   95%, transparent) 100%);
+  border        : 1px solid rgba(72, 214, 205, 0.15);
+  box-shadow    : inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  transition    : transform    400ms var(--ease-out),
+                  border-color 400ms var(--ease-out),
+                  box-shadow   400ms var(--ease-out);
+}
+.testimonial-card:hover {
+  transform   : translateY(-4px);
+  border-color: var(--border-hi);
+  box-shadow  : inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
+                0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+/* القاعدة الرأسية — التمييز الوحيد. تبدأ باللكنة وتخبو نزولاً. */
+.testimonial-card::before {
+  content            : '';
+  position           : absolute;
+  inset-block        : 20px;
+  inset-inline-start : 0;
+  width              : 3px;
+  border-radius      : 999px;
+  background         : linear-gradient(to bottom,
+                         var(--accent) 0%,
+                         color-mix(in srgb, var(--accent-deep) 40%, transparent) 100%);
+}
+
+/* الهلال السفليّ — نفس ما في بطاقات القسم «قبل» وغيره */
+.testimonial-card::after {
+  content      : '';
+  position     : absolute;
+  inset-inline : 0;
+  bottom       : 0;
+  height       : 1px;
+  background   : linear-gradient(to right, transparent,
+                   color-mix(in srgb, var(--accent) 22%, transparent), transparent);
+}
+
+/* الفاصل بين النصّ والمُشهِد */
+.divider-testimonial {
+  height    : 1px;
+  background: linear-gradient(to right,
+                color-mix(in srgb, var(--accent) 18%, transparent), transparent);
+}
+
+/* ════════════════════════════════════════════
+   .crystal-card و.divider-crystal — حُذفتا (2026-07-30).
+
+   كانتا السطحَ الزجاجيّ الوحيد في الموقع كلّه، وكلُّ بطاقةٍ أخرى
+   سطحٌ مصمتٌ بحدٍّ من اللوحة — فكان الشذوذ في المادّة لا في اللون.
+   وحين خرجت الشهادات منهما إلى .testimonial-card بقيتا بلا
+   مستعمِلٍ واحد. لا تُبعثان: الخروج منهما كان بقصد.
+   ════════════════════════════════════════════ */
+
+/* خيط الذهب (.rule-gold) — جُرّب ورُفض (2026-07-30).
+   الفكرة كانت فاصلَ فصولٍ يعيد الذهب ثلاث مرّات فيصير توقيعاً.
+   لكنه في التطبيق احتاج هواءً حوله كي يُقرأ حدَّ فصلٍ لا خطاً
+   زائداً، والهواء صار فجوةً بين القسمين أوسعَ من أن تُحتمَل.
+   الفاصل في هذه الصفحة يجيء من الحشو والإيقاع، لا من خطٍّ مرسوم. */
+
+/* ── Warm Sand → Dusty Rose headline gradient ──
+   موروث: ثماني صفحاتٍ خارج الرئيسية تستعمله. لا يُمسّ. */
 .text-rose-grad {
   background: linear-gradient(135deg, #E5D3B3 10%, #D9ACA3 55%, #A6756A 95%);
   -webkit-background-clip: text;
@@ -143,41 +432,327 @@ body  {
   background-clip: text;
 }
 
+/* ── بيج → ذهب اللوغو ──
+   بديل الرئيسية عن .text-rose-grad. الكلمة الواحدة المتدرّجة في
+   العنوان هي أكبر نصيبٍ يأخذه الذهب في القسم، ولا يتكرّر بعدها.
+   ينتهي عند --gold لا عند --gold-deep: الطرف الغامق (4.6:1) على
+   حرفٍ ثقيلٍ مقبول، وعلى ذيل الكلمة يبدو كأنّ اللون خبا. */
+.text-gold-grad {
+  background: linear-gradient(135deg, var(--sand) 8%, var(--gold-soft) 42%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* ── Subtle dot grid texture ── */
 .pattern-dots {
-  background-image: radial-gradient(circle, rgba(2,115,104,0.14) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(26, 148, 155,0.14) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 /* ── Divider — teal gradient line ── */
 .divider {
   height: 1px;
-  background: linear-gradient(to left, transparent, rgba(2,115,104,0.24), transparent);
+  background: linear-gradient(to left, transparent, rgba(26, 148, 155,0.24), transparent);
 }
+
+/* ════════════════════════════════════════════
+   الأزرار — صنفان بصريان، ونداءان لفظيان لا ثالث لهما
+
+   الشكل :  .btn-cta = أساسي معبّأ   |   .btn-outline = ثانوي مفرّغ
+   اللفظ :  «اطلب نسخة»  → /request        (شراء ذاتي)
+            «جرّب مجاناً» → DemoRequestForm (مسار بشري)
+
+   الأفعال المحايدة (تمرير، تصفّح) تأخذ .btn-outline ولا تخترع لفظاً جديداً.
+   كل صيغة إضافية تُعلّم الزائر اسماً جديداً لنفس الباب — وهذا ما كنا نُصلحه.
+   ════════════════════════════════════════════ */
+
+/* الأصل كان transition:all — يشمل ما لا يُراد تحريكه، ويجبر
+   المتصفّح على مراقبة كل خاصية. نسمّي ما نحرّكه. */
+
+/* ── توسيط رأسيّ داخل الأزرار ──
+   min-height:44px هدفه مساحة اللمس، لا شكل الزرّ. لكن العنصر كان
+   يُعرض block بلا توسيط، فارتفاع محتواه 32px (8 حشو + 16 سطر + 8)
+   والفارق حتى 44 كان يسقط كلّه أسفل النص: 4px فوقه و17px تحته.
+   فيبدو الكلام معلّقاً في أعلى الزرّ. التوسيط يوزّع الفارق. */
+.btn-cta, .btn-outline {
+  display        : inline-flex;
+  align-items    : center;
+  justify-content: center;
+}
+/* الأصناف التي تُمرَّر block/w-full (قائمة الجوال) تُبطل inline-flex
+   أعلاه لأن مرافق tailwind تليه في الترتيب — فتُعاد كـflex */
+.btn-cta.block, .btn-outline.block,
+.btn-cta.w-full, .btn-outline.w-full { display: flex; }
 
 /* ── Primary CTA — muted turquoise fill ── */
 .btn-cta {
-  background : #6ABDB2;
-  color      : #010D0D;
-  font-weight: 700;
-  transition : all 400ms ease-out;
+  background  : var(--accent);
+  color       : var(--canvas);
+  font-weight : 700;
+  cursor      : pointer;
+  min-height  : 44px;          /* touch-target-size */
+  touch-action: manipulation;  /* يزيل تأخير 300ms */
+  transition  : background var(--dur-base) var(--ease-out),
+                box-shadow var(--dur-base) var(--ease-out),
+                transform  var(--dur-base) var(--ease-out);
 }
 .btn-cta:hover {
-  background : #7ECDC3;
-  box-shadow : 0 8px 32px rgba(106, 189, 178, 0.28);
+  background : var(--accent-hover);
+  box-shadow : 0 8px 32px rgba(72, 214, 205, 0.28);
   transform  : translateY(-2px);
 }
+/* الضغط بلا ارتداد بصري يجعل الزر يبدو معطّلاً على اللمس،
+   حيث لا وجود لـ hover أصلاً (scale-feedback) */
+.btn-cta:active { transform: translateY(0) scale(0.97); transition-duration: var(--dur-fast); }
 
 /* ── Ghost / outline button ── */
 .btn-outline {
-  border     : 1.5px solid rgba(106, 189, 178, 0.30);
-  color      : #6ABDB2;
-  transition : all 400ms ease-out;
+  border      : 1.5px solid rgba(72, 214, 205, 0.30);
+  color       : var(--accent);
+  font-weight : 700;
+  cursor      : pointer;
+  min-height  : 44px;
+  touch-action: manipulation;
+  transition  : border-color var(--dur-base) var(--ease-out),
+                background   var(--dur-base) var(--ease-out),
+                transform    var(--dur-base) var(--ease-out);
 }
 .btn-outline:hover {
-  border-color: rgba(106, 189, 178, 0.65);
-  background  : rgba(106, 189, 178, 0.07);
+  border-color: rgba(72, 214, 205, 0.65);
+  background  : rgba(72, 214, 205, 0.07);
   transform   : translateY(-2px);
+}
+.btn-outline:active { transform: translateY(0) scale(0.97); transition-duration: var(--dur-fast); }
+
+/* ══════════════════════════════════════════════════════════════
+   متنفّس العناوين العربية — على كل العروض
+
+   ضيق السطر ليس عيب شاشةٍ صغيرة، بل خاصّة في الخطّ نفسه: القياس
+   أظهر h1 بوزن سطر 1.14 عند 1440px (67px) وعند 768px (40px)
+   كذلك. وكلّما كبر القياس اشتدّ التصادم لا خفّ، لأن المسافة
+   تتناسب مع حجم الحرف. فالحدّ الأدنى هنا لكل العروض، وطبقة
+   الجوال تاليةً تشدّده أكثر لضيق الشاشة.
+   ══════════════════════════════════════════════════════════════ */
+h1 { line-height: 1.30 !important; }
+h2 { line-height: 1.35 !important; }
+h3 { line-height: 1.45 !important; }
+
+/* الوسط بين الجوال وسطح المكتب: القياسات هنا كانت تُترك للحدّ
+   الأدنى في clamp أيضاً، فبقي اللوح اللوحي بعناوين 40px مضغوطة */
+@media (min-width: 641px) and (max-width: 1024px) {
+  h1 { font-size: clamp(1.9rem, 4.6vw, 2.6rem) !important; line-height: 1.34 !important; }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 1.9rem) !important; line-height: 1.38 !important; }
+  h3 { font-size: clamp(1.15rem, 2.4vw, 1.35rem) !important; line-height: 1.5 !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   أوزان الأسطر العربية — خارج مدى الجوال
+
+   كانت تصحيحات leading محصورة في ≤640px، فبقي ما فوقها على
+   أوزان tailwind اللاتينية: leading-none تعني line-height:1
+   حرفياً، أي أن صندوق السطر بمقاس الخط تماماً. واللاتيني يحتمله؛
+   والعربية لا: لها تشكيلٌ فوق السطر ونزلاتٌ عميقة تحته
+   (ج ح خ ع غ م ه ي)، وخطّ Cairo واسع الصعود والنزول أصلاً.
+   فيلتصق السطر بالسطر، ويُقصّ طرفا الحرف.
+
+   وهي ليست علّة جوال: الرقم الكبير في شريط الإحصاءات مكتوب
+   بـleading-none، فعند 820px يصير 28.7px بارتفاع سطر 28.7px —
+   وعند 1280px أربعين بكسلاً بلا أي متنفّس. المدى هنا مفتوح من
+   641px فصاعداً، وأوزانه أضيق قليلاً من نظيرتها في الجوال لأن
+   الأسطر أعرض فتحتمل كثافة أعلى.
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 641px) {
+  .leading-none    { line-height: 1.28; }
+  .leading-tight   { line-height: 1.36; }
+  .leading-snug    { line-height: 1.48; }
+  .leading-\[1\.08\], .leading-\[1\.1\], .leading-\[1\.2\],
+  .leading-\[1\.25\], .leading-\[1\.3\]  { line-height: 1.36; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   طبقة الجوال — مقياس نصّي عربيّ لكل صفحات الموقع
+
+   العلّة الجذرية: 213 تصريح fontSize مكتوباً داخل style، جلّها
+   clamp(min, vw, max). عند 390px تكون قيمة vw ضئيلة جداً، فيفوز
+   الحدّ الأدنى دائماً — والحدّ الأدنى كُتب ليكون «أصغر مقاسٍ على
+   سطح المكتب»، لا «المقاس الصحيح على الجوال». فوصل الجوال عناوين
+   بـ32 و36 بكسل.
+
+   وفوقها 62 موضعاً تستعمل leading-none و tight و snug، وهي أوزان
+   معايَرة على الحرف اللاتيني. والعربية تحتاج فراغاً أكثر لا أقل:
+   لها تشكيلٌ فوق السطر، ونزلاتٌ عميقة تحته (ج ح خ ع غ م ه ي)،
+   وخطّ Cairo أصلاً واسع الصعود والنزول. فكان السطر يلامس السطر.
+
+   لماذا !important: الأنماط المكتوبة في style تتقدّم على أي محدِّد،
+   ولا سبيل لتجاوزها إلا به. هذا أوقع من تعديل 213 موضعاً يدوياً
+   وأضمن ألّا يعود الانحراف. والمدى محصور في ≤640px، فسطح المكتب
+   لا يمسّه شيء.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* ── العناوين: مقاس يتنفّس داخل مدى الجوال نفسه ── */
+  h1 { font-size: clamp(1.5rem,  7vw,   1.85rem) !important; line-height: 1.45 !important; }
+  h2 { font-size: clamp(1.25rem, 5.2vw, 1.5rem)  !important; line-height: 1.45 !important; }
+  h3 { font-size: clamp(1.05rem, 4.2vw, 1.2rem)  !important; line-height: 1.55 !important; }
+
+  /* التوازن البصري: العنوان الطويل بلا كسرٍ لطيف يترك كلمة يتيمة */
+  h1, h2, h3 { text-wrap: balance; }
+
+  /* ── أوزان الأسطر اللاتينية، مُعادة للعربية ──
+     قواعد خارج @layer، فهي تسبق مرافق tailwind بلا !important */
+  .leading-none    { line-height: 1.35; }
+  .leading-tight   { line-height: 1.40; }
+  .leading-snug    { line-height: 1.50; }
+  .leading-normal  { line-height: 1.65; }
+  .leading-relaxed { line-height: 1.75; }
+  .leading-\[1\.08\], .leading-\[1\.1\], .leading-\[1\.2\],
+  .leading-\[1\.25\], .leading-\[1\.3\]  { line-height: 1.42; }
+
+  /* ── أرضية القراءة: 12px ──
+     مصدران للنص المتناهي في الصغر:
+     (أ) 120 صنفاً ثابتاً: text-[9px] و [10px] و [11px] و [8.5px]
+     (ب) 55 تصريح fontSize داخل style بقيم rem دون 0.75
+         (0.52 و 0.58 … 0.72) موزّعة على ثمانية ملفات.
+
+     الثانية لا يطالها محدِّد عادي — الأنماط السطرية تتقدّم عليه —
+     فتُلتقط بمطابقة نصّ سمة style نفسها. وحُصر المدى في الجوال
+     عمداً: بعض هذه النصوص زخرفيّ داخل محاكاة واجهات (رسوم
+     «قبل/بعد» ولقطات الجوال)، وصِغَرُه هناك مقصود على الشاشة
+     الواسعة، وغيرُ مقروءٍ على شاشة الهاتف.
+
+     أرقام صريحة لا 0.7* عامة: 0.75rem و 0.78rem سليمتان أصلاً. */
+  .text-\[8\.5px\], .text-\[9px\], .text-\[10px\], .text-\[11px\] { font-size: 0.75rem; line-height: 1.6; }
+
+  /* (ب) قيم rem سطرية، و(ج) أصناف tailwind الحرّة text-[0.72rem].
+     تُطابَق سمتا style و class نصّياً — أيسر من هروب الأقواس
+     المربّعة في المحدِّدات، وأوضح للقراءة. */
+  [style*="font-size: 0.5"], [class*="text-[0.5"],
+  [style*="font-size: 0.6"], [class*="text-[0.6"],
+  [style*="font-size: 0.7rem"], [class*="text-[0.7rem]"],
+  [style*="font-size: 0.70"], [class*="text-[0.70"],
+  [style*="font-size: 0.71"], [class*="text-[0.71"],
+  [style*="font-size: 0.72"], [class*="text-[0.72"],
+  [style*="font-size: 0.73"], [class*="text-[0.73"],
+  [style*="font-size: 0.74"], [class*="text-[0.74"] {
+    font-size: 0.75rem !important;
+  }
+  /* ضُبطت نزولاً بعد المعاينة: 1.75 و1.8 كانتا سخيّتين داخل
+     البطاقة — تنفخ ارتفاعها وتطيل الصفحة بلا مقابل في الوضوح.
+     1.6–1.7 مريحة للعربية وتوفّر سطراً كاملاً في كل فقرة.
+     الضيق المعطوب كان في العناوين (1.14) لا في المتن. */
+  .text-xs  { line-height: 1.60; }
+  .text-sm  { font-size: 0.82rem; line-height: 1.65; }  /* 14   → 13.1 */
+  .text-base{ font-size: 0.9rem;  line-height: 1.70; }  /* 16   → 14.4 */
+  .text-lg  { font-size: 1rem;    line-height: 1.70; }  /* 18   → 16   */
+  .text-xl  { font-size: 1.1rem;  line-height: 1.55; }  /* 20   → 17.6 */
+
+  /* عناوين البطاقات — h3 أُضيف له أعلاه مقاسٌ عام، ويُشدّ هنا
+     قليلاً لأن عنوان البطاقة يجاور متناً أصغر فيبدو ضخماً بجانبه */
+  h3 { font-size: clamp(0.98rem, 3.9vw, 1.12rem) !important; }
+
+  /* مربّعات الأيقونات: 44px داخل بطاقةٍ عرضها 342 كتلةٌ ثقيلة */
+  .w-11.h-11 { width: 2.25rem; height: 2.25rem; }  /* 44 → 36 */
+  .w-12.h-12 { width: 2.5rem;  height: 2.5rem;  }  /* 48 → 40 */
+  .w-14.h-14 { width: 2.75rem; height: 2.75rem; }  /* 56 → 44 */
+
+  /* ── كثافة البطاقات ──
+     الحشوة والفجوات بمقاس سطح المكتب: p-6 يعني 24px في كل جهة،
+     و gap-4 ستة عشر بكسلاً بين كل عنصرين داخل البطاقة. على شاشة
+     عرضها 390 يصير نصف البطاقة هواءً، فيطول النص التفافاً وتطول
+     الصفحة تمريراً. تُقلَّص الكبيرة وحدها؛ p-1 حتى p-4 حشواتُ
+     أزرارٍ وشارات، لا تُمسّ. */
+  .p-5 { padding: 1rem;    }   /* 20 → 16 */
+  .p-6 { padding: 1.15rem; }   /* 24 → 18 */
+  .p-7 { padding: 1.3rem;  }   /* 28 → 21 */
+  .p-8 { padding: 1.4rem;  }   /* 32 → 22 */
+
+  .gap-4 { gap: 0.7rem;  }     /* 16 → 11 */
+  .gap-5 { gap: 0.85rem; }     /* 20 → 14 */
+  .gap-6 { gap: 1rem;    }     /* 24 → 16 */
+  .gap-8 { gap: 1.25rem; }     /* 32 → 20 */
+
+  /* هامش سفلي للعناوين داخل الأقسام — mb-10/12 مقاس سطح مكتب */
+  .mb-10 { margin-bottom: 1.5rem;  }
+  .mb-12 { margin-bottom: 1.75rem; }
+  .mb-14 { margin-bottom: 2rem;    }
+
+  /* ── الأزرار: كانت تبتلع الشاشة عرضاً وارتفاعاً ── */
+  .btn-cta, .btn-outline {
+    padding    : 0.8rem 1.5rem !important;
+    font-size  : 0.95rem       !important;
+    line-height: 1.5           !important;
+  }
+
+  /* ── هدف اللمس: 44px ──
+     الروابط عناصر سطرية، و min-height لا أثر له فيها إطلاقاً —
+     فارتفاع روابط التذييل كان 23px والبريد 20px. تُحوَّل إلى صفٍّ
+     مرن ليسري الارتفاع. لم أوسّع مساحة اللمس بـ ::after لأن
+     الفراغ بين الروابط 10px فقط، فكانت مساحاتها ستتداخل
+     ويقع الضغط على الرابط المجاور. */
+  button, [role="button"], nav a {
+    min-height: 44px;
+  }
+  /* لا تُعمَّم على «كل رابط في التذييل».
+     كانت footer a تفرض inline-flex على أي رابط هناك — بما فيها
+     بطاقة «برنامج شركاء إحكام»، وهي رابطٌ يحوي صفّين (عنوان ثم
+     وصف). ففرض inline-flex صيّر الصفّين شقيقين مرنين جنباً إلى
+     جنب بدل أن يتتابعا، فانكسر العنوان ثلاثة أسطر وبدت البطاقة
+     مكتظّة. الهدف كان روابط القوائم النصّية، فليقتصر عليها. */
+  footer li a,
+  footer a[href^="http"],
+  footer a[href^="mailto"],
+  a.inline-flex {
+    display    : inline-flex;
+    align-items: center;
+    min-height : 44px;
+  }
+  /* استثناء مقصود: الروابط المتخلّلة نصّاً («تواصل معنا مباشرة»
+     داخل فقرة) تبقى بارتفاع سطرها. رفعها إلى 44px يفكّ تراصّ
+     الفقرة ويترك فجوات بين أسطرها — و WCAG 2.5.8 يستثني
+     الرابط الجاري في سياق النص من حدّ الهدف أصلاً. */
+  p a:not(.inline-flex), li > a:not(.inline-flex):not(footer a) {
+    min-height: 0;
+  }
+
+  /* ── إيقاع الأقسام ──
+     الفراغ الرأسي بين الأقسام كان بمقاس سطح المكتب حرفياً:
+     py-24 و py-28 بلا بادئة md، أي 96 و112 بكسل فوق وتحت.
+     فقسمان متجاوران يفصلهما 208px على شاشة ارتفاعها 844 —
+     رُبع الشاشة فراغ. هذا ما يجعل الصفحة تبدو مفكّكة لا مرتّبة.
+
+     تُقلَّص الكبيرة وحدها (≥48px)؛ أما py-1 حتى py-8 فهي حشوة
+     داخل المكوّنات لا إيقاع بين الأقسام، فتُترك.
+
+     ولا يُمسّ pt-* إطلاقاً: بعضه خلوصٌ للشريط العلوي الثابت،
+     وتقليصه يدسّ العنوان تحت الشريط.
+
+     تنبيه: py-* يضبط الأعلى أيضاً، فالحماية أعلاه لا تشمله. قسمٌ
+     يفتتح صفحةً بـpy-28 ينكمش علوّه إلى 52px — أقلّ من الشريط
+     (64px) — فيُدسّ تحته. فليكن خلوص أوّل قسم في أي صفحة بـpt-*
+     صريح (أو غلاف pt-16)، لا بـpy-* وحده. */
+  .py-12 { padding-block: 2rem;    }  /* 48 → 32 */
+  .py-14 { padding-block: 2.25rem; }  /* 56 → 36 */
+  .py-16 { padding-block: 2.5rem;  }  /* 64 → 40 */
+  .py-20 { padding-block: 2.75rem; }  /* 80 → 44 */
+  .py-24 { padding-block: 3rem;    }  /* 96 → 48 */
+  .py-28 { padding-block: 3.25rem; }  /* 112 → 52 */
+  .py-32 { padding-block: 3.5rem;  }  /* 128 → 56 */
+
+  .pb-16 { padding-bottom: 2.5rem;  }
+  .pb-20 { padding-bottom: 2.75rem; }
+  .pb-24 { padding-bottom: 3rem;    }
+  .pb-28 { padding-bottom: 3.25rem; }
+  .pb-32 { padding-bottom: 3.5rem;  }
+
+  /* الشريط الأفقي للتبويبات كان يُقصّ طرفاه بلا أي إشارة
+     إلى إمكان السحب — تُضاف حافّة تلاشٍ تدلّ على الامتداد */
+  [class*="overflow-x-auto"] {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+  [class*="overflow-x-auto"]::-webkit-scrollbar { display: none; }
 }
 
 /* ════════════════════════════════════════════
@@ -195,6 +770,6 @@ body  {
   to   { opacity: 1; transform: scale(1);    }
 }
 @keyframes pulse-btn {
-  0%,100% { box-shadow: 0 0 0 0   rgba(106, 189, 178, 0.40); }
-  50%     { box-shadow: 0 0 0 12px rgba(106, 189, 178, 0.00); }
+  0%,100% { box-shadow: 0 0 0 0   rgba(72, 214, 205, 0.40); }
+  50%     { box-shadow: 0 0 0 12px rgba(72, 214, 205, 0.00); }
 }

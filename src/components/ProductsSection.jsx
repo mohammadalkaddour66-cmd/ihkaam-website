@@ -107,7 +107,7 @@ export default function ProductsSection() {
           </span>
           <h2
             className="font-black leading-tight mb-5"
-            style={{ color: '#F0E8E5', fontSize: 'clamp(1.8rem, 4vw, 3rem)' }}
+            style={{ color: '#EAE4DF', fontSize: 'clamp(1.8rem, 4vw, 3rem)' }}
           >
             نظام إحكام السحابي..
             <br />
@@ -115,7 +115,7 @@ export default function ProductsSection() {
           </h2>
           <p
             className="max-w-2xl mx-auto leading-[1.95] text-sm"
-            style={{ color: '#7A9E96' }}
+            style={{ color: '#96BCBE' }}
           >
             لم يُصمَّم "إحكام" للمؤسسات التي تبحث عن مسكنات ورقية مؤقتة، بل صُنع خصيصاً
             للمعاهد الكبرى التي تسعى لإنهاء الفوضى الإدارية، حماية بياناتها سحابياً،
@@ -127,8 +127,8 @@ export default function ProductsSection() {
         <div
           className="rounded-[2rem] overflow-hidden mb-8"
           style={{
-            background: 'rgba(2,89,81,0.28)',
-            border: '1px solid rgba(2,115,104,0.22)',
+            background: 'rgba(17,49,44,0.28)',
+            border: '1px solid rgba(26,148,155,0.22)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
           }}
@@ -139,13 +139,13 @@ export default function ProductsSection() {
             <div className="flex items-center gap-3 mb-10 flex-wrap">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: '#D9ACA3', color: '#012626' }}
+                style={{ background: '#D9ACA3', color: '#09201E' }}
               >
                 <BookOpen size={18} />
               </div>
               <div>
-                <span className="font-black text-xl" style={{ color: '#F0E8E5' }}>إحكام</span>
-                <span className="text-xs block" style={{ color: '#7A9E96' }}>
+                <span className="font-black text-xl" style={{ color: '#EAE4DF' }}>إحكام</span>
+                <span className="text-xs block" style={{ color: '#96BCBE' }}>
                   نظام إدارة المعاهد القرآنية السحابي
                 </span>
               </div>
@@ -166,23 +166,23 @@ export default function ProductsSection() {
               <div className="text-start">
                 <h3
                   className="font-black leading-snug mb-5"
-                  style={{ color: '#F0E8E5', fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)' }}
+                  style={{ color: '#EAE4DF', fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)' }}
                 >
                   ما هو إحكام؟
                   <br />
                   <span className="text-rose-grad">دقيقة واحدة تكفي</span>
                 </h3>
-                <p className="text-sm leading-[2] mb-3" style={{ color: '#8FA89E' }}>
+                <p className="text-sm leading-[2] mb-3" style={{ color: '#7EB9B7' }}>
                   تخيّل أنك جالس في مقهى وزميلك مدير معهد يسألك:{' '}
                   <em style={{ color: '#D9ACA3' }}>"ما هو إحكام بكلمتين؟"</em>
                 </p>
-                <p className="text-sm leading-[2] mb-3" style={{ color: '#8FA89E' }}>
+                <p className="text-sm leading-[2] mb-3" style={{ color: '#7EB9B7' }}>
                   الجواب:{' '}
-                  <strong style={{ color: '#F0E8E5' }}>
+                  <strong style={{ color: '#EAE4DF' }}>
                     المدير الإداري الذي لا يتعب ولا ينسى.
                   </strong>
                 </p>
-                <p className="text-sm leading-[2]" style={{ color: '#8FA89E' }}>
+                <p className="text-sm leading-[2]" style={{ color: '#7EB9B7' }}>
                   بدل ما يضيع وقت كادرك في الأوراق والجداول — إحكام يتولى الحضور،
                   المحاسبة، جدولة الاختبارات، والتقارير، كلها تلقائياً، بينما يركّز
                   فريقك على ما يهم:{' '}
@@ -201,20 +201,20 @@ export default function ProductsSection() {
                     key={l}
                     className="rounded-2xl p-2.5 sm:p-4 text-center transition-all duration-500 ease-out cursor-default"
                     style={{
-                      background: 'rgba(1,38,38,0.55)',
-                      border: '1px solid rgba(2,115,104,0.18)',
+                      background: 'rgba(9,32,30,0.55)',
+                      border: '1px solid rgba(26,148,155,0.18)',
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = 'rgba(2,115,104,0.45)'
+                      e.currentTarget.style.borderColor = 'rgba(26,148,155,0.45)'
                       e.currentTarget.style.transform   = 'translateY(-3px)'
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'rgba(2,115,104,0.18)'
+                      e.currentTarget.style.borderColor = 'rgba(26,148,155,0.18)'
                       e.currentTarget.style.transform   = 'translateY(0)'
                     }}
                   >
                     <div className="text-rose-grad text-base sm:text-xl font-black">{v}</div>
-                    <div className="text-[9px] sm:text-[10px] mt-0.5" style={{ color: '#7A9E96' }}>{l}</div>
+                    <div className="text-[9px] sm:text-[10px] mt-0.5" style={{ color: '#96BCBE' }}>{l}</div>
                   </div>
                 ))}
               </div>
@@ -237,15 +237,15 @@ export default function ProductsSection() {
                     key={title}
                     className="rounded-2xl p-5 text-start transition-all duration-500 ease-out"
                     style={{
-                      background: 'rgba(1,38,38,0.45)',
-                      border: '1px solid rgba(2,115,104,0.15)',
+                      background: 'rgba(9,32,30,0.45)',
+                      border: '1px solid rgba(26,148,155,0.15)',
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.borderColor = 'rgba(217,172,163,0.30)'
                       e.currentTarget.style.transform   = 'translateY(-3px)'
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'rgba(2,115,104,0.15)'
+                      e.currentTarget.style.borderColor = 'rgba(26,148,155,0.15)'
                       e.currentTarget.style.transform   = 'translateY(0)'
                     }}
                   >
@@ -255,8 +255,8 @@ export default function ProductsSection() {
                     >
                       <Icon size={15} />
                     </div>
-                    <p className="text-xs font-bold mb-1" style={{ color: '#F0E8E5' }}>{title}</p>
-                    <p className="text-[11px] leading-relaxed" style={{ color: '#7A9E96' }}>{body}</p>
+                    <p className="text-xs font-bold mb-1" style={{ color: '#EAE4DF' }}>{title}</p>
+                    <p className="text-[11px] leading-relaxed" style={{ color: '#96BCBE' }}>{body}</p>
                   </div>
                 ))}
               </div>
@@ -267,15 +267,15 @@ export default function ProductsSection() {
                     key={title}
                     className="rounded-2xl p-5 text-start transition-all duration-500 ease-out"
                     style={{
-                      background: 'rgba(1,38,38,0.45)',
-                      border: '1px solid rgba(2,115,104,0.15)',
+                      background: 'rgba(9,32,30,0.45)',
+                      border: '1px solid rgba(26,148,155,0.15)',
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.borderColor = 'rgba(217,172,163,0.30)'
                       e.currentTarget.style.transform   = 'translateY(-3px)'
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'rgba(2,115,104,0.15)'
+                      e.currentTarget.style.borderColor = 'rgba(26,148,155,0.15)'
                       e.currentTarget.style.transform   = 'translateY(0)'
                     }}
                   >
@@ -285,8 +285,8 @@ export default function ProductsSection() {
                     >
                       <Icon size={15} />
                     </div>
-                    <p className="text-xs font-bold mb-1" style={{ color: '#F0E8E5' }}>{title}</p>
-                    <p className="text-[11px] leading-relaxed" style={{ color: '#7A9E96' }}>{body}</p>
+                    <p className="text-xs font-bold mb-1" style={{ color: '#EAE4DF' }}>{title}</p>
+                    <p className="text-[11px] leading-relaxed" style={{ color: '#96BCBE' }}>{body}</p>
                   </div>
                 ))}
               </div>
@@ -299,7 +299,7 @@ export default function ProductsSection() {
               <div
                 className="rounded-2xl p-6 text-start"
                 style={{
-                  background: 'rgba(1,38,38,0.55)',
+                  background: 'rgba(9,32,30,0.55)',
                   border: '1px solid rgba(166,117,106,0.15)',
                 }}
               >
@@ -308,7 +308,7 @@ export default function ProductsSection() {
                 </p>
                 <ul className="space-y-3">
                   {notFor.map(t => (
-                    <li key={t} className="flex items-start gap-2.5 text-xs" style={{ color: '#6A8A82' }}>
+                    <li key={t} className="flex items-start gap-2.5 text-xs" style={{ color: '#559F9C' }}>
                       <X size={13} className="flex-shrink-0 mt-0.5" style={{ color: '#7A2535' }} />
                       {t}
                     </li>
@@ -318,8 +318,8 @@ export default function ProductsSection() {
               <div
                 className="rounded-2xl p-6 text-start"
                 style={{
-                  background: 'rgba(2,89,81,0.30)',
-                  border: '1px solid rgba(2,115,104,0.25)',
+                  background: 'rgba(17,49,44,0.30)',
+                  border: '1px solid rgba(26,148,155,0.25)',
                 }}
               >
                 <p className="text-xs font-bold tracking-widest mb-4" style={{ color: '#D9ACA3' }}>
@@ -327,7 +327,7 @@ export default function ProductsSection() {
                 </p>
                 <ul className="space-y-3">
                   {isFor.map(t => (
-                    <li key={t} className="flex items-start gap-2.5 text-xs" style={{ color: '#8FA89E' }}>
+                    <li key={t} className="flex items-start gap-2.5 text-xs" style={{ color: '#7EB9B7' }}>
                       <Check size={13} className="flex-shrink-0 mt-0.5" strokeWidth={3} style={{ color: '#D9ACA3' }} />
                       {t}
                     </li>
@@ -368,8 +368,8 @@ export default function ProductsSection() {
                             boxShadow: '0 0 28px rgba(217,172,163,0.08)',
                           }
                         : {
-                            background: 'rgba(1,38,38,0.55)',
-                            border: '1px solid rgba(2,115,104,0.18)',
+                            background: 'rgba(9,32,30,0.55)',
+                            border: '1px solid rgba(26,148,155,0.18)',
                           }
                     }
                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)' }}
@@ -386,26 +386,26 @@ export default function ProductsSection() {
                     )}
 
                     {/* Plan name */}
-                    <p className="font-bold text-sm mb-1" style={{ color: '#F0E8E5' }}>{p.name}</p>
+                    <p className="font-bold text-sm mb-1" style={{ color: '#EAE4DF' }}>{p.name}</p>
 
                     {/* Capacity */}
-                    <p className="text-[11px] mb-4" style={{ color: '#7A9E96' }}>{p.capacity}</p>
+                    <p className="text-[11px] mb-4" style={{ color: '#96BCBE' }}>{p.capacity}</p>
 
                     {/* Price block */}
                     <div className="flex-1">
                       <div className="flex items-end gap-1 mb-1">
                         <span
                           className="text-3xl font-black"
-                          style={{ color: p.highlight ? '#D9ACA3' : '#F0E8E5' }}
+                          style={{ color: p.highlight ? '#D9ACA3' : '#EAE4DF' }}
                         >
                           {p.monthly}$
                         </span>
-                        <span className="text-[10px] mb-1.5" style={{ color: '#7A9E96' }}>/شهر</span>
+                        <span className="text-[10px] mb-1.5" style={{ color: '#96BCBE' }}>/شهر</span>
                       </div>
                       {/* Annual total */}
-                      <p className="text-[11px]" style={{ color: '#5A8A78' }}>
+                      <p className="text-[11px]" style={{ color: '#6FA5A8' }}>
                         يُدفع سنوياً{' '}
-                        <span style={{ color: p.highlight ? '#D9ACA3' : '#8FA89E', fontWeight: 600 }}>
+                        <span style={{ color: p.highlight ? '#D9ACA3' : '#7EB9B7', fontWeight: 600 }}>
                           {p.annual}$
                         </span>
                       </p>
@@ -417,7 +417,7 @@ export default function ProductsSection() {
               {/* Advanced services note */}
               <p
                 className="text-xs text-center leading-relaxed mb-8"
-                style={{ color: '#5A8A78' }}
+                style={{ color: '#6FA5A8' }}
               >
                 الخدمات المتقدمة المخصصة (مثل المحاسب الذكي ونجم الأسبوع) متاحة برسوم إعداد
                 تُدفع لمرة واحدة — اطلب تفاصيلها في استشارتك.
@@ -430,7 +430,7 @@ export default function ProductsSection() {
                   className="btn-cta flex items-center gap-2 text-sm font-bold px-8 py-3.5 rounded-xl"
                   style={{ boxShadow: '0 4px 22px rgba(217,172,163,0.20)' }}
                 >
-                  احجز تجربة مجانية لمدة 14 يوماً
+                  احجز جلسة تعريفية مجانية
                   <ArrowLeft size={15} />
                 </a>
               </div>
@@ -444,7 +444,7 @@ export default function ProductsSection() {
           className="text-center rounded-2xl py-9 px-6"
           style={{ border: '1px dashed rgba(166,117,106,0.18)' }}
         >
-          <p className="text-sm" style={{ color: '#5A8A78' }}>
+          <p className="text-sm" style={{ color: '#6FA5A8' }}>
             منتجات أخرى قيد البناء — ترقّبوا الإطلاق قريباً ✦
           </p>
         </div>

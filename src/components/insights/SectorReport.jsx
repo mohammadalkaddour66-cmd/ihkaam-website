@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, Mic, ShieldCheck, Users, FileText } from 'lucide-react'
-import { supabase } from '../../config/supabaseClient'
+import { fetchLandingStats } from '../../config/landingStats'
 
 function Insight({ icon: Icon, color, title, body, stat, statLabel, index }) {
   return (
@@ -11,11 +11,11 @@ function Insight({ icon: Icon, color, title, body, stat, statLabel, index }) {
       viewport={{ once: true }}
       transition={{ duration: 0.48, delay: index * 0.07 }}
       className="rounded-2xl p-6"
-      style={{ background: color + '09', border: `1px solid ${color}1A` }}
+      style={{ background: `color-mix(in srgb, ${color} 4%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 10%, transparent)` }}
     >
       <div className="flex items-center gap-3 mb-4">
         <div className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center"
-          style={{ background: color + '18' }}>
+          style={{ background: `color-mix(in srgb, ${color} 9%, transparent)` }}>
           <Icon size={16} style={{ color }} />
         </div>
         <p className="font-black text-sm leading-snug" style={{ color: '#EAE4DF' }}>{title}</p>
@@ -27,12 +27,12 @@ function Insight({ icon: Icon, color, title, body, stat, statLabel, index }) {
             {stat}
           </span>
           {statLabel && (
-            <span className="text-xs font-semibold" style={{ color: color + '99' }}>{statLabel}</span>
+            <span className="text-xs font-semibold" style={{ color: `color-mix(in srgb, ${color} 60%, transparent)` }}>{statLabel}</span>
           )}
         </div>
       )}
 
-      <p className="text-xs leading-[1.95]" style={{ color: '#7A9E96' }}>{body}</p>
+      <p className="text-xs leading-[1.95]" style={{ color: '#96BCBE' }}>{body}</p>
     </motion.div>
   )
 }
@@ -60,29 +60,15 @@ export default function SectorReport({ loading: parentLoading }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const d30 = new Date(); d30.setDate(d30.getDate() - 30)
-    const d60 = new Date(); d60.setDate(d60.getDate() - 60)
-    const s30 = d30.toISOString().slice(0, 10)
-    const s60 = d60.toISOString().slice(0, 10)
-
-    Promise.all([
-      supabase.from('students').select('*', { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('staff').select('*',    { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('groups').select('*',   { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('recitations').select('*', { count: 'exact', head: true }),
-      supabase.from('recitations').select('*', { count: 'exact', head: true }).gte('record_date', s30),
-      supabase.from('recitations').select('*', { count: 'exact', head: true }).gte('record_date', s60).lt('record_date', s30),
-      supabase.from('attendance').select('*',  { count: 'exact', head: true }).eq('record_type', 'غياب').eq('is_deleted', false),
-      supabase.from('attendance').select('*',  { count: 'exact', head: true }).eq('record_type', 'غياب').eq('is_deleted', false).gte('record_date', s30),
-    ]).then(([rStud, rStaff, rGrp, rTotRec, rRec30, rRecPrev, rTotAbs, rAbsMonth]) => {
-      const students   = rStud.count    ?? 0
-      const staff      = rStaff.count   ?? 0
-      const groups     = rGrp.count     ?? 0
-      const totalRecs  = rTotRec.count  ?? 0
-      const recs30     = rRec30.count   ?? 0
-      const recsPrev   = rRecPrev.count ?? 0
-      const totalAbs   = rTotAbs.count  ?? 0
-      const absMonth   = rAbsMonth.count ?? 0
+    fetchLandingStats().then(s => {
+      const students   = s.students
+      const staff      = s.staff
+      const groups     = s.groups
+      const totalRecs  = s.recitations
+      const recs30     = s.recitations30d
+      const recsPrev   = s.recitationsPrev30d
+      const totalAbs   = s.absences
+      const absMonth   = s.absences30d
 
       const monthlyGrowth     = recsPrev > 0 ? Math.round((recs30 - recsPrev) / recsPrev * 100) : null
       const recsPerStudentMo  = students > 0 ? +(recs30 / students).toFixed(1) : null
@@ -99,7 +85,7 @@ export default function SectorReport({ loading: parentLoading }) {
   const insights = metrics ? [
     {
       icon    : TrendingUp,
-      color   : '#6ABDB2',
+      color   : 'var(--cat-5)',
       title   : 'نشاط التسميع تضاعف في شهر واحد',
       stat    : metrics.monthlyGrowth != null ? `+${metrics.monthlyGrowth}%` : null,
       statLabel: 'نمو مقارنةً بالشهر الماضي',
@@ -110,7 +96,7 @@ export default function SectorReport({ loading: parentLoading }) {
     },
     {
       icon    : Mic,
-      color   : '#D9ACA3',
+      color   : 'var(--cat-2)',
       title   : 'كل طالب يُسمَّع أكثر مما تظن',
       stat    : metrics.recsPerStudentMo != null ? metrics.recsPerStudentMo.toString() : null,
       statLabel: 'جلسة / طالب / شهر هذا الشهر',
@@ -121,7 +107,7 @@ export default function SectorReport({ loading: parentLoading }) {
     },
     {
       icon    : ShieldCheck,
-      color   : '#9A8AE0',
+      color   : 'var(--cat-4)',
       title   : 'الغياب الموثق غياب يمكن معالجته',
       stat    : metrics.absMonth.toLocaleString('en-US'),
       statLabel: 'حالة غياب موثقة هذا الشهر',
@@ -132,7 +118,7 @@ export default function SectorReport({ loading: parentLoading }) {
     },
     {
       icon    : Users,
-      color   : '#D9C8A3',
+      color   : 'var(--cat-3)',
       title   : 'نسبة الطالب/المعلم تعكس جودة المتابعة',
       stat    : metrics.studPerStaff?.toString() ?? null,
       statLabel: 'طالب لكل معلم في الشبكة',
@@ -156,7 +142,7 @@ export default function SectorReport({ loading: parentLoading }) {
             style={{ fontSize: 'clamp(1.3rem,2.2vw,1.9rem)', color: '#EAE4DF' }}>
             4 رؤى مشتقة من بيانات الشبكة الحية
           </h2>
-          <p className="text-sm flex items-center gap-2" style={{ color: '#7A9E96' }}>
+          <p className="text-sm flex items-center gap-2" style={{ color: '#96BCBE' }}>
             <FileText size={13} />
             جميع الأرقام محسوبة مباشرةً من قاعدة البيانات · تتحدث تلقائياً · يونيو 2026
           </p>
@@ -169,7 +155,7 @@ export default function SectorReport({ loading: parentLoading }) {
           }
         </div>
 
-        <p className="text-[11px] text-center" style={{ color: '#1E3030' }}>
+        <p className="text-[11px] text-center" style={{ color: '#11312C' }}>
           جميع البيانات مجمّعة ومُجهَّلة · لا تُشير لأي مركز بعينه · تتحدث مع كل مركز جديد ينضم
         </p>
 

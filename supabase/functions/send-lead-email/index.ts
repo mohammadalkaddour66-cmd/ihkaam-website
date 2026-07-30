@@ -17,7 +17,11 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? ''
-const FROM_EMAIL     = 'إحكام <noreply@ihkaam.com>'  // ← غيّر لدومينك المحقق
+
+// Resend لا يقبل إرسالاً من عنوان Gmail — الـ from يجب أن يكون على نطاق موثَّق
+// لديه. لذلك يبقى المُرسِل على النطاق، بينما الردود توجَّه إلى بريد إحكام الرسمي.
+const FROM_EMAIL     = 'إحكام <noreply@ihkaam.app>'  // ← يجب أن يطابق النطاق الموثَّق في Resend
+const REPLY_TO_EMAIL = 'ihkaamapp@gmail.com'
 
 /* ── Email templates per variant ── */
 type Variant = 'pdf' | 'insights' | 'blog' | 'ihkaam'
@@ -299,7 +303,7 @@ function buildFollowUp(email: string, step: 2 | 3 | 4, variant: Variant): EmailT
 
 /* ── Send one email via Resend ── */
 async function sendEmail(to: string, subject: string, html: string, scheduledAt?: string) {
-  const body: Record<string, unknown> = { from: FROM_EMAIL, to: [to], subject, html }
+  const body: Record<string, unknown> = { from: FROM_EMAIL, to: [to], subject, html, reply_to: REPLY_TO_EMAIL }
   if (scheduledAt) body.scheduled_at = scheduledAt
 
   const res  = await fetch('https://api.resend.com/emails', {

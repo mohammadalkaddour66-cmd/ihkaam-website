@@ -68,9 +68,9 @@ function ArticleRow({ article, cat }) {
       {Icon && (
         <div
           className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: (cat?.color || '#6ABDB2') + '20' }}
+          style={{ background: (cat?.color || '#48D6CD') + '20' }}
         >
-          <Icon size={16} style={{ color: cat?.color || '#6ABDB2' }} />
+          <Icon size={16} style={{ color: cat?.color || '#48D6CD' }} />
         </div>
       )}
       <div className="flex-1 min-w-0">
@@ -107,7 +107,7 @@ export default function HelpCenter() {
   const isSearching = query.trim().length > 0
 
   return (
-    <div dir="rtl" style={{ background: '#010D0D', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
       <PageMeta
         title="تعلم إدارة معهدك القرآني — مركز التعلم"
         description="دليل شامل لإدارة مراكز تحفيظ القرآن: تسجيل الطلاب، المتابعة اليومية، الشؤون المالية، التقارير، وبوابة أولياء الأمور."
@@ -118,7 +118,7 @@ export default function HelpCenter() {
       <section
         className="relative overflow-hidden pt-28 pb-16 px-6"
         style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(106,189,178,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(72,214,205,0.12) 0%, transparent 70%)',
         }}
       >
         {/* Grid overlay */}
@@ -126,8 +126,8 @@ export default function HelpCenter() {
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(106,189,178,0.04) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(106,189,178,0.04) 1px, transparent 1px)
+              linear-gradient(rgba(72,214,205,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(72,214,205,0.04) 1px, transparent 1px)
             `,
             backgroundSize: '48px 48px',
           }}
@@ -139,7 +139,7 @@ export default function HelpCenter() {
             animate="visible"
             variants={stagger}
           >
-            <motion.p variants={fadeUp} className="text-[#6ABDB2] text-sm font-bold tracking-widest uppercase mb-3">
+            <motion.p variants={fadeUp} className="text-[#48D6CD] text-sm font-bold tracking-widest uppercase mb-3">
               مركز التعلم
             </motion.p>
             <motion.h1 variants={fadeUp} className="text-white text-4xl md:text-5xl font-black mb-4" style={{ lineHeight: 1.2 }}>
@@ -162,7 +162,7 @@ export default function HelpCenter() {
                 placeholder="ابحث عن ميزة أو سؤال... (مثال: تسجيل الحضور)"
                 className="w-full bg-white/8 border border-white/12 rounded-2xl px-5 py-4 pr-12
                            text-white placeholder-white/35 text-sm outline-none
-                           focus:border-[#6ABDB2]/50 focus:bg-white/10 transition-all"
+                           focus:border-[#48D6CD]/50 focus:bg-white/10 transition-all"
               />
             </motion.div>
           </motion.div>
@@ -225,13 +225,13 @@ export default function HelpCenter() {
           <h3 className="text-white font-black text-2xl md:text-3xl mb-3" style={{ lineHeight: 1.35 }}>
             هل لديك مدرسة قرآنية وتريد تطويرها رقمياً ؟
           </h3>
-          <p className="mb-7 text-sm" style={{ color: '#6ABDB2' }}>
+          <p className="mb-7 text-sm" style={{ color: '#48D6CD' }}>
           نظام إحكام لإدارة جمعيات ومعاهد تحفيظ القرآن الكريم
           </p>
           <Link
             to="/ihkaam"
             className="inline-flex items-center px-7 py-3 rounded-xl font-bold text-sm"
-            style={{ background: '#6ABDB2', color: '#010D0D' }}
+            style={{ background: '#48D6CD', color: '#020F0E' }}
           >
            اطلب نسختك الان
           

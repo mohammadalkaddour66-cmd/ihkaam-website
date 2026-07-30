@@ -17,9 +17,9 @@ const AUDIENCES = [
       'رصد جميع العمليات والكادر من مكان واحد',
       'قرارات مدعومة بالبيانات لا بالتخمين',
     ],
-    accent     : '#4ABDB2',
-    bgGlow     : 'rgba(74,189,178,0.12)',
-    borderColor: 'rgba(74,189,178,0.18)',
+    accent     : '#48D6CD',
+    bgGlow     : 'rgba(72,214,205,0.12)',
+    borderColor: 'rgba(72,214,205,0.18)',
   },
   {
     icon       : UserCheck,
@@ -31,9 +31,9 @@ const AUDIENCES = [
       'اختبارات ونتائج فورية بدون ورق',
       'وقته للتعليم — إحكام يتولى الباقي',
     ],
-    accent     : '#00C4AE',
-    bgGlow     : 'rgba(0,196,174,0.12)',
-    borderColor: 'rgba(0,196,174,0.18)',
+    accent     : '#48D6CD',
+    bgGlow     : 'rgba(72,214,205,0.12)',
+    borderColor: 'rgba(72,214,205,0.18)',
   },
   {
     icon       : ClipboardList,
@@ -60,8 +60,8 @@ const AUDIENCES = [
       'بوابة خاصة بخصوصية تامة — بلا مراسلات',
     ],
     accent     : '#8ABDB2',
-    bgGlow     : 'rgba(138,189,178,0.12)',
-    borderColor: 'rgba(138,189,178,0.18)',
+    bgGlow     : 'rgba(138, 186, 189,0.12)',
+    borderColor: 'rgba(138, 186, 189,0.18)',
   },
   {
     icon       : GraduationCap,
@@ -93,7 +93,7 @@ function AudienceCard({ item, index, className = '' }) {
       onMouseLeave={() => setHov(false)}
       className={`relative flex flex-col rounded-[22px] overflow-hidden ${className}`}
       style={{
-        background          : 'rgba(4,16,16,0.88)',
+        background          : 'rgba(2,15,14,0.88)',
         border              : `1px solid ${hov ? item.borderColor : 'rgba(255,255,255,0.05)'}`,
         backdropFilter      : 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
@@ -246,7 +246,7 @@ export default function IhkaamAudiences() {
       {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[280px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(0,168,150,0.05) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(72,214,205,0.05) 0%, transparent 70%)' }}
         aria-hidden
       />
 
@@ -274,7 +274,7 @@ export default function IhkaamAudiences() {
           </h2>
           <p
             className="text-sm mx-auto"
-            style={{ color: '#5A8A7E', maxWidth: '460px', lineHeight: '2' }}
+            style={{ color: '#509492', maxWidth: '460px', lineHeight: '2' }}
           >
             من الإدارة إلى الطالب — كل دور له واجهته المصممة خصيصاً داخل منظومة رقمية موحدة.
           </p>
@@ -310,15 +310,15 @@ export default function IhkaamAudiences() {
           <div
             className="inline-flex items-center gap-3 px-7 py-3.5 rounded-full"
             style={{
-              background: 'rgba(0,168,150,0.06)',
-              border    : '1px solid rgba(0,168,150,0.14)',
+              background: 'rgba(72,214,205,0.06)',
+              border    : '1px solid rgba(72,214,205,0.14)',
             }}
           >
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#00A896' }} />
-            <p className="text-sm" style={{ color: '#5A8A7E', lineHeight: '1.7' }}>
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#48D6CD' }} />
+            <p className="text-sm" style={{ color: '#509492', lineHeight: '1.7' }}>
               جميع العمليات التعليمية والإدارية في مكان واحد — بواجهة تناسب كل مستخدم
             </p>
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#00A896' }} />
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#48D6CD' }} />
           </div>
         </motion.div>
 

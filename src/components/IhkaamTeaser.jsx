@@ -20,7 +20,7 @@ export default function IhkaamTeaser() {
           transition={{ duration: 0.70, ease: [0.22, 1, 0.36, 1] }}
           className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] overflow-hidden"
           style={{
-            background  : '#011E1E',
+            background  : '#09201E',
             border      : '1px solid rgba(229,211,179,0.10)',
             borderRadius: '20px',
           }}
@@ -33,11 +33,11 @@ export default function IhkaamTeaser() {
             <div className="flex items-center gap-2 mb-6">
               <span
                 className="w-2 h-2 rounded-full animate-pulse"
-                style={{ background: '#6ABDB2', boxShadow: '0 0 6px rgba(106,189,178,0.50)' }}
+                style={{ background: '#48D6CD', boxShadow: '0 0 6px rgba(72,214,205,0.50)' }}
               />
               <span
                 className="text-xs font-semibold tracking-[0.20em] uppercase"
-                style={{ color: '#6ABDB2' }}
+                style={{ color: '#48D6CD' }}
               >
                 منصتنا الرائدة
               </span>
@@ -56,7 +56,7 @@ export default function IhkaamTeaser() {
             {/* Subtext */}
             <p
               className="leading-[1.95] mb-10"
-              style={{ color: '#7A9E96', fontSize: '0.88rem', maxWidth: '460px' }}
+              style={{ color: '#96BCBE', fontSize: '0.88rem', maxWidth: '460px' }}
             >
               المعاهد التي تعمل على إحكام لا تعود للأوراق. الحضور، المحاسبة،
               التقارير، والتواصل مع الأهالي — تحدث وحدها بينما يركّز الكادر على التعليم.
@@ -68,11 +68,11 @@ export default function IhkaamTeaser() {
                 <div
                   key={o.stat}
                   className="flex items-center gap-4 rounded-xl px-4 py-3"
-                  style={{ background: 'rgba(106,189,178,0.05)', border: '1px solid rgba(106,189,178,0.10)' }}
+                  style={{ background: 'rgba(72,214,205,0.05)', border: '1px solid rgba(72,214,205,0.10)' }}
                 >
                   <span
                     className="font-black text-xl w-12 shrink-0 text-center"
-                    style={{ color: '#6ABDB2' }}
+                    style={{ color: '#48D6CD' }}
                   >
                     {o.stat}
                   </span>
@@ -100,14 +100,14 @@ export default function IhkaamTeaser() {
             className="relative flex items-center justify-center overflow-hidden"
             style={{
               minHeight  : '400px',
-              background : 'linear-gradient(160deg, #021a15 0%, #010d0d 60%, #031f18 100%)',
+              background : 'linear-gradient(160deg, #020F0E 0%, #020F0E 60%, #09201E 100%)',
               borderRight: '1px solid rgba(229,211,179,0.07)',
             }}
           >
             <div
               className="pointer-events-none absolute inset-0"
               style={{
-                background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(2,115,104,0.18) 0%, transparent 70%)',
+                background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(26,148,155,0.18) 0%, transparent 70%)',
               }}
               aria-hidden
             />
@@ -135,11 +135,13 @@ export default function IhkaamTeaser() {
               <img
                 src="/ihkaam-logo.png"
                 alt="نظام إحكام"
+                loading="lazy"
+                decoding="async"
                 style={{
                   width    : '100%',
                   height   : '100%',
                   objectFit: 'cover',
-                  filter   : 'drop-shadow(0 8px 40px rgba(0,0,0,0.60)) drop-shadow(0 0 28px rgba(2,115,104,0.22))',
+                  filter   : 'drop-shadow(0 8px 40px rgba(0,0,0,0.60)) drop-shadow(0 0 28px rgba(26,148,155,0.22))',
                 }}
                 draggable={false}
               />

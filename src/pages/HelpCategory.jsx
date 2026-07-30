@@ -27,7 +27,7 @@ export default function HelpCategory() {
   const articles = cat.articles.map(s => ARTICLES[s]).filter(Boolean)
 
   return (
-    <div dir="rtl" style={{ background: '#010D0D', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
 
       {/* ─── Header ─────────────────────────────────── */}
       <div
@@ -112,7 +112,7 @@ export default function HelpCategory() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-white font-bold text-base mb-2 leading-snug group-hover:text-[#6ABDB2] transition-colors">
+                <h3 className="text-white font-bold text-base mb-2 leading-snug group-hover:text-[#48D6CD] transition-colors">
                   {art.title}
                 </h3>
 

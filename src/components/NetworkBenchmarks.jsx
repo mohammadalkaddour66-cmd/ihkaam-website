@@ -22,34 +22,34 @@ function BenchmarkCard({ icon: Icon, value, unit, label, desc, color, index, loa
       variants={fadeUp}
       className="relative flex flex-col gap-3 rounded-2xl p-5"
       style={{
-        background  : 'rgba(1,38,38,0.45)',
+        background  : 'rgba(9,32,30,0.45)',
         border      : `1px solid ${color}22`,
       }}
     >
       <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: color + '16' }}>
+        style={{ background: `color-mix(in srgb, ${color} 9%, transparent)` }}>
         <Icon size={17} style={{ color }} />
       </div>
 
       <div>
         {loading || value == null ? (
-          <div className="h-9 w-20 rounded-lg animate-pulse" style={{ background: color + '20' }} />
+          <div className="h-9 w-20 rounded-lg animate-pulse" style={{ background: `color-mix(in srgb, ${color} 13%, transparent)` }} />
         ) : (
           <div className="flex items-baseline gap-1.5">
             <span className="font-black tabular-nums leading-none"
               style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', color }}>
               {value.toLocaleString('en-US')}
             </span>
-            <span className="text-xs font-semibold" style={{ color: color + 'aa' }}>{unit}</span>
+            <span className="text-xs font-semibold" style={{ color: `color-mix(in srgb, ${color} 67%, transparent)` }}>{unit}</span>
           </div>
         )}
         <p className="text-sm font-bold mt-1" style={{ color: '#C8B8B0' }}>{label}</p>
       </div>
 
-      <p className="text-xs leading-relaxed" style={{ color: '#5A8A78' }}>{desc}</p>
+      <p className="text-xs leading-relaxed" style={{ color: '#6FA5A8' }}>{desc}</p>
 
       <div className="absolute top-0 left-0 w-12 h-12 rounded-br-[40px] pointer-events-none"
-        style={{ background: `radial-gradient(circle at top left, ${color}12, transparent 70%)` }} />
+        style={{ background: `radial-gradient(circle at top left, color-mix(in srgb, ${color} 7%, transparent), transparent 70%)` }} />
     </motion.div>
   )
 }
@@ -80,7 +80,7 @@ export default function NetworkBenchmarks() {
       unit    : 'طالب',
       label   : 'متوسط حجم المركز',
       desc    : 'متوسط عدد الطلاب في كل مركز ضمن الشبكة — مؤشر على الحجم الصحي لمركز ناجح',
-      color   : '#6ABDB2',
+      color   : '#48D6CD',
     },
     {
       icon    : BookOpen,
@@ -96,7 +96,7 @@ export default function NetworkBenchmarks() {
       unit    : 'جلسة',
       label   : 'متوسط جلسات التسميع للطالب',
       desc    : 'عدد مرات تسميع الطالب الواحد في الشبكة — كلما ارتفع الرقم دل على توثيق منتظم وحفظ أقوى',
-      color   : '#A3C4D9',
+      color   : 'var(--cat-4)',
     },
     {
       icon    : UserCheck,
@@ -109,10 +109,10 @@ export default function NetworkBenchmarks() {
   ]
 
   return (
-    <section dir="rtl" className="relative py-20 overflow-hidden" style={{ background: '#010D0D' }}>
+    <section dir="rtl" className="relative py-20 overflow-hidden" style={{ background: '#020F0E' }}>
 
       <div className="pointer-events-none absolute inset-0" aria-hidden style={{
-        background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(2,115,104,0.07) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(26,148,155,0.07) 0%, transparent 70%)',
       }} />
 
       <div className="max-w-6xl mx-auto px-6">
@@ -125,15 +125,15 @@ export default function NetworkBenchmarks() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 text-xs font-bold"
-            style={{ background: 'rgba(106,189,178,0.10)', border: '1px solid rgba(106,189,178,0.22)', color: '#6ABDB2' }}>
+            style={{ background: 'rgba(72,214,205,0.10)', border: '1px solid rgba(106,189,178,0.22)', color: '#48D6CD' }}>
             <Activity size={12} />
             مرصد شبكة إحكام
           </div>
           <h2 className="font-black mb-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', color: '#EAE4DF', lineHeight: 1.2 }}>
             البيانات تُحوّل مركزك من{' '}
-            <span style={{ color: '#6ABDB2' }}>شعور إلى معرفة</span>
+            <span style={{ color: '#48D6CD' }}>شعور إلى معرفة</span>
           </h2>
-          <p className="mx-auto text-sm leading-relaxed" style={{ color: '#7A9E96', maxWidth: 500 }}>
+          <p className="mx-auto text-sm leading-relaxed" style={{ color: '#96BCBE', maxWidth: 500 }}>
             هذه الأرقام مشتقة حياً من{' '}
             <span style={{ color: '#D9ACA3', fontWeight: 700 }}>
               {loading ? '…' : `+${institutes?.toLocaleString('en-US') ?? '٩٦'}`}
@@ -154,20 +154,20 @@ export default function NetworkBenchmarks() {
           viewport={{ once: true }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
           className="rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
-          style={{ background: 'rgba(2,115,104,0.07)', border: '1px solid rgba(2,115,104,0.18)' }}
+          style={{ background: 'rgba(26,148,155,0.07)', border: '1px solid rgba(28,66,58,0.18)' }}
         >
           <div>
             <p className="font-bold text-sm mb-1" style={{ color: '#EAE4DF' }}>
               كلما نمت الشبكة، ازدادت المعايير دقةً
             </p>
-            <p className="text-xs leading-relaxed" style={{ color: '#7A9E96', maxWidth: 440 }}>
+            <p className="text-xs leading-relaxed" style={{ color: '#96BCBE', maxWidth: 440 }}>
               كل مركز ينضم لإحكام يُضيف بيانات جديدة تُحسّن المعايير لجميع المراكز الأخرى — هذا هو تأثير الشبكة الذي يجعل القيمة تتراكم تلقائياً بدون أي جهد إضافي منك.
             </p>
           </div>
           <Link
             to="/insights"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold flex-shrink-0"
-            style={{ background: 'rgba(106,189,178,0.12)', border: '1px solid rgba(106,189,178,0.28)', color: '#6ABDB2' }}
+            style={{ background: 'rgba(106,189,178,0.12)', border: '1px solid rgba(106,189,178,0.28)', color: '#48D6CD' }}
           >
             اطّلع على تقرير الشبكة
             <ArrowLeft size={14} />

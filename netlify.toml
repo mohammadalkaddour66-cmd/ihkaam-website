@@ -2,6 +2,47 @@
   command = "npm run build"
   publish = "dist"
 
+# ─────────────────────────────────────────────────────────────
+# Security headers
+# ─────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Block clickjacking (no page here is meant to be embedded)
+    X-Frame-Options = "DENY"
+
+    # Stop browsers from guessing content types
+    X-Content-Type-Options = "nosniff"
+
+    # Send the origin only on cross-site navigation, full path same-site
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Nothing here needs these device APIs
+    Permissions-Policy = "geolocation=(), camera=(), microphone=(), payment=(), usb=()"
+
+    # Force HTTPS for a year.
+    # `preload` is deliberately omitted — submitting to the preload list is
+    # effectively irreversible. Add it only after the domain is settled.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+    # ── CSP — REPORT-ONLY on purpose ──
+    # This does NOT block anything yet; violations only log to the browser
+    # console. Open the deployed site, click through every page and form, and
+    # check the console for "Content Security Policy" reports.
+    #
+    # If the console stays clean, promote it by renaming the key below to
+    # `Content-Security-Policy` (drop the `-Report-Only` suffix).
+    #
+    # 'unsafe-inline' in style-src is required: framer-motion and the
+    # components style elements inline. Removing it would break the layout.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kulpesdycuwdemjwzjyx.supabase.co; connect-src 'self' https://kulpesdycuwdemjwzjyx.supabase.co wss://kulpesdycuwdemjwzjyx.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+# Vite fingerprints these filenames, so they can be cached forever
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

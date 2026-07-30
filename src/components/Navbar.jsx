@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-import { AnimatePresence } from 'framer-motion'
-import DemoRequestForm from './DemoRequestForm'
 
 /* Primary nav — for prospects discovering the product */
 const PRIMARY_LINKS = [
@@ -19,9 +16,9 @@ function LiveDot() {
   return (
     <span className="relative flex w-1.5 h-1.5 flex-shrink-0">
       <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-70"
-        style={{ background: '#6ABDB2' }} />
+        style={{ background: '#48D6CD' }} />
       <span className="relative inline-flex rounded-full w-1.5 h-1.5"
-        style={{ background: '#6ABDB2' }} />
+        style={{ background: '#48D6CD' }} />
     </span>
   )
 }
@@ -38,7 +35,6 @@ function scrollToHash(hash) {
 export default function Navbar() {
   const [scrolled,   setScrolled]   = useState(false)
   const [open,       setOpen]       = useState(false)
-  const [formOpen,   setFormOpen]   = useState(false)
   const { pathname } = useLocation()
 
   useEffect(() => {
@@ -64,11 +60,11 @@ export default function Navbar() {
     <header
       className="fixed inset-x-0 top-0 z-50 transition-all duration-500"
       style={{
-        background          : scrolled ? 'rgba(1,13,13,0.88)' : 'rgba(1,13,13,0.55)',
+        background          : scrolled ? 'rgba(2,15,14,0.88)' : 'rgba(2,15,14,0.55)',
         backdropFilter      : 'blur(18px)',
         WebkitBackdropFilter: 'blur(18px)',
         borderBottom        : scrolled
-          ? '1px solid rgba(2,115,104,0.18)'
+          ? '1px solid rgba(26, 148, 155,0.18)'
           : '1px solid transparent',
       }}
     >
@@ -76,15 +72,22 @@ export default function Navbar() {
 
         {/* ── Logo ────────────────────────────────────── */}
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
+          {/* نسخة 128px لا 512px: هنا يُرسم الشعار بـ 56px، والملف الكبير كان
+              يُنزَّل على كل صفحة في المسار الحرج. width/height صريحان كي لا
+              يقفز الناڤبار قبل وصول الصورة. */}
           <img
-            src="/ihkaam-logo.png"
+            src="/ihkaam-logo-sm.png"
             alt="إحكام"
+            width={56}
+            height={56}
+            fetchPriority="high"
+            decoding="async"
             className="h-14 w-auto object-contain"
-            style={{ filter: 'drop-shadow(0 0 8px rgba(106,189,178,0.30))' }}
+            style={{ filter: 'drop-shadow(0 0 8px rgba(72, 214, 205,0.30))' }}
           />
           <div className="flex flex-col leading-tight" dir="rtl">
             <span className="font-black text-sm tracking-wide" style={{ color: '#EAE4DF' }}>منصة إحكام</span>
-            <span className="text-[10px] font-medium tracking-widest" style={{ color: '#4A7A6A' }}>لإدارة المعاهد القرآنية</span>
+            <span className="text-[10px] font-medium tracking-widest" style={{ color: '#78d3d8' }}>لإدارة المعاهد القرآنية</span>
           </div>
         </Link>
 
@@ -105,12 +108,12 @@ export default function Navbar() {
                 onClick={handleClick}
                 className="text-sm transition-colors duration-300 whitespace-nowrap flex items-center gap-1.5"
                 style={{
-                  color     : isActive(l.to) ? '#EAE4DF' : '#7A9E96',
+                  color     : isActive(l.to) ? '#EAE4DF' : '#96BCBE',
                   fontWeight: isActive(l.to) ? '600'     : '500',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#EAE4DF')}
                 onMouseLeave={e => {
-                  if (!isActive(l.to)) e.currentTarget.style.color = '#7A9E96'
+                  if (!isActive(l.to)) e.currentTarget.style.color = '#96BCBE'
                 }}
               >
                 {l.label}
@@ -122,12 +125,12 @@ export default function Navbar() {
 
         {/* ── Right cluster: CTA ──────────────────────── */}
         <div className="hidden md:flex items-center gap-3">
-          <button
-            onClick={() => setFormOpen(true)}
-            className="btn-cta text-xs px-5 py-2 rounded-xl whitespace-nowrap cursor-pointer"
+          <Link
+            to="/request"
+            className="btn-cta text-xs px-5 py-2 rounded-xl whitespace-nowrap"
           >
-            اطلب تجربة مجانية
-          </button>
+            اطلب نسخة
+          </Link>
         </div>
 
         {/* ── Mobile burger ───────────────────────────── */}
@@ -135,28 +138,21 @@ export default function Navbar() {
           onClick={() => setOpen(!open)}
           aria-label={open ? 'إغلاق القائمة' : 'فتح القائمة'}
           className="md:hidden cursor-pointer transition-colors duration-300 -m-2.5 p-2.5 flex items-center justify-center"
-          style={{ color: '#7A9E96' }}
+          style={{ color: '#96BCBE' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#EAE4DF')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#7A9E96')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#96BCBE')}
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
-
-      {createPortal(
-        <AnimatePresence>
-          {formOpen && <DemoRequestForm key="demo-form" onClose={() => setFormOpen(false)} />}
-        </AnimatePresence>,
-        document.body
-      )}
 
       {/* ── Mobile drawer ───────────────────────────────── */}
       {open && (
         <div
           className="md:hidden px-6 py-5 flex flex-col gap-3"
           style={{
-            background: 'rgba(1,13,13,0.97)',
-            borderTop : '1px solid rgba(2,115,104,0.18)',
+            background: 'rgba(2,15,14,0.97)',
+            borderTop : '1px solid rgba(26, 148, 155,0.18)',
           }}
         >
           {PRIMARY_LINKS.map(l => {
@@ -173,12 +169,12 @@ export default function Navbar() {
               onClick={handleClick}
               className="py-3 transition-colors duration-300 text-sm flex items-center gap-1.5"
               style={{
-                color     : isActive(l.to) ? '#EAE4DF' : '#7A9E96',
+                color     : isActive(l.to) ? '#EAE4DF' : '#96BCBE',
                 fontWeight: isActive(l.to) ? '600'     : '500',
               }}
               onMouseEnter={e => (e.currentTarget.style.color = '#EAE4DF')}
               onMouseLeave={e => {
-                if (!isActive(l.to)) e.currentTarget.style.color = '#7A9E96'
+                if (!isActive(l.to)) e.currentTarget.style.color = '#96BCBE'
               }}
             >
               {l.label}
@@ -187,12 +183,13 @@ export default function Navbar() {
             )
           })}
 
-          <button
-            onClick={() => { setFormOpen(true); setOpen(false) }}
-            className="btn-cta text-sm py-2.5 rounded-xl text-center mt-1 w-full cursor-pointer"
+          <Link
+            to="/request"
+            onClick={() => setOpen(false)}
+            className="btn-cta text-sm py-2.5 rounded-xl text-center mt-1 w-full block"
           >
-            اطلب تجربة مجانية
-          </button>
+            اطلب نسخة
+          </Link>
         </div>
       )}
     </header>

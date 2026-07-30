@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pencil } from 'lucide-react'
 import { supabase } from '../config/supabaseClient'
@@ -7,11 +7,9 @@ import { supabase } from '../config/supabaseClient'
 const tabs = [
   { id: 'demo_requests',  label: 'طلبات التجربة',     icon: '🎯' },
   { id: 'tenants',        label: 'طلبات التفعيل',     icon: '🏛' },
-  { id: 'consultations',  label: 'طلبات الاستشارة',   icon: '📋' },
   { id: 'testimonials',   label: 'تقييمات العملاء',   icon: '⭐' },
   { id: 'subscribers',    label: 'المشتركون بالبريد', icon: '📧' },
   { id: 'affiliates',     label: 'طلبات الشراكة',     icon: '🤝' },
-  { id: 'teachers',       label: 'طلبات المعلمين',    icon: '👨‍🏫' },
   { id: 'interfaces',     label: 'واجهات النظام',     icon: '🖥' },
 ]
 
@@ -31,7 +29,7 @@ function Spinner() {
         className="w-10 h-10 rounded-full border-2 animate-spin"
         style={{ borderColor: 'rgba(217,172,163,0.35)', borderTopColor: '#D9ACA3' }}
       />
-      <p className="text-sm" style={{ color: '#7A9E96' }}>جاري جلب البيانات...</p>
+      <p className="text-sm" style={{ color: '#96BCBE' }}>جاري جلب البيانات...</p>
     </div>
   )
 }
@@ -60,25 +58,23 @@ function EmptyState({ msg }) {
         border    : '1px dashed rgba(217,172,163,0.12)',
       }}
     >
-      <p className="text-sm" style={{ color: '#5A8A78' }}>{msg}</p>
+      <p className="text-sm" style={{ color: '#6FA5A8' }}>{msg}</p>
     </div>
   )
 }
 
 /* ─── Stats row ───────────────────────────────────────────────── */
-function StatsRow({ consultations, testimonials, subscriberCount, affiliateCount, teacherCount }) {
+function StatsRow({ testimonials, subscriberCount, convertedCount, affiliateCount }) {
   const pending = testimonials.filter(t => t.status === 'pending').length
   const pendingAff = affiliateCount ?? 0
-  const pendingTeach = teacherCount ?? 0
   const stats = [
-    { label: 'طلبات الاستشارة',       value: consultations.length, accent: '#6ABDB2' },
-    { label: 'تقييمات بانتظار النشر', value: pending,              accent: '#D9ACA3' },
-    { label: 'مشتركو البريد',          value: subscriberCount ?? '—', accent: '#A3C4D9' },
-    { label: 'طلبات شراكة معلّقة',     value: pendingAff,          accent: '#B5A3D9' },
-    { label: 'معلمون بانتظار مراجعة', value: pendingTeach,         accent: '#D9C8A3' },
+    { label: 'تقييمات بانتظار النشر', value: pending,                accent: '#D9ACA3' },
+    { label: 'مشتركو البريد',          value: subscriberCount ?? '—', accent: 'var(--cat-4)' },
+    { label: 'تحوّلوا إلى طلب',        value: convertedCount ?? '—',  accent: '#48D6CD' },
+    { label: 'طلبات شراكة معلّقة',     value: pendingAff,             accent: 'var(--cat-1)' },
   ]
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map(s => (
         <div
           key={s.label}
@@ -91,7 +87,7 @@ function StatsRow({ consultations, testimonials, subscriberCount, affiliateCount
           }}
         >
           <p className="text-2xl font-black mb-1" style={{ color: s.accent }}>{s.value}</p>
-          <p className="text-xs" style={{ color: '#7A9E96' }}>{s.label}</p>
+          <p className="text-xs" style={{ color: '#96BCBE' }}>{s.label}</p>
         </div>
       ))}
     </div>
@@ -106,10 +102,10 @@ const VARIANT_LABELS = {
   ihkaam  : 'متابعة إحكام',
 }
 const VARIANT_COLORS = {
-  pdf     : '#6ABDB2',
-  insights: '#A3C4D9',
+  pdf     : '#48D6CD',
+  insights: 'var(--cat-4)',
   blog    : '#D9C8A3',
-  ihkaam  : '#B5A3D9',
+  ihkaam  : 'var(--cat-1)',
 }
 
 function SubscribersTab() {
@@ -133,24 +129,31 @@ function SubscribersTab() {
   if (loading) return <Spinner />
   if (error)   return <ErrorBanner msg={error} />
 
-  const filtered = filter === 'all' ? rows : rows.filter(r => r.variant === filter)
+  const convertedCount = rows.filter(r => r.converted_at).length
+
+  const filtered =
+    filter === 'all'       ? rows
+    : filter === 'converted' ? rows.filter(r => r.converted_at)
+    : rows.filter(r => r.variant === filter)
 
   return (
     <div className="flex flex-col gap-5">
       {/* Filter pills */}
       <div className="flex gap-2 flex-wrap">
-        {['all', 'pdf', 'insights', 'blog', 'ihkaam'].map(v => (
+        {['all', 'converted', 'pdf', 'insights', 'blog', 'ihkaam'].map(v => (
           <button
             key={v}
             onClick={() => setFilter(v)}
             className="text-xs font-bold px-3 py-1.5 rounded-full transition-all"
             style={{
-              background: filter === v ? 'rgba(106,189,178,0.20)' : 'rgba(255,255,255,0.04)',
-              border    : `1px solid ${filter === v ? 'rgba(106,189,178,0.40)' : 'rgba(255,255,255,0.08)'}`,
-              color     : filter === v ? '#6ABDB2' : '#7A9E96',
+              background: filter === v ? 'rgba(72,214,205,0.20)' : 'rgba(255,255,255,0.04)',
+              border    : `1px solid ${filter === v ? 'rgba(72,214,205,0.40)' : 'rgba(255,255,255,0.08)'}`,
+              color     : filter === v ? '#48D6CD' : '#96BCBE',
             }}
           >
-            {v === 'all' ? `الكل (${rows.length})` : (VARIANT_LABELS[v] ?? v)}
+            {v === 'all'       ? `الكل (${rows.length})`
+             : v === 'converted' ? `محوّل (${convertedCount})`
+             : (VARIANT_LABELS[v] ?? v)}
           </button>
         ))}
       </div>
@@ -163,7 +166,7 @@ function SubscribersTab() {
           <div
             className="hidden md:grid gap-3 px-5 py-3 rounded-xl text-xs font-semibold"
             style={{
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 0.9fr',
               color              : '#A6756A',
               background         : 'rgba(217,172,163,0.05)',
               letterSpacing      : '0.06em',
@@ -174,6 +177,7 @@ function SubscribersTab() {
             <span>النوع</span>
             <span>UTM Source</span>
             <span>التاريخ</span>
+            <span>الحالة</span>
           </div>
 
           {filtered.map((r, i) => (
@@ -181,33 +185,44 @@ function SubscribersTab() {
               key={r.id ?? i}
               className="grid gap-3 px-5 py-4 rounded-2xl text-sm"
               style={{
-                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-                background         : 'rgba(163,196,217,0.07)',
-                border             : '1px solid rgba(163,196,217,0.14)',
+                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 0.9fr',
+                background         : 'color-mix(in srgb, var(--cat-4) 7.000000000000001%, transparent)',
+                border             : '1px solid color-mix(in srgb, var(--cat-4) 14.000000000000002%, transparent)',
                 alignItems         : 'center',
               }}
             >
-              <span className="font-semibold truncate" style={{ color: '#F0E8E5', direction: 'ltr', textAlign: 'right' }}>
+              <span className="font-semibold truncate" style={{ color: '#EAE4DF', direction: 'ltr', textAlign: 'right' }}>
                 {r.email}
               </span>
-              <span className="text-xs truncate" style={{ color: '#7A9E96' }}>
+              <span className="text-xs truncate" style={{ color: '#96BCBE' }}>
                 {r.source_page || '—'}
               </span>
               <span
                 className="text-[11px] px-2.5 py-1 rounded-full w-fit font-bold"
                 style={{
-                  background: (VARIANT_COLORS[r.variant] ?? '#6ABDB2') + '18',
-                  color     : VARIANT_COLORS[r.variant] ?? '#6ABDB2',
+                  background: (VARIANT_COLORS[r.variant] ?? '#48D6CD') + '18',
+                  color     : VARIANT_COLORS[r.variant] ?? '#48D6CD',
                 }}
               >
                 {VARIANT_LABELS[r.variant] ?? r.variant ?? '—'}
               </span>
-              <span className="text-xs" style={{ color: '#5A8A78' }}>
+              <span className="text-xs" style={{ color: '#6FA5A8' }}>
                 {r.utm_source || '—'}
               </span>
-              <span className="text-xs" style={{ color: '#5A8A78' }}>
+              <span className="text-xs" style={{ color: '#6FA5A8' }}>
                 {formatDate(r.created_at)}
               </span>
+              {r.converted_at ? (
+                <span
+                  className="text-[11px] px-2.5 py-1 rounded-full w-fit font-bold"
+                  style={{ background: 'rgba(72,214,205,0.15)', color: '#48D6CD' }}
+                  title={`تحوّل إلى طلب اشتراك — ${formatDate(r.converted_at)}`}
+                >
+                  محوّل
+                </span>
+              ) : (
+                <span className="text-xs" style={{ color: '#6FA5A8' }}>—</span>
+              )}
             </div>
           ))}
         </>
@@ -218,7 +233,7 @@ function SubscribersTab() {
 
 /* ─── Demo Requests Tab ──────────────────────────────────────── */
 const DEMO_STATUS_LABEL = { pending: 'معلّق', approved: 'تمت الموافقة', rejected: 'مرفوض' }
-const DEMO_STATUS_COLOR = { pending: '#D9C8A3', approved: '#6ABDB2',   rejected: '#D9ACA3' }
+const DEMO_STATUS_COLOR = { pending: '#D9C8A3', approved: '#48D6CD',   rejected: '#D9ACA3' }
 
 function DemoRequestsTab() {
   const [rows,     setRows]    = useState([])
@@ -285,17 +300,17 @@ function DemoRequestsTab() {
         >
           <div
             className="w-full max-w-md rounded-2xl p-6 flex flex-col gap-4"
-            style={{ background: '#011A1A', border: '1px solid rgba(37,211,102,0.28)' }}
+            style={{ background: '#09201E', border: '1px solid rgba(37,211,102,0.28)' }}
             onClick={e => e.stopPropagation()}
           >
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#25D366' }}>
                 رسالة واتساب
               </p>
-              <p className="font-black text-sm" style={{ color: '#F0E8E5' }}>
+              <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>
                 {waModal.row.name}
               </p>
-              <p className="text-xs font-mono mt-0.5" style={{ color: '#5A8A78', direction: 'ltr' }}>
+              <p className="text-xs font-mono mt-0.5" style={{ color: '#6FA5A8', direction: 'ltr' }}>
                 {waModal.row.phone}
               </p>
             </div>
@@ -319,7 +334,7 @@ function DemoRequestsTab() {
               <button
                 onClick={() => setWaModal(null)}
                 className="flex-1 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#7A9E96' }}
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#96BCBE' }}
               >
                 إلغاء
               </button>
@@ -342,15 +357,15 @@ function DemoRequestsTab() {
       {/* ── Summary ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'إجمالي الطلبات',    value: counts.all,       accent: '#A3C4D9' },
+          { label: 'إجمالي الطلبات',    value: counts.all,       accent: 'var(--cat-4)' },
           { label: 'بانتظار المراجعة',  value: counts.pending,   accent: '#D9C8A3' },
-          { label: 'تمت الموافقة',      value: counts.approved,  accent: '#6ABDB2' },
+          { label: 'تمت الموافقة',      value: counts.approved,  accent: '#48D6CD' },
           { label: 'مرفوضة',            value: counts.rejected,  accent: '#D9ACA3' },
         ].map(s => (
           <div key={s.label} className="rounded-xl px-4 py-3 text-right"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <p className="font-black text-xl mb-0.5" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-[11px]" style={{ color: '#5A8A78' }}>{s.label}</p>
+            <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -366,9 +381,9 @@ function DemoRequestsTab() {
           <button key={f.id} onClick={() => setFilter(f.id)}
             className="text-xs font-bold px-3 py-1.5 rounded-full transition-all"
             style={{
-              background: filter === f.id ? 'rgba(163,196,217,0.20)' : 'rgba(255,255,255,0.04)',
-              border    : `1px solid ${filter === f.id ? 'rgba(163,196,217,0.40)' : 'rgba(255,255,255,0.08)'}`,
-              color     : filter === f.id ? '#A3C4D9' : '#7A9E96',
+              background: filter === f.id ? 'color-mix(in srgb, var(--cat-4) 20%, transparent)' : 'rgba(255,255,255,0.04)',
+              border    : `1px solid ${filter === f.id ? 'color-mix(in srgb, var(--cat-4) 40%, transparent)' : 'rgba(255,255,255,0.08)'}`,
+              color     : filter === f.id ? 'var(--cat-4)' : '#96BCBE',
             }}>
             {f.label} ({counts[f.id]})
           </button>
@@ -385,25 +400,25 @@ function DemoRequestsTab() {
             const color  = DEMO_STATUS_COLOR[status] ?? '#D9C8A3'
             return (
               <div key={r.id} className="rounded-2xl p-5 flex flex-col gap-3"
-                style={{ background: 'rgba(163,196,217,0.05)', border: '1px solid rgba(163,196,217,0.14)' }}>
+                style={{ background: 'color-mix(in srgb, var(--cat-4) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--cat-4) 14.000000000000002%, transparent)' }}>
 
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-black text-sm" style={{ color: '#F0E8E5' }}>{r.name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#7A9E96' }}>{r.institute}</p>
-                    <p className="text-xs mt-0.5 font-mono" style={{ color: '#5A8A78', direction: 'ltr' }}>{r.phone}</p>
+                    <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>{r.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#96BCBE' }}>{r.institute}</p>
+                    <p className="text-xs mt-0.5 font-mono" style={{ color: '#6FA5A8', direction: 'ltr' }}>{r.phone}</p>
                   </div>
                   <span className="text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-                    style={{ background: color + '18', color }}>
+                    style={{ background: `color-mix(in srgb, ${color} 9%, transparent)`, color }}>
                     {DEMO_STATUS_LABEL[status]}
                   </span>
                 </div>
 
                 {r.notes && (
-                  <p className="text-xs leading-relaxed" style={{ color: '#5A8A7E' }}>{r.notes}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: '#509492' }}>{r.notes}</p>
                 )}
 
-                <p className="text-[11px]" style={{ color: '#5A8A78' }}>{formatDate(r.created_at)}</p>
+                <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{formatDate(r.created_at)}</p>
 
                 {status === 'pending' && (
                   <div className="flex gap-2">
@@ -446,7 +461,7 @@ function DemoRequestsTab() {
 
 /* ─── Tenants Tab ────────────────────────────────────────────── */
 const TENANT_STATUS = { pending: 'معلّق', active: 'نشط', rejected: 'مرفوض' }
-const TENANT_COLOR  = { pending: '#D9C8A3', active: '#6ABDB2', rejected: '#D9ACA3' }
+const TENANT_COLOR  = { pending: '#D9C8A3', active: '#48D6CD', rejected: '#D9ACA3' }
 
 function TenantsTab() {
   const [rows,     setRows]     = useState([])
@@ -488,13 +503,13 @@ function TenantsTab() {
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'بانتظار المراجعة', value: pending,              accent: '#D9C8A3' },
-          { label: 'مراكز نشطة',       value: active,               accent: '#6ABDB2' },
+          { label: 'مراكز نشطة',       value: active,               accent: '#48D6CD' },
           { label: 'إجمالي الإيرادات', value: `$${revenue.toFixed(2)}`, accent: '#D9ACA3' },
         ].map(s => (
           <div key={s.label} className="rounded-xl px-4 py-3 text-right"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <p className="font-black text-xl mb-0.5" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-[11px]" style={{ color: '#5A8A78' }}>{s.label}</p>
+            <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -503,14 +518,14 @@ function TenantsTab() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {rows.map(r => (
           <div key={r.id} className="rounded-2xl p-6 flex flex-col gap-4"
-            style={{ background: 'rgba(106,189,178,0.04)', border: '1px solid rgba(106,189,178,0.14)' }}>
+            style={{ background: 'rgba(72,214,205,0.04)', border: '1px solid rgba(72,214,205,0.14)' }}>
 
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-black text-sm" style={{ color: '#F0E8E5' }}>{r.institute_name}</p>
-                <p className="text-xs mt-0.5" style={{ color: '#7A9E96' }}>{r.supervisor_name}</p>
+                <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>{r.institute_name}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#96BCBE' }}>{r.supervisor_name}</p>
                 {r.email && (
-                  <p className="text-xs" style={{ color: '#5A8A78', direction: 'ltr' }}>{r.email}</p>
+                  <p className="text-xs" style={{ color: '#6FA5A8', direction: 'ltr' }}>{r.email}</p>
                 )}
               </div>
               <span className="text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
@@ -522,25 +537,25 @@ function TenantsTab() {
             <div className="flex flex-wrap gap-2">
               {r.phone && (
                 <span className="text-xs font-mono px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(255,255,255,0.04)', color: '#7A9E96', direction: 'ltr' }}>
+                  style={{ background: 'rgba(255,255,255,0.04)', color: '#96BCBE', direction: 'ltr' }}>
                   {r.phone}
                 </span>
               )}
               {r.subscription_tier && (
                 <span className="text-xs px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(106,189,178,0.08)', color: '#6ABDB2' }}>
+                  style={{ background: 'rgba(72,214,205,0.08)', color: '#48D6CD' }}>
                   {r.subscription_tier}
                 </span>
               )}
               {r.billing_cycle && (
                 <span className="text-xs px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(255,255,255,0.04)', color: '#A3C4D9' }}>
+                  style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--cat-4)' }}>
                   {r.billing_cycle}
                 </span>
               )}
               {r.referral_code && (
                 <span className="text-xs font-mono px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(181,163,217,0.10)', color: '#B5A3D9' }}>
+                  style={{ background: 'color-mix(in srgb, var(--cat-1) 10%, transparent)', color: 'var(--cat-1)' }}>
                   via {r.referral_code}
                 </span>
               )}
@@ -550,7 +565,7 @@ function TenantsTab() {
               <p className="text-xs font-black" style={{ color: '#D9C8A3' }}>
                 ${(r.total_amount ?? 0).toFixed(2)}
               </p>
-              <p className="text-[11px]" style={{ color: '#5A8A78' }}>
+              <p className="text-[11px]" style={{ color: '#6FA5A8' }}>
                 {formatDate(r.created_at)}
               </p>
             </div>
@@ -559,7 +574,7 @@ function TenantsTab() {
               <div className="flex gap-2">
                 <button onClick={() => updateStatus(r.id, 'active')} disabled={updating === r.id}
                   className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                  style={{ background: 'rgba(106,189,178,0.15)', border: '1px solid rgba(106,189,178,0.30)', color: '#6ABDB2', cursor: 'pointer' }}>
+                  style={{ background: 'rgba(72,214,205,0.15)', border: '1px solid rgba(72,214,205,0.30)', color: '#48D6CD', cursor: 'pointer' }}>
                   {updating === r.id ? '...' : '✓ تفعيل'}
                 </button>
                 <button onClick={() => updateStatus(r.id, 'rejected')} disabled={updating === r.id}
@@ -578,14 +593,14 @@ function TenantsTab() {
 
 /* ─── Affiliates Tab ──────────────────────────────────────────── */
 const AFF_STATUS = { pending: 'معلّق', approved: 'مقبول', rejected: 'مرفوض' }
-const AFF_COLOR  = { pending: '#D9C8A3', approved: '#6ABDB2', rejected: '#D9ACA3' }
+const AFF_COLOR  = { pending: '#D9C8A3', approved: '#48D6CD', rejected: '#D9ACA3' }
 
 function AffMiniStat({ label, value, accent }) {
   return (
     <div className="rounded-xl px-4 py-3 text-right"
       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
       <p className="font-black text-xl mb-0.5" style={{ color: accent }}>{value}</p>
-      <p className="text-[11px]" style={{ color: '#5A8A78' }}>{label}</p>
+      <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{label}</p>
     </div>
   )
 }
@@ -647,9 +662,9 @@ function AffiliatesTab() {
 
       {/* ── Summary strip ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <AffMiniStat label="إجمالي الشركاء"    value={rows.length}             accent="#B5A3D9" />
-        <AffMiniStat label="شركاء مقبولون"     value={approvedCount}           accent="#6ABDB2" />
-        <AffMiniStat label="تحويلات نشطة"      value={activeTenants.length}    accent="#10B981" />
+        <AffMiniStat label="إجمالي الشركاء"    value={rows.length}             accent="var(--cat-1)" />
+        <AffMiniStat label="شركاء مقبولون"     value={approvedCount}           accent="#48D6CD" />
+        <AffMiniStat label="تحويلات نشطة"      value={activeTenants.length}    accent="#16B3AE" />
         <AffMiniStat label="عمولات محتسبة"     value={`$${totalCommission.toFixed(2)}`} accent="#D9C8A3" />
       </div>
 
@@ -665,14 +680,14 @@ function AffiliatesTab() {
             <div
               key={r.id}
               className="rounded-2xl p-6 flex flex-col gap-4"
-              style={{ background: 'rgba(181,163,217,0.06)', border: '1px solid rgba(181,163,217,0.16)' }}
+              style={{ background: 'color-mix(in srgb, var(--cat-1) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--cat-1) 16%, transparent)' }}
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-black text-sm" style={{ color: '#F0E8E5' }}>{r.full_name}</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#7A9E96', direction: 'ltr' }}>{r.email}</p>
-                  {r.phone && <p className="text-xs" style={{ color: '#5A8A78', direction: 'ltr' }}>{r.phone}</p>}
+                  <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>{r.full_name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#96BCBE', direction: 'ltr' }}>{r.email}</p>
+                  {r.phone && <p className="text-xs" style={{ color: '#6FA5A8', direction: 'ltr' }}>{r.phone}</p>}
                 </div>
                 <span
                   className="text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
@@ -684,11 +699,11 @@ function AffiliatesTab() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
-                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(255,255,255,0.04)', color: '#B5A3D9' }}>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--cat-1)' }}>
                   {r.relation || '—'}
                 </span>
                 {r.referral_code && (
-                  <span className="text-xs font-mono px-2.5 py-1 rounded-full" style={{ background: 'rgba(106,189,178,0.08)', color: '#6ABDB2' }}>
+                  <span className="text-xs font-mono px-2.5 py-1 rounded-full" style={{ background: 'rgba(72,214,205,0.08)', color: '#48D6CD' }}>
                     {r.referral_code}
                   </span>
                 )}
@@ -697,14 +712,14 @@ function AffiliatesTab() {
               {/* Conversion stats */}
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { label: 'إحالات',  value: tenants.length, color: '#B5A3D9' },
-                  { label: 'نشطة',    value: active.length,  color: '#10B981' },
+                  { label: 'إحالات',  value: tenants.length, color: 'var(--cat-1)' },
+                  { label: 'نشطة',    value: active.length,  color: '#16B3AE' },
                   { label: 'عمولة',   value: `$${earned.toFixed(0)}`, color: '#D9C8A3' },
                 ].map(s => (
                   <div key={s.label} className="rounded-xl px-3 py-2.5 text-center"
                     style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
                     <p className="font-black text-base leading-none mb-1" style={{ color: s.color }}>{s.value}</p>
-                    <p className="text-[10px]" style={{ color: '#3D5050' }}>{s.label}</p>
+                    <p className="text-[10px]" style={{ color: '#374D56' }}>{s.label}</p>
                   </div>
                 ))}
               </div>
@@ -715,9 +730,9 @@ function AffiliatesTab() {
                   onClick={() => setExpanded(isOpen ? null : r.id)}
                   className="text-xs font-bold py-2 rounded-xl w-full transition-colors"
                   style={{
-                    background: isOpen ? 'rgba(106,189,178,0.08)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${isOpen ? 'rgba(106,189,178,0.20)' : 'rgba(255,255,255,0.07)'}`,
-                    color: isOpen ? '#6ABDB2' : '#7A9E96',
+                    background: isOpen ? 'rgba(72,214,205,0.08)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${isOpen ? 'rgba(72,214,205,0.20)' : 'rgba(255,255,255,0.07)'}`,
+                    color: isOpen ? '#48D6CD' : '#96BCBE',
                     cursor: 'pointer',
                   }}
                 >
@@ -738,16 +753,16 @@ function AffiliatesTab() {
                         <p className="text-xs font-semibold truncate" style={{ color: '#C4D8D4' }}>
                           {t.institute_name}
                         </p>
-                        <p className="text-[10px] mt-0.5" style={{ color: '#3D5050' }}>
+                        <p className="text-[10px] mt-0.5" style={{ color: '#374D56' }}>
                           {t.subscription_tier} · ${(t.total_amount ?? 0).toFixed(2)} · {formatDate(t.created_at).split('،')[0]}
                         </p>
                       </div>
                       <span
                         className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
                         style={{
-                          background: t.status === 'active' ? 'rgba(16,185,129,0.12)' : 'rgba(251,191,36,0.10)',
-                          border    : `1px solid ${t.status === 'active' ? 'rgba(16,185,129,0.28)' : 'rgba(251,191,36,0.25)'}`,
-                          color     : t.status === 'active' ? '#6EE7B7' : '#FCD34D',
+                          background: t.status === 'active' ? 'rgba(22,179,174,0.12)' : 'rgba(251,191,36,0.10)',
+                          border    : `1px solid ${t.status === 'active' ? 'rgba(22,179,174,0.28)' : 'rgba(251,191,36,0.25)'}`,
+                          color     : t.status === 'active' ? '#6EE7E3' : '#FCD34D',
                         }}
                       >
                         {t.status === 'active' ? 'نشط' : 'معلق'}
@@ -758,7 +773,7 @@ function AffiliatesTab() {
               )}
 
               {r.note && (
-                <p className="text-xs leading-relaxed" style={{ color: '#7A9E96' }}>{r.note}</p>
+                <p className="text-xs leading-relaxed" style={{ color: '#96BCBE' }}>{r.note}</p>
               )}
 
               {/* Approve / Reject */}
@@ -768,7 +783,7 @@ function AffiliatesTab() {
                     onClick={() => updateStatus(r.id, 'approved')}
                     disabled={updating === r.id}
                     className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                    style={{ background: 'rgba(106,189,178,0.15)', border: '1px solid rgba(106,189,178,0.30)', color: '#6ABDB2', cursor: 'pointer' }}
+                    style={{ background: 'rgba(72,214,205,0.15)', border: '1px solid rgba(72,214,205,0.30)', color: '#48D6CD', cursor: 'pointer' }}
                   >
                     {updating === r.id ? '...' : '✓ قبول'}
                   </button>
@@ -783,208 +798,11 @@ function AffiliatesTab() {
                 </div>
               )}
 
-              <p className="text-[11px] mt-auto" style={{ color: '#5A8A78' }}>{formatDate(r.created_at)}</p>
+              <p className="text-[11px] mt-auto" style={{ color: '#6FA5A8' }}>{formatDate(r.created_at)}</p>
             </div>
           )
         })}
       </div>
-    </div>
-  )
-}
-
-/* ─── Teachers Tab ────────────────────────────────────────────── */
-const SPEC_COLOR = {
-  'تحفيظ القرآن'   : '#6ABDB2',
-  'التجويد والمخارج': '#D9ACA3',
-  'القراءات العشر'  : '#A3C4D9',
-  'إدارة الحلقات'  : '#D9C8A3',
-}
-
-function TeachersAdminTab() {
-  const [rows,     setRows]     = useState([])
-  const [loading,  setLoading]  = useState(true)
-  const [error,    setError]    = useState('')
-  const [updating, setUpdating] = useState(null)
-  const [filter,   setFilter]   = useState('pending')
-
-  useEffect(() => {
-    supabase
-      .from('marketplace_teachers')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .then(({ data, error: e }) => {
-        if (e) setError(e.message)
-        else setRows(data ?? [])
-        setLoading(false)
-      })
-  }, [])
-
-  async function updateStatus(id, status) {
-    setUpdating(id)
-    const { error: e } = await supabase
-      .from('marketplace_teachers')
-      .update({ status })
-      .eq('id', id)
-    if (!e) setRows(prev => prev.map(r => r.id === id ? { ...r, status } : r))
-    setUpdating(null)
-  }
-
-  if (loading) return <Spinner />
-  if (error)   return <ErrorBanner msg={error} />
-
-  const filtered = rows.filter(r => r.status === filter)
-  const counts   = { pending: rows.filter(r=>r.status==='pending').length, approved: rows.filter(r=>r.status==='approved').length }
-
-  return (
-    <div className="flex flex-col gap-5">
-      {/* Filter */}
-      <div className="flex gap-2">
-        {['pending','approved'].map(s => (
-          <button key={s} onClick={() => setFilter(s)}
-            className="text-xs font-bold px-3 py-1.5 rounded-full transition-all"
-            style={{
-              background: filter === s ? 'rgba(106,189,178,0.18)' : 'rgba(255,255,255,0.04)',
-              border    : `1px solid ${filter === s ? 'rgba(106,189,178,0.35)' : 'rgba(255,255,255,0.08)'}`,
-              color     : filter === s ? '#6ABDB2' : '#7A9E96',
-            }}>
-            {s === 'pending' ? `بانتظار المراجعة (${counts.pending})` : `مقبولون (${counts.approved})`}
-          </button>
-        ))}
-      </div>
-
-      {filtered.length === 0 ? (
-        <EmptyState msg={filter === 'pending' ? 'لا يوجد طلبات معلّقة.' : 'لا يوجد معلمون مقبولون بعد.'} />
-      ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {filtered.map(t => {
-            const specColor = SPEC_COLOR[t.specialization] ?? '#B5A3D9'
-            return (
-              <div key={t.id}
-                className="rounded-2xl p-5 flex flex-col gap-3"
-                style={{ background: 'rgba(217,200,163,0.06)', border: '1px solid rgba(217,200,163,0.14)' }}>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-black text-sm" style={{ color: '#F0E8E5' }}>{t.full_name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#7A9E96' }}>{t.city} · {t.gender}</p>
-                    <p className="text-xs mt-0.5 font-mono" style={{ color: '#5A8A78', direction: 'ltr' }}>{t.phone}</p>
-                  </div>
-                  <div className="flex flex-col gap-1.5 items-end flex-shrink-0">
-                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full"
-                      style={{ background: specColor + '18', color: specColor }}>
-                      {t.specialization}
-                    </span>
-                    {t.years_experience && (
-                      <span className="text-[10px]" style={{ color: '#5A8A78' }}>{t.years_experience}</span>
-                    )}
-                  </div>
-                </div>
-
-                {t.bio && (
-                  <p className="text-xs leading-relaxed" style={{ color: '#7A9E96' }}>{t.bio}</p>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px]" style={{ color: '#5A8A78' }}>{formatDate(t.created_at)}</span>
-                  {t.available && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(0,168,150,0.10)', color: '#00A896' }}>
-                      متاح الآن
-                    </span>
-                  )}
-                </div>
-
-                {filter === 'pending' && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => updateStatus(t.id, 'approved')}
-                      disabled={updating === t.id}
-                      className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                      style={{ background: 'rgba(106,189,178,0.15)', border: '1px solid rgba(106,189,178,0.30)', color: '#6ABDB2', cursor: 'pointer' }}>
-                      {updating === t.id ? '...' : '✓ نشر الملف'}
-                    </button>
-                    <button
-                      onClick={() => updateStatus(t.id, 'rejected')}
-                      disabled={updating === t.id}
-                      className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                      style={{ background: 'rgba(217,172,163,0.10)', border: '1px solid rgba(217,172,163,0.22)', color: '#D9ACA3', cursor: 'pointer' }}>
-                      {updating === t.id ? '...' : '✕ رفض'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  )
-}
-
-/* ─── Consultations Tab ───────────────────────────────────────── */
-function ConsultationsTab({ data, loading, error }) {
-  if (loading) return <Spinner />
-  if (error)   return <ErrorBanner msg={error} />
-  if (!data.length) return <EmptyState msg="لا توجد طلبات بعد — ستظهر هنا فور وصول أول طلب." />
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="hidden md:grid gap-4 px-5 py-3 rounded-xl text-xs font-semibold"
-        style={{
-          gridTemplateColumns: '1fr 1.4fr 1fr 1fr 1fr',
-          color              : '#A6756A',
-          background         : 'rgba(217,172,163,0.05)',
-          letterSpacing      : '0.06em',
-        }}
-      >
-        <span>الاسم</span>
-        <span>البريد الإلكتروني</span>
-        <span>المؤسسة</span>
-        <span>الخدمة</span>
-        <span>التاريخ</span>
-      </div>
-
-      {data.map((row, i) => (
-        <div
-          key={row.id ?? i}
-          className="grid gap-4 px-5 py-4 rounded-2xl text-sm transition-all duration-300"
-          style={{
-            gridTemplateColumns: '1fr 1.4fr 1fr 1fr 1fr',
-            background         : 'rgba(2,89,81,0.12)',
-            border             : '1px solid rgba(2,115,104,0.14)',
-            backdropFilter     : 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            alignItems         : 'center',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background   = 'rgba(2,89,81,0.22)'
-            e.currentTarget.style.borderColor  = 'rgba(2,115,104,0.28)'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background   = 'rgba(2,89,81,0.12)'
-            e.currentTarget.style.borderColor  = 'rgba(2,115,104,0.14)'
-          }}
-        >
-          <span className="font-semibold truncate" style={{ color: '#F0E8E5' }}>
-            {row.client_name || '—'}
-          </span>
-          <span className="truncate" style={{ color: '#7A9E96', direction: 'ltr', textAlign: 'right' }}>
-            {row.client_email || '—'}
-          </span>
-          <span className="truncate" style={{ color: '#B0CBC6' }}>
-            {row.entity_name || '—'}
-          </span>
-          <span
-            className="text-xs px-2.5 py-1 rounded-full w-fit"
-            style={{ background: 'rgba(2,115,104,0.18)', color: '#6ABDB2', whiteSpace: 'nowrap' }}
-          >
-            {row.service_requested || '—'}
-          </span>
-          <span className="text-xs" style={{ color: '#5A8A78' }}>
-            {formatDate(row.created_at)}
-          </span>
-        </div>
-      ))}
     </div>
   )
 }
@@ -1006,18 +824,18 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
             key={t.id ?? i}
             className="flex flex-col gap-4 rounded-2xl p-6"
             style={{
-              background          : isPending ? 'rgba(217,172,163,0.06)' : 'rgba(2,89,81,0.14)',
-              border              : isPending ? '1px solid rgba(217,172,163,0.16)' : '1px solid rgba(2,115,104,0.20)',
+              background          : isPending ? 'rgba(217,172,163,0.06)' : 'rgba(17,49,44,0.14)',
+              border              : isPending ? '1px solid rgba(217,172,163,0.16)' : '1px solid rgba(26,148,155,0.20)',
               backdropFilter      : 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
             }}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-col gap-0.5">
-                <span className="font-black text-sm" style={{ color: '#F0E8E5' }}>
+                <span className="font-black text-sm" style={{ color: '#EAE4DF' }}>
                   {t.client_name || '—'}
                 </span>
-                <span className="text-xs" style={{ color: '#7A9E96' }}>
+                <span className="text-xs" style={{ color: '#96BCBE' }}>
                   {t.client_role || '—'}
                 </span>
               </div>
@@ -1042,9 +860,9 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
                 <span
                   className="flex-shrink-0 text-[10px] font-bold px-3 py-1.5 rounded-full"
                   style={{
-                    background: 'rgba(2,115,104,0.18)',
-                    border    : '1px solid rgba(2,115,104,0.28)',
-                    color     : '#6ABDB2',
+                    background: 'rgba(26,148,155,0.18)',
+                    border    : '1px solid rgba(26,148,155,0.28)',
+                    color     : '#48D6CD',
                   }}
                 >
                   ✓ تم النشر
@@ -1063,7 +881,7 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
               {t.content || '—'}
             </p>
 
-            <p className="text-[11px] mt-auto" style={{ color: '#5A8A78' }}>
+            <p className="text-[11px] mt-auto" style={{ color: '#6FA5A8' }}>
               {formatDate(t.created_at)}
             </p>
           </div>
@@ -1080,7 +898,7 @@ const pInputBase = {
   borderStyle         : 'solid',
   borderColor         : 'rgba(217,172,163,0.18)',
   borderRadius        : '0.875rem',
-  color               : '#F0E8E5',
+  color               : '#EAE4DF',
   fontSize            : '0.875rem',
   padding             : '0.875rem 1.125rem',
   width               : '100%',
@@ -1102,13 +920,13 @@ function FileInput({ label, icon, name, onFile, fileName }) {
         className="flex items-center gap-3 cursor-pointer rounded-xl px-4 py-3 transition-all duration-300"
         style={{
           background  : 'rgba(255,255,255,0.03)',
-          border      : `1px solid ${fileName ? 'rgba(106,189,178,0.40)' : 'rgba(217,172,163,0.18)'}`,
+          border      : `1px solid ${fileName ? 'rgba(72,214,205,0.40)' : 'rgba(217,172,163,0.18)'}`,
           borderRadius: '0.875rem',
         }}
       >
-        <span style={{ color: fileName ? '#6ABDB2' : '#D9ACA3', fontSize: '1.05rem' }}>{icon}</span>
+        <span style={{ color: fileName ? '#48D6CD' : '#D9ACA3', fontSize: '1.05rem' }}>{icon}</span>
         <span className="text-sm flex-1 text-right truncate"
-          style={{ color: fileName ? '#6ABDB2' : 'rgba(127,166,158,0.65)' }}>
+          style={{ color: fileName ? '#48D6CD' : 'rgba(127, 163, 166,0.65)' }}>
           {fileName || `اختر صورة ${name} (JPG, PNG, WEBP)`}
         </span>
         <input type="file" accept="image/*" className="hidden"
@@ -1306,14 +1124,14 @@ function InterfacesTab() {
       {/* ── Add / Edit form ── */}
       <div className="rounded-2xl p-7"
         style={{
-          background          : editingId ? 'rgba(106,189,178,0.05)' : 'rgba(217,172,163,0.05)',
-          border              : editingId ? '1px solid rgba(106,189,178,0.22)' : '1px solid rgba(217,172,163,0.14)',
+          background          : editingId ? 'rgba(72,214,205,0.05)' : 'rgba(217,172,163,0.05)',
+          border              : editingId ? '1px solid rgba(72,214,205,0.22)' : '1px solid rgba(217,172,163,0.14)',
           backdropFilter      : 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
         }}
       >
         <div className="flex items-center justify-between mb-6">
-          <h4 className="font-black text-base text-right" style={{ color: '#F0E8E5' }}>
+          <h4 className="font-black text-base text-right" style={{ color: '#EAE4DF' }}>
             {editingId ? 'تعديل الواجهة' : 'إضافة واجهة جديدة'}
           </h4>
           {editingId && (
@@ -1321,9 +1139,9 @@ function InterfacesTab() {
               type="button"
               onClick={resetForm}
               className="text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer transition-all duration-250"
-              style={{ background: 'rgba(106,189,178,0.10)', border: '1px solid rgba(106,189,178,0.25)', color: '#6ABDB2' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(106,189,178,0.20)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(106,189,178,0.10)'}
+              style={{ background: 'rgba(72,214,205,0.10)', border: '1px solid rgba(72,214,205,0.25)', color: '#48D6CD' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(72,214,205,0.20)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(72,214,205,0.10)'}
             >
               ✕ إلغاء التعديل
             </button>
@@ -1380,7 +1198,7 @@ function InterfacesTab() {
           )}
           {formOk && (
             <p className="text-xs text-right rounded-xl px-4 py-3"
-              style={{ color: '#6ABDB2', background: 'rgba(2,115,104,0.08)', border: '1px solid rgba(2,115,104,0.20)' }}>
+              style={{ color: '#48D6CD', background: 'rgba(26,148,155,0.08)', border: '1px solid rgba(26,148,155,0.20)' }}>
               {editingId ? '✓ تم تحديث الواجهة بنجاح.' : '✓ تم رفع الواجهة بنجاح.'}
             </p>
           )}
@@ -1392,9 +1210,9 @@ function InterfacesTab() {
               background: saving
                 ? 'rgba(217,172,163,0.12)'
                 : editingId
-                  ? 'linear-gradient(135deg, rgba(106,189,178,0.85) 0%, rgba(2,115,104,0.90) 100%)'
+                  ? 'linear-gradient(135deg, rgba(72,214,205,0.85) 0%, rgba(26,148,155,0.90) 100%)'
                   : 'linear-gradient(135deg, rgba(217,172,163,0.85) 0%, rgba(166,117,106,0.90) 100%)',
-              color      : saving ? '#D9ACA3' : '#012626',
+              color      : saving ? '#D9ACA3' : '#09201E',
               borderWidth: '1px', borderStyle: 'solid',
               borderColor: saving ? 'rgba(217,172,163,0.25)' : 'transparent',
               fontSize   : '0.9rem',
@@ -1434,9 +1252,9 @@ function InterfacesTab() {
             {interfaces.map(iface => (
               <div key={iface.id}
                 className="flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-250"
-                style={{ background: 'rgba(2,89,81,0.12)', border: '1px solid rgba(2,115,104,0.14)' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(2,89,81,0.20)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(2,89,81,0.12)'}
+                style={{ background: 'rgba(17,49,44,0.12)', border: '1px solid rgba(26,148,155,0.14)' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(17,49,44,0.20)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(17,49,44,0.12)'}
               >
                 {/* Desktop thumbnail */}
                 <div className="w-20 h-12 rounded-lg flex-shrink-0 overflow-hidden"
@@ -1450,17 +1268,17 @@ function InterfacesTab() {
                 {/* Mobile thumbnail */}
                 {iface.mobile_image && (
                   <div className="w-7 h-12 rounded-lg flex-shrink-0 overflow-hidden"
-                    style={{ background: 'rgba(106,189,178,0.08)', border: '1px solid rgba(106,189,178,0.15)' }}>
+                    style={{ background: 'rgba(72,214,205,0.08)', border: '1px solid rgba(72,214,205,0.15)' }}>
                     <img src={iface.mobile_image} alt="mobile" className="w-full h-full object-cover" />
                   </div>
                 )}
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 text-right">
-                  <p className="font-bold text-sm truncate" style={{ color: '#F0E8E5' }}>{iface.title}</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#5A8A78' }}>
+                  <p className="font-bold text-sm truncate" style={{ color: '#EAE4DF' }}>{iface.title}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#6FA5A8' }}>
                     ترتيب: {iface.order_index}
-                    {iface.mobile_image && <span className="mr-2" style={{ color: '#6ABDB2' }}>· 📱 يوجد صورة هاتف</span>}
+                    {iface.mobile_image && <span className="mr-2" style={{ color: '#48D6CD' }}>· 📱 يوجد صورة هاتف</span>}
                   </p>
                 </div>
 
@@ -1469,9 +1287,9 @@ function InterfacesTab() {
                   onClick={() => startEdit(iface)}
                   disabled={!!deletingId}
                   className="flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer transition-all duration-250 disabled:opacity-40"
-                  style={{ background: 'rgba(106,189,178,0.08)', border: '1px solid rgba(106,189,178,0.22)', color: '#6ABDB2' }}
-                  onMouseEnter={e => { if (!deletingId) e.currentTarget.style.background = 'rgba(106,189,178,0.18)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(106,189,178,0.08)' }}
+                  style={{ background: 'rgba(72,214,205,0.08)', border: '1px solid rgba(72,214,205,0.22)', color: '#48D6CD' }}
+                  onMouseEnter={e => { if (!deletingId) e.currentTarget.style.background = 'rgba(72,214,205,0.18)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(72,214,205,0.08)' }}
                 >
                   <Pencil size={12} strokeWidth={2} />
                   تعديل
@@ -1503,7 +1321,7 @@ function Sidebar({ active, onChange, onLogout }) {
       style={{
         width               : '260px',
         flexShrink          : 0,
-        background          : 'rgba(1,20,20,0.75)',
+        background          : 'rgba(2,15,14,0.75)',
         borderLeft          : '1px solid rgba(217,172,163,0.10)',
         backdropFilter      : 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
@@ -1517,7 +1335,7 @@ function Sidebar({ active, onChange, onLogout }) {
         >
           غرفة القيادة
         </p>
-        <h1 className="text-lg font-black leading-tight" style={{ color: '#F0E8E5' }}>
+        <h1 className="text-lg font-black leading-tight" style={{ color: '#EAE4DF' }}>
           لوحة التحكم
         </h1>
       </div>
@@ -1532,13 +1350,13 @@ function Sidebar({ active, onChange, onLogout }) {
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-right transition-all duration-250 cursor-pointer w-full"
               style={{
                 background: isActive ? 'rgba(217,172,163,0.12)' : 'transparent',
-                color     : isActive ? '#D9ACA3'                : '#7A9E96',
+                color     : isActive ? '#D9ACA3'                : '#96BCBE',
                 border    : isActive
                   ? '1px solid rgba(217,172,163,0.22)'
                   : '1px solid transparent',
               }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#F0E8E5' }}
-              onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#7A9E96' }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#EAE4DF' }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#96BCBE' }}
             >
               <span style={{ fontSize: '1rem', lineHeight: 1 }}>{tab.icon}</span>
               {tab.label}
@@ -1551,7 +1369,7 @@ function Sidebar({ active, onChange, onLogout }) {
         className="mt-auto px-2 pt-4 flex flex-col gap-3 border-t"
         style={{ borderColor: 'rgba(217,172,163,0.08)' }}
       >
-        <p className="text-[11px]" style={{ color: '#5A8A78' }}>
+        <p className="text-[11px]" style={{ color: '#6FA5A8' }}>
           نظام المهندس محمد — v1.0
         </p>
         <button
@@ -1560,7 +1378,7 @@ function Sidebar({ active, onChange, onLogout }) {
           style={{
             background: 'rgba(217,172,163,0.06)',
             border    : '1px solid rgba(217,172,163,0.14)',
-            color     : '#7A9E96',
+            color     : '#96BCBE',
           }}
           onMouseEnter={e => {
             e.currentTarget.style.background = 'rgba(217,172,163,0.12)'
@@ -1568,7 +1386,7 @@ function Sidebar({ active, onChange, onLogout }) {
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = 'rgba(217,172,163,0.06)'
-            e.currentTarget.style.color      = '#7A9E96'
+            e.currentTarget.style.color      = '#96BCBE'
           }}
         >
           <span style={{ fontSize: '0.85rem' }}>⏻</span>
@@ -1583,11 +1401,10 @@ function Sidebar({ active, onChange, onLogout }) {
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const [activeTab,       setActiveTab]       = useState('demo_requests')
-  const [consultations,   setConsultations]   = useState([])
   const [testimonials,    setTestimonials]    = useState([])
   const [subscriberCount, setSubscriberCount] = useState(null)
+  const [convertedCount,  setConvertedCount]  = useState(null)
   const [affiliateCount,  setAffiliateCount]  = useState(null)
-  const [teacherCount,    setTeacherCount]    = useState(null)
   const [loading,         setLoading]         = useState(true)
   const [fetchError,      setFetchError]      = useState('')
   const [approving,       setApproving]       = useState(null)
@@ -1598,28 +1415,24 @@ export default function AdminDashboard() {
       setFetchError('')
       try {
         const [
-          { data: cons,  error: e1 },
-          { data: tests, error: e2 },
-          { count: subC, error: e3 },
+          { data: tests, error: e1 },
+          { count: subC, error: e2 },
+          { count: convC, error: e3 },
           { count: affC, error: e4 },
-          { count: tchC, error: e5 },
         ] = await Promise.all([
-          supabase.from('consultations').select('*').order('created_at', { ascending: false }),
           supabase.from('testimonials').select('*').order('created_at', { ascending: false }),
           supabase.from('lead_magnet_subscribers').select('*', { count: 'exact', head: true }),
+          supabase.from('lead_magnet_subscribers').select('*', { count: 'exact', head: true }).not('converted_at', 'is', null),
           supabase.from('affiliate_applications').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-          supabase.from('marketplace_teachers').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         ])
         if (e1) throw e1
         if (e2) throw e2
         if (e3) throw e3
         if (e4) throw e4
-        if (e5) throw e5
-        setConsultations(cons ?? [])
         setTestimonials(tests ?? [])
         setSubscriberCount(subC ?? 0)
+        setConvertedCount(convC ?? 0)
         setAffiliateCount(affC ?? 0)
-        setTeacherCount(tchC ?? 0)
       } catch (err) {
         setFetchError(err?.message || 'فشل جلب البيانات. تحقق من الاتصال وإعدادات Supabase.')
       } finally {
@@ -1658,13 +1471,13 @@ export default function AdminDashboard() {
     <div
       className="flex min-h-screen"
       dir="rtl"
-      style={{ background: '#012626', fontFamily: 'inherit' }}
+      style={{ background: '#09201E', fontFamily: 'inherit' }}
     >
       {/* Ambient glow */}
       <div
         className="pointer-events-none fixed inset-0"
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 80% 20%, rgba(2,115,104,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 50% at 80% 20%, rgba(26,148,155,0.07) 0%, transparent 70%)',
           zIndex    : 0,
         }}
         aria-hidden
@@ -1697,10 +1510,10 @@ export default function AdminDashboard() {
             ⚙️
           </div>
           <div>
-            <h2 className="font-black text-lg mb-0.5" style={{ color: '#F0E8E5' }}>
+            <h2 className="font-black text-lg mb-0.5" style={{ color: '#EAE4DF' }}>
               مرحباً مهندس محمد، هذه غرفة القيادة الخاصة بك.
             </h2>
-            <p className="text-sm" style={{ color: '#7A9E96' }}>
+            <p className="text-sm" style={{ color: '#96BCBE' }}>
               تحكّم بكامل محتوى الموقع من هنا بعيداً عن أعين الزوار.
             </p>
           </div>
@@ -1709,11 +1522,10 @@ export default function AdminDashboard() {
         {/* Stats */}
         {!loading && !fetchError && (
           <StatsRow
-            consultations={consultations}
             testimonials={testimonials}
             subscriberCount={subscriberCount}
+            convertedCount={convertedCount}
             affiliateCount={affiliateCount}
-            teacherCount={teacherCount}
           />
         )}
 
@@ -1731,9 +1543,6 @@ export default function AdminDashboard() {
         {/* Tab body */}
         {activeTab === 'demo_requests' && <DemoRequestsTab />}
         {activeTab === 'tenants'       && <TenantsTab />}
-        {activeTab === 'consultations' && (
-          <ConsultationsTab data={consultations} loading={loading} error={fetchError} />
-        )}
         {activeTab === 'testimonials' && (
           <TestimonialsTab
             data={testimonials}
@@ -1745,7 +1554,6 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'subscribers' && <SubscribersTab />}
         {activeTab === 'affiliates'  && <AffiliatesTab />}
-        {activeTab === 'teachers'    && <TeachersAdminTab />}
         {activeTab === 'interfaces'  && <InterfacesTab />}
       </main>
     </div>

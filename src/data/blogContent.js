@@ -5,13 +5,13 @@
 ────────────────────────────────────────────────────────────────── */
 
 export const BLOG_CATEGORIES = [
-  { id: 'retention',   label: 'استبقاء الطلاب', color: '#6ABDB2' },
-  { id: 'operations',  label: 'إدارة العمليات',  color: '#D9ACA3' },
-  { id: 'finance',     label: 'الشؤون المالية',  color: '#A3C4D9' },
-  { id: 'staff',       label: 'إدارة الكادر',    color: '#D9C8A3' },
-  { id: 'growth',      label: 'النمو والتوسع',   color: '#B5A3D9' },
-  { id: 'parents',     label: 'علاقة الأهل',     color: '#A3D9B5' },
-  { id: 'daily',       label: 'المتابعة اليومية', color: '#C4D9A3' },
+  { id: 'retention',   label: 'استبقاء الطلاب', color: '#48D6CD' },
+  { id: 'operations',  label: 'إدارة العمليات',  color: '#D9B29C' },
+  { id: 'finance',     label: 'الشؤون المالية',  color: '#6FE7DE' },
+  { id: 'staff',       label: 'إدارة الكادر',    color: '#B98A63' },
+  { id: 'growth',      label: 'النمو والتوسع',   color: '#EBD3C2' },
+  { id: 'parents',     label: 'علاقة الأهل',     color: '#2FAEB4' },
+  { id: 'daily',       label: 'المتابعة اليومية', color: '#2FAEB4' },
 ]
 
 export const BLOG_POSTS = [
@@ -26,7 +26,7 @@ export const BLOG_POSTS = [
     excerpt   : 'كل مدير حلقة يظن أن التسرب يحدث بسبب الطالب أو أهله. الحقيقة أشد إيلامًا — وأبسط حلًا.',
     readTime  : 6,
     date      : '2026-07-01',
-    coverColor: '#6ABDB2',
+    coverColor: '#48D6CD',
     sections  : [
       {
         type: 'opening',
@@ -104,7 +104,7 @@ export const BLOG_POSTS = [
     excerpt   : '96 ساعة في السنة تذهب لإنتاج تقارير يدوية. هذا وقت كان يمكن أن يُبنى فيه المركز، لا أن يُوثَّق.',
     readTime  : 5,
     date      : '2026-07-02',
-    coverColor: '#D9ACA3',
+    coverColor: '#D9B29C',
     sections  : [
       {
         type: 'opening',
@@ -173,7 +173,7 @@ export const BLOG_POSTS = [
     excerpt   : 'معظم المديرين يعتقدون أن مشكلتهم المالية نقص في التحصيل. الحقيقة أن المشكلة في المعلومة، لا في المال.',
     readTime  : 7,
     date      : '2026-07-03',
-    coverColor: '#A3C4D9',
+    coverColor: '#6FE7DE',
     sections  : [
       {
         type: 'opening',
@@ -247,7 +247,7 @@ export const BLOG_POSTS = [
     excerpt   : 'بين الثقة العمياء والمراقبة المُحرجة مسافة اسمها: البيانات. إليك كيف يديرها المدير الذكي.',
     readTime  : 6,
     date      : '2026-07-04',
-    coverColor: '#D9C8A3',
+    coverColor: '#B98A63',
     sections  : [
       {
         type: 'opening',
@@ -322,7 +322,7 @@ export const BLOG_POSTS = [
     excerpt   : 'الجواب ليس أموالًا أكثر، ولا معلمين أكثر، ولا وقتًا أطول. الجواب أنظمة تعمل عندما لا تكون موجودًا.',
     readTime  : 8,
     date      : '2026-07-05',
-    coverColor: '#B5A3D9',
+    coverColor: '#EBD3C2',
     sections  : [
       {
         type: 'opening',
@@ -400,7 +400,7 @@ export const BLOG_POSTS = [
     excerpt   : 'في كل مرة يشتكي فيها ولي أمر، يوجد خلف غضبه سؤال واحد لم يجد إجابته في الوقت المناسب.',
     readTime  : 7,
     date      : '2026-07-06',
-    coverColor: '#A3D9B5',
+    coverColor: '#2FAEB4',
     sections  : [
       {
         type: 'opening',
@@ -472,7 +472,7 @@ export const BLOG_POSTS = [
     excerpt   : 'الفوضى في توزيع الطلاب على الحلقات ليست قدرًا — هي نتيجة غياب معايير واضحة. هذه المعايير تستطيع تطبيقها غداً.',
     readTime  : 6,
     date      : '2026-07-07',
-    coverColor: '#D9ACA3',
+    coverColor: '#D9B29C',
     sections  : [
       {
         type: 'opening',
@@ -541,7 +541,7 @@ export const BLOG_POSTS = [
     excerpt   : 'كل طالب يترك مركزك مرّ بمرحلة "تحذير صامت" لم يلاحظها أحد. إليك كيف تقرأ هذه الإشارات وتتصرف في الوقت الصحيح.',
     readTime  : 7,
     date      : '2026-07-08',
-    coverColor: '#6ABDB2',
+    coverColor: '#48D6CD',
     sections  : [
       {
         type: 'opening',
@@ -592,7 +592,7 @@ export const BLOG_POSTS = [
       },
       {
         type: 'cta',
-        text: 'إحكام يُنبّهك تلقائياً عند تكرار غياب أي طالب — حتى لا تضطر لمراجعة الدفاتر يدوياً لاكتشاف ما كان واضحاً.',
+        text: 'إحكام يوثّق كل غياب وتأخر في سجل الطالب، ويُظهر نمطه في تقرير الحضور والانضباط — فلا تحتاج لمراجعة الدفاتر يدوياً لاكتشاف ما كان واضحاً.',
       }
     ]
   },
@@ -607,7 +607,7 @@ export const BLOG_POSTS = [
     excerpt   : 'حين يُسمّع طالبان نفس السورة بنفس المستوى ويحصلان على درجتين مختلفتين — الثقة بالمركز تنهار. هذا كيف تمنعه.',
     readTime  : 5,
     date      : '2026-07-09',
-    coverColor: '#C4D9A3',
+    coverColor: '#2FAEB4',
     sections  : [
       {
         type: 'opening',
@@ -668,7 +668,7 @@ export const BLOG_POSTS = [
     excerpt   : 'طالب بلا خطة واضحة يحفظ ويتوقف ويعود — دون أن يصل لأي إنجاز ملموس. هذا كيف تُغير ذلك.',
     readTime  : 6,
     date      : '2026-07-10',
-    coverColor: '#C4D9A3',
+    coverColor: '#2FAEB4',
     sections  : [
       {
         type: 'opening',
@@ -728,7 +728,7 @@ export const BLOG_POSTS = [
     excerpt   : 'الرسوم المنخفضة جداً تُفقر المركز. الرسوم المرتفعة تُطرد العائلات. هذا المعيار يجد التوازن الصحيح.',
     readTime  : 7,
     date      : '2026-07-11',
-    coverColor: '#A3C4D9',
+    coverColor: '#6FE7DE',
     sections  : [
       {
         type: 'opening',
@@ -790,7 +790,7 @@ export const BLOG_POSTS = [
     excerpt   : 'أغلبها لا يبدو خطأً في البداية — لكنه يُعيق نمو المركز لسنوات. هذه قائمة الأشياء التي تتمنى لو عرفتها قبل البداية.',
     readTime  : 8,
     date      : '2026-07-12',
-    coverColor: '#D9ACA3',
+    coverColor: '#D9B29C',
     sections  : [
       {
         type: 'opening',
@@ -853,7 +853,7 @@ export const BLOG_POSTS = [
     excerpt   : 'معلمو التحفيظ يتركون وظائفهم لأسباب نادراً ما تكون مالية بحتة. هذا ما يبحثون عنه فعلاً — وكيف تُعطيهم إياه.',
     readTime  : 7,
     date      : '2026-07-13',
-    coverColor: '#D9C8A3',
+    coverColor: '#B98A63',
     sections  : [
       {
         type: 'opening',
@@ -917,7 +917,7 @@ export const BLOG_POSTS = [
     excerpt   : 'معظم مراكز التحفيظ تنمو من التوصيات. لكن القليل منها يُدير هذه التوصيات بشكل منهجي. هذا الفرق يصنع النمو الحقيقي.',
     readTime  : 6,
     date      : '2026-07-14',
-    coverColor: '#B5A3D9',
+    coverColor: '#EBD3C2',
     sections  : [
       {
         type: 'opening',
@@ -977,7 +977,7 @@ export const BLOG_POSTS = [
     excerpt   : 'كثير من المراكز الجيدة تنهار حين يغادر مديرها أو معلمها الرئيسي. هذا ليس حظاً سيئاً — هو نتيجة اختيار مسبق.',
     readTime  : 7,
     date      : '2026-07-15',
-    coverColor: '#D9ACA3',
+    coverColor: '#D9B29C',
     sections  : [
       {
         type: 'opening',
@@ -1037,7 +1037,7 @@ export const BLOG_POSTS = [
     excerpt   : 'البيانات التي تجمعها كل يوم تُخبرك بأشياء لا تراها بالعين — لو عرفت كيف تسألها الأسئلة الصحيحة.',
     readTime  : 6,
     date      : '2026-07-16',
-    coverColor: '#C4D9A3',
+    coverColor: '#2FAEB4',
     sections  : [
       {
         type: 'opening',
@@ -1099,7 +1099,7 @@ export const BLOG_POSTS = [
     excerpt   : 'الأسئلة لم تعد "هل نحتاج نظاماً رقمياً؟" — بل "كيف نختار النظام المناسب؟" هذا دليلك.',
     readTime  : 8,
     date      : '2026-07-17',
-    coverColor: '#B5A3D9',
+    coverColor: '#EBD3C2',
     sections  : [
       {
         type: 'opening',
@@ -1161,7 +1161,7 @@ export const BLOG_POSTS = [
     excerpt   : 'المحادثة الصعبة مع ولي الأمر ليست مشكلة — هي فرصة لبناء ثقة عميقة. إذا أدرتها صحيحاً.',
     readTime  : 6,
     date      : '2026-07-18',
-    coverColor: '#A3D9B5',
+    coverColor: '#2FAEB4',
     sections  : [
       {
         type: 'opening',
@@ -1221,7 +1221,7 @@ export const BLOG_POSTS = [
     excerpt   : 'التوسع لا يفشل لأن الموارد شحيحة. يفشل لأن النماذج التي تنجح في المراكز الصغيرة تنهار في المراكز الكبيرة.',
     readTime  : 8,
     date      : '2026-07-19',
-    coverColor: '#B5A3D9',
+    coverColor: '#EBD3C2',
     sections  : [
       {
         type: 'opening',
@@ -1279,7 +1279,7 @@ export const BLOG_POSTS = [
     excerpt   : 'التسعون يوماً الأولى تُحدد مسار مركزك لسنوات. هذا ما يجب أن تُنجزه — وما يجب أن تتجنبه تماماً.',
     readTime  : 9,
     date      : '2026-07-20',
-    coverColor: '#D9ACA3',
+    coverColor: '#D9B29C',
     sections  : [
       {
         type: 'opening',

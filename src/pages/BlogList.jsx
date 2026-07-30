@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Clock, ArrowLeft, BookOpen } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Clock, ArrowLeft, BookOpen, ChevronDown, Check } from 'lucide-react'
 import { BLOG_POSTS, BLOG_CATEGORIES, getCategoryById } from '../data/blogContent'
 import PageMeta from '../components/PageMeta'
 
@@ -66,7 +66,7 @@ function PostCard({ post, index }) {
           </div>
 
           {/* Title */}
-          <h2 className="text-white font-black text-lg leading-snug mb-3 group-hover:text-[#6ABDB2] transition-colors">
+          <h2 className="text-white font-black text-lg leading-snug mb-3 group-hover:text-[#48D6CD] transition-colors">
             {post.title}
           </h2>
 
@@ -92,6 +92,104 @@ function PostCard({ post, index }) {
   )
 }
 
+function CategoryFilter({ active, onChange }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onPointerDown = e => { if (!ref.current?.contains(e.target)) setOpen(false) }
+    const onKeyDown     = e => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  const options = [
+    { id: 'all', label: 'كل التصنيفات', color: '#48D6CD', count: BLOG_POSTS.length },
+    ...BLOG_CATEGORIES
+      .map(cat => ({ ...cat, count: BLOG_POSTS.filter(p => p.category === cat.id).length }))
+      .filter(cat => cat.count > 0),
+  ]
+  const current = options.find(o => o.id === active) ?? options[0]
+
+  return (
+    <div ref={ref} className="relative w-full max-w-xs mx-auto" style={{ zIndex: 30 }}>
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="w-full flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors"
+        style={{
+          background  : open ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.035)',
+          borderColor : open ? current.color + '55' : 'rgba(255,255,255,0.10)',
+        }}
+      >
+        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: current.color }} />
+        <span className="text-white text-sm font-bold flex-1 text-right">{current.label}</span>
+        <span className="text-white/30 text-xs tabular-nums">{current.count}</span>
+        <ChevronDown
+          size={15}
+          className="text-white/40 flex-shrink-0"
+          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.22s' }}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="listbox"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute top-full inset-x-0 mt-2 p-1.5 rounded-2xl border overflow-hidden"
+            style={{
+              background     : 'rgba(4,26,25,0.92)',
+              borderColor    : 'rgba(255,255,255,0.10)',
+              backdropFilter : 'blur(14px)',
+              boxShadow      : '0 18px 40px -12px rgba(0,0,0,0.7)',
+            }}
+          >
+            {options.map(opt => {
+              const isActive = opt.id === active
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  role="option"
+                  aria-selected={isActive}
+                  onClick={() => { onChange(opt.id); setOpen(false) }}
+                  className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-right transition-colors"
+                  style={{ background: isActive ? opt.color + '18' : 'transparent' }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: opt.color }} />
+                  <span
+                    className="text-xs font-semibold flex-1"
+                    style={{ color: isActive ? opt.color : 'rgba(255,255,255,0.6)' }}
+                  >
+                    {opt.label}
+                  </span>
+                  <span className="text-white/25 text-[11px] tabular-nums">{opt.count}</span>
+                  {isActive
+                    ? <Check size={13} style={{ color: opt.color }} className="flex-shrink-0" />
+                    : <span className="w-[13px] flex-shrink-0" />}
+                </button>
+              )
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export default function BlogList() {
   const [activeCategory, setActiveCategory] = useState('all')
 
@@ -100,7 +198,7 @@ export default function BlogList() {
     : BLOG_POSTS.filter(p => p.category === activeCategory)
 
   return (
-    <div dir="rtl" style={{ background: '#010D0D', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
       <PageMeta
         title="مدونة إحكام — رؤى لمدير المركز القرآني"
         description="مقالات معمّقة حول إدارة مراكز تحفيظ القرآن: استبقاء الطلاب، الشؤون المالية، إدارة الكادر، والنمو المستدام."
@@ -111,15 +209,15 @@ export default function BlogList() {
       <section
         className="relative pt-32 pb-16 px-6 overflow-hidden"
         style={{
-          background: 'radial-gradient(ellipse 80% 55% at 50% -5%, rgba(106,189,178,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 80% 55% at 50% -5%, rgba(72,214,205,0.12) 0%, transparent 70%)',
         }}
       >
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(106,189,178,0.04) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(106,189,178,0.04) 1px, transparent 1px)
+              linear-gradient(rgba(72,214,205,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(72,214,205,0.04) 1px, transparent 1px)
             `,
             backgroundSize: '48px 48px',
           }}
@@ -132,7 +230,7 @@ export default function BlogList() {
           >
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold mb-5"
-              style={{ background: 'rgba(106,189,178,0.12)', color: '#6ABDB2', border: '1px solid rgba(106,189,178,0.25)' }}
+              style={{ background: 'rgba(72,214,205,0.12)', color: '#48D6CD', border: '1px solid rgba(72,214,205,0.25)' }}
             >
               <BookOpen size={13} />
               مدونة إحكام
@@ -148,34 +246,8 @@ export default function BlogList() {
       </section>
 
       {/* ─── Category filter ─────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-6 mb-8">
-        <div className="flex flex-wrap gap-2 justify-center">
-          <button
-            onClick={() => setActiveCategory('all')}
-            className="text-xs font-semibold px-4 py-2 rounded-full border transition-all"
-            style={
-              activeCategory === 'all'
-                ? { background: '#6ABDB2', color: '#010D0D', borderColor: '#6ABDB2' }
-                : { background: 'transparent', color: 'rgba(255,255,255,0.45)', borderColor: 'rgba(255,255,255,0.12)' }
-            }
-          >
-            الكل
-          </button>
-          {BLOG_CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className="text-xs font-semibold px-4 py-2 rounded-full border transition-all"
-              style={
-                activeCategory === cat.id
-                  ? { background: cat.color, color: '#010D0D', borderColor: cat.color }
-                  : { background: 'transparent', color: 'rgba(255,255,255,0.45)', borderColor: 'rgba(255,255,255,0.12)' }
-              }
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
+      <div className="relative max-w-6xl mx-auto px-6 mb-8" style={{ zIndex: 30 }}>
+        <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
       </div>
 
       {/* ─── Posts grid ──────────────────────────────── */}

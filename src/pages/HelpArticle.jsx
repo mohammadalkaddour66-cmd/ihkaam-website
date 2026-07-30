@@ -7,10 +7,29 @@ import {
 import { getArticle, getCategoryForArticle, ARTICLES } from '../data/helpContent'
 
 /* ─── Step card ──────────────────────────────────────────── */
-function StepCard({ step, num, color }) {
-  const lines = step.body.split('\n')
+
+/* يحوّل نص الخطوة إلى كتل: أسطر «•» المتتالية تصير قائمة واحدة،
+   وما عداها فقرات. الأسطر الفارغة تُهمَل حتى لا تولّد فراغات وهمية. */
+function parseBody(body) {
+  const blocks = []
+  for (const raw of body.split('\n')) {
+    const line = raw.trim()
+    if (!line) continue
+    if (line.startsWith('•')) {
+      const text = line.replace(/^•\s*/, '')
+      if (blocks.at(-1)?.type === 'list') blocks.at(-1).items.push(text)
+      else blocks.push({ type: 'list', items: [text] })
+    } else {
+      blocks.push({ type: 'text', text: line })
+    }
+  }
+  return blocks
+}
+
+function StepCard({ step, num, color, isLast }) {
+  const blocks = parseBody(step.body)
   return (
-    <div className="relative flex gap-5">
+    <div className="relative flex gap-4 sm:gap-5">
       <div className="flex-shrink-0 flex flex-col items-center">
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm"
@@ -18,26 +37,41 @@ function StepCard({ step, num, color }) {
         >
           {num}
         </div>
-        <div className="flex-1 w-px mt-2" style={{ background: color + '20' }} />
+        {/* لا خطّ واصل بعد الخطوة الأخيرة — كان يتدلّى بلا وجهة */}
+        {!isLast && <div className="flex-1 w-px mt-2" style={{ background: color + '20' }} />}
       </div>
 
-      <div className="pb-8 flex-1 min-w-0">
+      <div className={`flex-1 min-w-0 ${isLast ? 'pb-2' : 'pb-7'}`}>
         <h4 className="text-white font-bold text-base mb-2">{step.title}</h4>
 
-        <div className="text-white/65 text-sm leading-relaxed space-y-1.5">
-          {lines.map((line, i) => (
-            <p key={i} className={line.startsWith('•') ? 'pr-2' : ''}>
-              {line}
-            </p>
-          ))}
+        <div className="text-white/65 text-sm leading-relaxed space-y-2">
+          {blocks.map((block, i) =>
+            block.type === 'text' ? (
+              <p key={i}>{block.text}</p>
+            ) : (
+              /* قائمة حقيقية: علامة ملوّنة + إزاحة معلّقة تُبقي الأسطر
+                 الملتفّة محاذية للنص لا للعلامة */
+              <ul key={i} className="space-y-1.5 pt-0.5">
+                {block.items.map((item, j) => (
+                  <li key={j} className="flex items-start gap-2.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[0.5em]"
+                      style={{ background: color }}
+                    />
+                    <span className="flex-1 text-white/60">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )
+          )}
         </div>
 
         {step.note && (
           <div
             className="mt-3 rounded-xl px-4 py-3 flex gap-3 items-start"
-            style={{ background: '#6ABDB2' + '14', border: '1px solid #6ABDB2' + '30' }}
+            style={{ background: '#48D6CD' + '14', border: '1px solid #48D6CD' + '30' }}
           >
-            <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#6ABDB2' }} />
+            <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#48D6CD' }} />
             <p className="text-white/75 text-xs leading-relaxed">{step.note}</p>
           </div>
         )}
@@ -63,9 +97,9 @@ function HelpSidebar({ article, catColor }) {
   return (
     <aside className="space-y-5">
 
-      {/* Steps overview */}
+      {/* Steps overview — تكرارٌ محض على الموبايل: الخطوات كاملةً فوقه مباشرة */}
       <div
-        className="rounded-2xl p-5 border border-white/7"
+        className="hidden lg:block rounded-2xl p-5 border border-white/7"
         style={{ background: 'rgba(255,255,255,0.025)' }}
       >
         <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
@@ -148,15 +182,15 @@ export default function HelpArticle() {
 
   if (!article) return null
 
-  const catColor = cat?.color || '#6ABDB2'
+  const catColor = cat?.color || '#48D6CD'
   const Icon     = cat?.icon
 
   return (
-    <div dir="rtl" style={{ background: '#010D0D', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
 
       {/* ─── Hero ───────────────────────────────────── */}
       <div
-        className="relative pt-28 pb-12 px-6 overflow-hidden"
+        className="relative pt-24 sm:pt-28 pb-8 sm:pb-12 px-5 sm:px-6 overflow-hidden"
         style={{
           background: `radial-gradient(ellipse 70% 50% at 50% -5%, ${catColor}14 0%, transparent 70%)`,
         }}
@@ -215,7 +249,7 @@ export default function HelpArticle() {
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0, transition: { delay: 0.08, duration: 0.5 } }}
-            className="text-white/55 text-base leading-relaxed mb-5 max-w-2xl"
+            className="text-white/55 text-sm sm:text-base leading-relaxed mb-5 max-w-2xl"
           >
             {article.description}
           </motion.p>
@@ -238,12 +272,12 @@ export default function HelpArticle() {
       </div>
 
       {/* ─── Two-column body ────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-6 pb-28">
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 pb-20 sm:pb-28">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-14">
 
           {/* Main content */}
-          <main className="flex-1 min-w-0 pt-10">
-            <h2 className="text-white font-bold text-xl mb-8 flex items-center gap-3">
+          <main className="flex-1 min-w-0 pt-8 sm:pt-10">
+            <h2 className="text-white font-bold text-xl mb-6 sm:mb-8 flex items-center gap-3">
               <span
                 className="w-1 h-6 rounded-full inline-block"
                 style={{ background: catColor }}
@@ -253,14 +287,15 @@ export default function HelpArticle() {
 
             <div>
               {article.steps.map((step, i) => (
-                <StepCard key={i} step={step} num={i + 1} color={catColor} />
+                <StepCard key={i} step={step} num={i + 1} color={catColor}
+                  isLast={i === article.steps.length - 1} />
               ))}
             </div>
 
             {/* Tips */}
             {article.tips?.length > 0 && (
               <div
-                className="mt-10 rounded-2xl p-6"
+                className="mt-8 sm:mt-10 rounded-2xl p-5 sm:p-6"
                 style={{ background: 'rgba(255,213,75,0.06)', border: '1px solid rgba(255,213,75,0.18)' }}
               >
                 <h3 className="font-bold text-base mb-4 flex items-center gap-2" style={{ color: '#FFD54B' }}>
@@ -284,7 +319,7 @@ export default function HelpArticle() {
 
           {/* Sticky sidebar */}
           <div className="lg:w-64 xl:w-72 flex-shrink-0">
-            <div className="lg:sticky lg:top-24 pt-10">
+            <div className="lg:sticky lg:top-24 lg:pt-10">
               <HelpSidebar article={article} catColor={catColor} />
             </div>
           </div>

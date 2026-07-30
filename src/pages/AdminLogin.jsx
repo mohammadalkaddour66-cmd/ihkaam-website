@@ -8,7 +8,7 @@ const inputBase = {
   borderStyle : 'solid',
   borderColor : 'rgba(217,172,163,0.22)',
   borderRadius: '0.875rem',
-  color       : '#F0E8E5',
+  color       : '#EAE4DF',
   fontSize    : '0.9rem',
   padding     : '0.875rem 1.125rem',
   width       : '100%',
@@ -56,12 +56,12 @@ export default function AdminLogin() {
     <div
       className="min-h-screen flex items-center justify-center p-6"
       dir="rtl"
-      style={{ background: '#012626', fontFamily: 'inherit' }}
+      style={{ background: '#09201E', fontFamily: 'inherit' }}
     >
       {/* Ambient glows */}
       <div
         className="pointer-events-none fixed inset-0"
-        style={{ background: 'radial-gradient(ellipse 70% 60% at 25% 35%, rgba(2,115,104,0.10) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(ellipse 70% 60% at 25% 35%, rgba(26,148,155,0.10) 0%, transparent 65%)' }}
         aria-hidden
       />
       <div
@@ -74,11 +74,11 @@ export default function AdminLogin() {
       <div
         className="relative w-full max-w-md rounded-3xl p-8 md:p-10"
         style={{
-          background          : 'rgba(2,89,81,0.14)',
+          background          : 'rgba(17,49,44,0.14)',
           border              : '1px solid rgba(217,172,163,0.16)',
           backdropFilter      : 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          boxShadow           : '0 32px 80px rgba(1,8,8,0.55)',
+          boxShadow           : '0 32px 80px rgba(2,15,14,0.55)',
         }}
       >
         {/* Header */}
@@ -98,10 +98,10 @@ export default function AdminLogin() {
           >
             غرفة القيادة
           </span>
-          <h1 className="text-2xl font-black mb-2" style={{ color: '#F0E8E5' }}>
+          <h1 className="text-2xl font-black mb-2" style={{ color: '#EAE4DF' }}>
             تسجيل الدخول
           </h1>
-          <p className="text-xs" style={{ color: '#5A8A78' }}>
+          <p className="text-xs" style={{ color: '#6FA5A8' }}>
             منطقة مقيدة — للمهندس محمد القدور فقط
           </p>
         </div>
@@ -175,7 +175,7 @@ export default function AdminLogin() {
               background : loading
                 ? 'rgba(217,172,163,0.12)'
                 : 'linear-gradient(135deg, rgba(217,172,163,0.85) 0%, rgba(166,117,106,0.90) 100%)',
-              color       : loading ? '#D9ACA3' : '#012626',
+              color       : loading ? '#D9ACA3' : '#09201E',
               borderWidth : '1px',
               borderStyle : 'solid',
               borderColor : loading ? 'rgba(217,172,163,0.25)' : 'transparent',
@@ -191,9 +191,9 @@ export default function AdminLogin() {
           <Link
             to="/"
             className="text-xs transition-colors duration-200"
-            style={{ color: '#5A8A78' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#7A9E96'}
-            onMouseLeave={e => e.currentTarget.style.color = '#5A8A78'}
+            style={{ color: '#6FA5A8' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#96BCBE'}
+            onMouseLeave={e => e.currentTarget.style.color = '#6FA5A8'}
           >
             ← العودة إلى الموقع
           </Link>

@@ -1,10 +1,20 @@
-import { Mail, ArrowLeft, Clock, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Mail, ArrowLeft, Clock, MessageCircle, Copy, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const WA_HREF = 'https://wa.me/963951590406'
-const MAIL_HREF = 'mailto:mohammadalkaddour66@gmail.com?subject=' +
-  encodeURIComponent('استفسار عن منصة إحكام') +
-  '&body=' + encodeURIComponent('السلام عليكم،\n\nأريد الاستفسار عن...')
+const WA_HREF   = 'https://wa.me/963947409106'
+const MAIL_ADDR = 'ihkaamapp@gmail.com'
+const SUBJECT   = 'استفسار عن منصة إحكام'
+const BODY      = 'السلام عليكم،\n\nأريد الاستفسار عن...'
+
+// رابط mailto: لا يفعل شيئاً على الأجهزة التي لا برنامج بريد افتراضياً فيها —
+// وهو حال أغلب مستخدمي Gmail على المتصفح، فيبدو الزر معطّلاً. لذا نفتح نافذة
+// إنشاء رسالة في Gmail مباشرةً (تعمل على الجوال والحاسوب)، ونترك نسخ العنوان
+// لمن يستخدم بريداً آخر.
+const MAIL_HREF = 'https://mail.google.com/mail/?view=cm&fs=1' +
+  `&to=${encodeURIComponent(MAIL_ADDR)}` +
+  `&su=${encodeURIComponent(SUBJECT)}` +
+  `&body=${encodeURIComponent(BODY)}`
 
 function WhatsAppIcon() {
   return (
@@ -15,6 +25,18 @@ function WhatsAppIcon() {
 }
 
 export default function ContactSection() {
+  const [copied, setCopied] = useState(false)
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(MAIL_ADDR)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* المتصفحات القديمة أو سياق غير آمن — العنوان ظاهر نصّاً على أي حال */
+    }
+  }
+
   return (
     <section
       id="contact"
@@ -24,7 +46,7 @@ export default function ContactSection() {
       {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         <div style={{ position:'absolute', bottom:0, right:0, width:480, height:480,
-          background:'radial-gradient(circle at bottom right, rgba(2,115,104,0.10) 0%, transparent 65%)' }} />
+          background:'radial-gradient(circle at bottom right, rgba(26,148,155,0.10) 0%, transparent 65%)' }} />
         <div style={{ position:'absolute', top:0, left:0, width:380, height:380,
           background:'radial-gradient(circle at top left, rgba(166,117,106,0.07) 0%, transparent 65%)' }} />
       </div>
@@ -33,8 +55,8 @@ export default function ContactSection() {
 
         {/* Icon */}
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8"
-          style={{ background:'rgba(2,115,104,0.12)', border:'1px solid rgba(2,115,104,0.25)' }}>
-          <MessageCircle size={26} style={{ color:'#6ABDB2' }} />
+          style={{ background:'rgba(26,148,155,0.12)', border:'1px solid rgba(26,148,155,0.25)' }}>
+          <MessageCircle size={26} style={{ color:'#48D6CD' }} />
         </div>
 
         {/* Eyebrow */}
@@ -45,14 +67,14 @@ export default function ContactSection() {
 
         {/* Heading */}
         <h1 className="font-black leading-tight mb-5"
-          style={{ color:'#F0E8E5', fontSize:'clamp(1.8rem,4vw,2.6rem)' }}>
+          style={{ color:'#EAE4DF', fontSize:'clamp(1.8rem,4vw,2.6rem)' }}>
           بماذا يمكن أن{' '}
           <span style={{ color:'#D9ACA3' }}>نخدمكم؟</span>
         </h1>
 
         {/* Sub */}
         <p className="text-sm leading-[1.9] mb-10 mx-auto"
-          style={{ color:'#7A9E96', maxWidth:420 }}>
+          style={{ color:'#96BCBE', maxWidth:420 }}>
             لديكم سؤال عن المنصة؟
           فريقنا حاضر ويسعده التواصل معكم.
         </p>
@@ -85,22 +107,24 @@ export default function ContactSection() {
 
         {/* Response time badge */}
         <div className="flex items-center justify-center gap-1.5 mt-3 mb-8">
-          <Clock size={11} style={{ color:'#2E6050' }} />
-          <span className="text-xs" style={{ color:'#2E6050' }}>
+          <Clock size={11} style={{ color:'#2E5260' }} />
+          <span className="text-xs" style={{ color:'#2E5260' }}>
            سيتم الرد عليكم في اقرب وقت ممكن (عادةً خلال 24 ساعة)
           </span>
         </div>
 
         {/* ── Divider ── */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="flex-1 h-px" style={{ background:'rgba(2,115,104,0.15)' }} />
-          <span className="text-xs" style={{ color:'#2E5050' }}>أو عبر البريد (ردّ خلال 48 ساعة)</span>
-          <div className="flex-1 h-px" style={{ background:'rgba(2,115,104,0.15)' }} />
+          <div className="flex-1 h-px" style={{ background:'rgba(26,148,155,0.15)' }} />
+          <span className="text-xs" style={{ color:'#1C423A' }}>أو عبر البريد (ردّ خلال 48 ساعة)</span>
+          <div className="flex-1 h-px" style={{ background:'rgba(26,148,155,0.15)' }} />
         </div>
 
         {/* ── Secondary: Email ── */}
         <a
           href={MAIL_HREF}
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center justify-center gap-2.5 w-full font-semibold rounded-2xl transition-all duration-300"
           style={{
             padding   : '0.9rem 2rem',
@@ -124,11 +148,23 @@ export default function ContactSection() {
           مراسلتنا عبر البريد الإلكتروني
         </a>
 
+        {/* عنوان البريد + نسخ — لمن يستخدم بريداً غير Gmail */}
+        <button
+          type="button"
+          onClick={copyEmail}
+          className="flex items-center justify-center gap-1.5 mx-auto mt-3 text-xs transition-colors duration-200"
+          style={{ color: copied ? '#48D6CD' : '#1C423A' }}
+        >
+          {copied ? <Check size={12} /> : <Copy size={12} />}
+          <span dir="ltr">{MAIL_ADDR}</span>
+          <span>{copied ? '— تم النسخ' : '— انسخ العنوان'}</span>
+        </button>
+
         {/* ── Divider ── */}
         <div className="flex items-center gap-4 my-8">
-          <div className="flex-1 h-px" style={{ background:'rgba(2,115,104,0.10)' }} />
-          <span className="text-xs" style={{ color:'#2E5050' }}>أو</span>
-          <div className="flex-1 h-px" style={{ background:'rgba(2,115,104,0.10)' }} />
+          <div className="flex-1 h-px" style={{ background:'rgba(26,148,155,0.10)' }} />
+          <span className="text-xs" style={{ color:'#1C423A' }}>أو</span>
+          <div className="flex-1 h-px" style={{ background:'rgba(26,148,155,0.10)' }} />
         </div>
 
         {/* ── Tertiary: Explore ── */}
@@ -137,18 +173,18 @@ export default function ContactSection() {
           className="flex items-center justify-center gap-2 w-full font-semibold text-sm rounded-2xl transition-all duration-300"
           style={{
             padding   : '0.9rem 2rem',
-            border    : '1px solid rgba(2,115,104,0.28)',
-            color     : '#6ABDB2',
-            background: 'rgba(2,115,104,0.05)',
+            border    : '1px solid rgba(26,148,155,0.28)',
+            color     : '#48D6CD',
+            background: 'rgba(26,148,155,0.05)',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'rgba(2,115,104,0.55)'
-            e.currentTarget.style.background  = 'rgba(2,115,104,0.10)'
+            e.currentTarget.style.borderColor = 'rgba(26,148,155,0.55)'
+            e.currentTarget.style.background  = 'rgba(26,148,155,0.10)'
             e.currentTarget.style.transform   = 'translateY(-1px)'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(2,115,104,0.28)'
-            e.currentTarget.style.background  = 'rgba(2,115,104,0.05)'
+            e.currentTarget.style.borderColor = 'rgba(26,148,155,0.28)'
+            e.currentTarget.style.background  = 'rgba(26,148,155,0.05)'
             e.currentTarget.style.transform   = 'translateY(0)'
           }}
         >

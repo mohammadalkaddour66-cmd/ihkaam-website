@@ -1,5 +1,6 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { supabase } from '../config/supabaseClient'
+import { useFormGuard } from '../hooks/useFormGuard'
 
 const serviceOptions = [
   { value: '',                    label: 'اختر نوع الخدمة المنفذة' },
@@ -19,7 +20,7 @@ const inputBase = {
   borderStyle         : 'solid',
   borderColor         : 'rgba(217,172,163,0.18)',
   borderRadius        : '0.875rem',
-  color               : '#F0E8E5',
+  color               : '#EAE4DF',
   fontSize            : '1rem',
   padding             : '0.9rem 1.125rem',
   width               : '100%',
@@ -58,10 +59,20 @@ export default function ClientReviewForm() {
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState('')
 
+  const { honeypotProps, guardSubmit, markSubmitted } = useFormGuard('client-review')
+
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const gate = guardSubmit()
+    if (!gate.ok) {
+      if (gate.message) { setError(gate.message); return }
+      setSent(true)   /* honeypot tripped — show success, write nothing */
+      return
+    }
+
     setError('')
     setLoading(true)
     try {
@@ -76,6 +87,7 @@ export default function ClientReviewForm() {
         }])
 
       if (dbError) throw dbError
+      markSubmitted()
       setSent(true)
     } catch (err) {
       setError(err?.message || 'حدث خطأ في الاتصال. يرجى المحاولة مجدداً.')
@@ -107,7 +119,7 @@ export default function ClientReviewForm() {
       <div
         className="pointer-events-none absolute bottom-0 left-0 w-[420px] h-[420px]"
         style={{
-          background: 'radial-gradient(circle at bottom left, rgba(2,115,104,0.08) 0%, transparent 65%)',
+          background: 'radial-gradient(circle at bottom left, rgba(26,148,155,0.08) 0%, transparent 65%)',
         }}
         aria-hidden
       />
@@ -125,7 +137,7 @@ export default function ClientReviewForm() {
           <h2
             className="font-black leading-tight mb-5 mx-auto"
             style={{
-              color   : '#F0E8E5',
+              color   : '#EAE4DF',
               fontSize: 'clamp(1.6rem, 3.5vw, 2.5rem)',
             }}
           >
@@ -134,7 +146,7 @@ export default function ClientReviewForm() {
           </h2>
           <p
             className="text-sm leading-[2] mx-auto"
-            style={{ color: '#7A9E96', maxWidth: '520px' }}
+            style={{ color: '#96BCBE', maxWidth: '520px' }}
           >
             رأيك هو المقياس الحقيقي لنجاح أنظمتنا. يسعدنا تدوين تجربتك في العمل معنا.
           </p>
@@ -144,11 +156,11 @@ export default function ClientReviewForm() {
         <div
           className="rounded-[2rem] p-8 md:p-12"
           style={{
-            background          : 'rgba(2,89,81,0.15)',
+            background          : 'rgba(17,49,44,0.15)',
             border              : '1px solid rgba(217,172,163,0.14)',
             backdropFilter      : 'blur(22px)',
             WebkitBackdropFilter: 'blur(22px)',
-            boxShadow           : '0 8px 48px rgba(1,10,10,0.35)',
+            boxShadow           : '0 8px 48px rgba(2,15,14,0.35)',
           }}
         >
           {sent ? (
@@ -168,13 +180,13 @@ export default function ClientReviewForm() {
               </div>
               <h3
                 className="text-xl font-black"
-                style={{ color: '#F0E8E5' }}
+                style={{ color: '#EAE4DF' }}
               >
                 شكراً لك..
               </h3>
               <p
                 className="text-sm leading-[2] max-w-sm"
-                style={{ color: '#7A9E96' }}
+                style={{ color: '#96BCBE' }}
               >
                 تم استلام تقييمك بنجاح وسيتم إضافته لجدار الثقة قريباً.
               </p>
@@ -190,6 +202,9 @@ export default function ClientReviewForm() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+
+              {/* Bot trap — invisible to humans */}
+              <input {...honeypotProps} />
 
               {/* Name */}
               <Field label="الاسم الكريم" htmlFor="review-name">
@@ -239,14 +254,14 @@ export default function ClientReviewForm() {
                     backgroundPosition  : 'left 14px center',
                     paddingLeft         : '2.5rem',
                     cursor              : 'pointer',
-                    color               : form.service ? '#F0E8E5' : 'rgba(127,166,158,0.65)',
+                    color               : form.service ? '#EAE4DF' : 'rgba(127, 163, 166,0.65)',
                   }}
                 >
                   {serviceOptions.map(o => (
                     <option
                       key={o.value}
                       value={o.value}
-                      style={{ background: '#012626', color: '#F0E8E5' }}
+                      style={{ background: '#09201E', color: '#EAE4DF' }}
                     >
                       {o.label}
                     </option>
@@ -283,7 +298,7 @@ export default function ClientReviewForm() {
                   padding         : '1rem',
                   fontSize        : '0.92rem',
                   background      : 'linear-gradient(135deg, rgba(217,172,163,0.90) 0%, rgba(166,117,106,0.95) 100%)',
-                  color           : '#012626',
+                  color           : '#09201E',
                   border          : 'none',
                   letterSpacing   : '0.04em',
                 }}
@@ -317,7 +332,7 @@ export default function ClientReviewForm() {
 
               <p
                 className="text-center text-[11px]"
-                style={{ color: '#5A8A78' }}
+                style={{ color: '#6FA5A8' }}
               >
                 تقييمك سيُنشر كشهادة حقيقية بعد المراجعة
               </p>

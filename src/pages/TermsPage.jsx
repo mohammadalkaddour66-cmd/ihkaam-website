@@ -11,12 +11,12 @@ export default function TermsPage() {
     <div
       className="relative min-h-screen"
       dir="rtl"
-      style={{ background: '#010D0D' }}
+      style={{ background: '#020F0E' }}
     >
       {/* Background glow */}
       <div
         className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(2,115,104,0.07) 0%, transparent 70%)', zIndex: 0 }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(26,148,155,0.07) 0%, transparent 70%)', zIndex: 0 }}
         aria-hidden
       />
 
@@ -32,11 +32,11 @@ export default function TermsPage() {
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center mb-7"
             style={{
-              background: 'rgba(2,115,104,0.15)',
-              border    : '1px solid rgba(106,189,178,0.22)',
+              background: 'rgba(26,148,155,0.15)',
+              border    : '1px solid rgba(72,214,205,0.22)',
             }}
           >
-            <ScrollText size={26} style={{ color: '#6ABDB2' }} strokeWidth={1.5} />
+            <ScrollText size={26} style={{ color: '#48D6CD' }} strokeWidth={1.5} />
           </div>
 
           <span
@@ -55,14 +55,14 @@ export default function TermsPage() {
 
           <p
             className="text-sm leading-relaxed"
-            style={{ color: '#5A8A7E', maxWidth: '520px' }}
+            style={{ color: '#509492', maxWidth: '520px' }}
           >
             يُرجى قراءة هذه الشروط بعناية قبل استخدام خدماتنا. باستخدامك للمنصة فأنت توافق على الالتزام بهذه الشروط.
           </p>
 
           <div
             className="mt-10"
-            style={{ height: 1, background: 'linear-gradient(90deg, rgba(106,189,178,0.25) 0%, transparent 60%)' }}
+            style={{ height: 1, background: 'linear-gradient(90deg, rgba(72,214,205,0.25) 0%, transparent 60%)' }}
           />
         </motion.div>
 
@@ -76,20 +76,20 @@ export default function TermsPage() {
           <div
             className="rounded-[20px] p-8 md:p-12"
             style={{
-              background: 'rgba(1,26,26,0.55)',
+              background: 'rgba(9,32,30,0.55)',
               border    : '1px solid rgba(229,211,179,0.08)',
               fontSize  : '0.93rem',
             }}
           >
 
             {/* مقدمة */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-2 mb-4">مقدمة</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-2 mb-4">مقدمة</h2>
             <p className="mb-4 leading-relaxed text-slate-300">
               بدخولك إلى منصة إحكام أو استخدامها، فإنك تقرّ بقراءة هذه الشروط والأحكام وفهمها والموافقة الكاملة عليها. تُمثّل هذه الوثيقة عقدًا قانونيًا مُلزمًا بينك بوصفك "المؤسسة المستفيدة" وبين فريق تطوير منصة إحكام بوصفها "مزوّد الخدمة".
             </p>
 
             {/* 1 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">1. تعريف المنصة وطبيعة الخدمة</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">1. تعريف المنصة وطبيعة الخدمة</h2>
             <p className="mb-4 leading-relaxed text-slate-300">
               منصة إحكام هي حلٌّ برمجي سحابي يُقدَّم وفق نموذج "البرمجيات كخدمة" (SaaS)، مُصمَّمٌ خصيصًا لتمكين المؤسسات القرآنية من إدارة عملياتها التشغيلية بصورة كاملة ومتكاملة، وتشمل الخدمة: إدارة الطلاب، جداول الحلقات، التقييمات، والخدمات الإضافية الاختيارية.
             </p>
@@ -98,9 +98,9 @@ export default function TermsPage() {
             </p>
 
             {/* 2 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">2. نموذج الاشتراك والتسعير</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">2. نموذج الاشتراك والتسعير</h2>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">2.1 هيكل الاشتراك</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">2.1 هيكل الاشتراك</h3>
             <p className="mb-3 leading-relaxed text-slate-300">
               تعتمد منصة إحكام نموذج تسعير قائمًا على حصة الطلاب (Student Quota)، ويُتاح الاشتراك بخيارَين:
             </p>
@@ -109,36 +109,36 @@ export default function TermsPage() {
               <li>اشتراك سنوي يُجدَّد كل اثني عشر شهرًا ميلاديًا</li>
             </ul>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">2.2 الخدمات الإضافية (Add-ons)</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">2.2 الخدمات الإضافية (Add-ons)</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               تُقدِّم المنصة مجموعةً من الميزات الاختيارية المدفوعة، تشمل على سبيل المثال لا الحصر: الإدارة المالية، الطابور الذكي، وغيرها. تُحتسب هذه الخدمات ضمن قيمة الاشتراك الشهري أو السنوي المختار، ولا تُباع بأي شكل من أشكال الدفع الفردي أو الدائم.
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">2.3 الحد الأقصى للطلاب</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">2.3 الحد الأقصى للطلاب</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               ترتبط الباقة المختارة بسقف محدد من الطلاب النشطين. في حال رغبت المؤسسة في تجاوز هذا السقف، يتعيّن عليها الترقية إلى الباقة الملائمة قبل إضافة طلاب جدد.
             </p>
 
             {/* 3 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">3. آلية الدفع</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">3. آلية الدفع</h2>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">3.1 طريقة السداد المعتمدة</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">3.1 طريقة السداد المعتمدة</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               لا تُعالِج منصة إحكام أي معاملات مالية إلكترونية مباشرة. يتم السداد عبر التحويل اليدوي إلى المحافظ الإلكترونية المعتمدة (مثل Sham Cash وما في حكمها وفق ما يُعلَن رسميًا على المنصة).
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">3.2 إجراء التفعيل</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">3.2 إجراء التفعيل</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               بعد إتمام التحويل، تُرسِل المؤسسة إيصال الدفع إلى فريق الدعم. يقوم المشرف العام (Super Admin) بالتحقق من الإيصال يدويًا ثم تفعيل لوحة التحكم أو تجديدها. لا يُعدُّ الاشتراك نافذًا إلا بعد تأكيد التفعيل من الفريق.
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">3.3 المسؤولية عن التحويل</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">3.3 المسؤولية عن التحويل</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               تتحمل المؤسسة كامل المسؤولية عن صحة بيانات التحويل ودقتها. لا تتحمل منصة إحكام أي مسؤولية عن تأخر التفعيل الناجم عن خطأ في بيانات التحويل أو تأخر إرسال إيصال الدفع.
             </p>
 
             {/* 4 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">4. التزويد وإنشاء الحساب (Zero-Touch Provisioning)</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">4. التزويد وإنشاء الحساب (Zero-Touch Provisioning)</h2>
             <p className="mb-3 leading-relaxed text-slate-300">
               عند الموافقة على طلب الاشتراك وإتمام الدفع، تقوم المنصة تلقائيًا بتوليد:
             </p>
@@ -152,37 +152,37 @@ export default function TermsPage() {
             </p>
 
             {/* 5 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">5. تجديد الاشتراك وفترة السماح</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">5. تجديد الاشتراك وفترة السماح</h2>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">5.1 التنبيه المسبق</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">5.1 التنبيه المسبق</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               تُرسل المنصة إشعارات تذكيرية قبل انتهاء الاشتراك بوقت كافٍ عبر القنوات المتاحة (البريد الإلكتروني أو لوحة التحكم).
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">5.2 فترة السماح</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">5.2 فترة السماح</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               عند انتهاء الاشتراك دون تجديد، تدخل المؤسسة في فترة سماح مدتها ثلاثة (3) أيام، تحتفظ خلالها بإمكانية الوصول الكامل إلى لوحة التحكم.
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">5.3 تعليق الخدمة</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">5.3 تعليق الخدمة</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               بعد انقضاء فترة السماح دون تجديد، يحق لمنصة إحكام تعليق الوصول إلى لوحة التحكم بصورة كاملة إلى حين استلام إيصال التجديد وتأكيده. لا تُحذف البيانات فور التعليق وتظل محفوظة وفق السياسة المعتمدة.
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">5.4 إنهاء الاشتراك</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">5.4 إنهاء الاشتراك</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               تحق للمؤسسة إنهاء اشتراكها بعدم التجديد. لا تُسترد رسوم الاشتراك عن الفترة المتبقية في أي من الحالتين الشهرية أو السنوية.
             </p>
 
             {/* 6 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">6. مسؤولية المحتوى والبيانات</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">6. مسؤولية المحتوى والبيانات</h2>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">6.1 دور إحكام</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">6.1 دور إحكام</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               منصة إحكام هي مزوّد خدمة برمجية (SaaS) فحسب. لا تتولى المنصة أي رقابة أو مراجعة للمحتوى الذي تُدخله المؤسسة أو تديره.
             </p>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">6.2 مسؤولية المؤسسة</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">6.2 مسؤولية المؤسسة</h3>
             <p className="mb-3 leading-relaxed text-slate-300">
               تتحمل المؤسسة المستفيدة المسؤولية القانونية والأخلاقية الكاملة والحصرية تجاه:
             </p>
@@ -193,13 +193,13 @@ export default function TermsPage() {
               <li>ضمان الحصول على الموافقات اللازمة عند جمع بيانات القاصرين</li>
             </ul>
 
-            <h3 className="text-base font-bold text-emerald-300 mt-5 mb-2">6.3 المحتوى المحظور</h3>
+            <h3 className="text-base font-bold text-[#7FE3DA] mt-5 mb-2">6.3 المحتوى المحظور</h3>
             <p className="mb-4 leading-relaxed text-slate-300">
               يُحظر تحت أي ظرف استخدام المنصة في نشر أو تخزين أي محتوى يُحرّض على الكراهية أو العنف أو التطرف، أو ما يُخالف أحكام الشريعة الإسلامية أو الأنظمة القانونية المعمول بها. يحق لمنصة إحكام تعليق أي حساب تثبت مخالفته لهذا البند فورًا وبلا إنذار مسبق.
             </p>
 
             {/* 7 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">7. تعليق الحسابات وإيقافها</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">7. تعليق الحسابات وإيقافها</h2>
             <p className="mb-3 leading-relaxed text-slate-300">
               تحتفظ منصة إحكام بحق تعليق أي حساب أو إيقافه بصورة مؤقتة أو دائمة في الحالات الآتية:
             </p>
@@ -213,7 +213,7 @@ export default function TermsPage() {
             </p>
 
             {/* 8 */}
-            <h2 className="text-xl font-bold text-emerald-400 mt-8 mb-4">8. تعديل الشروط والأحكام</h2>
+            <h2 className="text-xl font-bold text-[#48D6CD] mt-8 mb-4">8. تعديل الشروط والأحكام</h2>
             <p className="mb-4 leading-relaxed text-slate-300">
               يحق لمنصة إحكام تعديل هذه الشروط في أي وقت. تُنشر التعديلات على هذه الصفحة مع تحديث تاريخ السريان، ويُرسَل إشعار رسمي إلى المؤسسات المشتركة. يُعدُّ الاستمرار في استخدام المنصة بعد نشر التعديلات موافقةً ضمنية عليها.
             </p>
@@ -224,7 +224,7 @@ export default function TermsPage() {
         {/* ── Last updated note ── */}
         <p
           className="mt-8 text-xs text-center"
-          style={{ color: '#2E4A40' }}
+          style={{ color: '#1C423A' }}
         >
           آخر تحديث: 26 يونيو 2026
         </p>

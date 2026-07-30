@@ -5,6 +5,7 @@ import { Clock, ArrowRight, ChevronLeft, ArrowLeft, BookOpen, Zap, Bell, Loader2
 import { getPost, getCategoryById, BLOG_POSTS } from '../data/blogContent'
 import PageMeta from '../components/PageMeta'
 import { supabase } from '../config/supabaseClient'
+import { useFormGuard } from '../hooks/useFormGuard'
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('ar-SA', {
@@ -19,9 +20,18 @@ function SidebarEmailCapture({ catColor }) {
   const [done,    setDone]    = useState(false)
   const [focused, setFocused] = useState(false)
 
+  const { honeypotProps, guardSubmit, markSubmitted } = useFormGuard('blog-subscribe')
+
   async function submit(e) {
     e.preventDefault()
     if (!email.trim()) return
+
+    const gate = guardSubmit()
+    if (!gate.ok) {
+      setDone(true)   /* bot trap or cooldown — show success, write nothing */
+      return
+    }
+
     setLoading(true)
     try {
       const p = new URLSearchParams(window.location.search)
@@ -34,6 +44,7 @@ function SidebarEmailCapture({ catColor }) {
         utm_campaign: p.get('utm_campaign') || null,
         referrer    : document.referrer     || null,
       }])
+      markSubmitted()
       setDone(true)
     } finally {
       setLoading(false)
@@ -60,6 +71,8 @@ function SidebarEmailCapture({ catColor }) {
         نشرة أسبوعية — مقالات عملية لمديري مراكز التحفيظ. بدون إعلانات.
       </p>
       <form onSubmit={submit} className="flex flex-col gap-2">
+        {/* Bot trap — invisible to humans */}
+        <input {...honeypotProps} />
         <input
           type="email" required
           value={email}
@@ -85,7 +98,7 @@ function SidebarEmailCapture({ catColor }) {
         <button
           type="submit" disabled={loading}
           className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl font-bold text-xs disabled:opacity-60"
-          style={{ background: catColor, color: '#010D0D', cursor: 'pointer' }}
+          style={{ background: catColor, color: '#020F0E', cursor: 'pointer' }}
         >
           {loading ? <Loader2 size={13} className="animate-spin" /> : <Bell size={12} />}
           {loading ? 'جارٍ...' : 'اشترك مجاناً'}
@@ -123,7 +136,7 @@ function Sidebar({ post }) {
         <Link
           to="/ihkaam"
           className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-xs"
-          style={{ background: catColor, color: '#010D0D' }}
+          style={{ background: catColor, color: '#020F0E' }}
         >
           اكتشف إحكام
           <ArrowLeft size={13} />
@@ -184,11 +197,14 @@ function ArticleBody({ sections, catColor }) {
   return (
     <div>
       {sections.map((section, i) => {
+        /* First section sits right under the hero — no extra top margin */
+        const isFirst = i === 0
+
         if (section.type === 'heading') {
           return (
             <h2
               key={i}
-              className="text-white font-black text-xl mt-10 mb-4 flex items-center gap-3"
+              className={`text-white font-black text-xl mb-4 flex items-center gap-3 ${isFirst ? '' : 'mt-10'}`}
             >
               <span
                 className="w-1 h-5 rounded-full flex-shrink-0"
@@ -203,7 +219,7 @@ function ArticleBody({ sections, catColor }) {
           return (
             <div
               key={i}
-              className="mt-6 mb-8 rounded-2xl p-6 border-r-4"
+              className={`mb-8 rounded-2xl p-6 border-r-4 ${isFirst ? '' : 'mt-6'}`}
               style={{
                 background      : catColor + '0c',
                 borderRightColor: catColor + '60',
@@ -229,7 +245,7 @@ function ArticleBody({ sections, catColor }) {
               <Link
                 to="/ihkaam"
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm"
-                style={{ background: catColor, color: '#010D0D' }}
+                style={{ background: catColor, color: '#020F0E' }}
               >
                 اكتشف إحكام
                 <ArrowLeft size={14} />
@@ -284,7 +300,7 @@ export default function BlogArticle() {
   const catColor = post.coverColor
 
   return (
-    <div dir="rtl" style={{ background: '#010D0D', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
       <PageMeta
         title={post.title}
         description={post.excerpt}
@@ -293,7 +309,7 @@ export default function BlogArticle() {
 
       {/* ─── Hero ───────────────────────────────────── */}
       <div
-        className="relative pt-28 pb-14 px-6 overflow-hidden"
+        className="relative pt-28 pb-8 md:pb-14 px-6 overflow-hidden"
         style={{
           background: `radial-gradient(ellipse 70% 50% at 50% -5%, ${catColor}14 0%, transparent 65%)`,
         }}
@@ -362,7 +378,7 @@ export default function BlogArticle() {
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-14">
 
           {/* Main article */}
-          <main className="flex-1 min-w-0 pt-8">
+          <main className="flex-1 min-w-0 pt-4 lg:pt-8">
             <ArticleBody sections={post.sections} catColor={catColor} />
           </main>
 

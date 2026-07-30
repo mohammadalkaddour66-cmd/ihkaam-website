@@ -25,7 +25,7 @@ export default function ProtectedRoute() {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
-        style={{ background: '#012626' }}
+        style={{ background: '#09201E' }}
         aria-label="جارٍ التحقق من صلاحيات الدخول"
       >
         <div

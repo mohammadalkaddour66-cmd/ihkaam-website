@@ -9,8 +9,8 @@ const FEATURES = [
     icon : Smartphone,
     title: 'يعمل على جميع الأجهزة',
     desc : 'سواء كنت على حاسوبك أو جهازك اللوحي أو هاتفك، يعمل نظام إحكام بكفاءة كامل لأندرويد وآيفون.',
-    color: '#6ABDB2',
-    glow : 'rgba(106,189,178,0.12)',
+    color: '#48D6CD',
+    glow : 'rgba(72,214,205,0.12)',
   },
   {
     icon : Zap,
@@ -23,8 +23,8 @@ const FEATURES = [
     icon : ShieldCheck,
     title: 'الأمن والحماية',
     desc : 'بُني النظام وفق أفضل معايير الأمن السحابي، مع تشفير البيانات وصلاحيات محكمة تضمن خصوصية كل معهد ومستخدم.',
-    color: '#6ABDB2',
-    glow : 'rgba(106,189,178,0.12)',
+    color: '#48D6CD',
+    glow : 'rgba(72,214,205,0.12)',
   },
   {
     icon : RefreshCw,
@@ -37,17 +37,17 @@ const FEATURES = [
   {
     icon : FileDown,
     title: 'تقارير قابلة للتصدير',
-    desc : 'صدّر أي تقرير — حضور، تسميع، درجات — بصيغة PDF بضغطة واحدة، مع إمكانية التصفية حسب الطالب أو الفترة الزمنية.',
-    color: '#6ABDB2',
-    glow : 'rgba(106,189,178,0.12)',
+    desc : 'صدّر أي تقرير — غياب، تسميع، اختبارات، مالي — بصيغة PDF أو Excel بضغطة واحدة، مع التصفية حسب الحلقة أو الطالب أو الفترة الزمنية.',
+    color: '#48D6CD',
+    glow : 'rgba(72,214,205,0.12)',
   },
  
   {
     icon : UserCog,
     title: 'صلاحيات متعددة المستويات',
-    desc : 'أدر فريق عملك بثقة — مدير، مشرف، معلم، إداري — كل دور له صلاحياته الدقيقة دون أي تداخل أو تعارض.',
-    color: '#6ABDB2',
-    glow : 'rgba(106,189,178,0.12)',
+    desc : 'سبع صفات وظيفية جاهزة — مدير، إداري، مشرف، معلم، معلم مساعد، مُختبِر، مشرف مالي — ولكل موظف صلاحياته المستقلة تُضبط تبويبةً تبويبة.',
+    color: '#48D6CD',
+    glow : 'rgba(72,214,205,0.12)',
   },
 ]
 
@@ -67,19 +67,19 @@ function FeatureRow({ feature }) {
       variants={cardVariants}
       className="flex items-start gap-5 rounded-2xl px-6 py-5 cursor-default"
       style={{
-        background: 'rgba(1,16,16,0.55)',
+        background: 'rgba(2,15,14,0.55)',
         border    : `1px solid rgba(229,211,179,0.06)`,
         borderRight: `3px solid ${feature.color}50`,
       }}
       whileHover={{ x: -4 }}
       transition={{ duration: 0.20, ease: 'easeOut' }}
       onMouseEnter={e => {
-        e.currentTarget.style.background   = 'rgba(1,22,22,0.80)'
+        e.currentTarget.style.background   = 'rgba(2,15,14,0.80)'
         e.currentTarget.style.borderRight  = `3px solid ${feature.color}`
         e.currentTarget.style.boxShadow    = `4px 0 24px ${feature.color}18`
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background   = 'rgba(1,16,16,0.55)'
+        e.currentTarget.style.background   = 'rgba(2,15,14,0.55)'
         e.currentTarget.style.borderRight  = `3px solid ${feature.color}50`
         e.currentTarget.style.boxShadow    = 'none'
       }}
@@ -122,7 +122,7 @@ export default function IhkaamSystemFeatures() {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(2,115,104,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(26,148,155,0.07) 0%, transparent 70%)',
         }}
         aria-hidden
       />
@@ -139,7 +139,7 @@ export default function IhkaamSystemFeatures() {
         >
           <span
             className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-            style={{ color: '#4A7A72' }}
+            style={{ color: '#48777A' }}
           >
             المنصة التقنية
           </span>
@@ -151,7 +151,7 @@ export default function IhkaamSystemFeatures() {
           </h2>
           <p
             className="text-sm mx-auto leading-[2]"
-            style={{ color: '#7A9E96', maxWidth: '540px' }}
+            style={{ color: '#96BCBE', maxWidth: '540px' }}
           >
             بُني نظام إحكام على أسس تقنية راسخة تجعله موثوقاً وسهلاً وآمناً،
             ليس فقط يوم تشغيله — بل لسنوات قادمة.

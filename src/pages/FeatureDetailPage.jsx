@@ -1,6 +1,6 @@
 ﻿import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, ArrowLeft, CheckCircle2, XCircle, Star, Headphones } from 'lucide-react'
+import { ArrowRight, ArrowLeft, CheckCircle2, XCircle, Star, Headphones, Brain } from 'lucide-react'
 import { FEATURES } from '../data/featureDetails'
 
 /* ═══════════════════════════════════════════════
@@ -18,14 +18,14 @@ const stagger = (d = 0) => ({
 function Breadcrumb({ f }) {
   return (
     <motion.nav initial={{ opacity:0, x:12 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.35 }}
-      className="flex items-center gap-2 mb-10 text-xs font-semibold flex-wrap" style={{ color:'#5A8A78' }}>
-      <Link to="/ihkaam" className="flex items-center gap-1.5 hover:text-teal-400 transition-colors">
+      className="flex items-center gap-2 mb-10 text-xs font-semibold flex-wrap" style={{ color:'#6FA5A8' }}>
+      <Link to="/ihkaam" className="flex items-center gap-1.5 hover:text-[#48D6CD] transition-colors">
         <ArrowRight size={12} strokeWidth={2.5} /> منصة إحكام
       </Link>
       <span>/</span>
       <span style={{ color: f.color }}>{f.badge === 'النسخة الأساسية' ? 'الميزات الأساسية' : 'الوحدات الإضافية'}</span>
       <span>/</span>
-      <span style={{ color:'#7A9E96' }}>{f.title.split('.')[0].split('—')[0].trim()}</span>
+      <span style={{ color:'#96BCBE' }}>{f.title.split('.')[0].split('—')[0].trim()}</span>
     </motion.nav>
   )
 }
@@ -35,12 +35,12 @@ function StatsBand({ stats, color }) {
     <motion.div variants={stagger()} initial="hidden" whileInView="visible"
       viewport={{ once:true, margin:'-50px' }}
       className="grid grid-cols-1 sm:grid-cols-3 gap-0 rounded-2xl overflow-hidden"
-      style={{ border:`1px solid ${color}18`, background:'rgba(1,18,18,0.60)' }}>
+      style={{ border:`1px solid ${color}18`, background:'rgba(2,15,14,0.60)' }}>
       {stats.map((s, i) => (
         <motion.div key={i} variants={fadeUp}
           className={`flex flex-col items-center justify-center py-7 px-4 text-center${i < stats.length-1 ? ' border-b sm:border-b-0 sm:border-l border-white/5' : ''}`}>
           <span className="font-black text-2xl sm:text-3xl mb-2 leading-none" style={{ color }}>{s.value}</span>
-          <span className="text-xs leading-snug" style={{ color:'#4A7A72' }}>{s.label}</span>
+          <span className="text-xs leading-snug" style={{ color:'#48777A' }}>{s.label}</span>
         </motion.div>
       ))}
     </motion.div>
@@ -72,7 +72,7 @@ function ProblemSolution({ f }) {
       </motion.div>
       <motion.div variants={fadeUp}
         className="rounded-3xl p-8 flex flex-col gap-5"
-        style={{ background:`rgba(1,32,26,0.45)`, border:`1px solid ${f.color}22` }}>
+        style={{ background:`rgba(9,32,30,0.45)`, border:`1px solid ${f.color}22` }}>
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ background:`${f.color}18`, border:`1px solid ${f.color}30` }}>
@@ -99,7 +99,7 @@ function CapCard({ cap }) {
   return (
     <motion.div variants={fadeUp}
       className="rounded-2xl p-6 flex flex-col gap-4 h-full"
-      style={{ background:'rgba(1,22,22,0.70)', border:'1px solid rgba(229,211,179,0.07)' }}
+      style={{ background:'rgba(2,15,14,0.70)', border:'1px solid rgba(229,211,179,0.07)' }}
       whileHover={{ y:-4, borderColor:`${cap.color}28`, boxShadow:`0 12px 40px rgba(0,0,0,0.28)` }}
       transition={{ duration:0.22 }}>
       <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -117,7 +117,7 @@ function CTABottom({ f }) {
     <motion.div initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }}
       viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.65, ease:[0.22,1,0.36,1] }}
       className="rounded-3xl px-10 py-16 text-center relative overflow-hidden"
-      style={{ background:'linear-gradient(135deg,rgba(1,38,38,0.95) 0%,rgba(1,22,22,0.98) 100%)', border:`1px solid ${f.color}20` }}>
+      style={{ background:'linear-gradient(135deg,rgba(9,32,30,0.95) 0%,rgba(2,15,14,0.98) 100%)', border:`1px solid ${f.color}20` }}>
       <div className="pointer-events-none absolute inset-0"
         style={{ background:`radial-gradient(ellipse 60% 60% at 50% 0%, ${f.color}10 0%, transparent 65%)` }} aria-hidden />
       <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:f.color }}>
@@ -127,7 +127,7 @@ function CTABottom({ f }) {
         style={{ color:'#EAE4DF', fontSize:'clamp(1.6rem,3vw,2.4rem)', maxWidth:500 }}>
         {f.type === 'addon' ? 'أضف هذه الوحدة لنسختك من إحكام' : 'طلب نسختك من إحكام الآن'}
       </h2>
-      <p className="text-sm leading-[2] mb-10 mx-auto" style={{ color:'#5A8A7E', maxWidth:380 }}>
+      <p className="text-sm leading-[2] mb-10 mx-auto" style={{ color:'#509492', maxWidth:380 }}>
         {f.type === 'addon'
           ? 'تُضاف هذه الوحدة بسهولة لأي خطة — أثناء إتمام الطلب أو في أي وقت لاحق.'
           : 'ابدأ اليوم. لا رسوم تركيب، لا عقود معقدة، دعم كامل من أول يوم.'}
@@ -135,16 +135,16 @@ function CTABottom({ f }) {
       <div className="flex flex-wrap items-center justify-center gap-4">
         <Link to="/request"
           className="inline-flex items-center gap-2.5 rounded-xl font-black px-8 py-4 text-sm transition-all duration-250"
-          style={{ background:`linear-gradient(135deg,${f.color} 0%,${f.color}cc 100%)`, color:f.color==='#6ABDB2'?'#011A1A':'#1A0A0A', boxShadow:`0 6px 28px ${f.color}35` }}
+          style={{ background:`linear-gradient(135deg,${f.color} 0%,${f.color}cc 100%)`, color:f.color==='#48D6CD'?'#09201E':'#1A0A0A', boxShadow:`0 6px 28px ${f.color}35` }}
           onMouseEnter={e => e.currentTarget.style.boxShadow=`0 10px 40px ${f.color}55`}
           onMouseLeave={e => e.currentTarget.style.boxShadow=`0 6px 28px ${f.color}35`}>
           طلب نسخة <ArrowLeft size={16} strokeWidth={2.5} />
         </Link>
         <Link to="/ihkaam"
           className="inline-flex items-center gap-2 rounded-xl font-semibold px-7 py-4 text-sm transition-all duration-200"
-          style={{ color:'#5A8A7E', border:'1px solid rgba(229,211,179,0.10)', background:'rgba(255,255,255,0.02)' }}
+          style={{ color:'#509492', border:'1px solid rgba(229,211,179,0.10)', background:'rgba(255,255,255,0.02)' }}
           onMouseEnter={e => { e.currentTarget.style.color='#EAE4DF'; e.currentTarget.style.borderColor='rgba(229,211,179,0.22)' }}
-          onMouseLeave={e => { e.currentTarget.style.color='#5A8A7E'; e.currentTarget.style.borderColor='rgba(229,211,179,0.10)' }}>
+          onMouseLeave={e => { e.currentTarget.style.color='#509492'; e.currentTarget.style.borderColor='rgba(229,211,179,0.10)' }}>
           استكشف المنصة كاملة
         </Link>
       </div>
@@ -165,8 +165,8 @@ function DashboardVisual({ items }) {
           initial={{ opacity:0, y:18 }} animate={{ opacity:1, y:0 }}
           transition={{ duration:0.50, delay:0.2 + i*0.09, ease:[0.22,1,0.36,1] }}
           className="rounded-2xl px-4 py-4 flex flex-col gap-1.5"
-          style={{ background:'rgba(1,26,26,0.80)', border:`1px solid ${item.color}22`, backdropFilter:'blur(8px)' }}>
-          <span className="text-[10px] font-semibold" style={{ color:'#5A8A78' }}>{item.label}</span>
+          style={{ background:'rgba(9,32,30,0.80)', border:`1px solid ${item.color}22`, backdropFilter:'blur(8px)' }}>
+          <span className="text-[10px] font-semibold" style={{ color:'#6FA5A8' }}>{item.label}</span>
           <span className="font-black text-lg leading-none" style={{ color:item.color }}>{item.value}</span>
         </motion.div>
       ))}
@@ -176,12 +176,12 @@ function DashboardVisual({ items }) {
 
 function SplitLayout({ f }) {
   return (
-    <div className="relative min-h-screen" style={{ background:'#010D0D' }} dir="rtl">
+    <div className="relative min-h-screen" style={{ background:'#020F0E' }} dir="rtl">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[55vh] z-0"
         style={{ background:`radial-gradient(ellipse 50% 50% at 70% 0%, ${f.color}08 0%, transparent 70%)` }} aria-hidden />
 
       {/* HERO — 2 column */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-24 sm:pt-28 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
         <div>
           <Breadcrumb f={f} />
           <motion.div variants={stagger(0.06)} initial="hidden" animate="visible">
@@ -197,20 +197,20 @@ function SplitLayout({ f }) {
               {f.title}
             </motion.h1>
             <motion.p variants={fadeUp} className="leading-[2] mb-10 max-w-xl"
-              style={{ color:'#7A9E96', fontSize:'clamp(0.9rem,1.4vw,1rem)' }}>
+              style={{ color:'#96BCBE', fontSize:'clamp(0.9rem,1.4vw,1rem)' }}>
               {f.subtitle}
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
               <Link to="/request"
                 className="inline-flex items-center gap-2 rounded-xl font-black px-7 py-3.5 text-sm transition-all"
-                style={{ background:`linear-gradient(135deg,${f.color},${f.color}cc)`, color:f.color==='#6ABDB2'?'#011A1A':'#1A0A0A', boxShadow:`0 6px 24px ${f.color}30` }}>
+                style={{ background:`linear-gradient(135deg,${f.color},${f.color}cc)`, color:f.color==='#48D6CD'?'#09201E':'#1A0A0A', boxShadow:`0 6px 24px ${f.color}30` }}>
                 طلب نسخة <ArrowLeft size={14} strokeWidth={2.5} />
               </Link>
               <Link to="/ihkaam"
                 className="inline-flex items-center gap-2 rounded-xl font-semibold px-6 py-3.5 text-sm transition-all"
-                style={{ color:'#5A8A7E', border:'1px solid rgba(229,211,179,0.12)', background:'rgba(255,255,255,0.03)' }}
+                style={{ color:'#509492', border:'1px solid rgba(229,211,179,0.12)', background:'rgba(255,255,255,0.03)' }}
                 onMouseEnter={e => e.currentTarget.style.color='#EAE4DF'}
-                onMouseLeave={e => e.currentTarget.style.color='#5A8A7E'}>
+                onMouseLeave={e => e.currentTarget.style.color='#509492'}>
                 جميع الميزات
               </Link>
             </motion.div>
@@ -220,10 +220,10 @@ function SplitLayout({ f }) {
         <div className="flex items-center justify-center">
           <div className="relative w-full max-w-sm">
             <div className="absolute inset-0 rounded-3xl" style={{ background:`radial-gradient(circle at center, ${f.color}12, transparent 70%)` }} />
-            <div className="relative rounded-3xl p-6" style={{ background:'rgba(1,22,22,0.85)', border:`1px solid ${f.color}18`, backdropFilter:'blur(12px)' }}>
+            <div className="relative rounded-3xl p-6" style={{ background:'rgba(2,15,14,0.85)', border:`1px solid ${f.color}18`, backdropFilter:'blur(12px)' }}>
               <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom:'1px solid rgba(229,211,179,0.06)' }}>
-                <span className="text-xs font-black tracking-widest uppercase" style={{ color:'#5A8A78' }}>لوحة التحكم</span>
-                <div className="flex gap-1.5">{['#EF4444','#F59E0B','#22C55E'].map((c,i)=><div key={i} style={{ width:8,height:8,borderRadius:'50%',background:c,opacity:0.6 }} />)}</div>
+                <span className="text-xs font-black tracking-widest uppercase" style={{ color:'#6FA5A8' }}>لوحة التحكم</span>
+                <div className="flex gap-1.5">{['#EF4444','#F59E0B','#22C5C0'].map((c,i)=><div key={i} style={{ width:8,height:8,borderRadius:'50%',background:c,opacity:0.6 }} />)}</div>
               </div>
               {f.heroVisualItems && <DashboardVisual items={f.heroVisualItems} />}
             </div>
@@ -247,7 +247,7 @@ function SplitLayout({ f }) {
       <section className="relative z-10 max-w-6xl mx-auto px-6 pb-28">
         <motion.div initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.55 }}
           className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#5A8A78' }}>ماذا يفعل بالضبط؟</span>
+          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#6FA5A8' }}>ماذا يفعل بالضبط؟</span>
           <h2 className="font-black" style={{ color:'#EAE4DF', fontSize:'clamp(1.4rem,2.8vw,2rem)', maxWidth:520, margin:'0 auto' }}>كل ما تحتاجه — داخل هذه الوحدة</h2>
         </motion.div>
         <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
@@ -261,7 +261,7 @@ function SplitLayout({ f }) {
         <section className="relative z-10 max-w-5xl mx-auto px-6 pb-28">
           <motion.div initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.55 }}
             className="text-center mb-12">
-            <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#5A8A78' }}>سيناريوهات حقيقية</span>
+            <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#6FA5A8' }}>سيناريوهات حقيقية</span>
             <h2 className="font-black" style={{ color:'#EAE4DF', fontSize:'clamp(1.3rem,2.5vw,1.8rem)', maxWidth:460, margin:'0 auto' }}>
               يحدث هذا كل يوم في المعاهد التي تستخدم إحكام
             </h2>
@@ -271,13 +271,13 @@ function SplitLayout({ f }) {
             {f.scenarios.map((s, i) => (
               <motion.div key={i} variants={fadeUp}
                 className="rounded-2xl p-7 flex flex-col gap-4"
-                style={{ background:i%2===0?'rgba(1,30,30,0.65)':'rgba(1,20,20,0.45)', border:`1px solid ${f.color}18` }}>
+                style={{ background:i%2===0?'rgba(9,32,30,0.65)':'rgba(2,15,14,0.45)', border:`1px solid ${f.color}18` }}>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0"
                     style={{ background:`${f.color}18`, color:f.color, border:`1px solid ${f.color}28` }}>{i+1}</div>
                   <h4 className="font-black text-sm" style={{ color:'#EAE4DF' }}>{s.title}</h4>
                 </div>
-                <p className="text-sm leading-[2]" style={{ color:'#7A9E96' }}>{s.desc}</p>
+                <p className="text-sm leading-[2]" style={{ color:'#96BCBE' }}>{s.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -304,9 +304,9 @@ function PhoneShowcase({ f }) {
       transition={{ duration:0.70, delay:0.3, ease:[0.22,1,0.36,1] }}
       className="mx-auto" style={{ width:260, position:'relative' }}>
       {/* phone */}
-      <div style={{ borderRadius:'2.8rem', background:'linear-gradient(160deg,#1F3535,#0D1E1E)', border:'2.5px solid rgba(217,172,163,0.35)', padding:'14px 10px 20px', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
-        <div style={{ position:'absolute',top:12,left:'50%',transform:'translateX(-50%)',width:78,height:22,borderRadius:12,background:'#050A0A',zIndex:10 }} />
-        <div style={{ borderRadius:'2.2rem', overflow:'hidden', background:'#011A1A', minHeight:320, display:'flex', flexDirection:'column', gap:8, padding:'36px 12px 16px' }}>
+      <div style={{ borderRadius:'2.8rem', background:'linear-gradient(160deg,#1C423A,#09201E)', border:'2.5px solid rgba(217,172,163,0.35)', padding:'14px 10px 20px', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
+        <div style={{ position:'absolute',top:12,left:'50%',transform:'translateX(-50%)',width:78,height:22,borderRadius:12,background:'#020F0E',zIndex:10 }} />
+        <div style={{ borderRadius:'2.2rem', overflow:'hidden', background:'#09201E', minHeight:320, display:'flex', flexDirection:'column', gap:8, padding:'36px 12px 16px' }}>
           {/* header */}
           <div style={{ textAlign:'center', padding:'8px 0 12px', borderBottom:'1px solid rgba(217,172,163,0.10)' }}>
             <p style={{ color:'rgba(217,172,163,0.50)', fontSize:'0.58rem', fontWeight:700, letterSpacing:'0.15em' }}>بوابة أولياء الأمور</p>
@@ -315,11 +315,11 @@ function PhoneShowcase({ f }) {
           {/* notifications */}
           {f.phoneNotifications?.map((n, i) => (
             <motion.div key={i} initial={{ opacity:0, x:12 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.5+i*0.15, duration:0.45 }}
-              style={{ background:'rgba(1,38,30,0.60)', borderRadius:12, padding:'8px 10px', display:'flex', alignItems:'flex-start', gap:8, border:'1px solid rgba(217,172,163,0.08)' }}>
+              style={{ background:'rgba(9,32,30,0.60)', borderRadius:12, padding:'8px 10px', display:'flex', alignItems:'flex-start', gap:8, border:'1px solid rgba(217,172,163,0.08)' }}>
               <span style={{ fontSize:'0.80rem' }}>{n.icon}</span>
               <div style={{ flex:1, minWidth:0 }}>
                 <p style={{ color:'#EAE4DF', fontSize:'0.58rem', fontWeight:700, lineHeight:1.5 }}>{n.text}</p>
-                <p style={{ color:'#5A8A78', fontSize:'0.52rem', marginTop:2 }}>{n.time}</p>
+                <p style={{ color:'#6FA5A8', fontSize:'0.52rem', marginTop:2 }}>{n.time}</p>
               </div>
             </motion.div>
           ))}
@@ -364,20 +364,20 @@ function AudioShowcase({ f }) {
       transition={{ duration:0.65, delay:0.3, ease:[0.22,1,0.36,1] }}
       className="mx-auto max-w-sm">
       <div className="rounded-3xl p-6 flex flex-col gap-3"
-        style={{ background:'rgba(1,22,22,0.90)', border:'1px solid rgba(106,189,178,0.18)', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
-        <div className="flex items-center justify-between mb-2 pb-3" style={{ borderBottom:'1px solid rgba(106,189,178,0.08)' }}>
-          <span style={{ color:'#5A8A78', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.15em' }}>المكتبة الصوتية</span>
-          <Headphones size={14} style={{ color:'#6ABDB2' }} />
+        style={{ background:'rgba(2,15,14,0.90)', border:'1px solid rgba(72,214,205,0.18)', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
+        <div className="flex items-center justify-between mb-2 pb-3" style={{ borderBottom:'1px solid rgba(72,214,205,0.08)' }}>
+          <span style={{ color:'#6FA5A8', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.15em' }}>المكتبة الصوتية</span>
+          <Headphones size={14} style={{ color:'#48D6CD' }} />
         </div>
         {f.audioItems?.map((item, i) => (
           <motion.div key={i} initial={{ opacity:0, x:14 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.45+i*0.12, duration:0.40 }}
-            style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:14, background:'rgba(106,189,178,0.06)', border:'1px solid rgba(106,189,178,0.10)' }}>
-            <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(106,189,178,0.15)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-              <span style={{ fontSize:'0.65rem', fontWeight:900, color:'#6ABDB2' }}>▶</span>
+            style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:14, background:'rgba(72,214,205,0.06)', border:'1px solid rgba(72,214,205,0.10)' }}>
+            <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(72,214,205,0.15)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <span style={{ fontSize:'0.65rem', fontWeight:900, color:'#48D6CD' }}>▶</span>
             </div>
             <div style={{ flex:1, minWidth:0 }}>
               <p style={{ color:'#EAE4DF', fontSize:'0.68rem', fontWeight:700 }}>{item.page} — {item.surah}</p>
-              <p style={{ color:'#5A8A78', fontSize:'0.58rem', marginTop:2 }}>{item.reader}</p>
+              <p style={{ color:'#6FA5A8', fontSize:'0.58rem', marginTop:2 }}>{item.reader}</p>
             </div>
             {/* mini waveform */}
             <div style={{ display:'flex', alignItems:'center', gap:1.5 }}>
@@ -385,7 +385,7 @@ function AudioShowcase({ f }) {
                 <motion.div key={bi}
                   animate={{ scaleY: i===0 ? [1, (h/6), 1] : 1 }}
                   transition={{ duration:0.8, repeat:i===0?Infinity:0, delay:bi*0.08 }}
-                  style={{ width:2, height:h, borderRadius:2, background:i===0?'#6ABDB2':'rgba(106,189,178,0.25)', transformOrigin:'bottom' }} />
+                  style={{ width:2, height:h, borderRadius:2, background:i===0?'#48D6CD':'rgba(72,214,205,0.25)', transformOrigin:'bottom' }} />
               ))}
             </div>
           </motion.div>
@@ -402,25 +402,93 @@ function SubjectsShowcase({ f }) {
       transition={{ duration:0.65, delay:0.3, ease:[0.22,1,0.36,1] }}
       className="mx-auto max-w-xs">
       <div className="rounded-3xl p-6 flex flex-col gap-3"
-        style={{ background:'rgba(1,22,22,0.90)', border:'1px solid rgba(106,189,178,0.15)', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
-        <p style={{ color:'#5A8A78', fontSize:'0.62rem', fontWeight:700, letterSpacing:'0.18em', marginBottom:4 }}>ملف الطالب — المواد الرديفة</p>
+        style={{ background:'rgba(2,15,14,0.90)', border:'1px solid rgba(72,214,205,0.15)', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
+        <p style={{ color:'#6FA5A8', fontSize:'0.62rem', fontWeight:700, letterSpacing:'0.18em', marginBottom:4 }}>ملف الطالب — المواد الرديفة</p>
         {f.subjectCards?.map((sub, i) => (
           <motion.div key={i} initial={{ opacity:0, x:14 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.45+i*0.10 }}
             className="rounded-2xl p-4 flex items-center gap-3"
-            style={{ background:'rgba(106,189,178,0.05)', border:'1px solid rgba(106,189,178,0.10)' }}>
+            style={{ background:'rgba(72,214,205,0.05)', border:'1px solid rgba(72,214,205,0.10)' }}>
             <span style={{ fontSize:'1rem' }}>{sub.icon}</span>
             <div style={{ flex:1 }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                 <span style={{ color:'#EAE4DF', fontSize:'0.72rem', fontWeight:700 }}>{sub.name}</span>
-                <span style={{ color:'#6ABDB2', fontSize:'0.62rem', fontWeight:700 }}>{sub.grade}</span>
+                <span style={{ color:'#48D6CD', fontSize:'0.62rem', fontWeight:700 }}>{sub.grade}</span>
               </div>
-              <div style={{ marginTop:6, height:4, borderRadius:2, background:'rgba(106,189,178,0.12)', overflow:'hidden' }}>
+              <div style={{ marginTop:6, height:4, borderRadius:2, background:'rgba(72,214,205,0.12)', overflow:'hidden' }}>
                 <motion.div initial={{ width:0 }} animate={{ width:`${sub.progress}%` }} transition={{ duration:0.8, delay:0.6+i*0.10 }}
-                  style={{ height:'100%', borderRadius:2, background:'linear-gradient(90deg,#6ABDB2,#4A9D94)' }} />
+                  style={{ height:'100%', borderRadius:2, background:'linear-gradient(90deg,#48D6CD,#4A9D94)' }} />
               </div>
             </div>
           </motion.div>
         ))}
+      </div>
+    </motion.div>
+  )
+}
+
+/* smart-insights verdict card — mirrors the real screen: a verdict, then the
+   metric rows that produced it. The "from → to" is the whole point, so it is
+   the only thing rendered at full contrast. */
+const VERDICT_TONE = {
+  down: { fg: '#F08A8A', bg: 'rgba(239,100,100,0.10)', bd: 'rgba(239,100,100,0.24)' },
+  up  : { fg: '#5FD3A8', bg: 'rgba(95,211,168,0.10)',  bd: 'rgba(95,211,168,0.24)'  },
+  flat: { fg: '#6FA5A8', bg: 'rgba(72,214,205,0.05)',  bd: 'rgba(72,214,205,0.10)'  },
+}
+
+function InsightsShowcase({ f }) {
+  const v = f.insightVerdict
+  return (
+    <motion.div initial={{ opacity:0, y:30 }} animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.65, delay:0.3, ease:[0.22,1,0.36,1] }}
+      className="mx-auto w-full max-w-md">
+      <div className="rounded-3xl p-5 sm:p-6 flex flex-col gap-3"
+        style={{ background:'rgba(2,15,14,0.92)', border:'1px solid rgba(72,214,205,0.16)', boxShadow:'0 40px 80px rgba(0,0,0,0.85)' }}>
+
+        {/* circle header */}
+        <div className="flex items-center justify-between gap-3 pb-3"
+          style={{ borderBottom:'1px solid rgba(72,214,205,0.08)' }}>
+          <div className="text-right min-w-0">
+            <p style={{ color:'#EAE4DF', fontSize:'0.78rem', fontWeight:800 }}>{v.circle}</p>
+            <p style={{ color:'#6FA5A8', fontSize:'0.6rem', marginTop:3 }}>{v.teacher}</p>
+          </div>
+          <Brain size={15} style={{ color:'#48D6CD', flexShrink:0 }} />
+        </div>
+
+        {/* the verdict + why */}
+        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.45 }}
+          className="rounded-2xl px-3.5 py-3"
+          style={{ background:VERDICT_TONE.down.bg, border:`1px solid ${VERDICT_TONE.down.bd}` }}>
+          <p style={{ color:VERDICT_TONE.down.fg, fontSize:'0.72rem', fontWeight:800 }}>{v.status}</p>
+          <p style={{ color:'#96BCBE', fontSize:'0.62rem', lineHeight:1.9, marginTop:6 }}>{v.reason}</p>
+        </motion.div>
+
+        {/* metric rows */}
+        {v.metrics.map((m, i) => {
+          const t = VERDICT_TONE[m.tone]
+          return (
+            <motion.div key={m.label} initial={{ opacity:0, x:14 }} animate={{ opacity:1, x:0 }}
+              transition={{ delay:0.55 + i*0.09, duration:0.40 }}
+              className="flex items-center justify-between gap-2 rounded-xl px-3 py-2.5"
+              style={{ background:'rgba(72,214,205,0.04)', border:'1px solid rgba(72,214,205,0.09)' }}>
+              <span style={{ color:'#EAE4DF', fontSize:'0.66rem', fontWeight:700, whiteSpace:'nowrap' }}>{m.label}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                {/* ltr: the eye sweeps right-to-left, so it meets the old value
+                    first and the arrow leads it to the new one — "كان كذا وصار كذا" */}
+                <span dir="ltr" style={{ color:'#6FA5A8', fontSize:'0.6rem', whiteSpace:'nowrap' }}>
+                  {m.to} ← {m.from}
+                </span>
+                <span className="rounded-full px-2 py-0.5" style={{
+                  color:t.fg, background:t.bg, border:`1px solid ${t.bd}`,
+                  fontSize:'0.53rem', fontWeight:800, whiteSpace:'nowrap',
+                }}>{m.chip}</span>
+              </div>
+            </motion.div>
+          )
+        })}
+
+        <p style={{ color:'#4E7E80', fontSize:'0.55rem', textAlign:'center', marginTop:2 }}>
+          {v.metrics[0].unit && `الوحدة: ${v.metrics[0].unit} · `}المقارنة بماضي الحلقة نفسها
+        </p>
       </div>
     </motion.div>
   )
@@ -431,18 +499,19 @@ function getShowcaseVisual(f) {
   if (f.certificatePreview)  return <CertificateShowcase f={f} />
   if (f.audioItems)          return <AudioShowcase f={f} />
   if (f.subjectCards)        return <SubjectsShowcase f={f} />
+  if (f.insightVerdict)      return <InsightsShowcase f={f} />
   return null
 }
 
 function ShowcaseLayout({ f }) {
   const visual = getShowcaseVisual(f)
   return (
-    <div className="relative min-h-screen" style={{ background:'#010D0D' }} dir="rtl">
+    <div className="relative min-h-screen" style={{ background:'#020F0E' }} dir="rtl">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[70vh] z-0"
         style={{ background:`radial-gradient(ellipse 70% 55% at 50% -5%, ${f.color}0A 0%, transparent 65%)` }} aria-hidden />
 
       {/* HERO — centered */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-12 pb-4 text-center">
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-24 sm:pt-28 pb-4 text-center">
         <div className="text-right mb-8 max-w-xs">
           <Breadcrumb f={f} />
         </div>
@@ -458,20 +527,20 @@ function ShowcaseLayout({ f }) {
             {f.title}
           </motion.h1>
           <motion.p variants={fadeUp} className="leading-[2] mb-10 mx-auto"
-            style={{ color:'#7A9E96', fontSize:'clamp(0.9rem,1.5vw,1rem)', maxWidth:560 }}>
+            style={{ color:'#96BCBE', fontSize:'clamp(0.9rem,1.5vw,1rem)', maxWidth:560 }}>
             {f.subtitle}
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-3 justify-center mb-16">
             <Link to="/request"
               className="inline-flex items-center gap-2 rounded-xl font-black px-7 py-3.5 text-sm transition-all"
-              style={{ background:`linear-gradient(135deg,${f.color},${f.color}cc)`, color:f.color==='#6ABDB2'?'#011A1A':'#1A0A0A', boxShadow:`0 6px 24px ${f.color}30` }}>
+              style={{ background:`linear-gradient(135deg,${f.color},${f.color}cc)`, color:f.color==='#48D6CD'?'#09201E':'#1A0A0A', boxShadow:`0 6px 24px ${f.color}30` }}>
               طلب نسخة <ArrowLeft size={14} strokeWidth={2.5} />
             </Link>
             <Link to="/ihkaam"
               className="inline-flex items-center rounded-xl font-semibold px-6 py-3.5 text-sm transition-all"
-              style={{ color:'#5A8A7E', border:'1px solid rgba(229,211,179,0.12)', background:'rgba(255,255,255,0.03)' }}
+              style={{ color:'#509492', border:'1px solid rgba(229,211,179,0.12)', background:'rgba(255,255,255,0.03)' }}
               onMouseEnter={e => e.currentTarget.style.color='#EAE4DF'}
-              onMouseLeave={e => e.currentTarget.style.color='#5A8A7E'}>
+              onMouseLeave={e => e.currentTarget.style.color='#509492'}>
               جميع الميزات
             </Link>
           </motion.div>
@@ -480,7 +549,7 @@ function ShowcaseLayout({ f }) {
         {visual && (
           <div className="relative pb-16">
             <div className="absolute inset-x-0 bottom-0 h-32 z-10"
-              style={{ background:'linear-gradient(to bottom, transparent, #010D0D)' }} aria-hidden />
+              style={{ background:'linear-gradient(to bottom, transparent, #020F0E)' }} aria-hidden />
             {visual}
           </div>
         )}
@@ -502,7 +571,7 @@ function ShowcaseLayout({ f }) {
       <section className="relative z-10 max-w-5xl mx-auto px-6 pb-28">
         <motion.div initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.55 }}
           className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#5A8A78' }}>ماذا يفعل بالضبط؟</span>
+          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#6FA5A8' }}>ماذا يفعل بالضبط؟</span>
           <h2 className="font-black" style={{ color:'#EAE4DF', fontSize:'clamp(1.4rem,2.8vw,2rem)', maxWidth:520, margin:'0 auto' }}>
             كل ما تحتاجه — داخل هذه الوحدة
           </h2>
@@ -518,7 +587,7 @@ function ShowcaseLayout({ f }) {
         <section className="relative z-10 max-w-5xl mx-auto px-6 pb-28">
           <motion.div initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.55 }}
             className="text-center mb-12">
-            <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#5A8A78' }}>من الواقع</span>
+            <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#6FA5A8' }}>من الواقع</span>
             <h2 className="font-black" style={{ color:'#EAE4DF', fontSize:'clamp(1.3rem,2.5vw,1.8rem)', maxWidth:440, margin:'0 auto' }}>
               سيناريوهات يعيشها المعهد يومياً
             </h2>
@@ -528,13 +597,13 @@ function ShowcaseLayout({ f }) {
               <motion.div key={i} initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }}
                 viewport={{ once:true, margin:'-30px' }} transition={{ duration:0.50, delay:i*0.08 }}
                 className="rounded-3xl p-8 flex gap-6 items-start"
-                style={{ background:`rgba(1,22,22,0.55)`, border:`1px solid ${f.color}15` }}>
+                style={{ background:`rgba(2,15,14,0.55)`, border:`1px solid ${f.color}15` }}>
                 <div className="text-4xl font-black leading-none flex-shrink-0 opacity-15" style={{ color:f.color }}>
                   {i===0?'"':''}
                 </div>
                 <div>
                   <h4 className="font-black text-base mb-3" style={{ color:'#EAE4DF' }}>{s.title}</h4>
-                  <p className="text-sm leading-[2]" style={{ color:'#7A9E96' }}>{s.desc}</p>
+                  <p className="text-sm leading-[2]" style={{ color:'#96BCBE' }}>{s.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -564,14 +633,14 @@ function FlowSteps({ steps, color }) {
         {steps.map((step, i) => (
           <motion.div key={i} variants={fadeUp}
             className="flex items-start gap-5 rounded-2xl p-6"
-            style={{ background:`rgba(1,22,22,0.65)`, border:`1px solid ${color}${i===1?'28':'10'}` }}>
+            style={{ background:`rgba(2,15,14,0.65)`, border:`1px solid ${color}${i===1?'28':'10'}` }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0"
               style={{ background:`${color}${i===1?'22':'10'}`, border:`1px solid ${color}${i===1?'35':'18'}`, color }}>
               {step.num}
             </div>
             <div>
               <h4 className="font-black text-sm mb-1" style={{ color:'#EAE4DF' }}>{step.label}</h4>
-              <p className="text-xs leading-[1.8]" style={{ color:'#5A8A7E' }}>{step.desc}</p>
+              <p className="text-xs leading-[1.8]" style={{ color:'#509492' }}>{step.desc}</p>
             </div>
           </motion.div>
         ))}
@@ -582,12 +651,12 @@ function FlowSteps({ steps, color }) {
 
 function FlowLayout({ f }) {
   return (
-    <div className="relative min-h-screen" style={{ background:'#010D0D' }} dir="rtl">
+    <div className="relative min-h-screen" style={{ background:'#020F0E' }} dir="rtl">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[50vh] z-0"
         style={{ background:`radial-gradient(ellipse 55% 40% at 30% 0%, ${f.color}08 0%, transparent 70%)` }} aria-hidden />
 
       {/* HERO — bold left aligned */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-12 pb-6">
+      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-24 sm:pt-28 pb-6">
         <Breadcrumb f={f} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
           {/* LEFT: text */}
@@ -603,20 +672,20 @@ function FlowLayout({ f }) {
               {f.title}
             </motion.h1>
             <motion.p variants={fadeUp} className="leading-[2] mb-10"
-              style={{ color:'#7A9E96', fontSize:'clamp(0.9rem,1.4vw,1rem)', maxWidth:520 }}>
+              style={{ color:'#96BCBE', fontSize:'clamp(0.9rem,1.4vw,1rem)', maxWidth:520 }}>
               {f.subtitle}
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
               <Link to="/request"
                 className="inline-flex items-center gap-2 rounded-xl font-black px-7 py-3.5 text-sm transition-all"
-                style={{ background:`linear-gradient(135deg,${f.color},${f.color}cc)`, color:f.color==='#6ABDB2'?'#011A1A':'#1A0A0A', boxShadow:`0 6px 24px ${f.color}30` }}>
+                style={{ background:`linear-gradient(135deg,${f.color},${f.color}cc)`, color:f.color==='#48D6CD'?'#09201E':'#1A0A0A', boxShadow:`0 6px 24px ${f.color}30` }}>
                 طلب نسخة <ArrowLeft size={14} strokeWidth={2.5} />
               </Link>
               <Link to="/ihkaam"
                 className="inline-flex items-center rounded-xl font-semibold px-6 py-3.5 text-sm transition-all"
-                style={{ color:'#5A8A7E', border:'1px solid rgba(229,211,179,0.12)', background:'rgba(255,255,255,0.03)' }}
+                style={{ color:'#509492', border:'1px solid rgba(229,211,179,0.12)', background:'rgba(255,255,255,0.03)' }}
                 onMouseEnter={e => e.currentTarget.style.color='#EAE4DF'}
-                onMouseLeave={e => e.currentTarget.style.color='#5A8A7E'}>
+                onMouseLeave={e => e.currentTarget.style.color='#509492'}>
                 جميع الميزات
               </Link>
             </motion.div>
@@ -625,7 +694,7 @@ function FlowLayout({ f }) {
           {f.flowSteps && (
             <motion.div variants={stagger(0.10)} initial="hidden" animate="visible">
               <motion.p variants={fadeUp}
-                className="text-xs font-semibold tracking-[0.22em] uppercase mb-6" style={{ color:'#5A8A78' }}>
+                className="text-xs font-semibold tracking-[0.22em] uppercase mb-6" style={{ color:'#6FA5A8' }}>
                 كيف يعمل؟
               </motion.p>
               <FlowSteps steps={f.flowSteps} color={f.color} />
@@ -650,7 +719,7 @@ function FlowLayout({ f }) {
       <section className="relative z-10 max-w-6xl mx-auto px-6 pb-28">
         <motion.div initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.55 }}
           className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#5A8A78' }}>ماذا يفعل بالضبط؟</span>
+          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'#6FA5A8' }}>ماذا يفعل بالضبط؟</span>
           <h2 className="font-black" style={{ color:'#EAE4DF', fontSize:'clamp(1.4rem,2.8vw,2rem)', maxWidth:520, margin:'0 auto' }}>
             كل ما تحتاجه — داخل هذه الوحدة
           </h2>
@@ -667,7 +736,7 @@ function FlowLayout({ f }) {
         <section className="relative z-10 max-w-6xl mx-auto px-6 pb-28">
           <motion.div initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-60px' }} transition={{ duration:0.55 }}
             className="mb-12">
-            <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-4" style={{ color:'#5A8A78' }}>من الواقع</span>
+            <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-4" style={{ color:'#6FA5A8' }}>من الواقع</span>
             <h2 className="font-black" style={{ color:'#EAE4DF', fontSize:'clamp(1.3rem,2.5vw,1.8rem)', maxWidth:440 }}>
               سيناريوهات من حياة المعهد اليومية
             </h2>
@@ -677,9 +746,9 @@ function FlowLayout({ f }) {
             {f.scenarios.map((s, i) => (
               <motion.div key={i} variants={fadeUp}
                 className="rounded-2xl p-7 flex flex-col gap-4 border-r-4"
-                style={{ background:'rgba(1,22,22,0.55)', borderColor:f.color, borderRightWidth:3, borderTopColor:'transparent', borderBottomColor:'transparent', borderLeftColor:'transparent' }}>
+                style={{ background:'rgba(2,15,14,0.55)', borderColor:f.color, borderRightWidth:3, borderTopColor:'transparent', borderBottomColor:'transparent', borderLeftColor:'transparent' }}>
                 <h4 className="font-black text-sm" style={{ color:'#EAE4DF' }}>{s.title}</h4>
-                <p className="text-sm leading-[2]" style={{ color:'#7A9E96' }}>{s.desc}</p>
+                <p className="text-sm leading-[2]" style={{ color:'#96BCBE' }}>{s.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -703,7 +772,7 @@ export default function FeatureDetailPage() {
   if (!f) return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center gap-6 px-6" dir="rtl">
       <p className="font-black text-3xl" style={{ color:'#EAE4DF' }}>الصفحة غير موجودة</p>
-      <Link to="/ihkaam" className="text-sm font-bold" style={{ color:'#6ABDB2' }}>← العودة لمنصة إحكام</Link>
+      <Link to="/ihkaam" className="text-sm font-bold" style={{ color:'#48D6CD' }}>← العودة لمنصة إحكام</Link>
     </div>
   )
 

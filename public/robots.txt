@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ihkaam.com/sitemap.xml
+# مسارات ليست للفهرسة: لوحة الإدارة، ومسار الدفع (يُفتح بمعطياتٍ من الطلب
+# لا من محرك بحث)، ومعاينة الهوية المؤقّتة.
+Disallow: /admin
+Disallow: /checkout
+Disallow: /identity
+
+Sitemap: https://ihkaam.app/sitemap.xml

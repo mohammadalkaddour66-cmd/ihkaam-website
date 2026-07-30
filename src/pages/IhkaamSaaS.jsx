@@ -9,6 +9,7 @@ import IhkaamTrustStats   from '../components/IhkaamTrustStats'
 import IhkaamPartners     from '../components/IhkaamPartners'
 import IhkaamAudiences    from '../components/IhkaamAudiences'
 import IhkaamCoreFeatures    from '../components/IhkaamCoreFeatures'
+import IhkaamSmartInsights   from '../components/IhkaamSmartInsights'
 import IhkaamSystemFeatures from '../components/IhkaamSystemFeatures'
 import IhkaamConfigurator    from '../components/IhkaamConfigurator'
 import IhkaamFAQ             from '../components/IhkaamFAQ'
@@ -34,6 +35,7 @@ const SUB_NAV = [
   { label: 'نظرة عامة',    id: 'overview'  },
   { label: 'المعرض',       id: 'gallery'   },
   { label: 'الميزات',      id: 'features'  },
+  { label: 'التحليل الذكي', id: 'insights'  },
   { label: 'الإضافات',     id: 'addons'    },
   { label: 'إحكام بالأرقام', id: 'network'  },
   { label: 'الأسئلة',      id: 'faq'       },
@@ -64,9 +66,9 @@ function SubNav() {
       className="sticky z-40 overflow-x-auto"
       style={{
         top             : '64px',
-        background      : 'rgba(1,13,13,0.92)',
+        background      : 'rgba(2,15,14,0.92)',
         backdropFilter  : 'blur(16px)',
-        borderBottom    : '1px solid rgba(2,115,104,0.18)',
+        borderBottom    : '1px solid rgba(26,148,155,0.18)',
         WebkitBackdropFilter: 'blur(16px)',
       }}
     >
@@ -78,9 +80,9 @@ function SubNav() {
               key={id}
               onClick={() => scrollTo(id)}
               className="relative px-4 h-full text-xs font-semibold transition-colors duration-200 cursor-pointer whitespace-nowrap flex-shrink-0"
-              style={{ color: isActive ? '#D9ACA3' : '#5A8A78' }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#7A9E96' }}
-              onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#5A8A78' }}
+              style={{ color: isActive ? '#D9ACA3' : '#6FA5A8' }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#96BCBE' }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#6FA5A8' }}
             >
               {label}
               {isActive && (
@@ -168,7 +170,7 @@ export default function IhkaamSaaS() {
         />
         <div
           className="pointer-events-none absolute bottom-0 left-0 w-[450px] h-[450px]"
-          style={{ background: 'radial-gradient(circle at bottom left, rgba(2,115,104,0.08) 0%, transparent 65%)' }}
+          style={{ background: 'radial-gradient(circle at bottom left, rgba(26,148,155,0.08) 0%, transparent 65%)' }}
           aria-hidden
         />
 
@@ -198,7 +200,7 @@ export default function IhkaamSaaS() {
           <motion.p
             variants={heroItem}
             className="leading-[2] mb-11 mx-auto"
-            style={{ color: '#7A9E96', fontSize: 'clamp(0.9rem, 1.6vw, 1.05rem)', maxWidth: '640px' }}
+            style={{ color: '#96BCBE', fontSize: 'clamp(0.9rem, 1.6vw, 1.05rem)', maxWidth: '640px' }}
           >
             تسميع موثّق. حضور تلقائي. أولياء أمور دائماً على علم.
             إحكام يجمع كل هذا — لأن وقت كادرك أثمن من أن يضيع في الشاشات.
@@ -208,39 +210,25 @@ export default function IhkaamSaaS() {
             variants={heroItem}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-20"
           >
-            <button
-              onClick={() => scrollToSection('gallery')}
-              className="btn-cta inline-flex items-center gap-2.5 rounded-xl w-full sm:w-auto justify-center cursor-pointer"
-              style={{ fontSize: '0.9rem', padding: '0.9rem 2.2rem' }}
-            >
-             تصفّح الواجهات
-              <ArrowLeft size={16} strokeWidth={2} />
-            </button>
-
+            {/* الترتيب كان مقلوباً: التمرير للمعرض كان يلبس زي الـ CTA الأساسي
+               والتحويل الفعلي كان الزر الباهت. */}
             <Link
               to="/request"
-              className="inline-flex items-center gap-2 rounded-xl font-bold w-full sm:w-auto justify-center transition-all duration-250"
-              style={{
-                fontSize  : '0.9rem',
-                padding   : '0.9rem 2.2rem',
-                color     : '#00A896',
-                background: 'rgba(0,168,150,0.08)',
-                border    : '1px solid rgba(0,168,150,0.30)',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background  = 'rgba(0,168,150,0.15)'
-                e.currentTarget.style.borderColor = 'rgba(0,168,150,0.55)'
-                e.currentTarget.style.boxShadow   = '0 0 0 3px rgba(0,168,150,0.10)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background  = 'rgba(0,168,150,0.08)'
-                e.currentTarget.style.borderColor = 'rgba(0,168,150,0.30)'
-                e.currentTarget.style.boxShadow   = 'none'
-              }}
+              className="btn-cta inline-flex items-center gap-2.5 rounded-xl w-full sm:w-auto justify-center"
+              style={{ fontSize: '0.9rem', padding: '0.9rem 2.2rem' }}
             >
-              صمّم باقتك
-              <ArrowLeft size={16} strokeWidth={2.5} />
+              اطلب نسخة
+              <ArrowLeft size={16} strokeWidth={2} />
             </Link>
+
+            <button
+              onClick={() => scrollToSection('gallery')}
+              className="btn-outline inline-flex items-center gap-2 rounded-xl w-full sm:w-auto justify-center"
+              style={{ fontSize: '0.9rem', padding: '0.9rem 2.2rem' }}
+            >
+              تصفّح الواجهات
+              <ArrowLeft size={16} strokeWidth={2} />
+            </button>
           </motion.div>
         </motion.div>
       </section>
@@ -286,16 +274,16 @@ export default function IhkaamSaaS() {
           dir="rtl"
           className="max-w-3xl mx-auto rounded-2xl px-8 py-7 flex flex-col sm:flex-row items-center justify-between gap-5"
           style={{
-            background: 'linear-gradient(135deg, rgba(0,168,150,0.08) 0%, rgba(2,115,104,0.14) 100%)',
-            border    : '1px solid rgba(0,168,150,0.28)',
+            background: 'linear-gradient(135deg, rgba(72,214,205,0.08) 0%, rgba(26,148,155,0.14) 100%)',
+            border    : '1px solid rgba(72,214,205,0.28)',
           }}
         >
           <div className="text-right">
-            <p className="font-black text-lg mb-1" style={{ color: '#EAE4DF' }}>
+            <p className="font-black text-lg center mb-1" style={{ color: '#EAE4DF' }}>
               رأيت كيف يخدم إحكام كل دور في معهدك؟
             </p>
-            <p className="text-sm" style={{ color: '#7A9E96' }}>
-              الخطوة التالية بسيطة — صمّم باقتك وفريقنا يرافقك من أول يوم.
+            <p className="text-sm" style={{ color: '#96BCBE' }}>
+              الخطوة التالية بسيطة — اطلب نسختك وفريقنا يرافقك من أول يوم.
             </p>
           </div>
           <Link
@@ -303,7 +291,7 @@ export default function IhkaamSaaS() {
             className="btn-cta flex-shrink-0 rounded-xl whitespace-nowrap"
             style={{ fontSize: '0.9rem', padding: '0.9rem 2rem' }}
           >
-            صمّم باقتك
+            اطلب نسخة
           </Link>
         </div>
       </div>
@@ -321,6 +309,14 @@ export default function IhkaamSaaS() {
       >
         <IhkaamCoreFeatures />
       </motion.div>
+
+      {/* ════════════════════════════════════════════
+          7a — SMART INSIGHTS (the flagship core feature)
+          يقع مباشرةً بعد شبكة الميزات لأنه امتدادها لا إضافة
+          مستقلة — وقبل الخصائص التقنية كي يبقى الحديث عن
+          القيمة قبل الحديث عن البنية.
+          ════════════════════════════════════════════ */}
+      <IhkaamSmartInsights />
 
       {/* ════════════════════════════════════════════
           7b — SYSTEM FEATURES (technical characteristics)
@@ -391,9 +387,9 @@ export default function IhkaamSaaS() {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8"
-            style={{ background: 'rgba(0,168,150,0.10)', border: '1px solid rgba(0,168,150,0.25)' }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#6ABDB2' }} />
-            <span className="text-xs font-semibold tracking-wide" style={{ color: '#6ABDB2' }}>
+            style={{ background: 'rgba(72,214,205,0.10)', border: '1px solid rgba(72,214,205,0.25)' }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#48D6CD' }} />
+            <span className="text-xs font-semibold tracking-wide" style={{ color: '#48D6CD' }}>
               الآن — ابدأ تجربتك المجانية
             </span>
           </div>
@@ -402,30 +398,35 @@ export default function IhkaamSaaS() {
           <h2 className="text-3xl md:text-4xl font-black mb-4 leading-snug" style={{ color: '#EAE4DF' }}>
             جاهز لتحويل معهدك القرآني
             <br />
-            <span style={{ color: '#6ABDB2' }}>إلى منظومة رقمية متكاملة؟</span>
+            <span style={{ color: '#48D6CD' }}>إلى منظومة رقمية متكاملة؟</span>
           </h2>
 
-          <p className="text-base mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: '#7A9E96' }}>
-            أرسل لنا طلبك الآن وسيتواصل معك فريق إحكام خلال 24 ساعة لترتيب جلسة تعريفية مجانية تناسب وقتك.
+          <p className="text-base mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: '#96BCBE' }}>
+            أرسل لنا طلبك الآن وسيتواصل معك فريق إحكام 
           </p>
 
-          {/* Primary CTA */}
-          <Link
-            to="/request"
-            className="btn-cta inline-flex items-center gap-3 text-base px-10 py-4 rounded-2xl"
-            style={{ fontSize: '1rem', fontWeight: 700, textDecoration: 'none' }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
-            اطلب نسخة من إحكام الآن
-          </Link>
+          {/* الزوج القياسي: شراء ذاتي أساسي + مسار بشري ثانوي.
+             قبلها كان زراً واحداً وتحته وعد بجلسة مجانية — وعدان وباب واحد. */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              to="/request"
+              className="btn-cta inline-flex items-center gap-3 rounded-2xl w-full sm:w-auto justify-center"
+              style={{ fontSize: '1rem', padding: '1rem 2.5rem', textDecoration: 'none' }}
+            >
+              اطلب نسخة
+              <ArrowLeft size={18} strokeWidth={2} />
+            </Link>
+
+            <button
+              onClick={() => setFormOpen(true)}
+              className="btn-outline inline-flex items-center gap-2 rounded-2xl w-full sm:w-auto justify-center"
+              style={{ fontSize: '1rem', padding: '1rem 2.5rem' }}
+            >
+ اطلب تجربة مجانية            </button>
+          </div>
 
           {/* Trust note */}
-          <p className="mt-5 text-xs" style={{ color: '#3D5E55' }}>
-            بدون بطاقة ائتمانية — بدون التزام — تجربة مجانية كاملة
-          </p>
+          
         </div>
       </motion.div>
 

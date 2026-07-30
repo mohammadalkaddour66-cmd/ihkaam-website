@@ -29,7 +29,7 @@ export default function AboutSection() {
               قصتي مع الفوضى والنظام.
             </h2>
 
-            <div className="flex flex-col gap-7 text-start flex-1" style={{ color: '#7A9E96' }}>
+            <div className="flex flex-col gap-7 text-start flex-1" style={{ color: '#96BCBE' }}>
 
               <p style={{ lineHeight: '2.1', fontSize: '0.95rem' }}>
                 خلال دراستي للهندسة المدنية في جامعة حلب، وعملي الميداني لسنوات كمدرس
@@ -67,6 +67,8 @@ export default function AboutSection() {
             <img
               src={profileImg}
               alt="محمد القدّور"
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover object-top"
             />
             {/* Subtle bottom fade to tie photo into the dark canvas */}
@@ -74,7 +76,7 @@ export default function AboutSection() {
               className="absolute inset-0"
               style={{
                 background:
-                  'linear-gradient(to top, rgba(1,10,10,0.80) 0%, rgba(1,10,10,0.08) 55%, transparent 100%)',
+                  'linear-gradient(to top, rgba(2,15,14,0.80) 0%, rgba(2,15,14,0.08) 55%, transparent 100%)',
               }}
               aria-hidden
             />

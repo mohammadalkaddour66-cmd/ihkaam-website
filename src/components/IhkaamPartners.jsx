@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../config/supabaseClient'
+import { galleryImage } from '../config/imageUrl'
 import { useIsMobile } from '../hooks/useIsMobile'
 
 /* Below this count, a marquee looks sparse/awkward (too few logos to feel
@@ -20,21 +21,18 @@ function isExcluded(p) {
   return false
 }
 
+// الشعارات تُعرض بحجم 56px لكن ملفاتها الأصلية تصل إلى 173KB — نطلبها مُصغّرة
+// من الخادم (‎render/image‎) فتنزل إلى بضعة كيلوبايتات، وهي تتكرر عشرات المرات في
+// شريط الشركاء المتحرك.
 function resolveLogoUrl(url) {
-  return (url && url.startsWith(STORAGE_BASE)) ? url : null
-}
-
-function getInitials(t) {
-  if (!t) return '؟'
-  const w = t.trim().split(/\s+/).filter(Boolean)
-  return w.length === 1 ? w[0][0] : w[0][0] + w[w.length - 1][0]
+  return (url && url.startsWith(STORAGE_BASE)) ? galleryImage(url, 120) : null
 }
 
 function PartnerCard({ partner }) {
   const name    = partner.theme_config?.app_title || partner.name || partner.institute_id
   const logoSrc = resolveLogoUrl(partner.theme_config?.logo_url || '')
   const raw     = partner.theme_config?.accent_color
-  const accent  = raw && raw !== '#000000' ? raw : '#00A896'
+  const accent  = raw && raw !== '#000000' ? raw : '#48D6CD'
   const [imgOk, setImgOk] = useState(false)
 
   /* reset the "loaded" flag when the logo url changes (adjusting state during render) */
@@ -52,12 +50,16 @@ function PartnerCard({ partner }) {
     img.src = logoSrc
   }, [logoSrc])
 
+  /* المتغيّر كان يُسمّى --accent، فيحجب رمز الهوية نفسه داخل شجرة
+     البطاقة بلونٍ يأتي من theme_config لمعهدٍ آخر — أي أنّ أيّ
+     استعمالٍ لـvar(--accent) يُضاف هنا لاحقاً سيرث لون شريكٍ لا لون
+     إحكام. اسمٌ خاصّ يمنع التصادم. */
   return (
-    <div className="ihk-partner-card" style={{ '--accent': accent }}>
+    <div className="ihk-partner-card" style={{ '--partner-accent': accent }}>
       <div className="ihk-avatar" style={{ borderColor: `${accent}35`, background: `${accent}12` }}>
         {logoSrc && imgOk
           ? <img src={logoSrc} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:10 }} />
-          : <span style={{ color: accent, fontWeight: 900, fontSize: '1rem' }}>{getInitials(name)}</span>
+          : <img src="/ihkaam-app.png" alt={name} style={{ width:'100%', height:'100%', objectFit:'contain', padding:0, borderRadius:10 }} />
         }
       </div>
       <span className="ihk-partner-name" dir="rtl">{name}</span>
@@ -113,7 +115,9 @@ export default function IhkaamPartners() {
 
   return (
     <section className="relative z-10 py-14 overflow-hidden">
-      <p className="text-xs text-center mb-10 font-semibold tracking-[0.22em] uppercase" style={{ color: '#4A7A72' }}>
+      {/* كان #1A949B — درجةٌ سابعةٌ من التركوازي لا وجود لها في
+          :root، وهي لونُ حدودٍ لا لونُ نصّ. --text-3 مقيسٌ على 5:1 */}
+      <p className="text-xs text-center mb-10 font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--text-3)' }}>
         شركاء النجاح
       </p>
 
@@ -127,9 +131,23 @@ export default function IhkaamPartners() {
       )}
 
       <style>{`
+        /* direction:ltr على الحاوية لا على المسار وحده.
+
+           المسار عرضه max-content (5505px) داخل حاوية 390px، والصفحة
+           كلها RTL. وفي RTL يُسنَد الفائض إلى اليسار: يبدأ المسار عند
+           390−5505 = −5115px قبل أن تعمل الحركة أصلاً. ثم تدفعه الحركة
+           translateX(−33.3%) زيادةً 1835px لليسار، فيخرج آخر ما بقي من
+           البطاقات عن الشاشة — فيظهر الشريط فارغاً تماماً.
+
+           كان direction:ltr على المسار، وهو يضبط انسياب محتواه لا
+           موضعه هو؛ فالموضع تحكمه الحاوية. وضْعه هنا يجعل المسار
+           يبدأ من الحافة اليسرى (x=0) فتعمل الحركة كما صُمّمت.
+           قياساً: البطاقات الظاهرة على الجوال 1 من 27 → 3، وعلى
+           سطح المكتب 10 → 15. */
         .ihk-marquee-vp {
           overflow: hidden;
           width: 100%;
+          direction: ltr;
           mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
           -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
@@ -156,8 +174,8 @@ export default function IhkaamPartners() {
           gap: 0.75rem;
           padding: 0.72rem 1.1rem;
           border-radius: 16px;
-          border: 1px solid rgba(106,189,178,0.12);
-          background: rgba(1,26,26,0.55);
+          border: 1px solid rgba(72, 214, 205,0.12);
+          background: rgba(9,32,30,0.55);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           flex-shrink: 0;
@@ -166,7 +184,7 @@ export default function IhkaamPartners() {
           transition: border-color 250ms ease, transform 250ms ease, box-shadow 250ms ease;
         }
         .ihk-partner-card:hover {
-          border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+          border-color: color-mix(in srgb, var(--partner-accent) 45%, transparent);
           transform: translateY(-3px);
           box-shadow: 0 10px 30px rgba(0,0,0,0.28);
         }
@@ -186,7 +204,7 @@ export default function IhkaamPartners() {
         .ihk-partner-name {
           font-size: 0.82rem;
           font-weight: 600;
-          color: #C8B8B0;
+          color: var(--text-2);
           white-space: nowrap;
         }
       `}</style>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Users, BookOpen, ClipboardList, Bell, BarChart3, CheckCheck, ArrowLeft } from 'lucide-react'
+import { Users, BookOpen, ClipboardList, Bell, BarChart3, Brain, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 /* ─── Feature data ───────────────────────────────────────────────── */
@@ -33,29 +33,38 @@ const FEATURES = [
   },
   {
     id    : 4,
+    slug  : 'insights',
+    icon  : Brain,
+    title : 'التحليل الذكي',
+    tag   : 'إنذار مبكر قبل أن يتفاقم',
+    desc  : 'يقارن كل حلقة وكل طالب بماضيه، فيكشف التراجع مبكراً ويكتب لك سببه — من سجلاتك اليومية نفسها، بلا إدخال إضافي.',
+    slogan: 'لا تكتشف التراجع بعد شهرين.',
+    isNew : true,
+  },
+  {
+    id    : 5,
     slug  : 'parents',
     icon  : Bell,
     title : 'بوابة أولياء الأمور',
     tag   : 'تواصل مستمر وثقة أكبر',
-    desc  : 'امنح ولي الأمر نافذة مباشرة لمتابعة تقدم ابنه، والاطلاع على الإنجازات والتقارير في أي وقت.',
+    desc  : 'امنح ولي الأمر نافذة مباشرة لمتابعة تقدم ابنه، والاطلاع على سجلاته وتقاريره في أي وقت.',
     slogan: 'الثقة تبدأ بالشفافية.',
   },
   {
-    id    : 5,
+    id    : 6,
     slug  : 'reports',
     icon  : BarChart3,
     title : 'التقارير والأرشفة',
     tag   : 'بيانات تدعم القرار',
     desc  : 'استخرج تقارير دقيقة، واحتفظ بجميع البيانات في أرشيف سحابي آمن، لتحويل المعلومات اليومية إلى قرارات مدروسة.',
     slogan: 'كل قرار يبدأ من البيانات.',
-    wide  : true,
   },
 ]
 
 const COVERAGE_CHIPS = [
-  'إدارة الطلاب', 'إدارة الكادر', 'الحلقات', 'الصفوف',
-  'التسميع', 'الحضور', 'الاختبارات', 'الغياب',
-  'التقارير', 'الأرشفة', 'بوابة ولي الأمر',
+  'تسجيل الطلاب', 'تسجيل الكادر', 'الصفوف والحلقات',
+  'التسميع اليومي', 'الغياب والتأخر', 'سلوك الطلاب', 'الاختبارات',
+  'التقارير', 'التحليل الذكي', 'الأرشفة', 'بوابة ولي الأمر',
 ]
 
 /* ─── Animation variants ─────────────────────────────────────────── */
@@ -79,17 +88,17 @@ function FeatureCard({ feature }) {
       transition={{ duration: 0.22, ease: 'easeOut' }}
       className={`relative rounded-[22px] flex flex-col overflow-hidden${feature.wide ? ' md:col-span-2 lg:col-span-2' : ''}`}
       style={{
-        background: 'linear-gradient(160deg, rgba(0,168,150,0.06) 0%, rgba(1,14,14,0.95) 55%)',
-        border    : '1px solid rgba(106,189,178,0.12)',
+        background: 'linear-gradient(160deg, rgba(72,214,205,0.06) 0%, rgba(2,15,14,0.95) 55%)',
+        border    : '1px solid rgba(72,214,205,0.12)',
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(106,189,178,0.28)' }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(106,189,178,0.12)' }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(72,214,205,0.28)' }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(72,214,205,0.12)' }}
     >
       {/* Watermark number — decorative, top-left (LTR corner = left in RTL context) */}
       <span
         aria-hidden
         className="pointer-events-none absolute top-3 left-5 font-black leading-none select-none"
-        style={{ fontSize: '4.5rem', color: 'rgba(106,189,178,0.07)', lineHeight: 1 }}
+        style={{ fontSize: '4.5rem', color: 'rgba(72,214,205,0.07)', lineHeight: 1 }}
       >
         {num}
       </span>
@@ -97,7 +106,7 @@ function FeatureCard({ feature }) {
       {/* Left accent stripe */}
       <div
         className="absolute top-0 right-0 bottom-0 w-[3px] rounded-r-[22px]"
-        style={{ background: 'linear-gradient(to bottom, #6ABDB2 0%, transparent 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, #48D6CD 0%, transparent 100%)' }}
       />
 
       <div className="p-7 flex flex-col gap-5 flex-1">
@@ -106,24 +115,38 @@ function FeatureCard({ feature }) {
         <div
           className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{
-            background: 'rgba(2,115,104,0.18)',
-            border    : '1px solid rgba(106,189,178,0.16)',
+            background: 'rgba(26,148,155,0.18)',
+            border    : '1px solid rgba(72,214,205,0.16)',
           }}
         >
-          <Icon size={20} style={{ color: '#6ABDB2' }} strokeWidth={1.55} />
+          <Icon size={20} style={{ color: '#48D6CD' }} strokeWidth={1.55} />
         </div>
 
         {/* Title + tagline */}
         <div className="flex flex-col gap-1.5">
-          <h3
-            className="font-black leading-snug"
-            style={{ color: '#EAE4DF', fontSize: 'clamp(1rem, 1.5vw, 1.1rem)' }}
-          >
-            {feature.title}
-          </h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3
+              className="font-black leading-snug"
+              style={{ color: '#EAE4DF', fontSize: 'clamp(1rem, 1.5vw, 1.1rem)' }}
+            >
+              {feature.title}
+            </h3>
+            {feature.isNew && (
+              <span
+                className="text-[0.6rem] font-black px-2 py-0.5 rounded-full whitespace-nowrap"
+                style={{
+                  color     : '#D9ACA3',
+                  background: 'rgba(217,172,163,0.10)',
+                  border    : '1px solid rgba(217,172,163,0.28)',
+                }}
+              >
+                جديد
+              </span>
+            )}
+          </div>
           <span
             className="text-xs font-bold"
-            style={{ color: '#00A896', letterSpacing: '0.025em' }}
+            style={{ color: '#48D6CD', letterSpacing: '0.025em' }}
           >
             {feature.tag}
           </span>
@@ -140,7 +163,7 @@ function FeatureCard({ feature }) {
         {/* Slogan */}
         <p
           className="text-xs font-black tracking-wide"
-          style={{ color: 'rgba(106,189,178,0.50)', letterSpacing: '0.04em' }}
+          style={{ color: 'rgba(72,214,205,0.50)', letterSpacing: '0.04em' }}
         >
           {feature.slogan}
         </p>
@@ -150,19 +173,19 @@ function FeatureCard({ feature }) {
           to={`/ihkaam/features/${feature.slug}`}
           className="inline-flex items-center gap-2 text-xs font-bold w-fit px-3.5 py-2 rounded-lg transition-all duration-200"
           style={{
-            color      : '#6ABDB2',
-            background : 'rgba(106,189,178,0.07)',
-            border     : '1px solid rgba(106,189,178,0.18)',
+            color      : '#48D6CD',
+            background : 'rgba(72,214,205,0.07)',
+            border     : '1px solid rgba(72,214,205,0.18)',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background  = 'rgba(106,189,178,0.14)'
-            e.currentTarget.style.borderColor  = 'rgba(106,189,178,0.45)'
+            e.currentTarget.style.background  = 'rgba(72,214,205,0.14)'
+            e.currentTarget.style.borderColor  = 'rgba(72,214,205,0.45)'
             e.currentTarget.style.color        = '#8FDFD6'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background  = 'rgba(106,189,178,0.07)'
-            e.currentTarget.style.borderColor  = 'rgba(106,189,178,0.18)'
-            e.currentTarget.style.color        = '#6ABDB2'
+            e.currentTarget.style.background  = 'rgba(72,214,205,0.07)'
+            e.currentTarget.style.borderColor  = 'rgba(72,214,205,0.18)'
+            e.currentTarget.style.color        = '#48D6CD'
           }}
         >
           اعرف المزيد
@@ -204,7 +227,7 @@ export default function IhkaamCoreFeatures() {
           </h2>
           <p
             className="text-sm mx-auto"
-            style={{ color: '#5A8A7E', maxWidth: '580px', lineHeight: '2' }}
+            style={{ color: '#509492', maxWidth: '580px', lineHeight: '2' }}
           >
             تحتوي النسخة الأساسية على جميع الأدوات اليومية اللازمة لإدارة المعهد القرآني بكفاءة،
             بدءًا من تسجيل الطلاب وتنظيم الحلقات، وصولًا إلى المتابعة اليومية والتقارير وبوابة أولياء الأمور.
@@ -228,8 +251,8 @@ export default function IhkaamCoreFeatures() {
         <motion.div
           className="mt-8 rounded-[20px] p-6"
           style={{
-            background: 'rgba(0,168,150,0.04)',
-            border    : '1px solid rgba(0,168,150,0.12)',
+            background: 'rgba(72,214,205,0.04)',
+            border    : '1px solid rgba(72,214,205,0.12)',
           }}
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -237,23 +260,27 @@ export default function IhkaamCoreFeatures() {
           transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
         >
           <p
-            className="text-xs font-semibold tracking-[0.20em] uppercase text-center mb-5"
-            style={{ color: '#3D6A62' }}
+            className="text-xs font-semibold tracking-[0.20em] uppercase text-center mb-3.5"
+            style={{ color: 'var(--text-3)' }}
           >
             النسخة الأساسية تغطي
           </p>
-          <div className="flex flex-wrap gap-2 justify-center">
+          {/* أُزيلت علامة الصحّ من كل شريحة.
+             إحدى عشرة علامةً متطابقة لا تحمل معلومة: العنوان فوقها
+             يقول «تغطي» أصلاً، فكلّ ما تحتها مغطّى بالتعريف. وكانت
+             تكلّف 16px عرضاً لكل شريحة (أيقونة 10 + فجوة 6)، وهو
+             ما يحشر الصفّ في ثلاث شرائح بدل أربع فيطول الصندوق. */}
+          <div className="flex flex-wrap gap-1.5 justify-center">
             {COVERAGE_CHIPS.map(chip => (
               <span
                 key={chip}
-                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
+                className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
                 style={{
-                  background: 'rgba(0,168,150,0.09)',
-                  border    : '1px solid rgba(0,168,150,0.18)',
-                  color     : '#6ABDB2',
+                  background: 'rgba(72,214,205,0.09)',
+                  border    : '1px solid rgba(72,214,205,0.18)',
+                  color     : 'var(--accent)',
                 }}
               >
-                <CheckCheck size={10} style={{ color: '#00A896', flexShrink: 0 }} strokeWidth={3} />
                 {chip}
               </span>
             ))}

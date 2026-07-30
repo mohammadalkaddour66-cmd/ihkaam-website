@@ -1,10 +1,51 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../config/supabaseClient'
+import { fetchLandingStats } from '../config/landingStats'
+
+/* ══════════════════════════════════════════════════════
+   لونٌ واحد لكل مجموعة، لا لونٌ لكل بطاقة.
+
+   كانت تسع بطاقاتٍ بستّة ألوان: ‎#D9ACA3‎ ثلاثاً، و‎#E0C79A‎ مرّتين،
+   و‎#C9A67E‎ و‎#F0C97A‎ و‎#96BCBE‎ و‎#48D6CD‎. سبعٌ من التسع دافئة —
+   أي أنّ الثانويّ كان يحكم أكبر قسمٍ رقميّ في الصفحة، والأساسيّ
+   ضيفاً فيه. ولم تكن الستّة تعني شيئاً: بطاقتان بلونين مختلفين
+   داخل المجموعة الواحدة، وبطاقتان بلونٍ واحد عبر مجموعتين.
+
+   المجموعة هي وحدة المعنى هنا، فهي وحدة اللون:
+     ١ التسميع والحفظ   → الأساسيّ. جوهر المنتج.
+     ٢ الإنجاز والتميّز  → الدفء. هذه دلالته، وهذا موضعه الوحيد
+                          في القسم — ثلاث بطاقاتٍ متجاورة تُقرأ
+                          كتلةً مقصودة، لا كسبعٍ مبثوثةٍ عشواءً.
+     ٣ إدارة المعهد     → محايد. تشغيلٌ يوميّ لا إنجاز.
+
+   المجموعة الثانية كانت الذهبَ ‎#E3A93F‎: درجته 39° وتشبّعه 76%،
+   فتُقرأ برتقالياً صاخباً — وثلاث بطاقاتٍ متجاورة تضاعف الصخب.
+   ثم صارت ‎--warm #D9B29C‎ (درجة 22°) بنفس الدلالة.
+
+   وفي 2026-07-30 صارت الثلاث درجاتٍ من اللكنة الواحدة، بعد ما
+   استُقرّ في بطاقات الشهادات: الدفءُ فوق سطحٍ درجتُه 174° يشدّ
+   الأخضر إلى الأمام — اللونان شبه متقابلين على العجلة، فيزيد كلٌّ
+   منهما تشبّعَ الآخر في العين. وثلاث بطاقاتٍ دافئة في المنتصف
+   كانت أكبرَ رقعةٍ يقع فيها هذا في الصفحة.
+
+   والمجموعة تبقى وحدةَ اللون كما هي، لكن **التمايز بالإضاءة داخل
+   العائلة** لا بدرجةٍ لونية جديدة:
+     ١ التسميع والحفظ  → ‎#48D6CD‎  اللكنة نفسها. جوهر المنتج ولون القسم.
+     ٢ الإنجاز والتميّز → ‎#6FE7DE‎  أعلى إضاءة — الإنجاز يلمع.
+     ٣ إدارة المعهد    → ‎#2FAEB4‎  أخفتها — تشغيلٌ يوميّ لا إنجاز.
+   وثلاثتها ≥7:1 على ‎--canvas‎، والرقم نصٌّ بلون المجموعة.
+
+   glowRgb ثلاثيةٌ صريحة لأن وميض العدّاد يُحرَّك عبر framer:
+   الحركة تستبدل السلاسل بينياً، وسلسلةُ color-mix لا تقبل ذلك. */
+const GROUPS = {
+  recite : { color: 'var(--accent)',       glowRgb: '72,214,205'  },
+  achieve: { color: 'var(--accent-hover)', glowRgb: '111,231,222' },
+  manage : { color: 'var(--accent-deep)',  glowRgb: '47,174,180'  },
+}
 
 // ── Animated counter — starts only when `trigger` becomes true ────────────────
 // Glow effect uses textShadow (not absolute positioning) so it never gets clipped
-function CountUp({ to, duration = 1600, trigger, color }) {
+function CountUp({ to, duration = 1600, trigger, glowRgb }) {
   const [val, setVal]       = useState(0)
   const [glowing, setGlowing] = useState(false)
   const raf = useRef(null)
@@ -33,10 +74,10 @@ function CountUp({ to, duration = 1600, trigger, color }) {
     <motion.span
       animate={glowing ? {
         textShadow: [
-          `0 0 0px ${color}00`,
-          `0 0 18px ${color}, 0 0 36px ${color}88`,
-          `0 0 8px  ${color}44`,
-          `0 0 0px  ${color}00`,
+          `0 0 0px  rgba(${glowRgb},0)`,
+          `0 0 18px rgba(${glowRgb},1), 0 0 36px rgba(${glowRgb},0.53)`,
+          `0 0 8px  rgba(${glowRgb},0.27)`,
+          `0 0 0px  rgba(${glowRgb},0)`,
         ],
         scale: [1, 1.07, 1],
       } : {}}
@@ -48,39 +89,48 @@ function CountUp({ to, duration = 1600, trigger, color }) {
 }
 
 // ── Single stat card ──────────────────────────────────────────────────────────
-function StatCard({ value, prefix = '+', label, desc, color, index, trigger }) {
+function StatCard({ value, prefix = '+', label, desc, color, glowRgb, index, trigger }) {
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-30px' }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: index * 0.07 }}
-      className="relative flex flex-col gap-3 rounded-2xl p-6 h-full"
-      style={{ background: 'rgba(1,28,28,0.60)', border: `1px solid ${color}20` }}
+      className="stat-card flex flex-col gap-2.5 px-6 pt-7 pb-6 h-full"
+      style={{ '--gc': color }}
     >
-      {/* Glow */}
-      <div className="absolute top-0 right-0 w-20 h-20 rounded-bl-[60px] pointer-events-none"
-        style={{ background: `radial-gradient(circle at top right, ${color}14, transparent 70%)` }} />
+      {/* وهجُ الزاوية */}
+      <div className="pointer-events-none absolute top-0 end-0 w-28 h-28" aria-hidden
+        style={{ background: 'radial-gradient(circle at top left, color-mix(in srgb, var(--gc) 11%, transparent), transparent 70%)' }} />
 
-      {/* Value */}
-      <div className="flex items-baseline gap-1">
+      {/* بلورةُ الضوء تحت الشريط العلويّ — الشريط 2px مصمت يُقرأ
+          خطاً مطبوعاً؛ وهذه هالته، فيُقرأ باثّاً للضوء. الشهادات
+          نالت نفسها خطاً داخلياً على الحرف الأعلى، ولا يصلح هنا
+          لأن الشريط يغطّيه. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-10" aria-hidden
+        style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--gc) 9%, transparent), transparent)' }} />
+
+      {/* الرقم. الزائدةُ أصغرُ وأخفتُ فلا تُقرأ جزءاً من العدد،
+          و‏.num-seq تعزلها عن اتجاه الفقرة فلا تنقلب. */}
+      <div className="relative flex items-baseline gap-0.5 num-seq">
+        <span className="font-black tabular-nums leading-none"
+          style={{ fontSize: 'clamp(1.9rem,3.2vw,2.6rem)', color: 'var(--gc)' }}>
+          <CountUp to={value} trigger={trigger} glowRgb={glowRgb} />
+        </span>
         {prefix && (
-          <span className="font-black" style={{ fontSize: 'clamp(1.2rem,2vw,1.6rem)', color: color + 'cc' }}>
+          <span className="font-black leading-none"
+            style={{ fontSize: '0.95rem', color: 'color-mix(in srgb, var(--gc) 55%, transparent)' }}>
             {prefix}
           </span>
         )}
-        <span className="font-black tabular-nums leading-none"
-          style={{ fontSize: 'clamp(2rem,3.5vw,2.8rem)', color }}>
-          <CountUp to={value} trigger={trigger} color={color} />
-        </span>
       </div>
 
-      {/* Label */}
-      <p className="font-bold text-sm" style={{ color: '#C8B8B0' }}>{label}</p>
+      {/* العنوان صار --text-1: كان --text-2 فيقرأ بوزن الوصف نفسه،
+          فلا هرميّة داخل البطاقة — رقمٌ ثم سطران متساويان. */}
+      <p className="relative font-bold text-sm leading-snug" style={{ color: 'var(--text-1)' }}>{label}</p>
 
-      {/* Desc */}
-      <p className="text-xs leading-relaxed" style={{ color: '#5A8A78' }}>{desc}</p>
-    </motion.div>
+      <p className="relative text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>{desc}</p>
+    </motion.article>
   )
 }
 
@@ -88,7 +138,10 @@ function StatCard({ value, prefix = '+', label, desc, color, index, trigger }) {
 function SkeletonCard() {
   return (
     <div className="rounded-2xl p-6 animate-pulse h-44"
-      style={{ background: 'rgba(1,28,28,0.60)', border: '1px solid rgba(255,255,255,0.06)' }} />
+      style={{
+        background: 'linear-gradient(145deg, color-mix(in srgb, var(--canvas-2) 70%, transparent), color-mix(in srgb, var(--canvas) 95%, transparent))',
+        border    : '1px solid rgba(255,255,255,0.06)',
+      }} />
   )
 }
 
@@ -104,7 +157,7 @@ function GroupLabel({ children, color }) {
     >
       <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: color }} />
       <span className="text-[11px] font-bold tracking-[0.20em] uppercase" style={{ color }}>{children}</span>
-      <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${color}25)` }} />
+      <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, color-mix(in srgb, ${color} 16%, transparent))` }} />
     </motion.div>
   )
 }
@@ -153,31 +206,17 @@ export default function IhkaamByNumbers() {
   const trigger = sectionVisible && !loading
 
   useEffect(() => {
-    Promise.all([
-      // Group 1 — recitation breakdown
-      supabase.from('recitations').select('*', { count: 'exact', head: true }),
-      supabase.from('recitations').select('*', { count: 'exact', head: true }).eq('category', 'قرآن'),
-      supabase.from('recitations').select('*', { count: 'exact', head: true }).eq('category', 'حديث'),
-      // Group 2 — achievement
-      supabase.from('tests').select('*', { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('stars_of_the_week').select('*', { count: 'exact', head: true }),
-      supabase.from('subjects').select('*', { count: 'exact', head: true }),
-      // Group 3 — institute
-      supabase.from('students').select('*', { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('staff').select('*', { count: 'exact', head: true }).eq('is_deleted', false),
-      supabase.from('attendance').select('*', { count: 'exact', head: true })
-        .eq('record_type', 'غياب').eq('is_deleted', false),
-    ]).then(([rAll, rQuran, rHadith, rTests, rStars, rSubj, rStud, rStaff, rAbs]) => {
+    fetchLandingStats().then(s => {
       setData({
-        recitations : rAll.count    ?? 0,
-        quranRecs   : rQuran.count  ?? 0,
-        hadithRecs  : rHadith.count ?? 0,
-        tests       : rTests.count  ?? 0,
-        stars       : rStars.count  ?? 0,
-        subjects    : rSubj.count   ?? 0,
-        students    : rStud.count   ?? 0,
-        staff       : rStaff.count  ?? 0,
-        absences    : rAbs.count    ?? 0,
+        recitations : s.recitations,        // المجموعة 1 — تفصيل التسميع
+        quranRecs   : s.recitationsQuran,
+        hadithRecs  : s.recitationsHadith,
+        tests       : s.tests,              // المجموعة 2 — الإنجاز
+        stars       : s.stars,
+        subjects    : s.subjects,
+        students    : s.students,           // المجموعة 3 — المعهد
+        staff       : s.staff,
+        absences    : s.absences,
       })
       setLoading(false)
     })
@@ -188,19 +227,19 @@ export default function IhkaamByNumbers() {
       value : data.recitations,
       label : 'جلسة تسميع موثقة',
       desc  : 'كل جلسة مسجلة رقمياً — بتاريخها ودرجتها ومادتها، لكل طالب على حدة',
-      color : '#6ABDB2',
+      ...GROUPS.recite,
     },
     {
       value : data.quranRecs,
       label : 'جلسة تسميع قرآن كريم',
       desc  : 'حفظاً ومراجعةً وتلاوةً — كل جلسة موثقة بصفحاتها ونتيجتها',
-      color : '#A3D9B5',
+      ...GROUPS.recite,
     },
     {
       value : data.hadithRecs,
       label : 'جلسة تسميع حديث نبوي',
       desc  : 'المعلم يوثّق تسميع الأحاديث بنفس دقة القرآن — لا فرق في الأهمية',
-      color : '#B5A3D9',
+      ...GROUPS.recite,
     },
   ] : []
 
@@ -209,20 +248,20 @@ export default function IhkaamByNumbers() {
       value : data.tests,
       label : 'اختبار موثق',
       desc  : 'اختبارات المراحل والأجزاء مسجلة رقمياً — بالنتيجة والتاريخ والمادة',
-      color : '#D9C4A3',
+      ...GROUPS.achieve,
     },
     {
       value : data.stars,
       label : 'نجم حلقة تم تتويجه',
       desc  : 'كل أسبوع يُختار نجم — يُعلَم أهله، يُسجَّل إنجازه، ويبقى في سجله للأبد',
-      color : '#F5D87A',
+      ...GROUPS.achieve,
     },
     {
       value  : data.subjects,
       prefix : '',
       label  : 'مادة شرعية رديفة تُدار',
       desc   : 'الفقه، العقيدة، التجويد، السيرة وغيرها — تُتابَع بنفس دقة القرآن',
-      color  : '#C4D9A3',
+      ...GROUPS.achieve,
     },
   ] : []
 
@@ -231,28 +270,28 @@ export default function IhkaamByNumbers() {
       value : data.students,
       label : 'طالب يُتابَع يومياً',
       desc  : 'لكل طالب سجله الكامل: الحضور، التسميع، الملاحظات — بدون ورقة واحدة',
-      color : '#A3C4D9',
+      ...GROUPS.manage,
     },
     {
       value : data.staff,
       label : 'معلم يوثّق بدون ورق',
       desc  : 'وقتهم للتعليم، لا لملء السجلات — إحكام يتولى الباقي',
-      color : '#D9C8A3',
+      ...GROUPS.manage,
     },
     {
       value : data.absences,
       label : 'حالة غياب وثّقت',
       desc  : 'ولي الأمر يعلم في دقائق — لا في نهاية الأسبوع، ولا حين يسأل',
-      color : '#D9ACA3',
+      ...GROUPS.manage,
     },
   ] : []
 
   return (
-    <section ref={sectionRef} dir="rtl" className="relative py-20 overflow-hidden" style={{ background: '#010D0D' }}>
+    <section ref={sectionRef} dir="rtl" className="relative py-20 overflow-hidden" style={{ background: 'var(--canvas)' }}>
 
       {/* Ambient */}
       <div className="pointer-events-none absolute inset-0" aria-hidden style={{
-        background: 'radial-gradient(ellipse 60% 40% at 50% 60%, rgba(2,115,104,0.06) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse 60% 40% at 50% 60%, rgba(26, 148, 155,0.06) 0%, transparent 70%)',
       }} />
 
       <div className="max-w-6xl mx-auto px-6">
@@ -263,34 +302,40 @@ export default function IhkaamByNumbers() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.60, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12"
+          className="mb-12 text-center"
         >
-          <span className="text-xs font-bold tracking-[0.22em] uppercase" style={{ color: '#6ABDB2' }}>
+          {/* كان هذا القسم وحده غير موسّط بين أقسام الرئيسية الستّة —
+             الخمسة الأخرى تُوسّط ترويستها. والتوسيط هنا ليس ذوقاً
+             فحسب: العمود على الجوال ضيّق، والترويسة سطران أو ثلاثة،
+             فالتوسيط يوازنها. أما المتن الطويل فيبقى محاذى للبداية
+             حيث كان — النصّ الموسّط الطويل يُتعب العين لأن بداية كل
+             سطر تتزحزح فيضيع مكان الاستئناف. وهذه فقرة سطرين. */}
+          <span className="text-xs font-bold tracking-[0.22em] uppercase" style={{ color: 'var(--accent)' }}>
             إحكام بالأرقام
           </span>
-          <h2 className="font-black mt-2 mb-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', color: '#EAE4DF', lineHeight: 1.2 }}>
+          <h2 className="font-black mt-2 mb-3" style={{ fontSize: 'clamp(1.9rem, 4vw, 3.1rem)', lineHeight: 1.28, color: 'var(--text-1)' }}>
             هذا ما فعله إحكام{' '}
-            <span style={{ color: '#6ABDB2' }}>حتى اليوم</span>
+            <span style={{ color: 'var(--accent)' }}>حتى اليوم</span>
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: '#7A9E96', maxWidth: 480 }}>
+          <p className="text-sm leading-relaxed mx-auto" style={{ color: 'var(--text-2)', maxWidth: 480 }}>
             أرقام حقيقية من قاعدة البيانات — لا متوسطات، لا مقارنات، فقط ما تم فعلاً
           </p>
         </motion.div>
 
         {/* Group 1 — التسميع والحفظ */}
-        <GroupLabel color="#6ABDB2">التسميع والحفظ</GroupLabel>
+        <GroupLabel color={GROUPS.recite.color}>التسميع والحفظ</GroupLabel>
         <div className="mb-4">
           <SmartGrid cards={group1} loading={loading} trigger={trigger} />
         </div>
 
         {/* Group 2 — الإنجاز والتميز */}
-        <GroupLabel color="#F5D87A">الإنجاز والتميز</GroupLabel>
+        <GroupLabel color={GROUPS.achieve.color}>الإنجاز والتميز</GroupLabel>
         <div className="mb-4">
           <SmartGrid cards={group2} loading={loading} trigger={trigger} />
         </div>
 
         {/* Group 3 — إدارة المعهد */}
-        <GroupLabel color="#D9ACA3">إدارة المعهد</GroupLabel>
+        <GroupLabel color={GROUPS.manage.color}>إدارة المعهد</GroupLabel>
         <SmartGrid cards={group3} loading={loading} trigger={trigger} />
 
       </div>

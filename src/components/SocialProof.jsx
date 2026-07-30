@@ -24,7 +24,7 @@ export default function SocialProof() {
               className={`text-center ${
                 /* Vertical divider between items on desktop */
                 i < stats.length - 1
-                  ? 'md:border-e md:border-e-[rgba(2,115,104,0.20)]'
+                  ? 'md:border-e md:border-e-[rgba(26,148,155,0.20)]'
                   : ''
               }`}
             >
@@ -36,7 +36,7 @@ export default function SocialProof() {
               </div>
               <div
                 className="text-xs font-medium"
-                style={{ color: '#7A9E96' }}
+                style={{ color: '#96BCBE' }}
               >
                 {label}
               </div>

@@ -4,11 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import FloatingBg  from './FloatingBg'
 import Navbar      from './Navbar'
 import Footer      from './Footer'
-import { useIsMobile } from '../hooks/useIsMobile'
-
-/* Pages that render their own persistent mobile bottom action bar —
-   the WhatsApp button needs to lift above it there so they don't overlap. */
-const PAGES_WITH_MOBILE_STICKY_BAR = ['/request']
 
 /* Scroll to top on route change — skip when hash present */
 function ScrollReset() {
@@ -31,20 +26,41 @@ function ScrollReset() {
   return null
 }
 
-const WA_NUMBER = '963951590406'
+const WA_NUMBER = '963947409106'
 const WA_MESSAGE = encodeURIComponent('السلام عليكم، أريد الاستفسار عن منصة إحكام')
 
 function WhatsAppButton() {
   const [visible, setVisible] = useState(false)
+  const [atFooter, setAtFooter] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const isMobile = useIsMobile()
   const { pathname } = useLocation()
-  const liftForStickyBar = isMobile && PAGES_WITH_MOBILE_STICKY_BAR.includes(pathname)
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 1200)
     return () => clearTimeout(timer)
   }, [])
+
+  /* يختفي الزرّ عند بلوغ التذييل.
+     وهو ثابت الموضع (fixed)، فيطفو فوق شريط التذييل السفلي ويجاور
+     صفّ أيقونات التواصل. والقياس يقول إن الشريط موسّطٌ تماماً —
+     مركزه 195 ومنتصف الشاشة 195 — لكن كتلة خضراء كبيرة على اليسار
+     تُخِلّ بالتوازن البصري فيُقرأ الصفّ منحرفاً وهو ليس كذلك.
+
+     وواتساب مبذولٌ في التذييل مرّتين أصلاً: بطاقة في شريط القنوات،
+     وأيقونة في الصفّ السفلي. فالزرّ العائم هناك تكرارٌ ثالث يزاحم
+     ما يكرّره. الإخفاء يحلّ الأمرين معاً. */
+  useEffect(() => {
+    const footer = document.querySelector('footer')
+    if (!footer) return
+    const obs = new IntersectionObserver(
+      ([e]) => setAtFooter(e.isIntersecting),
+      { rootMargin: '0px 0px -40px 0px' }
+    )
+    obs.observe(footer)
+    return () => obs.disconnect()
+  }, [pathname])
+
+  const shown = visible && !atFooter
 
   return (
     <a
@@ -56,21 +72,27 @@ function WhatsAppButton() {
       onMouseLeave={() => setHovered(false)}
       style={{
         position  : 'fixed',
-        bottom    : liftForStickyBar ? '5.5rem' : '1.75rem',
+        /* Pages with a transient mobile action bar set --wa-lift while it is
+           on screen, so the button steps aside only for as long as it needs to. */
+        bottom    : 'var(--wa-lift, 1.75rem)',
         left      : '1.75rem',
         zIndex    : 999,
         display   : 'flex',
         alignItems: 'center',
-        gap       : '0.6rem',
+        /* Conditional, not constant: a flex gap is reserved even when the
+           neighbouring label is collapsed to maxWidth:0, so a fixed value left
+           9.6px of dead green past the icon — the circle read as a stub. */
+        gap       : hovered ? '0.6rem' : '0',
         borderRadius: '999px',
         padding   : hovered ? '0.72rem 1.1rem 0.72rem 0.72rem' : '0.72rem',
         background: '#25D366',
         boxShadow : hovered
           ? '0 8px 32px rgba(37,211,102,0.50), 0 2px 8px rgba(0,0,0,0.25)'
           : '0 4px 20px rgba(37,211,102,0.38), 0 2px 8px rgba(0,0,0,0.22)',
-        opacity   : visible ? 1 : 0,
-        transform : visible ? 'scale(1)' : 'scale(0.7)',
-        transition: 'all 0.30s cubic-bezier(0.22,1,0.36,1)',
+        opacity      : shown ? 1 : 0,
+        transform    : shown ? 'scale(1)' : 'scale(0.7)',
+        pointerEvents: shown ? 'auto' : 'none',  /* لا يُلتقط وهو شفاف */
+        transition   : 'all 0.30s cubic-bezier(0.22,1,0.36,1)',
         textDecoration: 'none',
         overflow  : 'hidden',
         whiteSpace: 'nowrap',

@@ -7,7 +7,7 @@ const MONTH_NAMES = [
   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
 ]
 
-function SVGChart({ data, width, height, color = '#6ABDB2' }) {
+function SVGChart({ data, width, height, color = '#48D6CD' }) {
   if (!data.length) return null
 
   const padT = 20, padB = 30, padL = 6, padR = 6
@@ -70,9 +70,9 @@ function SVGChart({ data, width, height, color = '#6ABDB2' }) {
           <text key={i}
             x={x(i)} y={height - 4}
             textAnchor="middle"
-            fill="#2A4040"
+            fill="#1C423A"
             fontSize={9}
-            fontFamily="Tajawal, sans-serif"
+            fontFamily="Cairo, sans-serif"
           >
             {MONTH_NAMES[parseInt(mm)] || mm}
           </text>
@@ -103,7 +103,7 @@ export default function MonthlyTrends({ data = [], loading }) {
   })()
 
   const TrendIcon = trendPct == null ? Minus : trendPct > 0 ? TrendingUp : TrendingDown
-  const trendColor = trendPct == null ? '#3D5050' : trendPct > 0 ? '#6ABDB2' : '#D9ACA3'
+  const trendColor = trendPct == null ? '#374D56' : trendPct > 0 ? '#48D6CD' : '#D9ACA3'
 
   /* Total for the period */
   const periodTotal = data.reduce((s, d) => s + d.count, 0)
@@ -115,14 +115,14 @@ export default function MonthlyTrends({ data = [], loading }) {
         {/* Header row */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#6ABDB2' }}>
+            <span className="text-xs font-bold tracking-widest uppercase" style={{ color: '#48D6CD' }}>
               نبض الشبكة
             </span>
             <h2 className="font-black mt-1 mb-1"
               style={{ fontSize: 'clamp(1.3rem,2.2vw,1.9rem)', color: '#EAE4DF' }}>
               جلسات التسميع — آخر 12 شهراً
             </h2>
-            <p className="text-xs" style={{ color: '#7A9E96' }}>
+            <p className="text-xs" style={{ color: '#96BCBE' }}>
               إجمالي جلسات التسميع المسجلة عبر كل مراكز الشبكة
             </p>
           </div>
@@ -130,11 +130,11 @@ export default function MonthlyTrends({ data = [], loading }) {
           <div className="flex items-center gap-3">
             {periodTotal > 0 && (
               <div className="px-4 py-2 rounded-xl"
-                style={{ background: 'rgba(106,189,178,0.07)', border: '1px solid rgba(106,189,178,0.14)' }}>
-                <p className="font-black text-sm tabular-nums leading-none" style={{ color: '#6ABDB2' }}>
+                style={{ background: 'rgba(72,214,205,0.07)', border: '1px solid rgba(72,214,205,0.14)' }}>
+                <p className="font-black text-sm tabular-nums leading-none" style={{ color: '#48D6CD' }}>
                   +{periodTotal.toLocaleString('en-US')}
                 </p>
-                <p className="text-[10px] mt-0.5" style={{ color: '#3D5050' }}>السنة الماضية</p>
+                <p className="text-[10px] mt-0.5" style={{ color: '#374D56' }}>السنة الماضية</p>
               </div>
             )}
             {trendPct !== null && (
@@ -144,7 +144,7 @@ export default function MonthlyTrends({ data = [], loading }) {
                 <span className="font-black text-sm" style={{ color: trendColor }}>
                   {trendPct > 0 ? '+' : ''}{trendPct}٪
                 </span>
-                <span className="text-[10px]" style={{ color: '#3D5050' }}>/ 3 أشهر</span>
+                <span className="text-[10px]" style={{ color: '#374D56' }}>/ 3 أشهر</span>
               </div>
             )}
           </div>
@@ -158,26 +158,26 @@ export default function MonthlyTrends({ data = [], loading }) {
           viewport={{ once: true }}
           transition={{ duration: 0.55 }}
           className="rounded-2xl overflow-hidden"
-          style={{ background: '#011E1E', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: '#09201E', border: '1px solid rgba(255,255,255,0.06)' }}
         >
           {loading ? (
             <div className="flex items-center justify-center" style={{ height: 190 }}>
               <div className="w-7 h-7 rounded-full border-2 animate-spin"
-                style={{ borderColor: '#6ABDB2', borderTopColor: 'transparent' }} />
+                style={{ borderColor: '#48D6CD', borderTopColor: 'transparent' }} />
             </div>
           ) : data.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 text-center p-10"
               style={{ height: 190 }}>
-              <p className="text-xs" style={{ color: '#2A4040' }}>
+              <p className="text-xs" style={{ color: '#1C423A' }}>
                 البيانات التاريخية الشهرية تظهر هنا بعد تشغيل الـ RPC في Supabase
               </p>
-              <p className="text-[10px]" style={{ color: '#1A2E2E' }}>
-                شغّل: <code style={{ color: '#5A8A78' }}>supabase/migrations/20260629_monthly_stats.sql</code>
+              <p className="text-[10px]" style={{ color: '#11312C' }}>
+                شغّل: <code style={{ color: '#6FA5A8' }}>supabase/migrations/20260629_monthly_stats.sql</code>
               </p>
             </div>
           ) : (
             <div className="p-4 pt-6">
-              <SVGChart data={data} width={width - 32} height={190} color="#6ABDB2" />
+              <SVGChart data={data} width={width - 32} height={190} color="#48D6CD" />
             </div>
           )}
         </motion.div>
