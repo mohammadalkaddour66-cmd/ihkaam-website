@@ -1,0 +1,32 @@
+{
+  "projectId": "4eceecf9-a310-4ba6-810e-19e18d937bc0",
+  "shape": "package",
+  "pkg": "my-website",
+  "globalName": "Ihkaam",
+  "srcDir": "src",
+  "cssEntry": ".design-sync/compiled.css",
+  "extraFonts": [".design-sync/fonts/cairo.css"],
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "FloatingBg": { "cardMode": "single", "primaryStory": "BehindContent" }
+  },
+  "componentSrcMap": {
+    "RippleButton": "src/components/RippleButton.jsx",
+    "QualityScore": "src/components/QualityScore.jsx",
+    "FloatingBg": "src/components/FloatingBg.jsx",
+    "GlowCursor": "src/components/GlowCursor.jsx",
+    "StatsSection": "src/components/StatsSection.jsx",
+    "SocialProof": "src/components/SocialProof.jsx",
+    "PainSection": "src/components/PainSection.jsx",
+    "AboutSection": null,
+    "ServicesSection": "src/components/ServicesSection.jsx",
+    "ProductsSection": "src/components/ProductsSection.jsx",
+    "SolutionPreviewSection": "src/components/SolutionPreviewSection.jsx",
+    "IhkaamFAQ": "src/components/IhkaamFAQ.jsx",
+    "IhkaamByNumbers": "src/components/IhkaamByNumbers.jsx",
+    "IhkaamTrustStats": "src/components/IhkaamTrustStats.jsx",
+    "IhkaamAudiences": "src/components/IhkaamAudiences.jsx",
+    "IhkaamDetailedFeatures": "src/components/IhkaamDetailedFeatures.jsx",
+    "IhkaamSystemFeatures": "src/components/IhkaamSystemFeatures.jsx"
+  }
+}

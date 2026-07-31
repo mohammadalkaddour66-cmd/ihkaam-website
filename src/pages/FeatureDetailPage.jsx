@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, ArrowLeft, CheckCircle2, XCircle, Star, Headphones, Brain } from 'lucide-react'
 import { FEATURES } from '../data/featureDetails'
+import PageMeta from '../components/PageMeta'
+import { FEATURE_SEO, FEATURE_KEYWORDS } from '../config/seo'
 
 /* ═══════════════════════════════════════════════
    SHARED ATOMS
@@ -776,7 +778,21 @@ export default function FeatureDetailPage() {
     </div>
   )
 
-  if (f.layout === 'split')    return <SplitLayout f={f} />
-  if (f.layout === 'showcase') return <ShowcaseLayout f={f} />
-  return <FlowLayout f={f} />
+  /* عناوين الفهرسة مفصولةٌ عن عناوين العرض عن قصد: f.title خطافٌ يجذب
+     من وصل الصفحة («كل شيء تحت السيطرة.»)، وهو في صفحة النتائج بلا
+     دلالة. أما f.subtitle فيصلح وصفاً احتياطياً إن غاب مدخل الـslug. */
+  const seo = FEATURE_SEO[slug]
+
+  return (
+    <>
+      <PageMeta
+        title={seo?.title || f.title}
+        description={seo?.description || f.subtitle}
+        keywords={FEATURE_KEYWORDS}
+      />
+      {f.layout === 'split'    ? <SplitLayout f={f} />
+       : f.layout === 'showcase' ? <ShowcaseLayout f={f} />
+       : <FlowLayout f={f} />}
+    </>
+  )
 }

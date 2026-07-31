@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>إحكام — كاروسيل ١ (v2): الذاكرة المؤسسية</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; background: #0A1414; padding: 40px 40px 120px;
+    gap: 40px; font-family: 'Cairo', sans-serif; direction: rtl;
+  }
+
+  /* ═══ Slide shell ═══ */
+  .slide {
+    width: 1080px; height: 1080px; flex-shrink: 0;
+    position: relative; overflow: hidden; padding: 40px;
+    display: flex; flex-direction: column; font-family: 'Cairo', sans-serif;
+  }
+  .bookend { background: #010D0D; color: #EAE4DF; }
+  .punch   { background: #011A1A; color: #EAE4DF; }
+  .punch-2 { background: #012424; color: #EAE4DF; }
+  .breathe { background: #E5D3B3; color: #010D0D; }
+
+  .accent-bar { position: absolute; top: 0; right: 0; height: 4px; width: 32%; background: #6ABDB2; }
+  .accent-bar.rose { background: #D9ACA3; }
+
+  .dots {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(2,115,104,0.14) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Ambient glow — radial-gradient only. html2canvas drops filter:blur(). */
+  .glow { position: absolute; pointer-events: none; border-radius: 50%; }
+  .glow.teal { background: radial-gradient(circle, rgba(0,168,150,0.26) 0%, rgba(0,168,150,0.07) 42%, transparent 68%); }
+  .glow.rose { background: radial-gradient(circle, rgba(217,172,163,0.20) 0%, rgba(217,172,163,0.05) 42%, transparent 68%); }
+
+  .body-area { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  /* ═══ Type ═══ */
+  .label { font-size: 17px; font-weight: 700; color: #6ABDB2; margin-bottom: 22px; line-height: 1.6; }
+  .label.rose { color: #D9ACA3; }
+  .label.dark { color: #5A8A78; }
+
+  .display-xl { font-size: 68px; font-weight: 900; color: #EAE4DF; line-height: 1.3; letter-spacing: -0.5px; }
+  .display    { font-size: 50px; font-weight: 900; color: #EAE4DF; line-height: 1.38; letter-spacing: -0.5px; }
+  .h1-light   { font-size: 42px; font-weight: 800; color: #010D0D; line-height: 1.45; letter-spacing: -0.3px; }
+  .sub        { font-size: 22px; font-weight: 400; color: #7A9E96; line-height: 1.75; margin-top: 22px; max-width: 760px; }
+  .sub-dark   { font-size: 21px; font-weight: 400; color: #012424; line-height: 1.75; }
+  .grad {
+    background: linear-gradient(135deg, #E5D3B3 10%, #D9ACA3 55%, #A6756A 95%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ═══ DEVICE FRAMES ═══ */
+  .laptop {
+    position: relative; border-radius: 14px; overflow: hidden; background: #0A1414;
+    border: 1px solid rgba(106,189,178,0.22);
+    box-shadow: 0 44px 90px rgba(0,0,0,0.62), 0 0 0 1px rgba(106,189,178,0.07),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .laptop-bar {
+    height: 36px; background: #060D0D; border-bottom: 1px solid #16292A;
+    display: flex; align-items: center; padding: 0 14px; gap: 7px; direction: ltr;
+  }
+  .laptop-bar i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+  .laptop-url {
+    margin: 0 auto; background: #0A1414; border: 1px solid #16292A; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #4E7A72;
+    padding: 3px 60px; letter-spacing: 0.5px;
+  }
+  .laptop-screen { position: relative; overflow: hidden; background: #fff; }
+  .laptop-screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top right; }
+
+  .phone {
+    position: relative; border: 5px solid #2C3C3C; border-radius: 34px; overflow: hidden;
+    background: #060D0D;
+    box-shadow: 0 34px 70px rgba(0,0,0,0.70), 0 0 0 1px rgba(0,0,0,0.55);
+  }
+  .phone-notch {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 58px; height: 15px; background: #000; border-radius: 999px; z-index: 3;
+  }
+  .phone-screen { overflow: hidden; background: #fff; }
+  .phone-screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .phone-home {
+    position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%);
+    width: 78px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.32); z-index: 3;
+  }
+
+  /* Floating metric card that overlaps a device */
+  .float-card {
+    position: absolute; z-index: 5; border-radius: 16px; padding: 15px 19px;
+    background: rgba(6,17,17,0.94); border: 1px solid rgba(106,189,178,0.30);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.55), 0 0 24px rgba(0,168,150,0.10);
+  }
+  .float-card .k { font-size: 14px; font-weight: 600; color: #7A9E96; line-height: 1.5; }
+  .float-card .v { font-family: 'JetBrains Mono', monospace; font-size: 27px; font-weight: 700; color: #6ABDB2; line-height: 1.25; }
+  .float-card.rose { border-color: rgba(217,172,163,0.34); }
+  .float-card.rose .v { color: #D9ACA3; }
+
+  /* ═══ Panels ═══ */
+  .bento { background: #011A1A; border: 1px solid rgba(2,115,104,0.16); border-radius: 20px; padding: 28px 32px; }
+  .glass { border-radius: 20px; padding: 26px 30px; box-shadow: 0 0 24px rgba(106,189,178,0.07), 0 6px 20px rgba(0,0,0,0.30); }
+  .glass.teal { background: rgba(106,189,178,0.08); border: 1.5px solid rgba(106,189,178,0.35); }
+  .glass.rose { background: rgba(217,172,163,0.08); border: 1.5px solid rgba(217,172,163,0.35); }
+  .glass.clay { background: rgba(166,117,106,0.10); border: 1.5px solid rgba(166,117,106,0.38); }
+
+  .card-light { background: #EAE4DF; border-radius: 20px; padding: 26px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+  .card-title { font-size: 25px; font-weight: 800; color: #010D0D; line-height: 1.45; }
+  .card-body  { font-size: 19px; font-weight: 400; color: #012424; line-height: 1.7; margin-top: 8px; }
+
+  /* Scattered "where your data lives today" paper cards */
+  .scrap {
+    position: absolute; border-radius: 14px; padding: 18px 22px;
+    background: #06201E; border: 1px solid rgba(166,117,106,0.42);
+    box-shadow: 0 20px 44px rgba(0,0,0,0.55);
+  }
+  .scrap .t { font-size: 21px; font-weight: 800; color: #E5D3B3; line-height: 1.5; }
+  .scrap .d { font-size: 15px; font-weight: 400; color: #8A7068; line-height: 1.6; margin-top: 5px; }
+
+  /* ═══ Footer ═══ */
+  .swipe {
+    position: absolute; bottom: 42px; left: 40px; z-index: 8;
+    display: flex; align-items: center; gap: 11px; font-size: 18px; font-weight: 700; color: #6ABDB2;
+  }
+  .swipe.dark { color: #A6756A; }
+  .swipe .arrow { font-size: 24px; line-height: 1; }
+  .pager {
+    position: absolute; bottom: 42px; right: 40px; z-index: 8; direction: ltr;
+    font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600;
+    color: #5A8A78; letter-spacing: 1px;
+  }
+  .pager.dark { color: #A6756A; }
+
+  .lockup { position: relative; z-index: 8; display: flex; align-items: center; gap: 13px; }
+  .lockup .mark {
+    width: 54px; height: 54px; border-radius: 16px; overflow: hidden; flex-shrink: 0;
+    border: 1px solid rgba(106,189,178,0.28); background: #011A1A;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lockup img { width: 82%; height: 82%; object-fit: contain; }
+  .lockup .n1 { font-size: 19px; font-weight: 800; color: #EAE4DF; line-height: 1.5; }
+  .lockup .n2 { font-size: 15px; font-weight: 400; color: #7A9E96; line-height: 1.5; }
+
+  .download-btn {
+    padding: 14px 28px; background: #012424; color: #EAE4DF;
+    border: 1px solid rgba(106,189,178,0.28); border-radius: 8px;
+    font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .download-btn:hover { background: #6ABDB2; color: #010D0D; }
+  .size-label {
+    position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7A9E96;
+    background: #011A1A; padding: 6px 16px; border-radius: 6px;
+    border: 1px solid rgba(2,115,104,0.16); z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="size-label">Instagram / Facebook — 1080 x 1080 — 8 slides — v2 (product-led)</div>
+
+
+<!-- ═══════════ 01 — COVER ═══════════
+     Hook up top; the laptop bleeds off the bottom-left corner so the slide
+     reads as a window into the product rather than a poster.            -->
+<div class="slide bookend">
+  <div class="accent-bar"></div>
+  <div class="dots"></div>
+  <div class="glow teal" style="width: 900px; height: 900px; left: -240px; bottom: -420px;"></div>
+
+  <div class="lockup">
+    <div class="mark"><img src="ihkaam-logo.png" alt="إحكام"></div>
+    <div><div class="n1">إحكام</div><div class="n2">نظام إدارة المعاهد القرآنية</div></div>
+  </div>
+
+  <div style="position: relative; z-index: 6; margin-top: 46px;">
+    <div class="label">سؤال واحد يكشف كل شيء</div>
+    <div class="display-xl">«وين وصل ابني<br>في الحفظ؟»</div>
+    <div style="height: 1px; width: 420px; margin: 26px 0;
+                background: linear-gradient(to left, rgba(106,189,178,0.55), transparent);"></div>
+    <div style="font-size: 23px; color: #EAE4DF; line-height: 1.7;">يسأله ولي الأمر في ثانية واحدة.</div>
+    <div style="font-size: 23px; color: #7A9E96; line-height: 1.7; margin-top: 6px;">
+      كم يلزمك أنت لتجيب — <span class="grad" style="font-weight: 800;">بثقة</span>؟
+    </div>
+  </div>
+
+  <!-- Device cluster spans the full bottom band and is cropped by the slide
+       edge, so the lower half carries weight instead of going empty. -->
+  <div style="position: absolute; bottom: -92px; left: -120px; width: 880px; z-index: 4; transform: rotate(-3deg);">
+    <div class="laptop">
+      <div class="laptop-bar">
+        <i style="background:#E05B4B"></i><i style="background:#E0B14B"></i><i style="background:#4BC26B"></i>
+        <span class="laptop-url">app.ihkaam.sa</span>
+      </div>
+      <div class="laptop-screen" style="height: 442px;"><img src="shots/clean/01.png" alt=""></div>
+    </div>
+  </div>
+
+  <div style="position: absolute; bottom: -54px; left: 646px; z-index: 6; transform: rotate(5deg);">
+    <div class="phone" style="width: 232px;">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" style="height: 452px;"><img src="shots/clean/53.png" alt=""></div>
+      <div class="phone-home"></div>
+    </div>
+  </div>
+
+  <!-- Sits ON the laptop, not beside it — the overlap is what creates depth. -->
+  <div class="float-card" style="top: 660px; left: 392px;">
+    <div class="k">المعدل العام للتسميع</div>
+    <div class="v">92%</div>
+  </div>
+  <!-- A second stat card was landing on top of the dashboard's own "42" tile
+       and read as a duplicate, so the cover carries one floating metric only. -->
+
+  <div class="pager">01 / 08</div>
+</div>
+
+
+<!-- ═══════════ 02 — THE UNCOMFORTABLE TRUTH ═══════════
+     Scattered, tilted scraps stand in for the three places the answer
+     actually lives. No stock photo needed — the disorder IS the visual. -->
+<div class="slide punch">
+  <div class="accent-bar rose"></div>
+  <div class="glow rose" style="width: 760px; height: 760px; right: -230px; top: -260px;"></div>
+
+  <div class="body-area">
+    <div class="label rose">الحقيقة غير المريحة</div>
+    <div class="display">الجواب موجود.<br>لكنه ليس عندك.</div>
+    <div class="sub" style="font-size: 22px; max-width: 560px;">
+      هو مبعثر في ثلاثة أماكن، ولا واحد منها يخصّ المعهد.
+    </div>
+
+    <div style="position: relative; height: 468px; margin-top: 30px;">
+      <div class="scrap" style="width: 356px; top: 0; right: 8px; transform: rotate(-2.5deg);">
+        <div class="t">📋 دفتر الحضور</div>
+        <div class="d">ورقة واحدة تحمل شهراً كاملاً</div>
+      </div>
+      <div class="scrap" style="width: 356px; top: 148px; right: 176px; transform: rotate(2deg);
+                                border-color: rgba(217,172,163,0.42);">
+        <div class="t">💬 محادثات واتساب</div>
+        <div class="d">تقارير مدفونة تحت مئتَي رسالة</div>
+      </div>
+      <div class="scrap" style="width: 376px; top: 296px; right: 30px; transform: rotate(-1.5deg);
+                                border-color: rgba(106,189,178,0.40);">
+        <div class="t">🧠 ذاكرة المعلم</div>
+        <div class="d">أدقّ مصادرك — وبلا نسخة احتياطية</div>
+      </div>
+
+      <!-- Anchored to the bottom-left so the pull-quote closes the composition
+           under the scraps rather than floating in the empty corner. -->
+      <div class="glass rose" style="position: absolute; width: 430px; left: 0; bottom: 0; padding: 26px 28px;">
+        <div style="font-size: 22px; font-weight: 700; color: #EAE4DF; line-height: 1.7;">
+          المعلومة التي لا تستطيع استخراجها في عشر ثوانٍ — هي معلومة لا تملكها.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">02 / 08</div>
+</div>
+
+
+<!-- ═══════════ 03 — DIAGNOSIS (breathe) ═══════════ -->
+<div class="slide breathe">
+  <div class="body-area">
+    <div class="label dark">تشخيص</div>
+    <div class="h1-light" style="margin-bottom: 32px;">أين تعيش بيانات معهدك<br>في هذه اللحظة؟</div>
+
+    <div style="display: flex; flex-direction: column; gap: 18px;">
+      <div class="card-light" style="border-right: 4px solid #6ABDB2; display: flex; align-items: center; gap: 22px;">
+        <div style="width: 62px; height: 62px; border-radius: 18px; flex-shrink: 0; background: rgba(106,189,178,0.18);
+                    display: flex; align-items: center; justify-content: center; font-size: 30px;">📋</div>
+        <div>
+          <div class="card-title">دفتر الحضور</div>
+          <div class="card-body">ورقة واحدة تحمل شهراً كاملاً. تضيع، فيضيع معها الشهر.</div>
+        </div>
+      </div>
+
+      <div class="card-light" style="border-right: 4px solid #D9ACA3; display: flex; align-items: center; gap: 22px;">
+        <div style="width: 62px; height: 62px; border-radius: 18px; flex-shrink: 0; background: rgba(217,172,163,0.24);
+                    display: flex; align-items: center; justify-content: center; font-size: 30px;">💬</div>
+        <div>
+          <div class="card-title">محادثات واتساب</div>
+          <div class="card-body">التقارير مبعثرة بين مئات الرسائل. لا أحد يستطيع استخراجها مرتبة.</div>
+        </div>
+      </div>
+
+      <div class="card-light" style="border-right: 4px solid #A6756A; display: flex; align-items: center; gap: 22px;">
+        <div style="width: 62px; height: 62px; border-radius: 18px; flex-shrink: 0; background: rgba(166,117,106,0.22);
+                    display: flex; align-items: center; justify-content: center; font-size: 30px;">🧠</div>
+        <div>
+          <div class="card-title">ذاكرة المعلم</div>
+          <div class="card-body">أدقّ مصادرك — وأشدّها هشاشة. ولا توجد له نسخة احتياطية.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe dark"><span class="arrow">←</span> اسحب</div>
+  <div class="pager dark">03 / 08</div>
+</div>
+
+
+<!-- ═══════════ 04 — THE ESCALATION ═══════════
+     SVG plots the archive falling off a cliff the day the teacher leaves. -->
+<div class="slide punch-2">
+  <div class="accent-bar"></div>
+  <div class="dots"></div>
+  <div class="glow rose" style="width: 700px; height: 700px; left: -220px; bottom: -240px;"></div>
+
+  <div class="body-area">
+    <div class="label">السيناريو الذي لا أحد يستعدّ له</div>
+    <div class="display">ماذا لو اعتذر<br>الشيخ غداً؟</div>
+    <div class="sub" style="font-size: 22px; max-width: 700px;">
+      يخرج من الباب — ويخرج معه أرشيف ثلاث سنوات من المتابعة.
+      لا يمكنك تسليمه لمن بعده، لأنه لم يكن مكتوباً أصلاً.
+    </div>
+
+    <!-- Knowledge-over-time curve: climbs for 3 years, then drops to zero -->
+    <div style="position: relative; margin-top: 34px; border-radius: 20px; padding: 26px 30px 20px;
+                background: rgba(1,13,13,0.55); border: 1px solid rgba(166,117,106,0.28);">
+      <div style="font-size: 16px; font-weight: 700; color: #A6756A; margin-bottom: 14px;">
+        ذاكرة المعهد المتراكمة
+      </div>
+      <svg width="100%" height="232" viewBox="0 0 940 232" fill="none" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="fillUp" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#6ABDB2" stop-opacity="0.38"/>
+            <stop offset="100%" stop-color="#6ABDB2" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="lossZone" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%"   stop-color="#A6756A" stop-opacity="0.20"/>
+            <stop offset="100%" stop-color="#A6756A" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- baseline -->
+        <line x1="0" y1="200" x2="940" y2="200" stroke="rgba(106,189,178,0.16)" stroke-width="1"/>
+
+        <!-- everything lost the moment he walks out -->
+        <rect x="40" y="24" width="392" height="176" fill="url(#lossZone)"/>
+
+        <!-- accumulation: starts low on the right, climbs steeply leftward -->
+        <path d="M940 200 L940 176 C830 168 720 140 620 100 C540 68 480 40 434 24 L434 200 Z" fill="url(#fillUp)"/>
+        <path d="M940 176 C830 168 720 140 620 100 C540 68 480 40 434 24"
+              stroke="#6ABDB2" stroke-width="4" stroke-linecap="round"/>
+
+        <!-- the cliff: one hard vertical drop -->
+        <path d="M434 24 L434 200" stroke="#D9ACA3" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 8"/>
+
+        <!-- flat zero afterwards -->
+        <path d="M434 200 L40 200" stroke="#A6756A" stroke-width="4" stroke-linecap="round"/>
+
+        <circle cx="434" cy="24"  r="8" fill="#D9ACA3"/>
+        <circle cx="434" cy="200" r="7" fill="#A6756A"/>
+      </svg>
+      <!-- Time runs right→left with the reading direction, so the axis labels
+           must be authored in that order too: accumulation (right), the
+           departure (middle), zero (left). -->
+      <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+        <div style="font-size: 15px; color: #6ABDB2; font-weight: 700;">3 سنوات تراكم</div>
+        <div style="font-size: 15px; color: #D9ACA3; font-weight: 700;">يوم رحيله</div>
+        <div style="font-size: 15px; color: #A6756A; font-weight: 700;">من الصفر — من يخلفه</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">04 / 08</div>
+</div>
+
+
+<!-- ═══════════ 05 — THE REFRAME (breathe) ═══════════ -->
+<div class="slide breathe">
+  <div class="body-area">
+    <div class="label dark">إعادة تعريف</div>
+    <div class="h1-light" style="margin-bottom: 26px;">المعهد ليس مبنى،<br>ولا حلقات، ولا عدد طلاب.</div>
+
+    <div style="font-size: 25px; font-weight: 700; color: #012424; line-height: 1.7; max-width: 860px;">
+      المعهد هو <span style="color: #A6756A;">ذاكرته المؤسسية</span> — ما يبقى محفوظاً حين يتغيّر الأشخاص.
+    </div>
+
+    <div style="display: flex; gap: 18px; margin-top: 40px;">
+      <div class="card-light" style="flex: 1; border-right: 4px solid #1F7A6C;">
+        <div style="font-size: 34px; margin-bottom: 10px;">📈</div>
+        <div style="font-size: 21px; font-weight: 800; color: #010D0D; line-height: 1.6;">معهدٌ يكبر</div>
+        <div class="card-body">يفقد معلماً دون أن يفقد بياناته.</div>
+      </div>
+      <div class="card-light" style="flex: 1; border-right: 4px solid #A6756A;">
+        <div style="font-size: 34px; margin-bottom: 10px;">🔁</div>
+        <div style="font-size: 21px; font-weight: 800; color: #010D0D; line-height: 1.6;">معهدٌ يدور في مكانه</div>
+        <div class="card-body">تخرج بياناته مع معلمه، فيبدأ من الصفر في كل مرة.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe dark"><span class="arrow">←</span> اسحب</div>
+  <div class="pager dark">05 / 08</div>
+</div>
+
+
+<!-- ═══════════ 06 — THE SHIFT ═══════════
+     Left: the same scattered scraps from slide 2, shrunk and greyed.
+     Right: the real product in a laptop frame. The contrast is the argument. -->
+<div class="slide punch">
+  <div class="accent-bar"></div>
+  <div class="glow teal" style="width: 780px; height: 780px; left: -250px; top: 180px;"></div>
+
+  <div class="body-area">
+    <div class="label">التحوّل</div>
+    <div class="display" style="font-size: 44px; margin-bottom: 34px;">
+      من ذاكرة بشرية<br>إلى ذاكرة مؤسسية
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 26px;">
+
+      <!-- AFTER (left in RTL reading order = the destination) -->
+      <div style="flex: 1.32; position: relative;">
+        <div style="font-size: 16px; font-weight: 700; color: #7ECDC3; margin-bottom: 13px;">بعد إحكام</div>
+        <div class="laptop">
+          <div class="laptop-bar">
+            <i style="background:#E05B4B"></i><i style="background:#E0B14B"></i><i style="background:#4BC26B"></i>
+            <span class="laptop-url" style="padding: 3px 34px;">app.ihkaam.sa</span>
+          </div>
+          <div class="laptop-screen" style="height: 250px;"><img src="shots/clean/05.png" alt=""></div>
+        </div>
+        <div class="float-card" style="bottom: -26px; left: -26px; padding: 13px 17px;">
+          <div class="k">حلقات مفعّلة</div>
+          <div class="v" style="font-size: 23px;">12</div>
+        </div>
+        <div class="float-card rose" style="top: 52px; right: -30px; padding: 13px 17px;">
+          <div class="k">طلاب موزّعون</div>
+          <div class="v" style="font-size: 23px;">42</div>
+        </div>
+      </div>
+
+      <!-- BEFORE (right in RTL = the starting point) -->
+      <div style="flex: 1; position: relative; height: 296px;">
+        <div style="font-size: 16px; font-weight: 700; color: #C08D80; margin-bottom: 13px;">اليوم</div>
+        <div style="position: relative; height: 250px;">
+          <div class="scrap" style="width: 236px; top: 6px; right: 0; transform: rotate(-4deg); padding: 13px 16px;">
+            <div class="t" style="font-size: 17px;">📋 دفتر ورقي</div>
+          </div>
+          <div class="scrap" style="width: 236px; top: 82px; right: 40px; transform: rotate(3deg); padding: 13px 16px;
+                                    border-color: rgba(217,172,163,0.34);">
+            <div class="t" style="font-size: 17px;">💬 واتساب</div>
+          </div>
+          <div class="scrap" style="width: 236px; top: 158px; right: 12px; transform: rotate(-2deg); padding: 13px 16px;
+                                    border-color: rgba(106,189,178,0.30);">
+            <div class="t" style="font-size: 17px;">🧠 ذاكرة الشيخ</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">06 / 08</div>
+</div>
+
+
+<!-- ═══════════ 07 — THE PROOF ═══════════
+     The money slide: real reporting UI on desktop, real parent view on
+     phone, floating metrics on top. This is what a director buys.       -->
+<div class="slide bookend">
+  <div class="accent-bar"></div>
+  <div class="glow teal" style="width: 940px; height: 940px; left: -180px; top: 160px;"></div>
+
+  <div style="position: relative; z-index: 6;">
+    <div class="label">الجواب</div>
+    <div class="display" style="font-size: 46px;">هكذا تبدو الإجابة<br>في عشر ثوانٍ</div>
+    <div style="font-size: 20px; color: #7A9E96; line-height: 1.7; margin-top: 16px; max-width: 620px;">
+      تختار الطالب — فيخرج سجلّه كاملاً، جاهزاً للطباعة أو التصدير.
+    </div>
+  </div>
+
+  <!-- Desktop: the report builder -->
+  <div style="position: absolute; top: 396px; right: -70px; width: 800px; z-index: 4; transform: rotate(-2deg);">
+    <div class="laptop">
+      <div class="laptop-bar">
+        <i style="background:#E05B4B"></i><i style="background:#E0B14B"></i><i style="background:#4BC26B"></i>
+        <span class="laptop-url">app.ihkaam.sa/reports</span>
+      </div>
+      <div class="laptop-screen" style="height: 430px;"><img src="shots/clean/23.png" alt=""></div>
+    </div>
+  </div>
+
+  <!-- Phone: the same record, as the parent sees it -->
+  <div style="position: absolute; bottom: -60px; left: 52px; z-index: 6; transform: rotate(3deg);">
+    <div class="phone" style="width: 216px;">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" style="height: 415px;"><img src="shots/clean/53.png" alt=""></div>
+      <div class="phone-home"></div>
+    </div>
+  </div>
+
+  <div class="float-card" style="top: 372px; left: 46px;">
+    <div class="k">نسبة الحضور — 30 يوماً</div>
+    <div class="v">94%</div>
+  </div>
+  <div class="float-card rose" style="top: 486px; left: 132px;">
+    <div class="k">المحفوظ الكلّي</div>
+    <div class="v">6.5 <span style="font-family: 'Cairo'; font-size: 17px; font-weight: 800;">أجزاء</span></div>
+  </div>
+
+  <div style="position: absolute; bottom: 104px; left: 300px; z-index: 7; max-width: 300px;
+              font-size: 17px; color: #7A9E96; line-height: 1.7;">
+    ونفس السجل يفتحه ولي الأمر من هاتفه — دون أن يسألك.
+  </div>
+
+  <div class="pager">07 / 08</div>
+</div>
+
+
+<!-- ═══════════ 08 — CTA ═══════════ -->
+<div class="slide bookend">
+  <div class="accent-bar"></div>
+  <div class="dots"></div>
+  <div class="glow teal" style="width: 880px; height: 880px; right: -260px; bottom: -300px;"></div>
+
+  <div class="body-area" style="justify-content: flex-start; padding-top: 34px;">
+    <div class="label">إحكام — نظام إدارة المعاهد القرآنية</div>
+    <div class="display-xl" style="font-size: 56px;">معهدك يستحقّ ذاكرة<br>لا تُنسى.</div>
+    <div class="sub" style="font-size: 21px; max-width: 620px;">
+      التسميع، الحضور، الحلقات، التقارير، وبوابة أولياء الأمور — في مكان واحد يبقى بعد أن يتغيّر الأشخاص.
+    </div>
+
+    <div class="bento" style="margin-top: 30px; max-width: 600px; border-color: rgba(106,189,178,0.30);">
+      <div style="font-size: 23px; font-weight: 800; color: #EAE4DF; line-height: 1.6;">جرّب إحكام على معهدك مجاناً</div>
+      <div style="font-size: 19px; color: #7A9E96; line-height: 1.7; margin-top: 9px;">
+        الرابط في البايو — أو أرسل كلمة «إحكام» في رسالة خاصة.
+      </div>
+    </div>
+  </div>
+
+  <!-- Device cluster anchored bottom-left, cropped by the edge. Sized to close
+       the gap under the CTA box rather than leaving a dead band mid-slide. -->
+  <div style="position: absolute; bottom: -70px; left: -80px; width: 780px; z-index: 4; transform: rotate(-3deg);">
+    <div class="laptop">
+      <div class="laptop-bar">
+        <i style="background:#E05B4B"></i><i style="background:#E0B14B"></i><i style="background:#4BC26B"></i>
+        <span class="laptop-url" style="padding: 3px 52px;">app.ihkaam.sa</span>
+      </div>
+      <div class="laptop-screen" style="height: 428px;"><img src="shots/clean/09.png" alt=""></div>
+    </div>
+  </div>
+  <div style="position: absolute; bottom: -46px; left: 566px; z-index: 6; transform: rotate(4deg);">
+    <div class="phone" style="width: 206px;">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" style="height: 400px;"><img src="shots/clean/41.png" alt=""></div>
+      <div class="phone-home"></div>
+    </div>
+  </div>
+
+  <!-- No floating metric here: the dashboard tile directly beneath already
+       shows 483, and a card repeating it read as a rendering glitch. -->
+
+  <div class="lockup" style="position: absolute; bottom: 40px; right: 40px;">
+    <div class="mark"><img src="ihkaam-logo.png" alt="إحكام"></div>
+    <div><div class="n1">إحكام</div><div class="n2">ihkaam.sa</div></div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<div style="position: fixed; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 100;">
+  <button class="download-btn" style="background: #6ABDB2; color: #010D0D;" onclick="downloadPNG()">تحميل PNG (8 صور)</button>
+  <button class="download-btn" onclick="downloadPDF()">تحميل PDF</button>
+</div>
+
+<script>
+const W = 1080, H = 1080;
+
+async function downloadPNG() {
+  const btn = document.querySelector('[onclick="downloadPNG()"]');
+  btn.disabled = true;
+  const slides = document.querySelectorAll('.slide');
+  for (let i = 0; i < slides.length; i++) {
+    btn.textContent = `تصدير ${i + 1} من ${slides.length}...`;
+    const canvas = await html2canvas(slides[i], { scale: 2, useCORS: true, width: W, height: H, logging: false });
+    const link = document.createElement('a');
+    link.download = `ihkaam-carousel-01-${String(i + 1).padStart(2, '0')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    await new Promise(r => setTimeout(r, 500));
+  }
+  btn.textContent = 'تحميل PNG (8 صور)';
+  btn.disabled = false;
+}
+
+async function downloadPDF() {
+  const btn = document.querySelector('[onclick="downloadPDF()"]');
+  btn.disabled = true;
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [W, H] });
+    const slides = document.querySelectorAll('.slide');
+    for (let i = 0; i < slides.length; i++) {
+      btn.textContent = `تصدير ${i + 1} من ${slides.length}...`;
+      const canvas = await html2canvas(slides[i], { scale: 2, useCORS: true, width: W, height: H, logging: false });
+      if (i > 0) pdf.addPage([W, H]);
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, W, H);
+    }
+    pdf.save('ihkaam-carousel-01.pdf');
+  } catch (err) {
+    alert('فشل التصدير: ' + err.message + '\n\nافتح الصفحة عبر localhost وليس file://');
+  }
+  btn.textContent = 'تحميل PDF';
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>

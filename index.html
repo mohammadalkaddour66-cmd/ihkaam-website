@@ -4,28 +4,93 @@
     <meta charset="UTF-8" />
     <!-- أيقونات التبويب — مولّدة من public/ihkaam-logo.png عبر
          scripts/make-favicon.mjs. لا تُحرَّر يدوياً؛ أعد تشغيل السكربت.
-         كان هنا favicon.svg: شعارٌ بنفسجيّ موروثٌ من قالبٍ جاهز. -->
+         كان هنا favicon.svg: شعارٌ بنفسجيّ موروثٌ من قالبٍ جاهز.
+
+         و favicon.ico ليس تكراراً للـPNG: زاحفُ أيقونات جوجل يطلب
+         /favicon.ico من الجذر أولاً مهما أعلنّا هنا. و_redirects يردّ
+         `/*  /index.html  200`، فكان الزاحف يستلم صفحةَ HTML بحالة
+         نجاح — لا 404 يدفعه للبديل — فيفشل صامتاً ويُبقي البنفسجيَّ
+         القديم في فهرسه. وجودُ الملف فعلياً يقطع هذا المسار. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32"   href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   
-    <meta name="keywords" content="إدارة مركز تحفيظ القرآن, برنامج مدرسة قرآنية, نظام إدارة حلقات القرآن, متابعة طلاب التحفيظ, تسجيل حضور حلقة قرآن" />
-    <meta property="og:title" content="إحكام — نظام إدارة المعاهد القرآنية" />
-    
+
+    <!-- ⚠ هذه الوسوم هي النسخة الأولى التي يراها الزاحف قبل إقلاع الـJS،
+         وهي وسومُ الصفحة الرئيسية تحديداً. باقي المسارات تكتب وسومها بعد
+         الإقلاع عبر RouteMeta/PageMeta (src/config/seo.js).
+         لا تحذف وسم description أدناه — حذفُه في 2026-07-31 ترك
+         الموقع كلَّه بلا وصف، فصار جوجل يؤلّف المقتطف من نص الصفحة،
+         ويعرض وصفاً قديماً محفوظاً عنده يزعم «أكثر من 96 معهداً» — رقمٌ
+         لا وجود له في قاعدة البيانات. وكلُّ رقمٍ يُكتَب هنا يجب أن يكون
+         حدّاً أدنى مأخوذاً من get_public_landing_stats. -->
+    <meta name="description" content="نظام عربي يُدير مركز التحفيظ كاملاً: التسميع والحضور والأقساط والتقارير في مكان واحد، وبوابة يتابع فيها ولي الأمر ابنه أولاً بأول. اطلب تجربة مجانية." />
+    <meta name="keywords" content="نظام إدارة المعاهد القرآنية, برنامج إدارة مركز تحفيظ القرآن, إدارة حلقات القرآن, متابعة طلاب التحفيظ, تسجيل حضور حلقة قرآن" />
+    <link rel="canonical" href="https://ihkaam.app/" />
+
+    <meta property="og:title" content="إحكام — نظام إدارة المعاهد والحلقات القرآنية" />
+    <meta property="og:description" content="التسميع والحضور والأقساط والتقارير في نظام واحد، وبوابة يتابع فيها ولي الأمر ابنه أولاً بأول." />
     <meta property="og:type" content="website" />
     <!-- Facebook/Twitter/WhatsApp resolve these against their own host, not ours,
          so a relative path yields no preview image at all. Must stay absolute. -->
     <meta property="og:image" content="https://ihkaam.app/og-cover.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="منصة إحكام — لوحة إدارة معهد قرآني" />
     <meta property="og:url" content="https://ihkaam.app/" />
     <meta property="og:site_name" content="إحكام" />
     <meta property="og:locale" content="ar_AR" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="إحكام — نظام إدارة المعاهد والحلقات القرآنية" />
+    <meta name="twitter:description" content="التسميع والحضور والأقساط والتقارير في نظام واحد، وبوابة يتابع فيها ولي الأمر ابنه أولاً بأول." />
     <meta name="twitter:image" content="https://ihkaam.app/og-cover.jpg" />
-    <title>إحكام — نظام إدارة المعاهد القرآنية</title>
+    <title>إحكام — نظام إدارة المعاهد والحلقات القرآنية</title>
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- بياناتٌ منظَّمة. لا aggregateRating ولا تسعيرٌ هنا: كلاهما يُعرَض
+         في صفحة النتائج كادّعاءٍ موثَّق، ولا يُكتَب إلا عن مصدرٍ حقيقي
+         مطابقٍ لما تراه العين على الصفحة — وإلا فهي مخالفةٌ صريحة
+         لسياسة البيانات المنظَّمة، عقوبتها إسقاط الموقع من المزايا. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://ihkaam.app/#organization",
+          "name": "إحكام",
+          "url": "https://ihkaam.app/",
+          "logo": "https://ihkaam.app/favicon-192.png",
+          "description": "نظام عربي لإدارة المعاهد والحلقات القرآنية.",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "telephone": "+963947409106",
+            "availableLanguage": ["ar"]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://ihkaam.app/#website",
+          "url": "https://ihkaam.app/",
+          "name": "إحكام",
+          "inLanguage": "ar",
+          "publisher": { "@id": "https://ihkaam.app/#organization" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "إحكام",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "url": "https://ihkaam.app/ihkaam",
+          "inLanguage": "ar",
+          "description": "نظام لإدارة مراكز تحفيظ القرآن: الحلقات والطلاب، وتسجيل التسميع والحضور، والأقساط، والتقارير، وبوابة ولي الأمر.",
+          "publisher": { "@id": "https://ihkaam.app/#organization" }
+        }
+      ]
+    }
+    </script>
 
     <!-- الهيرو يقرأ صوره وإحصائياته من Supabase قبل أن يرسم شيئاً، فالـ DNS/TLS
          نحوه على المسار الحرج. preconnect يدفع الرحلتين قبل أن يُقلع الـ JS. -->

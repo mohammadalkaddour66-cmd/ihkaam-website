@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import FloatingBg  from './FloatingBg'
 import Navbar      from './Navbar'
 import Footer      from './Footer'
+import RouteMeta   from './RouteMeta'
 
 /* Scroll to top on route change — skip when hash present */
 function ScrollReset() {
@@ -126,6 +127,8 @@ export default function Layout() {
   return (
     <div className="relative" style={{ overflowX: 'hidden' }}>
       <FloatingBg />
+      {/* قبل <Outlet/> في الشجرة عمداً — انظر تعليق RouteMeta. */}
+      <RouteMeta />
       <ScrollReset />
       <div className="relative" style={{ zIndex: 10 }}>
         <Navbar />

@@ -6,55 +6,55 @@
     <loc>https://ihkaam.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/request</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/review</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/help</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
 
   <!-- ── صفحات الميزات الأساسية ── -->
@@ -62,31 +62,31 @@
     <loc>https://ihkaam.app/ihkaam/features/admin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/features/academic</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/features/daily</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/features/parents</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/features/reports</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
 
   <!-- ── صفحات الإضافات ── -->
@@ -94,37 +94,37 @@
     <loc>https://ihkaam.app/ihkaam/addons/finance</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/addons/subjects</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/addons/star</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/addons/library</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/addons/exams</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/ihkaam/addons/messages</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
 
   <!-- ── المدونة ── -->
@@ -132,7 +132,7 @@
     <loc>https://ihkaam.app/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-07-20</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://ihkaam.app/blog/why-students-leave</loc>

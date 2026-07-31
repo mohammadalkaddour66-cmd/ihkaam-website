@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إحكام — كاروسيل ١: الذاكرة المؤسسية</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; background: #0A1414; padding: 40px 40px 120px;
+    gap: 40px; font-family: 'Cairo', sans-serif; direction: rtl;
+  }
+
+  /* ── Slide shell ───────────────────────────────────────── */
+  .slide {
+    width: 1080px; height: 1080px; flex-shrink: 0;
+    position: relative; overflow: hidden;
+    padding: 40px;
+    display: flex; flex-direction: column;
+    font-family: 'Cairo', sans-serif;
+  }
+  .bookend  { background: #010D0D; color: #EAE4DF; }
+  .punch    { background: #011A1A; color: #EAE4DF; }
+  .punch-2  { background: #012424; color: #EAE4DF; }
+  .breathe  { background: #E5D3B3; color: #010D0D; }
+
+  /* Accent bar — top-RIGHT (RTL) */
+  .accent-bar {
+    position: absolute; top: 0; right: 0;
+    height: 4px; width: 32%; background: #6ABDB2;
+  }
+  .accent-bar.rose { background: #D9ACA3; }
+
+  /* Dot-grid texture */
+  .dots {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(2,115,104,0.14) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Content column — vertically centred, kills dead zones */
+  .body-area {
+    position: relative; z-index: 2;
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+  }
+
+  /* ── Type scale ────────────────────────────────────────── */
+  .label {
+    font-family: 'Cairo', sans-serif; font-size: 17px; font-weight: 700;
+    color: #6ABDB2; margin-bottom: 26px; line-height: 1.6;
+  }
+  .label.rose  { color: #D9ACA3; }
+  .label.dark  { color: #5A8A78; }
+
+  .display-xl {
+    font-size: 64px; font-weight: 900; color: #EAE4DF;
+    line-height: 1.35; letter-spacing: -0.5px;
+  }
+  .display {
+    font-size: 52px; font-weight: 900; color: #EAE4DF;
+    line-height: 1.4; letter-spacing: -0.5px;
+  }
+  .h1-light {
+    font-size: 42px; font-weight: 800; color: #010D0D;
+    line-height: 1.45; letter-spacing: -0.3px;
+  }
+  .sub {
+    font-size: 22px; font-weight: 400; color: #7A9E96;
+    line-height: 1.75; margin-top: 28px; max-width: 780px;
+  }
+  .sub-dark {
+    font-size: 21px; font-weight: 400; color: #012424;
+    line-height: 1.75;
+  }
+
+  /* Signature rose gradient — used ONCE, on the cover */
+  .grad {
+    background: linear-gradient(135deg, #E5D3B3 10%, #D9ACA3 55%, #A6756A 95%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Bento / cards ─────────────────────────────────────── */
+  .bento {
+    background: #011A1A; border: 1px solid rgba(2,115,104,0.16);
+    border-radius: 20px; padding: 30px 34px;
+  }
+  .glass {
+    border-radius: 20px; padding: 30px 34px;
+    box-shadow: 0 0 24px rgba(106,189,178,0.08), 0 6px 20px rgba(0,0,0,0.30);
+  }
+  .glass.teal { background: rgba(106,189,178,0.08); border: 1.5px solid rgba(106,189,178,0.35); }
+  .glass.rose { background: rgba(217,172,163,0.08); border: 1.5px solid rgba(217,172,163,0.35); }
+  .glass.clay { background: rgba(166,117,106,0.10); border: 1.5px solid rgba(166,117,106,0.38); }
+
+  .card-light {
+    background: #EAE4DF; border-radius: 20px;
+    padding: 28px 32px 28px 28px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card-title { font-size: 25px; font-weight: 800; color: #010D0D; line-height: 1.45; }
+  .card-body  { font-size: 19px; font-weight: 400; color: #012424; line-height: 1.7; margin-top: 10px; }
+
+  .divider {
+    height: 1px; margin: 30px 0;
+    background: linear-gradient(to left, transparent, rgba(2,115,104,0.24), transparent);
+  }
+
+  /* ── Mono numerals ─────────────────────────────────────── */
+  .mono      { font-family: 'JetBrains Mono', monospace; }
+  .stat-num  { font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 700; color: #6ABDB2; }
+  .stat-lbl  { font-size: 17px; font-weight: 500; color: #7A9E96; margin-top: 8px; line-height: 1.6; }
+
+  /* ── Footer bits — bottom-LEFT in RTL ──────────────────── */
+  .swipe {
+    position: absolute; bottom: 44px; left: 40px; z-index: 3;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 18px; font-weight: 700; color: #6ABDB2;
+  }
+  .swipe.dark { color: #A6756A; }
+  .swipe .arrow { font-size: 24px; line-height: 1; }
+
+  /* dir=ltr on the element itself — inside an RTL slide the bidi algorithm
+     otherwise reorders "01 / 08" into "08 / 01". Same applies to any
+     slash- or dot-separated numeral run (dates, versions, ratios). */
+  .pager {
+    position: absolute; bottom: 44px; right: 40px; z-index: 3;
+    direction: ltr;
+    font-family: 'JetBrains Mono', monospace; font-size: 16px;
+    font-weight: 600; color: #5A8A78; letter-spacing: 1px;
+  }
+  .pager.dark { color: #A6756A; }
+
+  .brandblock {
+    position: absolute; bottom: 40px; left: 40px; z-index: 3;
+    display: flex; align-items: center; gap: 14px; direction: rtl;
+  }
+  .brandblock .mark {
+    width: 56px; height: 56px; border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(106,189,178,0.28); background: #011A1A;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brandblock img { width: 82%; height: 82%; object-fit: contain; }
+  .brandblock .n1 { font-size: 19px; font-weight: 800; color: #EAE4DF; line-height: 1.5; }
+  .brandblock .n2 { font-size: 15px; font-weight: 400; color: #7A9E96; line-height: 1.5; }
+
+  /* ── Toolbar ───────────────────────────────────────────── */
+  .download-btn {
+    padding: 14px 28px; background: #012424; color: #EAE4DF;
+    border: 1px solid rgba(106,189,178,0.28); border-radius: 8px;
+    font-family: 'Cairo', sans-serif; font-size: 14px;
+    font-weight: 700; cursor: pointer;
+  }
+  .download-btn:hover { background: #6ABDB2; color: #010D0D; }
+  .size-label {
+    position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7A9E96;
+    background: #011A1A; padding: 6px 16px; border-radius: 6px;
+    border: 1px solid rgba(2,115,104,0.16); z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="size-label">Instagram / Facebook Carousel — 1080 x 1080px — 8 slides</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 1 — COVER (bookend). The hook: the parent's question.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide bookend">
+  <div class="accent-bar"></div>
+  <div class="dots"></div>
+
+  <!-- Cover lockup — occupies the top band so the cover doesn't open on
+       330px of empty canvas. Interior slides don't carry it. -->
+  <div style="position: relative; z-index: 3; display: flex; align-items: center; gap: 14px;">
+    <div style="width: 54px; height: 54px; border-radius: 16px; overflow: hidden;
+                border: 1px solid rgba(106,189,178,0.28); background: #011A1A;
+                display: flex; align-items: center; justify-content: center;">
+      <img src="ihkaam-logo.png" alt="إحكام" style="width: 82%; height: 82%; object-fit: contain;">
+    </div>
+    <div>
+      <div style="font-size: 19px; font-weight: 800; color: #EAE4DF; line-height: 1.5;">إحكام</div>
+      <div style="font-size: 15px; font-weight: 400; color: #7A9E96; line-height: 1.5;">نظام إدارة المعاهد القرآنية</div>
+    </div>
+  </div>
+
+  <div class="body-area">
+    <div class="label">سؤال واحد يكشف كل شيء</div>
+
+    <div class="display-xl" style="font-size: 72px;">
+      «وين وصل ابني<br>في الحفظ؟»
+    </div>
+
+    <div class="divider" style="max-width: 520px; margin-right: 0;"></div>
+
+    <div class="sub" style="font-size: 24px; color: #EAE4DF;">
+      يسأله ولي الأمر في ثانية واحدة.
+    </div>
+    <div class="sub" style="margin-top: 10px; font-size: 24px;">
+      كم يلزمك أنت لتجيب عنه — <span class="grad" style="font-weight: 800;">بثقة</span>؟
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">01 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 2 — PUNCH. The uncomfortable truth.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide punch">
+  <div class="accent-bar rose"></div>
+
+  <div class="body-area">
+    <div class="label rose">الحقيقة غير المريحة</div>
+
+    <div class="display">
+      الجواب موجود.<br>لكنه ليس عندك.
+    </div>
+
+    <div class="sub" style="font-size: 23px;">
+      هو في ذاكرة الشيخ. وفي دفتر قد يضيع.
+      وفي محادثة واتساب مدفونة تحت مئتَي رسالة.
+    </div>
+
+    <div class="glass rose" style="margin-top: 44px; max-width: 820px;">
+      <div style="font-size: 24px; font-weight: 700; color: #EAE4DF; line-height: 1.7;">
+        المعلومة التي لا تستطيع استخراجها في عشر ثوانٍ —
+        هي معلومة لا تملكها.
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">02 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 3 — BREATHE. Where the data actually lives today.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide breathe">
+  <div class="body-area">
+    <div class="label dark">تشخيص</div>
+
+    <div class="h1-light" style="margin-bottom: 36px;">
+      أين تعيش بيانات معهدك<br>في هذه اللحظة؟
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+      <div class="card-light" style="border-right: 4px solid #6ABDB2;">
+        <div class="card-title">دفتر الحضور</div>
+        <div class="card-body">ورقة واحدة تحمل شهراً كاملاً. تضيع، فيضيع معها الشهر.</div>
+      </div>
+
+      <div class="card-light" style="border-right: 4px solid #D9ACA3;">
+        <div class="card-title">محادثات واتساب</div>
+        <div class="card-body">التقارير مبعثرة بين مئات الرسائل. لا أحد يستطيع استخراجها مرتبة.</div>
+      </div>
+
+      <div class="card-light" style="border-right: 4px solid #A6756A;">
+        <div class="card-title">ذاكرة المعلم</div>
+        <div class="card-body">أدقّ مصادرك — وأشدّها هشاشة. ولا توجد له نسخة احتياطية.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="swipe dark"><span class="arrow">←</span> اسحب</div>
+  <div class="pager dark">03 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 4 — PUNCH (surface 2). The escalation. Highest stakes.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide punch-2">
+  <div class="accent-bar"></div>
+  <div class="dots"></div>
+
+  <div class="body-area">
+    <div class="label">السيناريو الذي لا أحد يستعدّ له</div>
+
+    <div class="display">
+      ماذا لو اعتذر<br>الشيخ غداً؟
+    </div>
+
+    <div class="sub" style="font-size: 23px;">
+      يخرج من الباب — ويخرج معه أرشيف ثلاث سنوات من المتابعة.
+      لا يمكنك تسليمه لمن بعده، لأنه لم يكن مكتوباً أصلاً.
+    </div>
+
+    <!-- Numerals stay in JetBrains Mono; the Arabic unit beside them stays in
+         Cairo. Never set Arabic in the mono face — the glyphs disconnect. -->
+    <div style="display: flex; gap: 18px; margin-top: 46px;">
+      <div class="glass teal" style="flex: 1; padding: 26px 28px;">
+        <div style="display: flex; align-items: baseline; gap: 9px;">
+          <span class="mono" style="font-size: 34px; font-weight: 700; color: #6ABDB2;">3</span>
+          <span style="font-size: 23px; font-weight: 800; color: #6ABDB2;">سنوات</span>
+        </div>
+        <div class="stat-lbl">متابعة تخرج مع شخص واحد</div>
+      </div>
+      <div class="glass rose" style="flex: 1; padding: 26px 28px;">
+        <div class="mono" style="font-size: 34px; font-weight: 700; color: #D9ACA3;">0</div>
+        <div class="stat-lbl">ما تبقّى منها مكتوباً</div>
+      </div>
+      <div class="glass clay" style="flex: 1; padding: 26px 28px;">
+        <div style="font-size: 30px; font-weight: 800; color: #C08D80; line-height: 1.4;">من الصفر</div>
+        <div class="stat-lbl">يبدأ من يخلفه</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">04 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 5 — BREATHE. The reframe. This is the idea to own.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide breathe">
+  <div class="body-area">
+    <div class="label dark">إعادة تعريف</div>
+
+    <div class="h1-light" style="margin-bottom: 30px;">
+      المعهد ليس مبنى،<br>ولا حلقات، ولا عدد طلاب.
+    </div>
+
+    <div class="sub-dark" style="font-size: 25px; font-weight: 700; line-height: 1.7; max-width: 860px;">
+      المعهد هو <span style="color: #A6756A;">ذاكرته المؤسسية</span> —
+      ما يبقى محفوظاً حين يتغيّر الأشخاص.
+    </div>
+
+    <div class="card-light" style="margin-top: 44px; border-right: 4px solid #6ABDB2; padding: 34px 36px;">
+      <div class="card-body" style="font-size: 21px; margin-top: 0;">
+        معهدٌ يفقد معلماً دون أن يفقد بياناته — <strong style="color:#010D0D;">معهدٌ يكبر</strong>.
+      </div>
+      <div class="card-body" style="font-size: 21px; margin-top: 14px;">
+        ومعهدٌ تخرج بياناته مع معلمه — <strong style="color:#010D0D;">يبدأ من الصفر في كل مرة</strong>.
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe dark"><span class="arrow">←</span> اسحب</div>
+  <div class="pager dark">05 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 6 — PUNCH. The shift: human memory → institutional memory.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide punch">
+  <div class="accent-bar"></div>
+
+  <div class="body-area">
+    <div class="label">التحوّل</div>
+
+    <div class="display" style="font-size: 46px; margin-bottom: 40px;">
+      من ذاكرة بشرية<br>إلى ذاكرة مؤسسية
+    </div>
+
+    <div style="display: flex; gap: 20px; align-items: stretch;">
+
+      <div class="glass clay" style="flex: 1;">
+        <div style="font-size: 17px; font-weight: 700; color: #C08D80; margin-bottom: 18px; line-height:1.6;">
+          اليوم
+        </div>
+        <div style="display:flex; flex-direction:column; gap: 14px;">
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">الجواب عند شخص واحد</div>
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">التقرير يُبنى يدوياً كل مرة</div>
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">ولي الأمر يسأل ولا يجد</div>
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">رحيل المعلم = فقدان الأرشيف</div>
+        </div>
+      </div>
+
+      <div class="glass teal" style="flex: 1;">
+        <div style="font-size: 17px; font-weight: 700; color: #7ECDC3; margin-bottom: 18px; line-height:1.6;">
+          بعد إحكام
+        </div>
+        <div style="display:flex; flex-direction:column; gap: 14px;">
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">الجواب عند المعهد نفسه</div>
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">التقرير جاهز في أي لحظة</div>
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">ولي الأمر يفتح ويرى بنفسه</div>
+          <div style="font-size: 20px; color: #EAE4DF; line-height: 1.65;">رحيل المعلم = تسليم منظّم</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">←</span> اسحب</div>
+  <div class="pager">06 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 7 — BREATHE. Proof: what the 10-second answer looks like.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide breathe">
+  <div class="body-area">
+    <div class="label dark">الجواب</div>
+
+    <div class="h1-light" style="margin-bottom: 34px;">
+      هكذا تبدو الإجابة<br>في عشر ثوانٍ
+    </div>
+
+    <div class="card-light" style="padding: 0; overflow: hidden;">
+
+      <!-- record header -->
+      <div style="background: #011A1A; padding: 26px 32px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-size: 25px; font-weight: 800; color: #EAE4DF; line-height: 1.5;">عبدالرحمن م.</div>
+          <div style="font-size: 17px; font-weight: 400; color: #7A9E96; line-height: 1.6;">حلقة الفجر — المستوى الثالث</div>
+        </div>
+        <div style="text-align: left;">
+          <div class="mono" style="font-size: 15px; color: #6ABDB2; letter-spacing: 1px;">ACTIVE</div>
+        </div>
+      </div>
+
+      <!-- record rows -->
+      <div style="padding: 8px 32px 26px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 18px 0; border-bottom: 1px solid rgba(1,36,36,0.10);">
+          <span style="font-size: 20px; color: #012424;">آخر ما وصل إليه</span>
+          <span style="font-size: 21px; font-weight: 800; color: #010D0D;">سورة النساء — الآية <span class="mono">86</span></span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 18px 0; border-bottom: 1px solid rgba(1,36,36,0.10);">
+          <span style="font-size: 20px; color: #012424;">آخر جلسة تسميع</span>
+          <span class="mono" dir="ltr" style="font-size: 20px; font-weight: 700; color: #010D0D;">2026 / 07 / 16</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 18px 0; border-bottom: 1px solid rgba(1,36,36,0.10);">
+          <span style="font-size: 20px; color: #012424;">نسبة الحضور — 30 يوماً</span>
+          <span class="mono" style="font-size: 22px; font-weight: 700; color: #1F7A6C;">94%</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 18px 0;">
+          <span style="font-size: 20px; color: #012424;">المحفوظ الكلّي</span>
+          <span style="font-size: 22px; font-weight: 800; color: #1F7A6C;">
+            <span class="mono" style="font-weight: 700;">6.5</span> أجزاء
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sub-dark" style="margin-top: 26px; font-size: 20px; color: #5A6E62;">
+      نفس الشاشة يفتحها ولي الأمر من هاتفه — دون أن يسألك.
+    </div>
+  </div>
+
+  <div class="swipe dark"><span class="arrow">←</span> اسحب</div>
+  <div class="pager dark">07 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 8 — CTA (bookend). Product enters only here.
+     ══════════════════════════════════════════════════════════ -->
+<div class="slide bookend">
+  <div class="accent-bar"></div>
+  <div class="dots"></div>
+
+  <div class="body-area">
+    <div class="label">إحكام — نظام إدارة المعاهد القرآنية</div>
+
+    <div class="display-xl" style="font-size: 58px;">
+      معهدك يستحقّ ذاكرة<br>لا تُنسى.
+    </div>
+
+    <div class="sub" style="font-size: 23px;">
+      التسميع، الحضور، الحلقات، التقارير، وبوابة أولياء الأمور —
+      محفوظة في مكان واحد، تبقى بعد أن يتغيّر الأشخاص.
+    </div>
+
+    <div class="bento" style="margin-top: 44px; max-width: 760px; border-color: rgba(106,189,178,0.28);">
+      <div style="font-size: 24px; font-weight: 800; color: #EAE4DF; line-height: 1.6;">
+        جرّب إحكام على معهدك مجاناً
+      </div>
+      <div style="font-size: 20px; font-weight: 400; color: #7A9E96; line-height: 1.7; margin-top: 12px;">
+        الرابط في البايو — أو أرسل لنا كلمة «إحكام» في رسالة خاصة.
+      </div>
+    </div>
+  </div>
+
+  <div class="brandblock">
+    <div class="mark"><img src="ihkaam-logo.png" alt="إحكام"></div>
+    <div style="text-align: right;">
+      <div class="n1">إحكام</div>
+      <div class="n2">نظام إدارة المعاهد القرآنية</div>
+    </div>
+  </div>
+  <div class="pager">08 / 08</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     EXPORT TOOLBAR
+     ══════════════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<div style="position: fixed; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 100;">
+  <button class="download-btn" style="background: #6ABDB2; color: #010D0D;" onclick="downloadPNG()">تحميل PNG (8 صور)</button>
+  <button class="download-btn" onclick="downloadPDF()">تحميل PDF</button>
+</div>
+
+<script>
+const W = 1080, H = 1080;
+
+async function downloadPNG() {
+  const btn = document.querySelector('[onclick="downloadPNG()"]');
+  btn.disabled = true;
+  const slides = document.querySelectorAll('.slide');
+  for (let i = 0; i < slides.length; i++) {
+    btn.textContent = `تصدير ${i + 1} من ${slides.length}...`;
+    const canvas = await html2canvas(slides[i], { scale: 2, useCORS: true, width: W, height: H, logging: false });
+    const link = document.createElement('a');
+    link.download = `ihkaam-carousel-01-${String(i + 1).padStart(2, '0')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    await new Promise(r => setTimeout(r, 500));
+  }
+  btn.textContent = 'تحميل PNG (8 صور)';
+  btn.disabled = false;
+}
+
+async function downloadPDF() {
+  const btn = document.querySelector('[onclick="downloadPDF()"]');
+  btn.disabled = true;
+  try {
+    if (!window.jspdf) throw new Error('jsPDF not loaded');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [W, H] });
+    const slides = document.querySelectorAll('.slide');
+    for (let i = 0; i < slides.length; i++) {
+      btn.textContent = `تصدير ${i + 1} من ${slides.length}...`;
+      const canvas = await html2canvas(slides[i], { scale: 2, useCORS: true, width: W, height: H, logging: false });
+      if (i > 0) pdf.addPage([W, H]);
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, W, H);
+    }
+    pdf.save('ihkaam-carousel-01.pdf');
+  } catch (err) {
+    alert('فشل التصدير: ' + err.message + '\n\nافتح الصفحة عبر localhost وليس file://');
+  }
+  btn.textContent = 'تحميل PDF';
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>
