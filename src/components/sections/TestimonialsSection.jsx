@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../config/supabaseClient'
 import { galleryImage } from '../../config/imageUrl'
@@ -15,7 +16,7 @@ import { galleryImage } from '../../config/imageUrl'
    يشدّ الأخضر إلى الأمام: اللونان متقابلان تقريباً على العجلة،
    فكلٌّ منهما يزيد الآخر تشبّعاً في العين. فعادت العائلة تركوازية
    — نفس عائلة بطاقة «كيف يعمل» التي طلبها المستخدم — بثلاث درجات
-   إضاءة من اللكنة الواحدة: 6FE7DE / 48D6CD / 2FAEB4.
+   إضاءة من اللكنة الواحدة: 0B3B33 / 1F6F52 / 2E7A5A.
    وكلّها ≥7:1 على --canvas، فتصلح للنصّ لا للحشو وحده. */
 const RUNGS = ['var(--accent-hover)', 'var(--accent)', 'var(--accent-deep)']
 
@@ -66,13 +67,13 @@ function instituteIdFor(role) {
    نفسه، وإن لم يُعرف المعهد أو سقط تحميلُ شعاره فشعارُ إحكام بديلاً.
 
    والشريحة على وصفة شارة الرقم في بطاقة «كيف يعمل» بالضبط: حشوٌ
-   تركوازي 10% وحدٌّ 25%. كانت `--pine` — و#24735C درجتُه 162°، أي
+   تركوازي 10% وحدٌّ 25%. كانت `--pine` — و#1F6F52 درجتُه 162°، أي
    داخل النطاق المحرَّم (70–166) أصلاً، وهي التي كانت تُرى خلف كل
    شعارٍ فيه شفافية. والظلُّ السفليّ يرفع الشريحة عن السطح فتُقرأ
    قطعةً موضوعةً عليه لا رقعةً مطبوعةً فيه. */
 const IHKAAM_LOGO = '/ihkaam-app.png'
 
-function AuthorLogo({ src, rung }) {
+function AuthorLogo({ src, rung, big = false }) {
   /* نحفظ *أيَّ* رابطٍ سقط لا مجرّد أنّ سقوطاً حصل: فلو تغيّر الشعار
      لاحقاً جُرّب الجديدُ من تلقائه دون تصفيرٍ في effect */
   const [failedSrc, setFailedSrc] = useState(null)
@@ -80,11 +81,11 @@ function AuthorLogo({ src, rung }) {
   const own = Boolean(src) && failedSrc !== src
   return (
     <div
-      className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+      className={`${big ? 'w-16 h-16 rounded-full' : 'w-12 h-12 rounded-xl'} overflow-hidden flex-shrink-0 flex items-center justify-center bg-white`}
       style={{
         background: `color-mix(in srgb, ${rung} 10%, transparent)`,
         border    : `1px solid color-mix(in srgb, ${rung} 25%, transparent)`,
-        boxShadow : '0 4px 12px rgba(0,0,0,0.28)',
+        boxShadow : big ? '0 0 0 4px rgba(224,181,98,0.18)' : '0 4px 12px rgba(11, 59, 51, 0.084)',
       }}
     >
       {/* alt فارغ: الشعار مجاورٌ لاسم صاحبه وصفته نصّاً، فنُطقه تكرار */}
@@ -111,78 +112,120 @@ const QuoteIcon = ({ color, size = 28 }) => (
   </svg>
 )
 
-/* ─── Card ─────────────────────────────────────────────────────── */
-function TestimonialCard({ t, logo }) {
+/* ─── عرض الشهادات: «منصّة» واحدة كبيرة + فهرس جانبي (2026-11-19) ────────
+   كانت تسع بطاقاتٍ متشابهة في شبكة، فتُقرأ كصفحة جريدة. الآن شهادةٌ واحدة
+   تتصدّر بخطٍّ كبير على لوحٍ داكن، وبجانبها فهرسٌ بأصحاب الشهادات يُختار
+   منه، والتبديل تلقائيّ كل 9 ثوانٍ مع شريط تقدّم، ويتوقّف عند التمرير فوقه. */
+const ROTATE_MS = 9000
+
+function Spotlight({ cards, logos }) {
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const n = cards.length
+  const go = useCallback((i) => setActive(((i % n) + n) % n), [n])
+
+  useEffect(() => {
+    if (paused || n < 2) return
+    const t = setTimeout(() => go(active + 1), ROTATE_MS)
+    return () => clearTimeout(t)
+  }, [active, paused, n, go])
+
+  const t = cards[active]
+  const logo = logos[instituteIdFor(t.role)] || null
+
   return (
-    <article className="testimonial-card ps-9 pe-7 py-7 flex flex-col gap-5 text-start">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch"
+         onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
 
-      {/* وهجُ الزاوية — نفس ما في بطاقات باقي الموقع */}
-      <div
-        className="pointer-events-none absolute top-0 end-0 w-36 h-36"
-        style={{ background: `radial-gradient(circle at top left, color-mix(in srgb, ${t.rung} 11%, transparent), transparent 66%)` }}
-        aria-hidden
-      />
-
-      {/* علامةُ الاقتباس زخرفةٌ خلف النصّ لا أيقونةٌ فوقه: شفافيةٌ
-          واطئة جداً فلا تزاحم القراءة، و aria-hidden فلا تُنطق */}
-      <div className="pointer-events-none absolute -top-1 start-6 opacity-[0.07]" aria-hidden>
-        <QuoteIcon color={t.rung} size={92} />
-      </div>
-
-      {/* Tag */}
-      <span
-        className="relative self-end text-[10px] font-bold px-3 py-1 rounded-full"
-        style={{
-          background: `color-mix(in srgb, ${t.rung} 12%, transparent)`,
-          color     : t.rung,
-          border    : `1px solid color-mix(in srgb, ${t.rung} 26%, transparent)`,
-        }}
-      >
-        {t.tag}
-      </span>
-
-      {/* Quote text */}
-      <p className="relative text-sm leading-[2.1] flex-1" style={{ color: 'var(--text-1)' }}>
-        {t.text}
-      </p>
-
-      <div className="divider-testimonial" />
-
-      {/* Author */}
-      <div className="relative flex items-center gap-3.5">
-        <AuthorLogo src={logo} rung={t.rung} />
-        <div className="flex flex-col gap-0.5 text-start">
-          <span className="text-sm font-bold" style={{ color: t.rung }}>
-            {t.name}
-          </span>
-          <span className="text-xs" style={{ color: 'var(--text-3)' }}>
-            {t.role}
+      {/* المنصّة */}
+      <article className="section-dark lg:col-span-7 rounded-[28px] overflow-hidden p-8 sm:p-11 flex flex-col"
+               style={{ boxShadow: 'var(--shadow-lg)', minHeight: 440 }} aria-live="polite">
+        <div className="pattern-layer pattern-khatam" aria-hidden />
+        <div className="flex items-center justify-between mb-6">
+          <QuoteIcon color="#E0B562" size={54} />
+          <span className="text-sm font-bold tabular-nums" style={{ color: 'rgba(248,245,236,0.6)' }}>
+            {String(active + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
           </span>
         </div>
+
+        <p key={active} className="testi-in flex-1 font-bold"
+           style={{ color: '#F8F5EC', fontSize: t.text.length > 260 ? '1.15rem' : t.text.length > 140 ? '1.35rem' : '1.6rem', lineHeight: 1.9 }}>
+          {t.text}
+        </p>
+
+        <div className="mt-8 flex items-center gap-4">
+          <AuthorLogo src={logo} rung="#E0B562" big />
+          <div className="flex flex-col gap-1">
+            <span className="text-lg font-bold" style={{ color: '#E0B562' }}>{t.name}</span>
+            <span className="text-sm" style={{ color: 'rgba(248,245,236,0.72)' }}>{t.role}</span>
+          </div>
+          <div className="ms-auto flex gap-2">
+            <button type="button" onClick={() => go(active - 1)} aria-label="الشهادة السابقة"
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+                    style={{ border: '1px solid rgba(224,181,98,0.4)', color: '#E0B562' }}>
+              <ChevronRight size={18} />
+            </button>
+            <button type="button" onClick={() => go(active + 1)} aria-label="الشهادة التالية"
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+                    style={{ background: '#E0B562', color: '#0B3B33' }}>
+              <ChevronLeft size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* شريط التقدّم */}
+        <div className="mt-7 h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(248,245,236,0.12)' }}>
+          <div key={`${active}-${paused}`} className={paused ? '' : 'testi-progress'}
+               style={{ height: '100%', background: '#E0B562', width: paused ? '0%' : undefined, '--testi-ms': `${ROTATE_MS}ms` }} />
+        </div>
+      </article>
+
+      {/* الجوال: شريط شعارات أفقي بدل الفهرس الطويل */}
+      <div className="lg:hidden flex gap-2.5 overflow-x-auto pb-2 testi-list" style={{ scrollSnapType: 'x mandatory' }}>
+        {cards.map((c, i) => (
+          <button key={c.name + i} type="button" onClick={() => go(i)} aria-label={c.name}
+                  className="flex-shrink-0 rounded-2xl p-1.5 transition-all duration-300"
+                  style={{ scrollSnapAlign: 'start', background: '#fff', boxShadow: i === active ? 'inset 0 0 0 2px #B8863A' : 'inset 0 0 0 1px var(--line-warm)', opacity: i === active ? 1 : 0.7 }}>
+            <AuthorLogo src={logos[instituteIdFor(c.role)] || null} rung="#B8863A" />
+          </button>
+        ))}
       </div>
-    </article>
+
+      {/* الفهرس */}
+      <ul className="hidden lg:flex lg:col-span-5 flex-col gap-2.5 lg:max-h-[560px] lg:overflow-y-auto lg:pe-1 testi-list">
+        {cards.map((c, i) => {
+          const on = i === active
+          return (
+            <li key={c.name + i}>
+              <button type="button" onClick={() => go(i)}
+                      className="w-full text-start rounded-2xl p-4 flex items-start gap-3.5 transition-all duration-300"
+                      style={{
+                        background: on ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
+                        boxShadow : on ? 'var(--shadow-md), inset 0 0 0 1.5px rgba(184,134,58,0.55)' : 'inset 0 0 0 1px var(--line-warm)',
+                        transform : on ? 'translateX(-4px)' : 'none',
+                      }}>
+                <AuthorLogo src={logos[instituteIdFor(c.role)] || null} rung="#B8863A" />
+                <span className="flex flex-col gap-1 min-w-0">
+                  <span className="text-base font-bold" style={{ color: on ? '#0B3B33' : 'var(--text-1)' }}>{c.name}</span>
+                  <span className="text-xs truncate" style={{ color: 'var(--text-3)' }}>{c.role}</span>
+                  <span className="text-sm line-clamp-2 mt-0.5" style={{ color: 'var(--text-2)', lineHeight: 1.7 }}>{c.text}</span>
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }
 
 /* ─── Loading skeleton ─────────────────────────────────────────── */
 function SkeletonCard() {
   return (
-    <div className="testimonial-card ps-9 pe-7 py-7 flex flex-col gap-5">
-      <div className="self-end h-5 w-28 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.08)' }} />
-      <div className="flex flex-col gap-2.5 flex-1">
-        <div className="h-3 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.06)', width: '92%' }} />
-        <div className="h-3 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.06)', width: '80%' }} />
-        <div className="h-3 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.06)', width: '87%' }} />
-        <div className="h-3 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.06)', width: '65%' }} />
-      </div>
-      <div className="divider-testimonial" />
-      <div className="flex items-center gap-3.5">
-        <div className="w-11 h-11 rounded-xl animate-pulse" style={{ background: 'rgba(255,255,255,0.08)' }} />
-        <div className="flex flex-col gap-1.5 text-start">
-          <div className="h-3 w-24 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.08)' }} />
-          <div className="h-2.5 w-32 rounded-full animate-pulse" style={{ background: 'rgba(255,255,255,0.05)' }} />
-        </div>
-      </div>
+    <div className="rounded-[28px] p-8 flex flex-col gap-4 bg-white" style={{ boxShadow: 'var(--shadow-sm)', minHeight: 440 }}>
+      {[92, 80, 87, 65].map(w => (
+        <div key={w} className="h-3 rounded-full animate-pulse" style={{ background: 'rgba(11, 59, 51, 0.07)', width: `${w}%` }} />
+      ))}
     </div>
   )
 }
@@ -238,71 +281,35 @@ export default function TestimonialsSection({ titleLead = 'شركاء النجا
   return (
     <section id="testimonials" className="relative z-10 py-28">
 
-      {/* وهجا القسم — مصدرا الضوء. كان الثاني --pine (162°) وهو
-          الأخضر الذي كان يصبغ أسفل القسم كلّه */}
-      <div
-        className="pointer-events-none absolute top-0 right-0 w-[500px] h-[500px]"
-        style={{
-          background: 'radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 65%)',
-        }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 w-[400px] h-[400px]"
-        style={{
-          background: 'radial-gradient(circle at bottom left, color-mix(in srgb, var(--accent-deep) 12%, transparent) 0%, transparent 65%)',
-        }}
-        aria-hidden
-      />
-
       <div className="relative max-w-6xl mx-auto px-6">
 
         {/* Header */}
         <div className="text-center mb-14">
           {/* عنوانُ القسم على هيئة شارة «كيف يعمل» نفسها: نصٌّ عارٍ
              كان يقف بلا سطحٍ فوق شبكةٍ كلُّ بطاقةٍ فيها محدودة */}
-          <span
-            className="inline-flex items-center rounded-full px-5 py-2 text-xs font-bold tracking-[0.22em] uppercase mb-5"
-            style={{
-              background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
-              border    : '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
-              color     : 'var(--accent)',
-            }}
-          >
-            شهادات العملاء
-          </span>
+          <span className="eyebrow">شهادات العملاء</span>
           <h2
-            className="font-black leading-tight mb-5 mx-auto"
+            className="font-bold mt-5 mb-5 mx-auto"
             style={{
               color   : 'var(--text-1)',
-              fontSize: 'clamp(1.7rem, 3.5vw, 2.7rem)',
+              fontSize: 'clamp(1.9rem, 3.6vw, 2.9rem)',
               maxWidth: '680px',
             }}
           >
             {titleLead}{' '}
-            <span style={{ color: 'var(--accent)' }}>{titleAccent}</span>
+            <span className="title-mark">{titleAccent}</span>
           </h2>
           <p
-            className="text-sm leading-[2] mx-auto"
+            className="text-lg leading-[2] mx-auto"
             style={{ color: 'var(--text-2)', maxWidth: '560px' }}
           >
             قصص حقيقية لمؤسسات استردت وقتها ومالها وتحولت إلى الأنظمة الرقمية الذكية.
           </p>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {loading
-            ? [0, 1].map(i => <SkeletonCard key={i} />)
-            : cards.map((t, i) => (
-                <TestimonialCard
-                  key={t.name + i}
-                  t={t}
-                  logo={logos[instituteIdFor(t.role)] || null}
-                />
-              ))
-          }
-        </div>
+        {loading
+          ? <div className="grid grid-cols-1 lg:grid-cols-12 gap-6"><div className="lg:col-span-7"><SkeletonCard /></div><div className="lg:col-span-5"><SkeletonCard /></div></div>
+          : <Spotlight cards={cards} logos={logos} />}
 
         {/* CTA */}
         <div className="mt-14 text-center">
@@ -314,7 +321,7 @@ export default function TestimonialsSection({ titleLead = 'شركاء النجا
               «كيف يعمل» — نفس اللكنة ونفس الحركة، بلا JS */}
           <Link
             to="/review"
-            className="btn-outline inline-flex items-center gap-2.5 rounded-xl px-8 py-4"
+            className="btn-outline inline-flex items-center gap-2.5 rounded-full px-8 py-4"
             style={{ fontSize: '0.9rem' }}
           >
             شاركنا تجربتك

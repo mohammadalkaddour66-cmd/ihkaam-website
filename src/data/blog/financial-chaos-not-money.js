@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'finance',
   relatedPosts  : ['setting-tuition-fees', 'why-centers-fail-to-scale', 'monthly-reports-time-trap'],
   sources       : [],
-  coverColor    : '#6FE7DE',
+  coverColor    : '#0B3B33',
   cover         : '/og/blog/financial-chaos-not-money.jpg',
   sections: [
     {

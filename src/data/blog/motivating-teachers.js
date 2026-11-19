@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'star',
   relatedPosts  : ['how-to-know-teacher-is-working', 'quran-certificate-wording', 'first-90-days-director'],
   sources       : [],
-  coverColor    : '#B98A63',
+  coverColor    : '#7A5A2E',
   cover         : '/og/blog/motivating-teachers.jpg',
   sections: [
     {

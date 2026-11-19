@@ -15,7 +15,7 @@ export const CATEGORIES = [
     label      : 'البداية السريعة',
     description: 'الدخول للنظام وفهم الواجهة الرئيسية',
     icon       : Rocket,
-    color      : '#48D6CD',
+    color      : '#1F6F52',
     articles   : ['login', 'dashboard-overview', 'signup', 'payment', 'install-home-screen'],
   },
   {
@@ -23,7 +23,7 @@ export const CATEGORIES = [
     label      : 'إدارة الطلاب',
     description: 'تسجيل الطلاب وإدارة الحلقات والمجموعات',
     icon       : Users,
-    color      : '#D9ACA3',
+    color      : '#8A6425',
     articles   : ['student-registration', 'groups-management', 'student-transfer', 'moving-student-data'],
   },
   {
@@ -31,7 +31,7 @@ export const CATEGORIES = [
     label      : 'المتابعة اليومية',
     description: 'تسجيل الحضور والتسميع والسجلات اليومية',
     icon       : ClipboardList,
-    color      : '#48D6CD',
+    color      : '#1F6F52',
     articles   : ['attendance-batch', 'attendance-staff', 'daily-recitation'],
   },
   {
@@ -39,7 +39,7 @@ export const CATEGORIES = [
     label      : 'الاختبارات',
     description: 'تسجيل نتائج الاختبارات وإدارة الطابور',
     icon       : GraduationCap,
-    color      : '#D9ACA3',
+    color      : '#8A6425',
     articles   : ['tests', 'exam-queue', 'monthly-eval'],
   },
   {
@@ -47,7 +47,7 @@ export const CATEGORIES = [
     label      : 'الشؤون المالية',
     description: 'إدارة الأقساط والمعاملات المالية',
     icon       : Wallet,
-    color      : '#48D6CD',
+    color      : '#1F6F52',
     articles   : ['finance-tuitions', 'finance-ledger'],
   },
   {
@@ -55,7 +55,7 @@ export const CATEGORIES = [
     label      : 'التقارير والأرشفة',
     description: 'استخراج وتصدير التقارير وأرشفة ملفات المعهد',
     icon       : BarChart3,
-    color      : '#D9ACA3',
+    color      : '#8A6425',
     articles   : ['reports-overview', 'archiving'],
   },
   {
@@ -63,7 +63,7 @@ export const CATEGORIES = [
     label      : 'التحليل الذكي',
     description: 'قراءة اتجاه أداء الحلقة والطالب مقارنةً بماضيه',
     icon       : Brain,
-    color      : '#48D6CD',
+    color      : '#1F6F52',
     articles   : ['smart-insights', 'insights-metrics'],
   },
   {
@@ -71,7 +71,7 @@ export const CATEGORIES = [
     label      : 'بوابة أولياء الأمور',
     description: 'متابعة الطالب من خلال البوابة الخاصة بالأهل',
     icon       : Bell,
-    color      : '#48D6CD',
+    color      : '#1F6F52',
     articles   : ['parent-portal'],
   },
   {
@@ -79,7 +79,7 @@ export const CATEGORIES = [
     label      : 'إدارة الكادر',
     description: 'إضافة المعلمين والإداريين وضبط الصلاحيات',
     icon       : Shield,
-    color      : '#D9ACA3',
+    color      : '#8A6425',
     articles   : ['staff-management', 'star-of-week'],
   },
 ]

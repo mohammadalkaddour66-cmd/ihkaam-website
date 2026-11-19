@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'insights',
   relatedPosts  : ['fair-recitation-system', 'how-to-know-teacher-is-working', 'monthly-reports-time-trap'],
   sources       : [],
-  coverColor    : '#2FAEB4',
+  coverColor    : '#2E7A5A',
   cover         : '/og/blog/reading-recitation-data.jpg',
   sections: [
     {

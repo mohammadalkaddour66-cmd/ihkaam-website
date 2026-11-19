@@ -8,26 +8,26 @@
    في ثلاثة ملفات ويُدخل دالّةً لا داعي لها.
 
    فالشرط: هذا الملف وكتلة :root في index.css يتغيّران معاً.
-   لا تُضَف درجةٌ هنا ليست هناك. ودرجة كل لون (hue) خارج 70–166.
+   لا تُضَف درجةٌ هنا ليست هناك. لا تركوازي إطلاقاً (الهوية الفاتحة 2026-11-19).
    ══════════════════════════════════════════════════════ */
 
-/* الأساسيّ — التركوازي. نصيبه الأكبر بعد الأسطح الداكنة. */
-export const ACCENT       = '#48D6CD'
-export const ACCENT_HOVER = '#6FE7DE'
-export const ACCENT_DEEP  = '#2FAEB4'
+/* الأساسيّ — الأخضر. نصيبه الأكبر بعد الأسطح الكريمية. */
+export const ACCENT       = '#1F6F52'
+export const ACCENT_HOVER = '#0B3B33'
+export const ACCENT_DEEP  = '#2E7A5A'
 
 /* الثانويّ — ذهب اللوغو وبيجه. حدّه عُشر ألوان القسم.
    دلالتُه واحدة لا تتوسّع: الإنجاز والتميّز والشهادة.
    ليس لوناً «للتنويع» حين تنفد الأفكار — هكذا صار أربعة عشر. */
-export const GOLD      = '#E3A93F'
-export const GOLD_SOFT  = '#F0CE8A'
-export const GOLD_DEEP  = '#B8781F'
-export const SAND       = '#E5D3B3'
+export const GOLD      = '#B8863A'
+export const GOLD_SOFT  = '#E0B562'
+export const GOLD_DEEP  = '#8A6425'
+export const SAND       = '#7A6440'
 
 /* المحايد — نصوصٌ وأرقامٌ لا تحمل دلالةً خاصّة. */
-export const TEXT_1 = '#EAE4DF'
-export const TEXT_2 = '#96BCBE'
-export const TEXT_3 = '#6FA5A8'
+export const TEXT_1 = '#1A2E28'
+export const TEXT_2 = '#4A5D56'
+export const TEXT_3 = '#5E6E67'
 
 /* الاحتكاك — الغياب والتراجع وحدهما. لا يُستعمل للزينة. */
-export const CLAY = '#A6756A'
+export const CLAY = '#7A5A2E'

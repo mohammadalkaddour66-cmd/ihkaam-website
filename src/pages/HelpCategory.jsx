@@ -29,7 +29,7 @@ export default function HelpCategory() {
   const articles = cat.articles.map(s => ARTICLES[s]).filter(Boolean)
 
   return (
-    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#F8F5EC', minHeight: '100vh' }}>
       <PageMeta
         title={`${cat.label} — مركز المساعدة`}
         description={composeDescription([
@@ -61,10 +61,10 @@ export default function HelpCategory() {
 
         <div className="relative max-w-4xl mx-auto">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-white/35 mb-6">
-            <Link to="/help" className="hover:text-white/70 transition-colors">الدعم الفني</Link>
+          <nav className="flex items-center gap-2 text-xs text-[#1A2E28]/60 mb-6">
+            <Link to="/help" className="hover:text-[#1A2E28]/70 transition-colors">الدعم الفني</Link>
             <ChevronLeft size={12} />
-            <span className="text-white/60">{cat.label}</span>
+            <span className="text-[#1A2E28]/60">{cat.label}</span>
           </nav>
 
           {/* Icon + Title */}
@@ -76,8 +76,8 @@ export default function HelpCategory() {
               <Icon size={26} style={{ color: cat.color }} />
             </div>
             <div>
-              <h1 className="text-white text-3xl md:text-4xl font-black">{cat.label}</h1>
-              <p className="text-white/45 text-sm mt-1">{cat.description}</p>
+              <h1 className="text-[#1A2E28] text-3xl md:text-4xl font-black">{cat.label}</h1>
+              <p className="text-[#1A2E28]/70 text-sm mt-1">{cat.description}</p>
             </div>
           </div>
 
@@ -94,19 +94,19 @@ export default function HelpCategory() {
       {/* ─── Articles grid ───────────────────────────── */}
       <div className="max-w-4xl mx-auto px-6 pb-24">
         {cat.intro && (
-          <p className="text-white/70 text-base leading-loose mb-8 max-w-3xl">
+          <p className="text-[#1A2E28]/70 text-base leading-loose mb-8 max-w-3xl">
             {cat.intro}
           </p>
         )}
         {cat.points?.length > 0 && (
           <div
-            className="rounded-2xl p-5 mb-8 border border-white/8"
-            style={{ background: 'rgba(255,255,255,0.03)' }}
+            className="rounded-2xl p-5 mb-8 border border-[#0B3B33]/8"
+            style={{ background: 'rgba(11, 59, 51, 0.03)' }}
           >
-            <h2 className="text-white font-bold text-base mb-3">قبل أن تبدأ في قسم {cat.label}</h2>
+            <h2 className="text-[#1A2E28] font-bold text-base mb-3">قبل أن تبدأ في قسم {cat.label}</h2>
             <ul className="space-y-2">
               {cat.points.map((p, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-white/60 text-sm leading-relaxed">
+                <li key={i} className="flex items-start gap-2.5 text-[#1A2E28]/60 text-sm leading-relaxed">
                   <span
                     className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
                     style={{ background: cat.color }}
@@ -128,14 +128,14 @@ export default function HelpCategory() {
             >
               <Link
                 to={`/help/${art.slug}`}
-                className="group flex flex-col h-full p-5 rounded-2xl border border-white/8
-                           hover:border-white/20 transition-all"
+                className="group flex flex-col h-full p-5 rounded-2xl border border-[#0B3B33]/8
+                           hover:border-[#0B3B33]/20 transition-all"
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'rgba(11, 59, 51, 0.03)',
                   transition: 'border-color 0.22s, background 0.22s',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = cat.color + '08')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.03)')}
               >
                 {/* Step count badge */}
                 <div className="flex items-center justify-between mb-3">
@@ -148,12 +148,12 @@ export default function HelpCategory() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-white font-bold text-base mb-2 leading-snug group-hover:text-[#48D6CD] transition-colors">
+                <h3 className="text-[#1A2E28] font-bold text-base mb-2 leading-snug group-hover:text-[#1F6F52] transition-colors">
                   {art.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-white/50 text-sm leading-relaxed flex-1 line-clamp-2">
+                <p className="text-[#1A2E28]/70 text-sm leading-relaxed flex-1 line-clamp-2">
                   {art.description}
                 </p>
 
@@ -164,13 +164,13 @@ export default function HelpCategory() {
                       <span
                         key={w}
                         className="text-[10px] px-2 py-0.5 rounded-full border"
-                        style={{ borderColor: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.40)' }}
+                        style={{ borderColor: 'rgba(11, 59, 51, 0.12)', color: 'rgba(11, 59, 51, 0.40)' }}
                       >
                         {w}
                       </span>
                     ))}
                     {art.whoFor.length > 2 && (
-                      <span className="text-[10px] text-white/25">+{art.whoFor.length - 2}</span>
+                      <span className="text-[10px] text-[#1A2E28]/60">+{art.whoFor.length - 2}</span>
                     )}
                   </div>
                 )}
@@ -192,7 +192,7 @@ export default function HelpCategory() {
         <div className="mt-10 text-center">
           <Link
             to="/help"
-            className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white/70 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#1A2E28]/60 hover:text-[#1A2E28]/70 transition-colors"
           >
             <ArrowRight size={15} />
             العودة لجميع الأقسام

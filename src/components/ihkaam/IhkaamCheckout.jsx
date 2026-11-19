@@ -116,21 +116,21 @@ const NEXT_STEPS = [
 
 /* ─── Shared input styles ────────────────────────────────────────────── */
 const inputBase = {
-  background  : '#020F0E',
-  border      : '1px solid rgba(26,148,155,0.22)',
+  background  : '#F8F5EC',
+  border      : '1px solid rgba(11, 59, 51, 0.22)',
   borderRadius: '12px',
   padding     : '0.82rem 1rem',
-  color       : '#EAE4DF',
-  caretColor  : '#48D6CD',
+  color       : '#1A2E28',
+  caretColor  : '#1F6F52',
   width       : '100%',
   outline     : 'none',
   fontSize    : '1rem',
-  fontFamily  : 'Cairo, sans-serif',
+  fontFamily  : 'Qomra, sans-serif',
   transition  : 'border-color 200ms ease',
   textAlign   : 'right',
 }
-const iFocus = e => (e.target.style.borderColor = 'rgba(72,214,205,0.55)')
-const iBlur  = e => (e.target.style.borderColor = 'rgba(26,148,155,0.22)')
+const iFocus = e => (e.target.style.borderColor = 'rgba(31, 111, 82, 0.55)')
+const iBlur  = e => (e.target.style.borderColor = 'rgba(11, 59, 51, 0.22)')
 
 /* ─── Country picker ─────────────────────────────────────────────────────
    A native <select> can't show a long option in a narrow box — it just
@@ -169,23 +169,23 @@ function CountryPicker({ value, onChange }) {
           width      : 'auto',
           whiteSpace : 'nowrap',
           paddingLeft: '0.5rem', paddingRight: '0.7rem',
-          background : 'rgba(17,49,44,0.18)',
-          borderColor: open ? 'rgba(72,214,205,0.55)' : 'rgba(26,148,155,0.22)',
+          background : 'rgba(241, 236, 223, 0.18)',
+          borderColor: open ? 'rgba(31, 111, 82, 0.55)' : 'rgba(11, 59, 51, 0.22)',
         }}
       >
         {/* No flag emoji here: Windows has no regional-indicator glyphs, so 🇸🇾
             degrades to the bare letters "SY". The name carries the identity and
             width:auto guarantees it is never clipped. */}
-        <span style={{ color: '#C4D8D4', fontWeight: 600, fontSize: '0.85rem' }}>
+        <span style={{ color: '#33463F', fontWeight: 600, fontSize: '0.85rem' }}>
           {current?.name ?? 'الدولة'}
         </span>
-        <span dir="ltr" className="tabular-nums" style={{ color: '#48D6CD', fontWeight: 700, fontSize: '0.85rem' }}>
+        <span dir="ltr" className="tabular-nums" style={{ color: '#1F6F52', fontWeight: 700, fontSize: '0.85rem' }}>
           {current?.code ?? '+'}
         </span>
         <ChevronDown
           size={13}
           style={{
-            color     : '#6FA5A8',
+            color     : '#5E6E67',
             flexShrink: 0,
             transform : open ? 'rotate(180deg)' : 'none',
             transition: 'transform 200ms',
@@ -205,10 +205,10 @@ function CountryPicker({ value, onChange }) {
             insetInlineStart: 0,
             width           : '14rem',
             maxHeight       : '15rem',
-            background    : 'rgba(4,26,25,0.97)',
-            border        : '1px solid rgba(72,214,205,0.18)',
+            background    : 'rgba(248, 245, 236, 0.97)',
+            border        : '1px solid rgba(31, 111, 82, 0.18)',
             backdropFilter: 'blur(12px)',
-            boxShadow     : '0 18px 44px -12px rgba(0,0,0,0.75)',
+            boxShadow     : '0 18px 44px -12px rgba(11, 59, 51, 0.225)',
             padding       : '0.3rem',
           }}
         >
@@ -222,18 +222,18 @@ function CountryPicker({ value, onChange }) {
                 aria-selected={isActive}
                 onClick={() => { onChange(c.code); setOpen(false) }}
                 className="w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-right cursor-pointer"
-                style={{ background: isActive ? 'rgba(72,214,205,0.14)' : 'transparent', border: 'none' }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                style={{ background: isActive ? 'rgba(31, 111, 82, 0.14)' : 'transparent', border: 'none' }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(11, 59, 51, 0.05)' }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
               >
                 <span style={{ fontSize: '1rem', lineHeight: 1 }}>{c.flag}</span>
                 <span
                   className="flex-1 text-right"
-                  style={{ color: isActive ? '#48D6CD' : '#C4D8D4', fontSize: '0.82rem', fontWeight: isActive ? 700 : 500 }}
+                  style={{ color: isActive ? '#1F6F52' : '#33463F', fontSize: '0.82rem', fontWeight: isActive ? 700 : 500 }}
                 >
                   {c.name}
                 </span>
-                <span dir="ltr" className="tabular-nums" style={{ color: '#6FA5A8', fontSize: '0.75rem' }}>
+                <span dir="ltr" className="tabular-nums" style={{ color: '#5E6E67', fontSize: '0.75rem' }}>
                   {c.code}
                 </span>
               </button>
@@ -246,11 +246,11 @@ function CountryPicker({ value, onChange }) {
             onClick={() => { onChange('other'); setOpen(false) }}
             className="w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-right cursor-pointer"
             style={{ background: 'transparent', border: 'none' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(11, 59, 51, 0.05)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >
             <span style={{ fontSize: '1rem', lineHeight: 1 }}>🌍</span>
-            <span className="flex-1 text-right" style={{ color: '#9A8A74', fontSize: '0.82rem' }}>
+            <span className="flex-1 text-right" style={{ color: '#8B7B65', fontSize: '0.82rem' }}>
               دولة أخرى…
             </span>
           </button>
@@ -266,7 +266,7 @@ function Field({ label, children }) {
     <div className="flex flex-col gap-1.5">
       <label
         className="text-[10px] font-bold uppercase tracking-[0.14em]"
-        style={{ color: '#509492' }}
+        style={{ color: '#5E6E67' }}
       >
         {label}
       </label>
@@ -276,18 +276,18 @@ function Field({ label, children }) {
 }
 
 /* ─── Invoice-style line item row ────────────────────────────────────── */
-function SummaryRow({ label, value, suffix, labelColor = '#96BCBE', valueColor = '#C4D8D4', className = '' }) {
+function SummaryRow({ label, value, suffix, labelColor = '#4A5D56', valueColor = '#33463F', className = '' }) {
   return (
     <div
       className={`flex items-center justify-between gap-4 px-4 py-2.5 rounded-xl ${className}`}
-      style={{ background: 'rgba(255,255,255,0.025)' }}
+      style={{ background: 'rgba(11, 59, 51, 0.025)' }}
     >
       <span style={{ color: labelColor, fontSize: '0.80rem', lineHeight: 1.4 }}>{label}</span>
       <div className="flex items-baseline gap-1.5 flex-shrink-0">
         <span dir="ltr" className="tabular-nums font-bold" style={{ color: valueColor, fontSize: '0.88rem' }}>
           {value}
         </span>
-        {suffix && <span style={{ color: '#364C54', fontSize: '0.65rem' }}>{suffix}</span>}
+        {suffix && <span style={{ color: '#ABC9BE', fontSize: '0.65rem' }}>{suffix}</span>}
       </div>
     </div>
   )
@@ -316,29 +316,29 @@ function OrderSummary({
            title said "تفاصيل باقة الاشتراك" — same sentence twice. ── */}
       <div>
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h2 className="font-black" style={{ color: '#EAE4DF', fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)' }}>
+          <h2 className="font-black" style={{ color: '#1A2E28', fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)' }}>
             ملخص الطلب
           </h2>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span
               className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
               style={{
-                background: !isMonthly ? 'rgba(229,211,179,0.09)' : 'rgba(17,49,44,0.18)',
-                border    : `1px solid ${!isMonthly ? 'rgba(229,211,179,0.22)' : 'rgba(26,148,155,0.22)'}`,
-                color     : !isMonthly ? '#E5D3B3' : '#48D6CD',
+                background: !isMonthly ? 'rgba(184, 134, 58, 0.09)' : 'rgba(241, 236, 223, 0.18)',
+                border    : `1px solid ${!isMonthly ? 'rgba(184, 134, 58, 0.22)' : 'rgba(11, 59, 51, 0.22)'}`,
+                color     : !isMonthly ? '#7A6440' : '#1F6F52',
               }}
             >
               {periodLabel}
             </span>
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
-              style={{ background: 'rgba(72,214,205,0.10)', border: '1px solid rgba(72,214,205,0.28)' }}
+              style={{ background: 'rgba(31, 111, 82, 0.10)', border: '1px solid rgba(31, 111, 82, 0.28)' }}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                style={{ background: '#48D6CD', boxShadow: '0 0 6px rgba(72,214,205,0.65)' }}
+                style={{ background: '#1F6F52', boxShadow: '0 0 6px rgba(31, 111, 82, 0.65)' }}
               />
-              <span className="text-xs font-bold" style={{ color: '#48D6CD' }}>{tierName}</span>
+              <span className="text-xs font-bold" style={{ color: '#1F6F52' }}>{tierName}</span>
             </span>
           </div>
         </div>
@@ -352,18 +352,18 @@ function OrderSummary({
           label="سعة الطلاب النشطين"
           value={students}
           suffix="طالب"
-          valueColor="#48D6CD"
+          valueColor="#1F6F52"
         />
         {/* Itemised add-ons. Each amount is that feature's own share of the
             grand total — monthly price × الفترة × (1 − الخصم) — so the lines
             sum to the number at the bottom. Name and price only. */}
         {selectedFeatureList.length > 0 && (
-          <div className="rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.025)' }}>
+          <div className="rounded-xl overflow-hidden" style={{ background: 'rgba(11, 59, 51, 0.025)' }}>
             <div className="flex items-center justify-between gap-3 px-4 pt-2.5 pb-2">
-              <span style={{ color: '#96BCBE', fontSize: '0.80rem', lineHeight: 1.4 }}>
+              <span style={{ color: '#4A5D56', fontSize: '0.80rem', lineHeight: 1.4 }}>
                 الميزات المتقدمة
               </span>
-              <span dir="ltr" className="tabular-nums" style={{ color: '#3D6B6B', fontSize: '0.68rem' }}>
+              <span dir="ltr" className="tabular-nums" style={{ color: '#94C2B1', fontSize: '0.68rem' }}>
                 {selectedFeatureList.length}
               </span>
             </div>
@@ -371,15 +371,15 @@ function OrderSummary({
               <div
                 key={f.id}
                 className="flex items-start justify-between gap-3 px-4 py-2"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.045)' }}
+                style={{ borderTop: '1px solid rgba(11, 59, 51, 0.045)' }}
               >
-                <span style={{ color: '#7FB8B4', fontSize: '0.75rem', lineHeight: 1.5 }}>
+                <span style={{ color: '#47806B', fontSize: '0.75rem', lineHeight: 1.5 }}>
                   {f.name}
                 </span>
                 <span
                   dir="ltr"
                   className="tabular-nums flex-shrink-0"
-                  style={{ color: '#48D6CD', fontSize: '0.78rem', fontWeight: 700, lineHeight: 1.5 }}
+                  style={{ color: '#1F6F52', fontSize: '0.78rem', fontWeight: 700, lineHeight: 1.5 }}
                 >
                   ${((f.price_usd_monthly || 0) * duration * (1 - discountFrac)).toFixed(2)}
                 </span>
@@ -394,13 +394,13 @@ function OrderSummary({
            price and the two collided. ── */}
       <div
         className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-4 pt-4 border-t"
-        style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+        style={{ borderColor: 'rgba(11, 59, 51, 0.06)' }}
       >
 
         {/* Right (RTL start): stacked text labels */}
         <div className="flex flex-col gap-1 min-w-0">
           {discountPct > 0 && (
-            <p style={{ color: '#364C54', fontSize: '0.70rem', lineHeight: 1.4 }}>
+            <p style={{ color: '#ABC9BE', fontSize: '0.70rem', lineHeight: 1.4 }}>
               قبل الخصم:&nbsp;
               <span
                 dir="ltr"
@@ -411,7 +411,7 @@ function OrderSummary({
               </span>
             </p>
           )}
-          <p style={{ color: '#8AADA6', fontWeight: 700, fontSize: '0.84rem', lineHeight: 1.3 }}>
+          <p style={{ color: '#527568', fontWeight: 700, fontSize: '0.84rem', lineHeight: 1.3 }}>
             {isMonthly ? 'إجمالي الاشتراك' : `الإجمالي لـ ${periodLabel}`}
           </p>
         </div>
@@ -423,9 +423,9 @@ function OrderSummary({
               className="rounded-full flex-shrink-0"
               style={{
                 padding   : '0.22rem 0.65rem',
-                background: 'rgba(22,179,174,0.12)',
-                border    : '1px solid rgba(22,179,174,0.28)',
-                color     : '#6EE7E3',
+                background: 'rgba(46, 122, 90, 0.12)',
+                border    : '1px solid rgba(46, 122, 90, 0.28)',
+                color     : '#0B3B33',
                 fontSize  : '0.70rem',
                 fontWeight: 700,
                 lineHeight: 1.5,
@@ -444,7 +444,7 @@ function OrderSummary({
             dir="ltr"
             className="font-black tabular-nums"
             style={{
-              color        : isMonthly ? '#48D6CD' : '#EAE4DF',
+              color        : isMonthly ? '#1F6F52' : '#1A2E28',
               fontSize     : 'clamp(1.75rem, 2.8vw, 2.25rem)',
               lineHeight   : 1,
               letterSpacing: '-0.03em',
@@ -477,18 +477,18 @@ function SuccessScreen({ onHome }) {
         style={{
           width     : '100px',
           height    : '100px',
-          background: 'rgba(72,214,205,0.10)',
-          border    : '2px solid rgba(72,214,205,0.32)',
+          background: 'rgba(31, 111, 82, 0.10)',
+          border    : '2px solid rgba(31, 111, 82, 0.32)',
         }}
       >
-        <CheckCircle2 size={46} style={{ color: '#48D6CD' }} strokeWidth={1.4} />
+        <CheckCircle2 size={46} style={{ color: '#1F6F52' }} strokeWidth={1.4} />
       </motion.div>
 
       <div className="flex flex-col gap-4 max-w-md">
-        <h2 className="font-black" style={{ color: '#EAE4DF', fontSize: 'clamp(1.4rem, 2.8vw, 1.9rem)' }}>
+        <h2 className="font-black" style={{ color: '#1A2E28', fontSize: 'clamp(1.4rem, 2.8vw, 1.9rem)' }}>
           تم استلام طلبك بنجاح!
         </h2>
-        <p className="text-sm leading-[2.1]" style={{ color: '#96BCBE' }}>
+        <p className="text-sm leading-[2.1]" style={{ color: '#4A5D56' }}>
           سنتواصل معك قريباً عبر الواتساب لإتمام تفعيل مركزك.
         </p>
       </div>
@@ -500,8 +500,8 @@ function SuccessScreen({ onHome }) {
       <button
         onClick={onHome}
         className="rounded-xl px-8 py-3 text-sm font-bold cursor-pointer transition-all duration-200"
-        style={{ background: 'transparent', border: '1px solid rgba(72,214,205,0.22)', color: '#6FA5A8' }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(72,214,205,0.06)')}
+        style={{ background: 'transparent', border: '1px solid rgba(31, 111, 82, 0.22)', color: '#5E6E67' }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.06)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         العودة للرئيسية
@@ -680,12 +680,12 @@ export default function IhkaamCheckout() {
               onClick={() => navigate(-1)}
               className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200"
               style={{
-                background: 'rgba(255,255,255,0.02)',
-                border    : '1px solid rgba(255,255,255,0.10)',
-                color     : '#48D6CD',
+                background: 'rgba(11, 59, 51, 0.02)',
+                border    : '1px solid rgba(11, 59, 51, 0.10)',
+                color     : '#1F6F52',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.05)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.02)')}
             >
               <span>العودة لتعديل الباقة</span>
               <ArrowRight size={14} />
@@ -694,13 +694,13 @@ export default function IhkaamCheckout() {
           <div className="text-center">
             <p
               className="hidden md:block text-[10px] font-bold uppercase tracking-[0.26em] mb-3"
-              style={{ color: '#A6756A' }}
+              style={{ color: '#7A5A2E' }}
             >
               اشترك في إحكام
             </p>
             <h1
               className="font-black leading-tight"
-              style={{ color: '#EAE4DF', fontSize: 'clamp(1.15rem, 2vw, 1.55rem)' }}
+              style={{ color: '#1A2E28', fontSize: 'clamp(1.15rem, 2vw, 1.55rem)' }}
             >
               خطوة واحدة لتفعيل مؤسستك القرآنية
             </h1>
@@ -719,11 +719,11 @@ export default function IhkaamCheckout() {
             {/* ── Customer Form ── */}
             <div
               className="rounded-[22px] px-5 py-6 md:px-8 md:py-8 flex flex-col gap-5 md:gap-6 h-full"
-              style={{ background: '#09201E', border: '1px solid rgba(229,211,179,0.08)' }}
+              style={{ background: '#FFFFFF', border: '1px solid rgba(184, 134, 58, 0.08)' }}
             >
               {/* Eyebrow dropped — "معلومات المؤسسة" and "بيانات المعهد
                   والمشرف" were the same label stacked on itself. */}
-              <h2 className="font-black text-[0.98rem]" style={{ color: '#EAE4DF' }} dir="rtl">
+              <h2 className="font-black text-[0.98rem]" style={{ color: '#1A2E28' }} dir="rtl">
                 بيانات المعهد والمشرف
               </h2>
 
@@ -773,9 +773,9 @@ export default function IhkaamCheckout() {
                               ...inputBase,
                               width             : '5rem',
                               textAlign         : 'center',
-                              background        : 'rgba(229,211,179,0.07)',
-                              border            : '1px solid rgba(229,211,179,0.20)',
-                              color             : '#E5D3B3',
+                              background        : 'rgba(184, 134, 58, 0.07)',
+                              border            : '1px solid rgba(184, 134, 58, 0.20)',
+                              color             : '#7A6440',
                               fontWeight        : '700',
                               fontSize          : '1rem',
                               paddingInlineStart: '0.5rem',
@@ -788,9 +788,9 @@ export default function IhkaamCheckout() {
                             type="button"
                             onClick={() => { setField('countryCode', '+963'); setField('customCode', '') }}
                             className="absolute -bottom-[1.15rem] start-0 text-[10px] cursor-pointer whitespace-nowrap transition-colors duration-150"
-                            style={{ color: '#6FA5A8' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#48D6CD')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#6FA5A8')}
+                            style={{ color: '#5E6E67' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#1F6F52')}
+                            onMouseLeave={e => (e.currentTarget.style.color = '#5E6E67')}
                           >
                             ← تغيير
                           </button>
@@ -827,7 +827,7 @@ export default function IhkaamCheckout() {
                        there's room for it), then the shape check, then the
                        wa.me test link once the number is well-formed. ── */}
                   {phoneCheck.state === 'empty' && (
-                    <p className="text-[11px] leading-[1.7]" style={{ color: '#6FA5A8' }} dir="rtl">
+                    <p className="text-[11px] leading-[1.7]" style={{ color: '#5E6E67' }} dir="rtl">
                       {form.countryCode === 'other'
                         ? 'اكتب مفتاح دولتك مع الإشارة + (مثال: +44)'
                         : (selectedCountry?.hint ?? 'بدون مفتاح الدولة')}
@@ -837,7 +837,7 @@ export default function IhkaamCheckout() {
                   {phoneCheck.state === 'invalid' && (
                     <p
                       className="flex items-start gap-1.5 text-[11px] leading-[1.7]"
-                      style={{ color: '#D9ACA3' }}
+                      style={{ color: '#8A6425' }}
                       dir="rtl"
                     >
                       <AlertCircle size={12} className="flex-shrink-0 mt-[3px]" />
@@ -849,7 +849,7 @@ export default function IhkaamCheckout() {
                     <div className="flex items-center justify-between gap-2 flex-wrap" dir="rtl">
                       <span
                         className="flex items-center gap-1.5 text-[11px]"
-                        style={{ color: '#48D6CD' }}
+                        style={{ color: '#1F6F52' }}
                       >
                         <CheckCircle2 size={12} className="flex-shrink-0" />
                         <span dir="ltr" className="tabular-nums font-bold">{phoneCheck.e164}</span>
@@ -860,12 +860,12 @@ export default function IhkaamCheckout() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-[11px] font-bold rounded-full px-2.5 py-1 transition-colors duration-200"
                         style={{
-                          background: 'rgba(72,214,205,0.10)',
-                          border    : '1px solid rgba(72,214,205,0.28)',
-                          color     : '#48D6CD',
+                          background: 'rgba(31, 111, 82, 0.10)',
+                          border    : '1px solid rgba(31, 111, 82, 0.28)',
+                          color     : '#1F6F52',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(72,214,205,0.18)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(72,214,205,0.10)')}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.18)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.10)')}
                       >
                         <ExternalLink size={11} />
                         جرّب الرقم على واتساب
@@ -908,11 +908,11 @@ export default function IhkaamCheckout() {
                         onFocus={iFocus}
                         onBlur={iBlur}
                       >
-                        <option value="" disabled style={{ background: '#020F0E', color: '#3C555F' }}>
+                        <option value="" disabled style={{ background: '#F8F5EC', color: '#A0C3B6' }}>
                           اختر المحافظة
                         </option>
                         {GOVERNORATES.map(g => (
-                          <option key={g} value={g} style={{ background: '#020F0E', color: '#EAE4DF' }}>
+                          <option key={g} value={g} style={{ background: '#F8F5EC', color: '#1A2E28' }}>
                             {g}
                           </option>
                         ))}
@@ -920,7 +920,7 @@ export default function IhkaamCheckout() {
                       <ChevronDown
                         size={15}
                         className="pointer-events-none absolute top-1/2 -translate-y-1/2"
-                        style={{ color: '#6FA5A8', insetInlineEnd: '1rem' }}
+                        style={{ color: '#5E6E67', insetInlineEnd: '1rem' }}
                       />
                     </div>
                   </Field>
@@ -957,7 +957,7 @@ export default function IhkaamCheckout() {
             {/* ── Receipt card ── */}
             <div
               className="rounded-[22px] p-5 md:p-7 flex flex-col"
-              style={{ background: '#09201E', border: '1px solid rgba(229,211,179,0.08)' }}
+              style={{ background: '#FFFFFF', border: '1px solid rgba(184, 134, 58, 0.08)' }}
             >
               <OrderSummary
                 tierName={tier.name}
@@ -977,14 +977,14 @@ export default function IhkaamCheckout() {
 
         {/* ── Full-width activation CTA — anchors both columns below ── */}
         <div className="mt-5 mb-7 md:mt-8 md:mb-10 flex flex-col gap-3">
-          <p className="text-[11px] text-center leading-[1.85]" style={{ color: '#3C555F' }}>
+          <p className="text-[11px] text-center leading-[1.85]" style={{ color: '#A0C3B6' }}>
             بتأكيد الطلب أنت توافق على{' '}
             <Link
               to="/privacy"
               className="underline underline-offset-2 transition-colors duration-200"
-              style={{ color: '#48D6CD' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#A0D4CC')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#48D6CD')}
+              style={{ color: '#1F6F52' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#2B5F4C')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#1F6F52')}
             >
               سياسة الخصوصية
             </Link>
@@ -992,9 +992,9 @@ export default function IhkaamCheckout() {
             <Link
               to="/terms"
               className="underline underline-offset-2 transition-colors duration-200"
-              style={{ color: '#48D6CD' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#A0D4CC')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#48D6CD')}
+              style={{ color: '#1F6F52' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#2B5F4C')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#1F6F52')}
             >
               الشروط والأحكام
             </Link>
@@ -1006,20 +1006,20 @@ export default function IhkaamCheckout() {
             className="w-full rounded-xl py-4 font-black text-base flex items-center justify-center gap-2.5 disabled:opacity-55 cursor-pointer"
             /* Brand primary action — same treatment as "أكمل طلب الاشتراك" */
             style={{
-              background   : '#48D6CD',
-              color        : '#09201E',
+              background   : '#1F6F52',
+              color        : '#FFFFFF',
               border       : 'none',
               outline      : 'none',
               letterSpacing: '0.02em',
-              boxShadow    : '0 8px 24px rgba(72,214,205,0.18)',
+              boxShadow    : '0 8px 24px rgba(31, 111, 82, 0.18)',
               transition   : 'box-shadow 200ms ease, transform 150ms ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(72,214,205,0.30)'
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(31, 111, 82, 0.30)'
               e.currentTarget.style.transform = 'scale(1.005)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(72,214,205,0.18)'
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(31, 111, 82, 0.18)'
               e.currentTarget.style.transform = 'scale(1)'
             }}
           >
@@ -1027,7 +1027,7 @@ export default function IhkaamCheckout() {
             أرسل الطلب
           </button>
           {formError && (
-            <p className="text-[11px] font-semibold text-center" style={{ color: '#D9ACA3' }}>
+            <p className="text-[11px] font-semibold text-center" style={{ color: '#8A6425' }}>
               {formError}
             </p>
           )}
@@ -1039,12 +1039,12 @@ export default function IhkaamCheckout() {
             compact line each; the ghost numeral stays where there's room. */}
         <div
           className="rounded-2xl p-5 md:p-8"
-          style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)' }}
+          style={{ background: 'rgba(11, 59, 51, 0.01)', border: '1px solid rgba(11, 59, 51, 0.05)' }}
           dir="rtl"
         >
           <p
             className="text-[9px] font-bold uppercase tracking-[0.22em] mb-5 md:mb-8 text-center"
-            style={{ color: '#A6756A' }}
+            style={{ color: '#7A5A2E' }}
           >
             ماذا يحدث بعد الطلب؟
           </p>
@@ -1059,7 +1059,7 @@ export default function IhkaamCheckout() {
                     style={{
                       insetInlineStart: '2.65rem',
                       width           : 'calc(100% - 0.5rem)',
-                      background      : 'linear-gradient(to left, transparent, rgba(72,214,205,0.14))',
+                      background      : 'linear-gradient(to left, transparent, rgba(31, 111, 82, 0.14))',
                     }}
                   />
                 )}
@@ -1069,21 +1069,21 @@ export default function IhkaamCheckout() {
                   <div
                     className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{
-                      background: 'rgba(26,148,155,0.16)',
-                      border    : '1px solid rgba(72,214,205,0.18)',
+                      background: 'rgba(11, 59, 51, 0.16)',
+                      border    : '1px solid rgba(31, 111, 82, 0.18)',
                     }}
                   >
-                    <Icon size={16} style={{ color: '#48D6CD' }} strokeWidth={1.6} />
+                    <Icon size={16} style={{ color: '#1F6F52' }} strokeWidth={1.6} />
                   </div>
                   <span
                     className="hidden md:block font-black tabular-nums select-none"
-                    style={{ color: 'rgba(72,214,205,0.20)', fontSize: '2rem', lineHeight: 1 }}
+                    style={{ color: 'rgba(31, 111, 82, 0.20)', fontSize: '2rem', lineHeight: 1 }}
                   >
                     <span dir="ltr">{i + 1}</span>
                   </span>
                 </div>
 
-                <p className="text-[0.8rem] md:text-sm leading-[1.7] md:leading-[1.9]" style={{ color: '#4A8A88' }}>
+                <p className="text-[0.8rem] md:text-sm leading-[1.7] md:leading-[1.9]" style={{ color: '#75B59E' }}>
                   {text}
                 </p>
               </div>

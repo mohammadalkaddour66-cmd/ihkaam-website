@@ -31,10 +31,10 @@ const IdentityLab = import.meta.env.DEV
 
 function PageLoader() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center" style={{ background: '#020F0E' }}>
+    <div className="fixed inset-0 flex items-center justify-center" style={{ background: '#F8F5EC' }}>
       <div
         className="w-8 h-8 rounded-full animate-spin"
-        style={{ border: '3px solid rgba(72,214,205,0.20)', borderTopColor: '#48D6CD' }}
+        style={{ border: '3px solid rgba(31, 111, 82, 0.20)', borderTopColor: '#1F6F52' }}
         role="status"
         aria-label="جارٍ التحميل"
       />

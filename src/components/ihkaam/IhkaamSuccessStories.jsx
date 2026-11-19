@@ -1,62 +1,37 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { ChevronRight, ChevronLeft, MapPin, ShieldCheck } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, ShieldCheck, TrendingUp, BookOpenCheck, Users, Award, Building2, Lock } from 'lucide-react'
 import { supabase } from '../../config/supabaseClient'
 import { fetchPartnerRows, cleanPartners } from '../../config/partners'
-import { useIsMobile } from '../../hooks/useIsMobile'
-import { useSwipe } from '../../hooks/useSwipe'
-import {
-  ACCENT, ACCENT_HOVER, ACCENT_DEEP,
-  GOLD, GOLD_SOFT, GOLD_DEEP, CLAY, TEXT_2, TEXT_3,
-} from '../../config/palette'
+import { ACCENT, ACCENT_DEEP, GOLD, TEXT_2 } from '../../config/palette'
 
-const INTERVAL_MS  = 2000
+/* ══════════════════════════════════════════════════════════════════
+   «أرقام كل معهد من سجلّاته» (إعادة تصميم 2026-11-19 ب)
 
-// ---------------------------------------------------------------------------
-// Country flags & color palette
-// ---------------------------------------------------------------------------
-const COUNTRY_FLAGS = {
-  'سوريا':'🇸🇾','العراق':'🇮🇶','السعودية':'🇸🇦','الإمارات':'🇦🇪',
-  'الأردن':'🇯🇴','الكويت':'🇰🇼','قطر':'🇶🇦','البحرين':'🇧🇭',
-  'عُمان':'🇴🇲','مصر':'🇪🇬','تونس':'🇹🇳','الجزائر':'🇩🇿',
-  'المغرب':'🇲🇦','ليبيا':'🇱🇾','السودان':'🇸🇩','لبنان':'🇱🇧',
-}
+   كان مروحةً ثلاثية الأبعاد من خمس بطاقات تدور كل ثانيتين، بخطوطٍ
+   بين 8 و11 بكسل، وشارات مراتب (#1 #2…) وألوان hash، والمعهد بلا
+   اسمٍ ولا شعار (موقعه فقط). رآه المالك «سيئاً جداً».
 
-/* درجاتٌ من عائلة الهوية، وذهبٌ واحد من ثمانية.
-   كانت خمسٌ من الثماني دافئة (E0B15E و B98A63 و C97F5A و C97F45
-   و D9ACA3 مرّتين) — أي أنّ أغلب بطاقات المعاهد تُرسم بالثانويّ،
-   وهي أبرز ما في القسم. واختيار اللون hash على المعرّف، فلا دلالة
-   فيه أصلاً؛ وما كان عشوائياً فليكن عشوائياً داخل عائلةٍ واحدة. */
-const PALETTE = [
-  ACCENT, ACCENT_DEEP, ACCENT_HOVER, GOLD,
-  ACCENT, ACCENT_DEEP, ACCENT,       ACCENT_HOVER,
-]
-function hashAccent(id) {
-  let h = 0
-  for (let i = 0; i < id.length; i++) h = ((h << 5) - h + id.charCodeAt(i)) | 0
-  return PALETTE[Math.abs(h) % PALETTE.length]
-}
-function getAccent(inst) {
-  const raw = inst.theme_config?.accent_color
-  /* ‎#E0B15E‎ ليست لوناً في اللوحة، بل قيمةٌ افتراضيةٌ قديمة محفوظةٌ
-     في theme_config لصفوفٍ كثيرة: لو قُبلت لصارت أغلب البطاقات
-     بلونٍ واحدٍ متقاعد. تُرفض هنا لا تُلوَّن بها. تبقى مكتوبةً
-     حرفياً لأن المرفوض بيانٌ في القاعدة لا رمزٌ في النظام. */
-  return (raw && raw !== '#000000' && raw !== '#E0B15E') ? raw : hashAccent(inst.institute_id)
-}
+   صار سجلاً من عمودين:
+   • قائمة المعاهد (ما يميّزها، مدينتها وحجمها، رقمها الأبرز).
+   • لوحٌ داكن للمعهد المختار: رقمه البطل كبيراً بالذهب، وثلاثة
+     أرقامٍ مساندة بخطٍّ مقروء، ومقارنة التسميع إن نما، وجملةٌ تلخّصه.
+   يتبدّل المعهد كل 7 ثوانٍ ويقف حين يمرّ الزائر فوق القسم. لا مراتب
+   مرقّمة: ترتيب المعاهد علناً يقرؤه المعهد الثامن على أنه «الأخير».
 
-// ---------------------------------------------------------------------------
-// 3D card positions — 5 slots: -2 | -1 | 0 (center) | +1 | +2
-// ---------------------------------------------------------------------------
-const POS = {
-  '-2': { x: -310, ry:  34, scale: 0.68, opacity: 0.32, z: 1 },
-  '-1': { x: -178, ry:  19, scale: 0.84, opacity: 0.65, z: 3 },
-   '0': { x:    0, ry:   0, scale: 1.00, opacity: 1.00, z: 5 },
-   '1': { x:  178, ry: -19, scale: 0.84, opacity: 0.65, z: 3 },
-   '2': { x:  310, ry: -34, scale: 0.68, opacity: 0.32, z: 1 },
-}
-const CARD_W  = 310
-const CARD_H  = 460  // used for side cards; center is auto height
+   بلا اسمٍ ولا شعار (قرار المالك: خصوصية المعهد). يُعرَّف كل معهد
+   بمدينته وحجمه وما يميّزه («ريادة التسميع»…)، وعلامته أيقونةٌ تدلّ
+   على رقمه الأبرز، لا شعاره.
+
+   حساب الأرقام وقاعدة من يدخل القسم لم يتغيّرا (أدناه).
+   ══════════════════════════════════════════════════════════════════ */
+
+const INTERVAL_MS = 7000
+
+
+const GOLD_L = '#E0B562'
+const CREAM  = '#F8F5EC'
+const INK    = '#0B3B33'
 
 // ---------------------------------------------------------------------------
 // CountUp
@@ -177,11 +152,16 @@ function pickSpecialty(d, rank) {
   if (rank === 0 && growth !== null && growth >= 80)  return { label: 'نمو + ريادة',         color: GOLD }
   if (rank === 0)                                      return { label: 'الأعلى إنجازاً',      color: GOLD }
   if (growth !== null && growth >= 150)                return { label: 'نشاط تضاعف',          color: ACCENT }
-  if (growth !== null && growth >= 60)                 return { label: 'نمو متسارع',           color: ACCENT }
+  if (growth !== null && growth >= 40)                 return { label: 'نمو متسارع',           color: ACCENT }
   if (attPct !== null && attPct >= 95)                 return { label: 'انتظام مثالي',         color: TEXT_2 }
   if (attPct !== null && attPct >= 88)                 return { label: 'حضور متميز',           color: TEXT_2 }
   if (absPct !== null && absPct < 4)                   return { label: 'شبه صفر غياب',         color: TEXT_2 }
-  if (recs >= 5000)                                    return { label: 'ريادة التسميع',        color: GOLD }
+  /* بلا أسماء صار الوصف هو ما يميّز المعاهد في القائمة، فدرجات التسميع
+     ثلاث بدل واحدة كي لا تتكرّر «ريادة التسميع» خمس مرات */
+  if (students >= 500)                                 return { label: 'قاعدة طلاب واسعة',    color: ACCENT_DEEP }
+  if (recs >= 20000)                                   return { label: 'ريادة التسميع',        color: GOLD }
+  if (recs >= 10000)                                   return { label: 'تسميع غزير',           color: ACCENT }
+  if (recs >= 5000)                                    return { label: 'تسميع منتظم',          color: ACCENT }
   if (recs >= 1000)                                    return { label: 'تسميع مكثّف',          color: ACCENT }
   if (students >= 200)                                 return { label: 'قاعدة طلاب واسعة',    color: ACCENT_DEEP }
   if (avgGrade !== null && avgGrade >= 8.5)            return { label: 'تفوق أكاديمي',         color: GOLD }
@@ -219,320 +199,145 @@ function isStrong(d) {
       || (d.avgGrade !== null && d.avgGrade >= 8)
 }
 
-// ---------------------------------------------------------------------------
-// Rank Badge — circle above card showing #1 #2 #3 …
-// ---------------------------------------------------------------------------
-/* المراتب الثلاث: ذهبٌ ثم فضّةٌ ثم نحاس — استعارةٌ مفهومةٌ بلا شرح،
-   وهي الموضع الثاني المشروع للذهب في هذا القسم.
 
-   وكان وهج المرتبة الأولى ‎rgba(72,214,205)‎ تركوازياً تحت تدرّجٍ
-   ذهبيّ: هالةٌ بلونٍ آخر غير القرص الذي تحيط به، فتبدو كأنّ الشارة
-   استُعيرت من نظامٍ آخر. الوهج ظلّ اللون لا لونٌ ثانٍ.
-   والتدرّجات كلّها الآن من سلّم الذهب نفسه (35°–41°) لا من أربع
-   درجاتٍ متفرّقة. */
-const RANK_COLORS = [
-  { bg: `linear-gradient(135deg,${GOLD_SOFT} 0%,${GOLD} 100%)`,   glow: 'rgba(227, 169, 63,0.50)'  },  // gold
-  { bg: `linear-gradient(135deg,#C6DADD 0%,${TEXT_3} 100%)`,      glow: 'rgba(150, 188, 190,0.40)' },  // silver
-  { bg: `linear-gradient(135deg,${GOLD_DEEP} 0%,${CLAY} 100%)`,   glow: 'rgba(184, 120, 31,0.42)'  },  // bronze
-]
-const RANK_DEFAULT = { bg: `linear-gradient(135deg,${ACCENT_DEEP} 0%,var(--surface-2) 100%)`, glow: 'rgba(26, 148, 155,0.30)' }
+// ---------------------------------------------------------------------------
+// عرض
+// ---------------------------------------------------------------------------
+const anonTitle = (inst) => (inst.city ? `معهد في ${inst.city}` : 'معهد قرآني')
+/* العدد مقرَّباً لا دقيقاً، وبلا عدد الحلقات: المدينة + «206 طلاب و9 حلقات»
+   تكفي أهل المدينة ليعرفوا المعهد، فتسقط الخصوصية من باب آخر */
+const sizeLine  = (d) => (d.students >= 50 ? `أكثر من ${Math.floor(d.students / 50) * 50} طالب` : '')
 
-function RankBadge({ rank, size = 42 }) {
-  const c    = rank < 3 ? RANK_COLORS[rank] : RANK_DEFAULT
-  const fs   = size <= 34 ? '0.60rem' : '0.72rem'
+/* علامة مجهولة الهوية: أيقونةٌ تدلّ على أبرز ما في المعهد */
+function AnonMark({ d, size, light = false }) {
+  const Icon = d.growth !== null ? TrendingUp
+             : d.recs >= 1000   ? BookOpenCheck
+             : d.avgGrade !== null && d.avgGrade >= 8 ? Award
+             : d.students >= 50 ? Users : Building2
   return (
-    <div
+    <span className="w-full h-full flex items-center justify-center rounded-full"
+      style={light
+        ? { background: 'rgba(224,181,98,0.12)', color: GOLD_L }
+        : { background: 'radial-gradient(circle at 32% 26%, #1A5546 0%, #0B3B33 60%, #082C26 100%)', color: GOLD_L }}>
+      <Icon size={Math.round(size * 0.44)} strokeWidth={1.8} />
+    </span>
+  )
+}
+
+/* صفٌّ في قائمة المعاهد */
+function InstituteRow({ card, active, onPick, progressKey, paused }) {
+  const { inst, d, hero, specialty } = card
+  return (
+    <button type="button" onClick={onPick} aria-pressed={active}
+      className="relative w-full text-right flex items-center gap-3.5 rounded-2xl px-4 py-3.5 transition-colors duration-300 overflow-hidden"
       style={{
-        position   : 'absolute',
-        top        : -(size / 2),
-        left       : '50%',
-        transform  : 'translateX(-50%)',
-        width      : size,
-        height     : size,
-        borderRadius: '50%',
-        background : c.bg,
-        display    : 'flex',
-        alignItems : 'center',
-        justifyContent: 'center',
-        fontSize   : fs,
-        fontWeight : 900,
-        color      : '#fff',
-        zIndex     : 10,
-        direction  : 'ltr',
-        letterSpacing: '-0.02em',
-        boxShadow  : `0 4px 18px ${c.glow}, 0 0 0 2px rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.22)`,
-        userSelect : 'none',
-      }}
-    >
-      #{rank + 1}
-    </div>
+        background: active ? '#FFFFFF' : 'transparent',
+        boxShadow : active ? 'var(--shadow-sm), inset 0 0 0 1px rgba(184,134,58,0.45)' : 'inset 0 0 0 1px transparent',
+      }}>
+      <span className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 46, height: 46, boxShadow: '0 0 0 1px rgba(184,134,58,0.35)' }}>
+        <AnonMark d={d} size={46} />
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-base font-bold truncate" style={{ color: 'var(--text-1)' }}>{specialty.label}</span>
+        <span className="block text-sm truncate" style={{ color: 'var(--text-3)' }}>{[anonTitle(inst), sizeLine(d)].filter(Boolean).join(' · ')}</span>
+      </span>
+      <span className="flex-shrink-0 text-left">
+        <span className="block text-base font-bold tabular-nums" dir="ltr" style={{ color: active ? '#8A6425' : INK }}>{hero.value}</span>
+        <span className="block text-xs" style={{ color: 'var(--text-3)' }}>{hero.label}</span>
+      </span>
+      {active && !paused && (
+        <motion.span key={progressKey} aria-hidden className="absolute bottom-0 right-0 h-[3px]"
+          style={{ background: 'linear-gradient(90deg,#B8863A,#E0B562)' }}
+          initial={{ width: '0%' }} animate={{ width: '100%' }}
+          transition={{ duration: INTERVAL_MS / 1000, ease: 'linear' }} />
+      )}
+    </button>
   )
 }
 
-// ---------------------------------------------------------------------------
-// Small helper sub-components
-// ---------------------------------------------------------------------------
-/* ══════════════════════════════════════════════════════
-   نصوص هذا القسم كانت تُلوَّن بأسطحه.
-
-   ‎#11312C‎ و‎#1C423A‎ و‎#1C423A‎ درجاتُ حدودٍ وخلفياتٍ داكنة، كُتبت
-   في color لنصوصٍ فوق ‎rgba(2,15,14)‎. التباين مقيساً:
-     ‎#11312C‎ ← 1.5:1   («منذ بدء الاستخدام»)
-     ‎#1C423A‎ ← 1.7:1   («اضغط للتفاصيل»، «قبل شهرين»)
-     ‎#1C423A‎ ← 2.0:1   (ترويستا «تطور التسميع» و«إحصاءات المعهد»)
-   والحدّ 4.5:1. أي أن أربعة نصوصٍ كانت غير مقروءةٍ عملياً — لا
-   خفيفةً، بل قريبةً من لون الخلفية نفسه. ومنها «اضغط للتفاصيل»،
-   وهو الإرشاد الوحيد الذي يخبر الزائر أن البطاقات الجانبية تُنقَر.
-
-   و‎#1A949B‎ (5.4:1) يمرّ، لكنه درجةٌ سابعةٌ ليست في :root.
-   البدائل من الرمز: ‎--text-3‎ عند 5.0:1 و‎--text-2‎ عند 6.7:1.
-   ══════════════════════════════════════════════════════ */
-function MetricRow({ label, value, accent }) {
-  return (
-    <div className="flex items-center justify-between px-3 py-1.5">
-      <span style={{ color: TEXT_3, fontSize: '0.59rem', fontWeight: 600 }}>{label}</span>
-      <span style={{ color: accent ?? TEXT_2, fontSize: '0.65rem', fontWeight: 700 }}>{value}</span>
-    </div>
-  )
-}
-/* ISS-42: النسبة تُقرَّب قبل العرض — كانت تظهر خاماً «46.95652173913044%».
-   `value` نصّ جاهز للعرض حين لا يكون المؤشر نسبةً (الدرجة من 10 مثلاً). */
-function BarRow({ label, pct, color, value }) {
-  const shownPct   = Math.round(pct)
-  const displayPct = Math.max(2, Math.min(100, shownPct))
-  return (
-    <div>
-      <div className="flex justify-between mb-1">
-        <span style={{ color: TEXT_3, fontSize: '0.60rem', fontWeight: 600 }}>{label}</span>
-        <span dir="ltr" style={{ color, fontSize: '0.60rem', fontWeight: 700 }}>{value ?? `${shownPct}%`}</span>
-      </div>
-      <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${displayPct}%` }}
-          transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-          style={{ height: '100%', borderRadius: 2, background: `linear-gradient(90deg, ${color}, ${color}70)` }}
-        />
-      </div>
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// CenterCard — full detail, spotlight
-// ---------------------------------------------------------------------------
-function CenterCard({ inst, metrics, rank }) {
-  const accent    = getAccent(inst)
-  const flag      = inst.country ? (COUNTRY_FLAGS[inst.country] ?? '🕌') : '🕌'
-  const location  = [inst.city, inst.country].filter(Boolean).join('، ') || 'معهد قرآني'
-  const d         = deriveMetrics(metrics)
-  const hero      = pickHero(d)
+/* لوح المعهد المختار */
+function Spotlight({ card }) {
+  const { inst, d, hero } = card
   const supporting = pickSupporting(d, hero.label)
-  const tagline   = buildTagline(d)
-  const specialty = pickSpecialty(d, rank)
+  const tagline    = buildTagline(d)
+  const { specialty } = card
+  const showGrowth = d.growth !== null && d.recentRec > 0 && d.earlyRec > 0
+  const maxRec     = Math.max(d.recentRec, d.earlyRec, 1)
 
   return (
-    <div
-      className="w-full rounded-3xl flex flex-col overflow-hidden"
-      style={{
-        background  : 'rgba(2,15,14,0.96)',
-        border      : `1px solid ${accent}35`,
-        boxShadow   : `0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px ${accent}20, 0 0 80px ${accent}08`,
-      }}
-    >
-      {/* Accent top bar */}
-      <div style={{ height: 3, background: `linear-gradient(90deg, ${accent}, ${accent}40, transparent)` }} />
+    <motion.div key={inst.institute_id}
+      initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      className="relative z-[1] h-full flex flex-col p-7 sm:p-10">
 
-      {/* Header */}
-      <div className="px-5 pt-4 pb-2 space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">{flag}</span>
-          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-            <MapPin size={10} style={{ color: TEXT_3 }} />
-            <span className="text-[11px] font-bold truncate" style={{ color: TEXT_2 }}>{location}</span>
-          </div>
-          <div
-            className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(72, 214, 205,0.08)', border: '1px solid rgba(72, 214, 205,0.18)' }}
-          >
-            <ShieldCheck size={9} style={{ color: ACCENT }} />
-            <span style={{ fontSize: '0.58rem', color: ACCENT, fontWeight: 700 }}>موثّق</span>
-          </div>
-        </div>
-
-        {/* Specialty badge — centered */}
-        <div className="flex justify-center">
-          <div
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-black"
-            style={{ background: `${specialty.color}18`, border: `1px solid ${specialty.color}35`, color: specialty.color }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: specialty.color }} />
-            {specialty.label}
+      {/* الرأس */}
+      <div className="flex items-center gap-4">
+        <span className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 64, height: 64, boxShadow: '0 0 0 1.5px rgba(224,181,98,0.6), 0 0 0 6px rgba(224,181,98,0.08)' }}>
+          <AnonMark d={d} size={64} light />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="font-bold truncate" style={{ color: CREAM, fontSize: 'clamp(1.3rem, 2.4vw, 1.75rem)' }}>{anonTitle(inst)}{inst.country ? `، ${inst.country}` : ''}</h3>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm" style={{ color: 'rgba(248,245,236,0.7)' }}>
+            {sizeLine(d) && <span className="inline-flex items-center gap-1.5"><MapPin size={14} /> {sizeLine(d)}</span>}
+            <span className="inline-flex items-center gap-1.5"><Lock size={13} /> الاسم محجوب احتراماً لخصوصية المعهد</span>
+            <span className="inline-flex items-center gap-1.5" style={{ color: '#A8D5BA' }}><ShieldCheck size={14} /> من قاعدة بيانات المعهد</span>
           </div>
         </div>
       </div>
 
-      {/* Hero stat */}
-      <div
-        className="mx-5 rounded-2xl px-4 py-4 text-center mb-3"
-        style={{ background: `linear-gradient(135deg, ${accent}16 0%, ${accent}06 100%)`, border: `1px solid ${accent}22` }}
-      >
-        <CountUp
-          value={hero.value}
-          className="font-black tabular-nums block mb-1"
-          style={{ color: accent, fontSize: 'clamp(2rem,4.5vw,2.8rem)', lineHeight: 1 }}
-        />
-        <p className="text-[10px] font-semibold" style={{ color: TEXT_2, letterSpacing: '0.05em' }}>
-          {hero.label}
-        </p>
+      {/* الرقم البطل */}
+      <div className="mt-9 sm:mt-11">
+        <span className="inline-block rounded-full px-3.5 py-1 text-sm font-bold mb-4"
+              style={{ background: 'rgba(224,181,98,0.12)', color: GOLD_L, boxShadow: 'inset 0 0 0 1px rgba(224,181,98,0.35)' }}>
+          {specialty.label}
+        </span>
+        <div dir="ltr" className="text-right">
+          <CountUp value={hero.value} className="font-bold tabular-nums leading-none"
+                   style={{ color: GOLD_L, fontSize: 'clamp(3.2rem, 7vw, 5.2rem)' }} />
+        </div>
+        <div className="text-xl font-bold mt-3" style={{ color: CREAM }}>{hero.label}</div>
       </div>
 
-      {/* Supporting stats */}
+      {/* الأرقام المساندة */}
       {supporting.length > 0 && (
-        <div className="flex gap-2 px-5 mb-3">
-          {supporting.map((s, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-xl py-2 text-center"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.055)' }}
-            >
-              {/* كان #C3BCAE — رماديٌّ دافئ، وهو رابع لونٍ للنصّ في
-                 البطاقة نفسها. ثلاثة أرقامٍ مساندة في كل بطاقة تعني
-                 ثلاثة مواضع للثانويّ بلا دلالةٍ تستحقّه. */}
-              <CountUp value={s.v} className="font-bold block mb-0.5 tabular-nums" style={{ color: 'var(--text-1)', fontSize: '0.82rem' }} />
-              <p style={{ color: TEXT_3, fontSize: '0.60rem', fontWeight: 600 }}>{s.l}</p>
+        <div className={`grid gap-3 mt-8 ${supporting.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          {supporting.map(s => (
+            <div key={s.l} className="rounded-2xl px-4 py-4" style={{ background: 'rgba(248,245,236,0.06)', boxShadow: 'inset 0 0 0 1px rgba(248,245,236,0.12)' }}>
+              <div dir="ltr" className="text-right">
+                <CountUp value={s.v} className="font-bold tabular-nums" style={{ color: CREAM, fontSize: 'clamp(1.25rem, 2.4vw, 1.7rem)' }} />
+              </div>
+              <div className="text-sm mt-1" style={{ color: 'rgba(248,245,236,0.68)' }}>{s.l}</div>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── القسم الثالث: إما تطور التسميع (إن وُجد نمو) أو إحصاءات المعهد ── */}
-      {d.growth !== null && d.recentRec > 0 && d.earlyRec > 0 ? (
-        <div className="mx-5 mb-2 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
-          <div className="flex items-center justify-between px-3 pt-2 pb-1">
-            <p className="text-[9px] font-bold tracking-[0.1em] uppercase" style={{ color: TEXT_3 }}>تطور التسميع</p>
-            {/* النموّ خبرٌ حسن، وكان وردياً — لا يقول شيئاً. الأساسيّ
-               للصاعد، والطينيّ للهابط: الاحتكاك دلالته الوحيدة. */}
-            <span style={{ color: d.growth >= 0 ? ACCENT : CLAY, fontSize: '0.65rem', fontWeight: 800 }}>
-              {d.growth >= 0 ? `↑ ${d.growth}%` : `↓ ${Math.abs(d.growth)}%`}
-            </span>
+      {/* تطوّر التسميع */}
+      {showGrowth && (
+        <div className="mt-6 rounded-2xl px-5 py-4" style={{ background: 'rgba(248,245,236,0.04)', boxShadow: 'inset 0 0 0 1px rgba(248,245,236,0.1)' }}>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-bold" style={{ color: 'rgba(248,245,236,0.8)' }}>جلسات التسميع</span>
+            <span className="inline-flex items-center gap-1 text-sm font-bold" style={{ color: '#A8D5BA' }}><TrendingUp size={15} /> {d.growth}%</span>
           </div>
-          <div className="px-3 pb-2.5">
-            <div className="flex gap-3 items-end mb-1.5" style={{ height: 38 }}>
-              <div className="flex-1 flex flex-col items-center justify-end gap-1">
-                <span style={{ color: TEXT_3, fontSize: '0.58rem', fontWeight: 600 }}>{d.earlyRec.toLocaleString('en-US')}</span>
-                <div className="w-full rounded-t-sm" style={{ height: `${Math.max(10, d.earlyRec / Math.max(d.recentRec, d.earlyRec) * 30)}px`, background: 'rgba(72, 214, 205,0.22)' }} />
-              </div>
-              <div className="flex-1 flex flex-col items-center justify-end gap-1">
-                <span style={{ color: accent, fontSize: '0.58rem', fontWeight: 700 }}>{d.recentRec.toLocaleString('en-US')}</span>
-                <div className="w-full rounded-t-sm" style={{ height: `${Math.max(10, d.recentRec / Math.max(d.recentRec, d.earlyRec) * 30)}px`, background: accent, boxShadow: `0 0 6px ${accent}50` }} />
-              </div>
+          {[['قبل شهرين', d.earlyRec, 'rgba(248,245,236,0.28)'], ['آخر شهرين', d.recentRec, GOLD_L]].map(([l, v, c]) => (
+            <div key={l} className="flex items-center gap-3 mb-2 last:mb-0">
+              <span className="w-20 text-sm flex-shrink-0" style={{ color: 'rgba(248,245,236,0.68)' }}>{l}</span>
+              <span className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(248,245,236,0.08)' }}>
+                <motion.span className="block h-full rounded-full" style={{ background: c }}
+                  initial={{ width: 0 }} animate={{ width: `${Math.max(4, v / maxRec * 100)}%` }}
+                  transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} />
+              </span>
+              <span className="w-14 text-sm font-bold tabular-nums text-left" style={{ color: CREAM }}>{v.toLocaleString('en-US')}</span>
             </div>
-            <div className="flex gap-3 text-center">
-              <p className="flex-1 text-[8.5px]" style={{ color: TEXT_3 }}>قبل شهرين</p>
-              <p className="flex-1 text-[8.5px] font-bold" style={{ color: accent }}>آخر شهرين</p>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="mx-5 mb-2 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
-          <div className="flex items-center justify-between px-3 pt-2 pb-0.5">
-            <p className="text-[9px] font-bold tracking-[0.1em] uppercase" style={{ color: TEXT_3 }}>إحصاءات المعهد</p>
-            <p className="text-[8.5px]" style={{ color: TEXT_3 }}>منذ بدء الاستخدام</p>
-          </div>
-          <div className="divide-y" style={{ borderColor: 'rgba(255,255,255,0.035)' }}>
-            {d.recsPerStudent !== null && (
-              <MetricRow label="تسميع لكل طالب (متوسط)" value={`${d.recsPerStudent} جلسة`} accent={accent} />
-            )}
-            {d.studentsPerGroup !== null && (
-              <MetricRow label="طلاب لكل حلقة (متوسط)" value={`${d.studentsPerGroup} طالب`} accent={accent} />
-            )}
-          </div>
+          ))}
         </div>
       )}
 
-      {/* ── متوسط الدرجات ── */}
-      {/* ISS-42: يظهر حين يكون مؤشراً قوياً فقط (7 من 10 فأكثر)، على قاعدة
-          pickSupporting نفسها — بطاقة «4.7/10» كانت تُعرض علناً. */}
-      {d.avgGrade !== null && d.avgGrade >= 7 && (
-        <div className="mx-5 mb-3">
-          <BarRow
-            label="متوسط الدرجات"
-            value={`${d.avgGrade.toFixed(1)}/10`}
-            pct={d.avgGrade * 10}
-            color={ACCENT}
-          />
-        </div>
-      )}
-
-      {/* Tagline */}
-      <div className="mx-5 mb-4 mt-3 px-3 py-2.5 rounded-xl" style={{ background: 'rgba(72, 214, 205,0.04)', border: '1px solid rgba(72, 214, 205,0.08)' }}>
-        <p className="text-[10px] leading-[1.8]" style={{ color: TEXT_2 }}>{tagline}</p>
-      </div>
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// SideCard — compact, peek from behind center
-// ---------------------------------------------------------------------------
-function SideCard({ inst, metrics, position }) {
-  const accent   = getAccent(inst)
-  const flag     = inst.country ? (COUNTRY_FLAGS[inst.country] ?? '🕌') : '🕌'
-  const location = [inst.city, inst.country].filter(Boolean).join('، ') || 'معهد قرآني'
-  const d        = deriveMetrics(metrics)
-  const hero     = pickHero(d)
-  const isOuter  = Math.abs(position) === 2
-
-  return (
-    <div
-      className="w-full rounded-3xl flex flex-col overflow-hidden"
-      style={{
-        height    : CARD_H,
-        background: 'rgba(2,15,14,0.82)',
-        border    : '1px solid rgba(255,255,255,0.06)',
-        cursor    : 'pointer',
-      }}
-    >
-      <div style={{ height: 2, background: `linear-gradient(90deg, ${accent}50, transparent)` }} />
-
-      <div className="flex-1 flex flex-col items-center justify-center px-5 py-6 text-center gap-5">
-        {/* Flag + location */}
-        {!isOuter && (
-          <div>
-            <span className="text-2xl block mb-1.5">{flag}</span>
-            <p className="text-[10px] font-semibold" style={{ color: TEXT_3 }}>{location}</p>
-          </div>
-        )}
-
-        {/* Hero stat — the main visual element */}
-        <div
-          className="w-full rounded-2xl px-4 py-6"
-          style={{ background: `${accent}0E`, border: `1px solid ${accent}1A` }}
-        >
-          <CountUp
-            value={hero.value}
-            className="font-black tabular-nums block mb-1"
-            style={{ color: accent, fontSize: isOuter ? '1.7rem' : '2rem', lineHeight: 1 }}
-          />
-          {!isOuter && (
-            <p style={{ color: TEXT_3, fontSize: '0.62rem', fontWeight: 600, marginTop: 4 }}>
-              {hero.label}
-            </p>
-          )}
-        </div>
-
-        {/* Prompt — كان #1C423A عند 1.7:1، أي أنّ الإرشاد الوحيد الذي
-            يخبر الزائر بأن البطاقة الجانبية تُنقَر كان يكاد لا يُرى.
-            وشفافيّة البطاقة الجانبية 0.65، فالتباين الفعليّ أقلّ ممّا
-            يُقاس على الخلفية المصمتة. */}
-        {!isOuter && (
-          <p style={{ color: TEXT_2, fontSize: '0.60rem', fontWeight: 700, letterSpacing: '0.06em' }}>
-            اضغط للتفاصيل
-          </p>
-        )}
-      </div>
-    </div>
+      {/* الخلاصة */}
+      <p className="mt-auto pt-8 text-lg leading-[1.9]" style={{ color: 'rgba(248,245,236,0.88)' }}>
+        <span className="font-bold" style={{ color: GOLD_L }}>«</span>{tagline}<span className="font-bold" style={{ color: GOLD_L }}>»</span>
+      </p>
+    </motion.div>
   )
 }
 
@@ -540,47 +345,23 @@ function SideCard({ inst, metrics, position }) {
 // Main component
 // ---------------------------------------------------------------------------
 export default function IhkaamSuccessStories() {
-  const [allCards,    setAllCards]    = useState([])
-  const [ready,       setReady]       = useState(false)
-  const [activeIndex, setActiveIndex] = useState(0)
-  const timerRef = useRef(null)
+  const [cards,  setCards]  = useState([])
+  const [ready,  setReady]  = useState(false)
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const [tick,   setTick]   = useState(0)
+  const timer = useRef(null)
+  const n = cards.length
 
-  const isMobile = useIsMobile()
-  const n       = allCards.length
-  const goNext  = useCallback(() => setActiveIndex(i => (i + 1) % n), [n])
-  const goPrev  = useCallback(() => setActiveIndex(i => (i - 1 + n) % n), [n])
-  const goTo    = useCallback(idx  => setActiveIndex(idx), [])
-  const swipe   = useSwipe(goNext, goPrev)
+  const pick = useCallback((i) => { setActive(i); setTick(t => t + 1) }, [])
 
-  // Auto-rotate — continuous, never pauses
   useEffect(() => {
-    if (n < 2) { clearInterval(timerRef.current); return }
-    timerRef.current = setInterval(goNext, INTERVAL_MS)
-    return () => clearInterval(timerRef.current)
-  }, [n, goNext])
+    if (n < 2 || paused) return
+    timer.current = setTimeout(() => pick((active + 1) % n), INTERVAL_MS)
+    return () => clearTimeout(timer.current)
+  }, [n, active, paused, pick, tick])
 
-  // 5 visible cards centred around activeIndex
-  const visibleRange = useMemo(() => {
-    if (!n) return []
-    /* الخانات خمسٌ والمؤشّر يلتفّ، فإن قلّت البطاقات عن خمسٍ رُسمت
-       البطاقة نفسها في خانتين وتكرّر مفتاح React. تُطوى الخانات
-       الزائدة من الطرف البعيد، والمركز يبقى مركزاً. */
-    const offsets = n >= 5 ? [-2, -1, 0, 1, 2]
-                  : n === 4 ? [-1, 0, 1, 2]
-                  : n === 3 ? [-1, 0, 1]
-                  : n === 2 ? [0, 1]
-                  : [0]
-    return offsets.map(offset => {
-      const globalIndex = ((activeIndex + offset) % n + n) % n
-      return { position: offset, globalIndex, card: allCards[globalIndex] }
-    })
-  }, [allCards, activeIndex, n])
-
-  // ── Data fetch ──
-  // Fetches metrics for every candidate institute in a single RPC call
-  // (get_success_story_metrics) instead of the old N-institutes x 8-queries
-  // pattern, which fired 200+ simultaneous requests on real data and stalled
-  // every other query on the page (including the hero's own screenshot fetch).
+  // ── Data fetch ── (RPC واحد لكل المعاهد، لا N×8 طلبات)
   useEffect(() => {
     async function load() {
       // نفس صفوف شريط الشركاء ونفس ترشيحه (التجريبيّ والمكرَّر): config/partners.js (ISS-28/40)
@@ -596,165 +377,85 @@ export default function IhkaamSuccessStories() {
       const locMap    = Object.fromEntries((locations || []).map(l => [l.id, l]))
       const metricMap = Object.fromEntries((metrics || []).map(m => [m.institute_id, m]))
 
-      const enriched = filtered.map(s => {
+      const ranked = filtered.map(s => {
         const id  = s.institute_id
         const loc = locMap[id] ?? {}
         const m   = metricMap[id]
-        return {
-          inst: { ...s, country: loc.country ?? null, city: loc.city ?? null },
-          metrics: {
-            students : m?.students  ?? 0,
-            groups   : m?.groups    ?? 0,
-            recs     : m?.recs      ?? 0,
-            present  : 0,
-            absent   : m?.absent    ?? 0,
-            tardiness: m?.tardiness ?? 0,
-            recentRec: m?.recent_rec ?? 0,
-            earlyRec : m?.early_rec  ?? 0,
-            avgGrade : m?.avg_grade ?? null,
-          },
-        }
+        const d   = deriveMetrics({
+          students : m?.students  ?? 0,
+          groups   : m?.groups    ?? 0,
+          recs     : m?.recs      ?? 0,
+          absent   : m?.absent    ?? 0,
+          tardiness: m?.tardiness ?? 0,
+          recentRec: m?.recent_rec ?? 0,
+          earlyRec : m?.early_rec  ?? 0,
+          avgGrade : m?.avg_grade ?? null,
+        })
+        return { inst: { ...s, country: loc.country ?? null, city: loc.city ?? null }, d }
       })
-
-      const ranked = enriched
-        .map(c => ({ ...c, d: deriveMetrics(c.metrics) }))
         .filter(c => isStrong(c.d))
         .sort((a, b) => scoreMetrics(b.d) - scoreMetrics(a.d))
         .slice(0, MAX_CARDS)
+        .map((c, rank) => ({ ...c, rank, hero: pickHero(c.d), specialty: pickSpecialty(c.d, rank) }))
 
-      setAllCards(ranked)
+      setCards(ranked)
       setReady(true)
     }
     load()
   }, [])
 
-  if (!ready || !allCards.length) return null
+  const current = useMemo(() => cards[active] || null, [cards, active])
+
+  if (!ready || !current) return null
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="relative z-10 pt-20 pb-10 overflow-hidden"
-      dir="rtl"
-    >
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
-
-        {/* Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5" style={{ color:'var(--accent)' }}>
-            قصص نجاح حقيقية
-          </span>
-          <h2 className="font-black leading-tight mb-4" style={{ fontSize:'clamp(1.9rem,4vw,3.1rem)', color:'var(--text-1)' }}>
-            معاهد تستخدم <span style={{ color:'var(--accent)' }}>إحكام</span>
+    <section className="relative z-10 px-6 pt-24 pb-16" dir="rtl"
+      onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="eyebrow">قصص نجاح حقيقية</span>
+          <h2 className="font-bold mt-5 mb-4" style={{ fontSize: 'clamp(1.9rem,4vw,3.1rem)', color: 'var(--text-1)' }}>
+            أرقام كل معهد <span className="title-mark">من سجلّاته</span>
           </h2>
-
-          <p className="text-sm leading-[2] mx-auto" style={{ color:'var(--text-2)', maxWidth:'420px' }}>
-            أنشط المعاهد على إحكام، وأرقامها محسوبةٌ الآن من قاعدة بيانات كل معهد
+          <p className="text-lg leading-[2] mx-auto" style={{ color: 'var(--text-2)', maxWidth: 580 }}>
+            أنشط المعاهد على إحكام، وأرقامها محسوبةٌ الآن من قاعدة بيانات كل معهد، لا من استبيان.
           </p>
         </div>
 
-        {/* ── Carousel: single card on mobile, 3D fan on larger screens ── */}
-        {isMobile ? (
-          <div className="relative mx-auto max-w-[420px] pt-6" {...swipe}>
-            <RankBadge rank={activeIndex} size={44} />
-            <CenterCard
-              inst={allCards[activeIndex].inst}
-              metrics={allCards[activeIndex].metrics}
-              rank={activeIndex}
-            />
-          </div>
-        ) : (
-          <div
-            className="relative mx-auto"
-            style={{ maxWidth: 900, height: 420, perspective: '1300px' }}
-          >
-            {visibleRange.map(({ position, globalIndex, card }) => {
-              const p        = POS[String(position)]
-              const isCenter = position === 0
-
-              return (
-                <motion.div
-                  key={card.inst.institute_id}
-                  style={{
-                    position : 'absolute',
-                    top      : '50%',
-                    left     : '50%',
-                    width    : CARD_W,
-                    height   : isCenter ? 'auto' : CARD_H,
-                    marginLeft : -CARD_W / 2,
-                    zIndex   : p.z,
-                    cursor   : isCenter ? 'default' : 'pointer',
-                    overflow : 'visible',
-                  }}
-                  animate={{
-                    x       : p.x,
-                    y       : '-50%',
-                    rotateY : p.ry,
-                    scale   : p.scale,
-                    opacity : p.opacity,
-                  }}
-                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  onClick={() => !isCenter && goTo(globalIndex)}
-                >
-                  <RankBadge rank={globalIndex} size={isCenter ? 44 : 34} />
-                  {isCenter
-                    ? <CenterCard inst={card.inst} metrics={card.metrics} rank={globalIndex} />
-                    : <SideCard   inst={card.inst} metrics={card.metrics} position={position} rank={globalIndex} />
-                  }
-                </motion.div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* ── Controls ── */}
-        <div className="flex items-center justify-center gap-6 mt-10" dir="ltr">
-          <button
-            onClick={goPrev}
-            aria-label="السابق"
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-            style={{ background:'rgba(72, 214, 205,0.08)', border:'1px solid rgba(72, 214, 205,0.22)', color:'#48D6CD' }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(72, 214, 205,0.18)'}
-            onMouseLeave={e => e.currentTarget.style.background='rgba(72, 214, 205,0.08)'}
-          >
-            <ChevronLeft size={17} />
-          </button>
-
-          {/* Dots */}
-          <div className="flex items-center gap-2">
-            {allCards.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                style={{
-                  width      : i === activeIndex ? 20 : 6,
-                  height     : 6,
-                  borderRadius: 3,
-                  background : i === activeIndex ? '#48D6CD' : 'rgba(72, 214, 205,0.22)',
-                  border     : 'none',
-                  cursor     : 'pointer',
-                  padding    : 0,
-                  transition : 'width 300ms ease, background 300ms ease',
-                }}
-              />
-            ))}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* القائمة */}
+          <div className="lg:col-span-5 order-1">
+            {/* الجوال: شريط أفقي */}
+            <div className="lg:hidden flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+              {cards.map((c, i) => (
+                <button key={c.inst.institute_id} type="button" onClick={() => pick(i)} aria-pressed={i === active}
+                  className="flex-shrink-0 inline-flex items-center gap-2 rounded-full pl-4 pr-1.5 py-1.5 text-sm font-bold"
+                  style={{ background: i === active ? INK : '#FFFFFF', color: i === active ? CREAM : 'var(--text-1)', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+                  <span className="rounded-full overflow-hidden" style={{ width: 30, height: 30 }}>
+                    <AnonMark d={c.d} size={30} />
+                  </span>
+                  {c.specialty.label}
+                </button>
+              ))}
+            </div>
+            {/* الحاسوب: سجلّ عمودي */}
+            <div className="hidden lg:flex flex-col gap-1.5 rounded-[26px] p-2.5" style={{ background: 'rgba(233,227,213,0.45)', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+              {cards.map((c, i) => (
+                <InstituteRow key={c.inst.institute_id} card={c} active={i === active}
+                  onPick={() => pick(i)} progressKey={`${i}-${tick}`} paused={paused} />
+              ))}
+            </div>
           </div>
 
-          <button
-            onClick={goNext}
-            aria-label="التالي"
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-            style={{ background:'rgba(72, 214, 205,0.08)', border:'1px solid rgba(72, 214, 205,0.22)', color:'#48D6CD' }}
-            onMouseEnter={e => e.currentTarget.style.background='rgba(72, 214, 205,0.18)'}
-            onMouseLeave={e => e.currentTarget.style.background='rgba(72, 214, 205,0.08)'}
-          >
-            <ChevronRight size={17} />
-          </button>
+          {/* اللوح */}
+          <div className="lg:col-span-7 order-2 section-dark relative rounded-[28px] overflow-hidden" style={{ minHeight: 480, boxShadow: 'var(--shadow-lg)' }}>
+            <div className="pattern-layer pattern-khatam" aria-hidden />
+            <AnimatePresence mode="wait">
+              <Spotlight key={current.inst.institute_id} card={current} />
+            </AnimatePresence>
+          </div>
         </div>
-
       </div>
-    </motion.section>
+    </section>
   )
 }

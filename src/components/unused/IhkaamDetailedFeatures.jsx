@@ -113,28 +113,28 @@ export default function IhkaamDetailedFeatures() {
   const IconComponent = currentPillar.icon;
 
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#09201E] relative overflow-hidden">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#FFFFFF] relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
         
         {/* العناوين الرئيسية التايبوغرافية الراقية */}
         <div className="text-center mb-16">
-          <span className="text-xs font-semibold tracking-widest text-[#48D6CD] uppercase bg-[#48D6CD]/10 px-3 py-1 rounded-full">
+          <span className="text-xs font-semibold tracking-widest text-[#1F6F52] uppercase bg-[#1F6F52]/10 px-3 py-1 rounded-full">
             المزايا الشاملة
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-[#EAE4DF] leading-tight">
-            ٤ منظومات كبرى <span className="bg-gradient-to-l from-[#D9ACA3] to-[#A6756A] bg-clip-text text-transparent">تُغطي كل جانب</span> من إدارة التعليم
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1A2E28] leading-tight">
+            ٤ منظومات كبرى <span className="bg-gradient-to-l from-[#8A6425] to-[#7A5A2E] bg-clip-text text-transparent">تُغطي كل جانب</span> من إدارة التعليم
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-[#96BCBE] max-w-2xl mx-auto">
+          <p className="mt-4 text-sm sm:text-base text-[#4A5D56] max-w-2xl mx-auto">
             اختر ركيزة لاستعراض تفاصيل الحلول البرمجية والهندسية التي يقدمها نظام إحكام لإنهاء الفوضى الإدارية.
           </p>
         </div>
 
         {/* الحاوية الرئيسية الكبرى بأسلوب الـ Bento Box الفاخر */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-[#09201E] border border-[#E5D3B3]/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm shadow-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-[#FFFFFF] border border-[#7A6440]/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm shadow-2xl">
           
           {/* القائمة الجانبية للتنقل - تظهر كأزرار عريضة فخمة */}
-          <div className="lg:col-span-4 flex flex-col gap-3 border-b lg:border-b-0 lg:border-l border-[#E5D3B3]/10 pb-6 lg:pb-0 lg:pl-6">
-            <span className="text-xs font-bold text-[#96BCBE]/60 tracking-wider mb-2 block px-4">
+          <div className="lg:col-span-4 flex flex-col gap-3 border-b lg:border-b-0 lg:border-l border-[#7A6440]/10 pb-6 lg:pb-0 lg:pl-6">
+            <span className="text-xs font-bold text-[#4A5D56]/60 tracking-wider mb-2 block px-4">
               الركائز الأساسية ({PILLARS.length})
             </span>
             {PILLARS.map((pillar, index) => {
@@ -146,21 +146,21 @@ export default function IhkaamDetailedFeatures() {
                   onClick={() => setActiveTab(pillar.id)}
                   className={`group relative flex items-center gap-4 text-right p-4 rounded-2xl transition-all duration-300 ${
                     isActive 
-                      ? 'bg-[#09201E] border border-[#E5D3B3]/10 shadow-lg' 
-                      : 'hover:bg-[#09201E]/40 border border-transparent'
+                      ? 'bg-[#FFFFFF] border border-[#7A6440]/10 shadow-lg' 
+                      : 'hover:bg-[#FFFFFF]/40 border border-transparent'
                   }`}
                 >
                   {/* خط التركواز الجانبي المؤشر للقسم النشط */}
                   {isActive && (
                     <motion.div 
                       layoutId="activeIndicator"
-                      className="absolute right-0 top-4 bottom-4 w-1 bg-[#48D6CD] rounded-l-full"
+                      className="absolute right-0 top-4 bottom-4 w-1 bg-[#1F6F52] rounded-l-full"
                     />
                   )}
 
                   {/* الأيقونة التفاعلية */}
                   <div className={`p-3 rounded-xl transition-all duration-300 ${
-                    isActive ? 'bg-[#48D6CD]/20 text-[#48D6CD]' : 'bg-white/5 text-[#96BCBE] group-hover:text-[#EAE4DF]'
+                    isActive ? 'bg-[#1F6F52]/20 text-[#1F6F52]' : 'bg-[#0B3B33]/5 text-[#4A5D56] group-hover:text-[#1A2E28]'
                   }`}>
                     <TabIcon className="w-5 h-5" />
                   </div>
@@ -168,18 +168,18 @@ export default function IhkaamDetailedFeatures() {
                   {/* النصوص وعنوان القسم الرقمي الشفاف في الخلفية */}
                   <div className="flex-1 min-w-0">
                     <h3 className={`text-base font-bold transition-all duration-300 ${
-                      isActive ? 'text-transparent bg-clip-text bg-gradient-to-l from-[#D9ACA3] to-[#A6756A]' : 'text-[#C8B8B0] group-hover:text-[#EAE4DF]'
+                      isActive ? 'text-transparent bg-clip-text bg-gradient-to-l from-[#8A6425] to-[#7A5A2E]' : 'text-[#5C4F48] group-hover:text-[#1A2E28]'
                     }`}>
                       {pillar.title}
                     </h3>
-                    <p className="text-xs text-[#96BCBE]/60 mt-0.5 truncate uppercase tracking-wider">
+                    <p className="text-xs text-[#4A5D56]/60 mt-0.5 truncate uppercase tracking-wider">
                       {pillar.subtitle}
                     </p>
                   </div>
 
                   {/* الرقم الشفاف الفاخر */}
                   <span className={`text-2xl font-black font-sans select-none transition-all duration-300 opacity-10 ${
-                    isActive ? 'text-[#48D6CD] opacity-25' : 'text-[#96BCBE]'
+                    isActive ? 'text-[#1F6F52] opacity-25' : 'text-[#4A5D56]'
                   }`}>
                     {String(index + 1).padStart(2, '0')}
                   </span>
@@ -202,12 +202,12 @@ export default function IhkaamDetailedFeatures() {
                 {currentPillar.groups.map((group, groupIdx) => (
                   <div 
                     key={groupIdx} 
-                    className="bg-[#09201E]/40 border border-[#E5D3B3]/5 rounded-2xl p-5 hover:border-[#E5D3B3]/10 transition-all duration-300"
+                    className="bg-[#FFFFFF]/40 border border-[#7A6440]/5 rounded-2xl p-5 hover:border-[#7A6440]/10 transition-all duration-300"
                   >
                     {/* ترويسة بطاقة البينتو الداخلية المدمجة */}
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#48D6CD] shadow-[0_0_8px_#48D6CD]" />
-                      <h4 className="text-base font-bold text-[#48D6CD]">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#1F6F52] shadow-[0_0_8px_#1F6F52]" />
+                      <h4 className="text-base font-bold text-[#1F6F52]">
                         {group.title}
                       </h4>
                     </div>
@@ -215,8 +215,8 @@ export default function IhkaamDetailedFeatures() {
                     {/* الميزات منسقة بنقاط أيقونية احترافية بدلاً من الكتل النصية المملة */}
                     <ul className="flex flex-col gap-3">
                       {group.features.map((feature, featureIdx) => (
-                        <li key={featureIdx} className="flex items-start gap-2.5 text-sm text-[#C8B8B0] leading-relaxed">
-                          <CheckCircle2 className="w-4 h-4 text-[#E5D3B3]/40 mt-0.5 flex-shrink-0" />
+                        <li key={featureIdx} className="flex items-start gap-2.5 text-sm text-[#5C4F48] leading-relaxed">
+                          <CheckCircle2 className="w-4 h-4 text-[#7A6440]/40 mt-0.5 flex-shrink-0" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -227,9 +227,9 @@ export default function IhkaamDetailedFeatures() {
             </AnimatePresence>
 
             {/* الفوتر السفلي الخفيف للمستند لتعزيز الطابع المعماري النظيف */}
-            <div className="mt-8 pt-4 border-t border-[#E5D3B3]/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#96BCBE]/50">
+            <div className="mt-8 pt-4 border-t border-[#7A6440]/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#4A5D56]/50">
               <div className="flex items-center gap-2">
-                <IconComponent className="w-4 h-4 text-[#48D6CD]/40" />
+                <IconComponent className="w-4 h-4 text-[#1F6F52]/40" />
                 <span className="uppercase tracking-widest">{currentPillar.id.replace('_', ' ')} architecture locked</span>
               </div>
               <span>نظام إحكام لإدارة المعاهد والمنصات التعليمية · ٢٠٢٦</span>

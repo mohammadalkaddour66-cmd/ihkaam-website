@@ -1,6 +1,9 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useSpring } from 'framer-motion'
 import { Users, BookOpen, ClipboardList, Bell, BarChart3, Brain, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import FeatureCardVisual from '../sections/FeatureCardVisual'
+import { useGalleryShots } from '../../hooks/useGalleryShots'
 
 /* ─── Feature data ───────────────────────────────────────────────── */
 const FEATURES = [
@@ -67,226 +70,113 @@ const COVERAGE_CHIPS = [
   'التقارير', 'التحليل الذكي', 'الأرشفة', 'بوابة ولي الأمر',
 ]
 
-/* ─── Animation variants ─────────────────────────────────────────── */
-const gridVariants = {
-  hidden : {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.04 } },
-}
-const cardVariants = {
-  hidden : { opacity: 0, y: 22 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.54, ease: [0.22, 1, 0.36, 1] } },
-}
+/* ══════════════════════════════════════════════════════════════════
+   «المنظومة الأساسية» (إعادة تصميم 2026-11-19 ج)
 
-/* ─── Feature card ───────────────────────────────────────────────── */
-function FeatureCard({ feature }) {
+   كانت ستّ بطاقاتٍ نصّية متشابهة برقمٍ باهت في الزاوية. صارت ستة صفوفٍ
+   متعاقبة: في كلٍّ الشاشة الحقيقية للميزة (FeatureCardVisual، نفسها في
+   الرئيسية) مقابل شرحها، وتتبادل الجهتين صفاً بعد صف.
+
+   وعلى الحافة خطٌّ ذهبيّ يمتدّ مع التمرير ويمرّ على أرقام الصفوف،
+   فيضيء كل رقمٍ حين يصله الخط — «الترقيم المرسوم» الذي طلبه المالك.
+   حركةٌ مربوطة بالتمرير لا تعمل في الخلفية.
+   ══════════════════════════════════════════════════════════════════ */
+
+function FeatureRow({ feature, index, shots }) {
   const Icon = feature.icon
   const num  = String(feature.id).padStart(2, '0')
+  const flip = index % 2 === 1
   return (
-    <motion.div
-      variants={cardVariants}
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.22, ease: 'easeOut' }}
-      className={`relative rounded-[22px] flex flex-col overflow-hidden${feature.wide ? ' md:col-span-2 lg:col-span-2' : ''}`}
-      style={{
-        background: 'linear-gradient(160deg, rgba(72,214,205,0.06) 0%, rgba(2,15,14,0.95) 55%)',
-        border    : '1px solid rgba(72,214,205,0.12)',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(72,214,205,0.28)' }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(72,214,205,0.12)' }}
-    >
-      {/* Watermark number — decorative, top-left (LTR corner = left in RTL context) */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute top-3 left-5 font-black leading-none select-none"
-        style={{ fontSize: '4.5rem', color: 'rgba(72,214,205,0.07)', lineHeight: 1 }}
+    <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center">
+      {/* الرقم على الخط */}
+      <motion.span
+        className="hidden md:flex absolute top-1/2 -translate-y-1/2 right-[-72px] w-11 h-11 rounded-full items-center justify-center text-sm font-bold tabular-nums z-10"
+        initial={{ background: '#F1ECDF', color: '#8A6425', scale: 0.85 }}
+        whileInView={{ background: '#B8863A', color: '#0B3B33', scale: 1 }}
+        viewport={{ once: true, margin: '0px 0px -50% 0px' }}
+        transition={{ duration: 0.4 }}
+        style={{ boxShadow: '0 0 0 6px #F8F5EC' }}
       >
         {num}
-      </span>
+      </motion.span>
 
-      {/* Left accent stripe */}
-      <div
-        className="absolute top-0 right-0 bottom-0 w-[3px] rounded-r-[22px]"
-        style={{ background: 'linear-gradient(to bottom, #48D6CD 0%, transparent 100%)' }}
-      />
-
-      <div className="p-7 flex flex-col gap-5 flex-1">
-
-        {/* Icon */}
-        <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{
-            background: 'rgba(26,148,155,0.18)',
-            border    : '1px solid rgba(72,214,205,0.16)',
-          }}
-        >
-          <Icon size={20} style={{ color: '#48D6CD' }} strokeWidth={1.55} />
-        </div>
-
-        {/* Title + tagline */}
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3
-              className="font-black leading-snug"
-              style={{ color: '#EAE4DF', fontSize: 'clamp(1rem, 1.5vw, 1.1rem)' }}
-            >
-              {feature.title}
-            </h3>
-            {feature.isNew && (
-              <span
-                className="text-[0.6rem] font-black px-2 py-0.5 rounded-full whitespace-nowrap"
-                style={{
-                  color     : '#D9ACA3',
-                  background: 'rgba(217,172,163,0.10)',
-                  border    : '1px solid rgba(217,172,163,0.28)',
-                }}
-              >
-                جديد
-              </span>
-            )}
-          </div>
-          <span
-            className="text-xs font-bold"
-            style={{ color: '#48D6CD', letterSpacing: '0.025em' }}
-          >
-            {feature.tag}
+      <motion.div
+        className={flip ? 'md:order-2' : ''}
+        initial={{ opacity: 0, x: flip ? -30 : 30 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <span className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'rgba(31,111,82,0.08)', color: '#1F6F52', boxShadow: 'inset 0 0 0 1px rgba(31,111,82,0.16)' }}>
+            <Icon size={21} strokeWidth={1.7} />
           </span>
+          <span className="text-sm font-bold" style={{ color: '#8A6425' }}>{feature.tag}</span>
+          {feature.isNew && <span className="text-xs font-bold rounded-full px-2.5 py-0.5" style={{ background: '#E0B562', color: '#0B3B33' }}>جديد</span>}
         </div>
-
-        {/* Description */}
-        <p
-          className="text-sm leading-[2] flex-1"
-          style={{ color: '#8AAFA8' }}
-        >
-          {feature.desc}
-        </p>
-
-        {/* Slogan */}
-        <p
-          className="text-xs font-black tracking-wide"
-          style={{ color: 'rgba(72,214,205,0.50)', letterSpacing: '0.04em' }}
-        >
-          {feature.slogan}
-        </p>
-
-        {/* Learn more */}
-        <Link
-          to={`/ihkaam/features/${feature.slug}`}
-          className="inline-flex items-center gap-2 text-xs font-bold w-fit px-3.5 py-2 rounded-lg transition-all duration-200"
-          style={{
-            color      : '#48D6CD',
-            background : 'rgba(72,214,205,0.07)',
-            border     : '1px solid rgba(72,214,205,0.18)',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background  = 'rgba(72,214,205,0.14)'
-            e.currentTarget.style.borderColor  = 'rgba(72,214,205,0.45)'
-            e.currentTarget.style.color        = '#8FDFD6'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background  = 'rgba(72,214,205,0.07)'
-            e.currentTarget.style.borderColor  = 'rgba(72,214,205,0.18)'
-            e.currentTarget.style.color        = '#48D6CD'
-          }}
-        >
-          اعرف المزيد
-          <ArrowLeft size={12} strokeWidth={2.5} />
+        <h3 className="font-bold mb-3" style={{ color: '#0B3B33', fontSize: 'clamp(1.5rem, 2.6vw, 2rem)' }}>{feature.title}</h3>
+        <p className="text-lg mb-4" style={{ color: 'var(--text-2)', lineHeight: 1.95 }}>{feature.desc}</p>
+        <p className="text-base font-bold mb-6" style={{ color: '#1F6F52' }}>{feature.slogan}</p>
+        <Link to={`/ihkaam/features/${feature.slug}`} className="btn-outline inline-flex items-center gap-2 rounded-full px-6 py-3" style={{ fontSize: '0.95rem' }}>
+          اقرأ عن {feature.title} <ArrowLeft size={15} />
         </Link>
+      </motion.div>
 
-      </div>
-    </motion.div>
+      <motion.div
+        className={`relative rounded-[24px] overflow-hidden ${flip ? 'md:order-1' : ''}`}
+        style={{ aspectRatio: '16 / 10', background: 'linear-gradient(160deg,#0B3B33,#082C26)', boxShadow: 'var(--shadow-lg)' }}
+        initial={{ opacity: 0, y: 30, scale: 0.97 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+      >
+        <div className="absolute inset-0 pattern-khatam" style={{ opacity: 0.08 }} aria-hidden />
+        <FeatureCardVisual slug={feature.slug} shots={shots} />
+      </motion.div>
+    </div>
   )
 }
 
 /* ─── Main export ────────────────────────────────────────────────── */
 export default function IhkaamCoreFeatures() {
+  const shots = useGalleryShots(true)
+  const rail  = useRef(null)
+  const { scrollYProgress } = useScroll({ target: rail, offset: ['start 60%', 'end 50%'] })
+  const fill  = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
+
   return (
-    <section className="relative z-10 py-24 px-6">
-
-      {/* Ambient glow */}
-      <div
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[280px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(217,172,163,0.05) 0%, transparent 70%)' }}
-        aria-hidden
-      />
-
+    <section className="relative z-10 py-24 px-6" dir="rtl">
       <div className="max-w-6xl mx-auto">
 
-        {/* Section header */}
-        <div className="text-center mb-14">
-          <span
-            className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-            style={{ color: '#A6756A' }}
-          >
-            النسخة الأساسية
-          </span>
-          <h2
-            className="font-black leading-tight mx-auto mb-5"
-            style={{ color: '#EAE4DF', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', maxWidth: '560px' }}
-          >
-            المنظومة الأساسية لإدارة المعهد
+        <div className="text-center mb-20">
+          <span className="eyebrow">النسخة الأساسية</span>
+          <h2 className="font-bold leading-tight mx-auto mt-5 mb-5" style={{ color: '#1A2E28', fontSize: 'clamp(1.9rem, 3.6vw, 2.8rem)', maxWidth: 720 }}>
+            ستّ وحدات <span className="title-mark">تدير يوم المعهد كلّه</span>
           </h2>
-          <p
-            className="text-sm mx-auto"
-            style={{ color: '#509492', maxWidth: '580px', lineHeight: '2' }}
-          >
-            تحتوي النسخة الأساسية على جميع الأدوات اليومية اللازمة لإدارة المعهد القرآني بكفاءة،
-            بدءًا من تسجيل الطلاب وتنظيم الحلقات، وصولًا إلى المتابعة اليومية والتقارير وبوابة أولياء الأمور.
+          <p className="text-lg mx-auto" style={{ color: '#4A5D56', maxWidth: 620, lineHeight: 1.9 }}>
+            من تسجيل الطالب الأول إلى تقرير آخر الشهر. هذه شاشاتها الحقيقية كما يراها المدير والمعلم وولي الأمر.
           </p>
         </div>
 
-        {/* Bento grid — 5 cards, last spans 2 cols */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          variants={gridVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-        >
-          {FEATURES.map(f => (
-            <FeatureCard key={f.id} feature={f} />
-          ))}
-        </motion.div>
+        <div ref={rail} className="relative md:pr-[72px] flex flex-col gap-24">
+          {/* الخطّ: أثرٌ خافت، وفوقه الذهب يمتدّ مع التمرير */}
+          <span className="hidden md:block absolute top-0 bottom-0 right-[21px] w-[2px] rounded-full" style={{ background: 'rgba(184,134,58,0.18)' }} aria-hidden />
+          <motion.span className="hidden md:block absolute top-0 bottom-0 right-[21px] w-[2px] rounded-full origin-top"
+            style={{ scaleY: fill, background: 'linear-gradient(to bottom,#E0B562,#B8863A)', boxShadow: '0 0 10px rgba(224,181,98,0.6)' }} aria-hidden />
+          {FEATURES.map((f, i) => <FeatureRow key={f.id} feature={f} index={i} shots={shots} />)}
+        </div>
 
-        {/* Coverage strip */}
-        <motion.div
-          className="mt-8 rounded-[20px] p-6"
-          style={{
-            background: 'rgba(72,214,205,0.04)',
-            border    : '1px solid rgba(72,214,205,0.12)',
-          }}
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-        >
-          <p
-            className="text-xs font-semibold tracking-[0.20em] uppercase text-center mb-3.5"
-            style={{ color: 'var(--text-3)' }}
-          >
-            النسخة الأساسية تغطي
-          </p>
-          {/* أُزيلت علامة الصحّ من كل شريحة.
-             إحدى عشرة علامةً متطابقة لا تحمل معلومة: العنوان فوقها
-             يقول «تغطي» أصلاً، فكلّ ما تحتها مغطّى بالتعريف. وكانت
-             تكلّف 16px عرضاً لكل شريحة (أيقونة 10 + فجوة 6)، وهو
-             ما يحشر الصفّ في ثلاث شرائح بدل أربع فيطول الصندوق. */}
-          <div className="flex flex-wrap gap-1.5 justify-center">
+        {/* ما تغطّيه النسخة الأساسية */}
+        <div className="mt-24 text-center">
+          <p className="text-base font-bold mb-4" style={{ color: '#8A6425' }}>وكلّها ضمن النسخة الأساسية</p>
+          <div className="flex flex-wrap gap-2 justify-center max-w-3xl mx-auto">
             {COVERAGE_CHIPS.map(chip => (
-              <span
-                key={chip}
-                className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
-                style={{
-                  background: 'rgba(72,214,205,0.09)',
-                  border    : '1px solid rgba(72,214,205,0.18)',
-                  color     : 'var(--accent)',
-                }}
-              >
+              <span key={chip} className="text-sm font-bold px-4 py-2 rounded-full bg-white" style={{ color: '#0B3B33', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
                 {chip}
               </span>
             ))}
           </div>
-        </motion.div>
-
+        </div>
       </div>
     </section>
   )

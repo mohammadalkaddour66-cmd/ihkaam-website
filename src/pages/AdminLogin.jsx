@@ -3,12 +3,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../config/supabaseClient'
 
 const inputBase = {
-  background  : 'rgba(255,255,255,0.04)',
+  background  : 'rgba(11, 59, 51, 0.04)',
   borderWidth : '1px',
   borderStyle : 'solid',
-  borderColor : 'rgba(217,172,163,0.22)',
+  borderColor : 'rgba(184, 134, 58, 0.22)',
   borderRadius: '0.875rem',
-  color       : '#EAE4DF',
+  color       : '#1A2E28',
   fontSize    : '0.9rem',
   padding     : '0.875rem 1.125rem',
   width       : '100%',
@@ -18,8 +18,8 @@ const inputBase = {
   fontFamily  : 'inherit',
 }
 const inputFocus = {
-  borderColor: 'rgba(217,172,163,0.55)',
-  boxShadow  : '0 0 0 3px rgba(217,172,163,0.08)',
+  borderColor: 'rgba(184, 134, 58, 0.55)',
+  boxShadow  : '0 0 0 3px rgba(184, 134, 58, 0.08)',
 }
 
 export default function AdminLogin() {
@@ -56,17 +56,17 @@ export default function AdminLogin() {
     <div
       className="min-h-screen flex items-center justify-center p-6"
       dir="rtl"
-      style={{ background: '#09201E', fontFamily: 'inherit' }}
+      style={{ background: '#FFFFFF', fontFamily: 'inherit' }}
     >
       {/* Ambient glows */}
       <div
         className="pointer-events-none fixed inset-0"
-        style={{ background: 'radial-gradient(ellipse 70% 60% at 25% 35%, rgba(26,148,155,0.10) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(ellipse 70% 60% at 25% 35%, rgba(255, 255, 255, 0.50) 0%, transparent 65%)' }}
         aria-hidden
       />
       <div
         className="pointer-events-none fixed inset-0"
-        style={{ background: 'radial-gradient(ellipse 50% 40% at 80% 75%, rgba(166,117,106,0.08) 0%, transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse 50% 40% at 80% 75%, rgba(122, 90, 46, 0.08) 0%, transparent 60%)' }}
         aria-hidden
       />
 
@@ -74,11 +74,11 @@ export default function AdminLogin() {
       <div
         className="relative w-full max-w-md rounded-3xl p-8 md:p-10"
         style={{
-          background          : 'rgba(17,49,44,0.14)',
-          border              : '1px solid rgba(217,172,163,0.16)',
+          background          : 'rgba(241, 236, 223, 0.14)',
+          border              : '1px solid rgba(184, 134, 58, 0.16)',
           backdropFilter      : 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          boxShadow           : '0 32px 80px rgba(2,15,14,0.55)',
+          boxShadow           : '0 32px 80px rgba(248, 245, 236, 0.55)',
         }}
       >
         {/* Header */}
@@ -86,22 +86,22 @@ export default function AdminLogin() {
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-5"
             style={{
-              background: 'rgba(217,172,163,0.12)',
-              border    : '1px solid rgba(217,172,163,0.25)',
+              background: 'rgba(184, 134, 58, 0.12)',
+              border    : '1px solid rgba(184, 134, 58, 0.25)',
             }}
           >
             ⚙️
           </div>
           <span
             className="text-[10px] font-semibold tracking-[0.22em] uppercase block mb-2"
-            style={{ color: '#A6756A' }}
+            style={{ color: '#7A5A2E' }}
           >
             غرفة القيادة
           </span>
-          <h1 className="text-2xl font-black mb-2" style={{ color: '#EAE4DF' }}>
+          <h1 className="text-2xl font-black mb-2" style={{ color: '#1A2E28' }}>
             تسجيل الدخول
           </h1>
-          <p className="text-xs" style={{ color: '#6FA5A8' }}>
+          <p className="text-xs" style={{ color: '#5E6E67' }}>
             منطقة مقيدة — لمشرف المنصة فقط
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function AdminLogin() {
           <div className="flex flex-col gap-2">
             <label
               className="text-xs font-semibold"
-              style={{ color: '#A6756A', letterSpacing: '0.07em' }}
+              style={{ color: '#7A5A2E', letterSpacing: '0.07em' }}
             >
               البريد الإلكتروني
             </label>
@@ -133,7 +133,7 @@ export default function AdminLogin() {
           <div className="flex flex-col gap-2">
             <label
               className="text-xs font-semibold"
-              style={{ color: '#A6756A', letterSpacing: '0.07em' }}
+              style={{ color: '#7A5A2E', letterSpacing: '0.07em' }}
             >
               كلمة المرور
             </label>
@@ -155,11 +155,11 @@ export default function AdminLogin() {
             <div
               className="text-xs text-right rounded-xl px-4 py-3"
               style={{
-                color       : '#D9ACA3',
-                background  : 'rgba(217,172,163,0.08)',
+                color       : '#8A6425',
+                background  : 'rgba(184, 134, 58, 0.08)',
                 borderWidth : '1px',
                 borderStyle : 'solid',
-                borderColor : 'rgba(217,172,163,0.22)',
+                borderColor : 'rgba(184, 134, 58, 0.22)',
               }}
             >
               ⚠️ {error}
@@ -173,12 +173,12 @@ export default function AdminLogin() {
             className="font-bold rounded-xl py-3.5 mt-2 cursor-pointer transition-all duration-300 disabled:opacity-60"
             style={{
               background : loading
-                ? 'rgba(217,172,163,0.12)'
-                : 'linear-gradient(135deg, rgba(217,172,163,0.85) 0%, rgba(166,117,106,0.90) 100%)',
-              color       : loading ? '#D9ACA3' : '#09201E',
+                ? 'rgba(184, 134, 58, 0.12)'
+                : 'linear-gradient(135deg, rgba(184, 134, 58, 0.85) 0%, rgba(122, 90, 46, 0.90) 100%)',
+              color       : loading ? '#8A6425' : '#FFFFFF',
               borderWidth : '1px',
               borderStyle : 'solid',
-              borderColor : loading ? 'rgba(217,172,163,0.25)' : 'transparent',
+              borderColor : loading ? 'rgba(184, 134, 58, 0.25)' : 'transparent',
               fontSize    : '0.9rem',
             }}
           >
@@ -191,9 +191,9 @@ export default function AdminLogin() {
           <Link
             to="/"
             className="text-xs transition-colors duration-200"
-            style={{ color: '#6FA5A8' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#96BCBE'}
-            onMouseLeave={e => e.currentTarget.style.color = '#6FA5A8'}
+            style={{ color: '#5E6E67' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#4A5D56'}
+            onMouseLeave={e => e.currentTarget.style.color = '#5E6E67'}
           >
             ← العودة إلى الموقع
           </Link>

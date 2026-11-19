@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'parents',
   relatedPosts  : ['handling-chronic-absentees', 'delivering-bad-news-to-parents', 'reading-recitation-data'],
   sources       : [],
-  coverColor    : '#48D6CD',
+  coverColor    : '#1F6F52',
   cover         : '/og/blog/why-students-leave.jpg',
   sections: [
     {

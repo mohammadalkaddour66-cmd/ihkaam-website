@@ -55,21 +55,21 @@ function SidebarEmailCapture({ catColor }) {
 
   if (done) {
     return (
-      <div className="rounded-2xl p-5 border border-white/7 flex flex-col items-center gap-3 text-center"
-        style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="rounded-2xl p-5 border border-[#0B3B33]/7 flex flex-col items-center gap-3 text-center"
+        style={{ background: 'rgba(11, 59, 51, 0.02)' }}>
         <CheckCircle size={22} style={{ color: catColor }} />
-        <p className="text-white/70 text-xs leading-relaxed">تم! ستصلك المقالات القادمة مباشرة.</p>
+        <p className="text-[#1A2E28]/70 text-xs leading-relaxed">تم! ستصلك المقالات القادمة مباشرة.</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl p-5 border border-white/7" style={{ background: 'rgba(255,255,255,0.025)' }}>
+    <div className="rounded-2xl p-5 border border-[#0B3B33]/7" style={{ background: 'rgba(11, 59, 51, 0.025)' }}>
       <div className="flex items-center gap-2 mb-3">
         <Bell size={13} style={{ color: catColor }} />
-        <h3 className="text-white font-bold text-sm">لا تفوّتك المقالات القادمة</h3>
+        <h3 className="text-[#1A2E28] font-bold text-sm">لا تفوّتك المقالات القادمة</h3>
       </div>
-      <p className="text-white/45 text-xs leading-relaxed mb-4">
+      <p className="text-[#1A2E28]/70 text-xs leading-relaxed mb-4">
         تصلك المقالات الجديدة على بريدك — مقالات عملية لمديري معاهد التحفيظ. بدون إعلانات.
       </p>
       <form onSubmit={submit} className="flex flex-col gap-2">
@@ -83,10 +83,10 @@ function SidebarEmailCapture({ catColor }) {
           onBlur={() => setFocused(false)}
           placeholder="بريدك الإلكتروني..."
           style={{
-            background  : 'rgba(255,255,255,0.04)',
-            border      : focused ? `1px solid ${catColor}60` : '1px solid rgba(255,255,255,0.08)',
+            background  : 'rgba(11, 59, 51, 0.04)',
+            border      : focused ? `1px solid ${catColor}60` : '1px solid rgba(11, 59, 51, 0.08)',
             borderRadius: 10,
-            color       : '#EAE4DF',
+            color       : '#1A2E28',
             fontSize    : '0.8rem',
             padding     : '0.65rem 0.875rem',
             outline     : 'none',
@@ -100,7 +100,7 @@ function SidebarEmailCapture({ catColor }) {
         <button
           type="submit" disabled={loading}
           className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl font-bold text-xs disabled:opacity-60"
-          style={{ background: catColor, color: '#020F0E', cursor: 'pointer' }}
+          style={{ background: catColor, color: '#F8F5EC', cursor: 'pointer' }}
         >
           {loading ? <Loader2 size={13} className="animate-spin" /> : <Bell size={12} />}
           {loading ? 'جارٍ...' : 'اشترك مجاناً'}
@@ -129,10 +129,10 @@ function Sidebar({ post }) {
         >
           <Zap size={16} style={{ color: catColor }} />
         </div>
-        <h3 className="text-white font-bold text-sm mb-2 leading-snug">
+        <h3 className="text-[#1A2E28] font-bold text-sm mb-2 leading-snug">
           هل تريد تطبيق هذا في مركزك؟
         </h3>
-        <p className="text-white/50 text-xs leading-relaxed mb-4">
+        <p className="text-[#1A2E28]/70 text-xs leading-relaxed mb-4">
           إحكام تجمع كل ما يحتاجه مدير المركز في مكان واحد — تسميع، حضور، ماليات، وتقارير.
         </p>
         {post.relatedFeature && FEATURE_SEO[post.relatedFeature] && (
@@ -147,7 +147,7 @@ function Sidebar({ post }) {
         <Link
           to="/ihkaam"
           className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-xs"
-          style={{ background: catColor, color: '#020F0E' }}
+          style={{ background: catColor, color: '#F8F5EC' }}
         >
           اكتشف إحكام
           <ArrowLeft size={13} />
@@ -156,10 +156,10 @@ function Sidebar({ post }) {
 
       {/* More articles */}
       <div
-        className="rounded-2xl p-5 border border-white/7"
-        style={{ background: 'rgba(255,255,255,0.025)' }}
+        className="rounded-2xl p-5 border border-[#0B3B33]/7"
+        style={{ background: 'rgba(11, 59, 51, 0.025)' }}
       >
-        <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
           <BookOpen size={12} />
           مقالات أخرى
         </h3>
@@ -175,12 +175,12 @@ function Sidebar({ post }) {
                 style={{ background: p.coverColor + '70', minHeight: '36px' }}
               />
               <div>
-                <p className="text-white/65 text-xs leading-snug font-semibold group-hover:text-white transition-colors line-clamp-2">
+                <p className="text-[#1A2E28]/65 text-xs leading-snug font-semibold group-hover:text-[#1A2E28] transition-colors line-clamp-2">
                   {p.title}
                 </p>
                 <div className="flex items-center gap-1.5 mt-1.5">
-                  <Clock size={10} className="text-white/25" />
-                  <span className="text-white/25 text-[10px]">{readTimeLabel(p.readTime)}</span>
+                  <Clock size={10} className="text-[#1A2E28]/60" />
+                  <span className="text-[#1A2E28]/60 text-[10px]">{readTimeLabel(p.readTime)}</span>
                 </div>
               </div>
             </Link>
@@ -194,7 +194,7 @@ function Sidebar({ post }) {
       {/* Back to blog */}
       <Link
         to="/blog"
-        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold border border-white/8 text-white/40 hover:text-white/70 hover:border-white/20 transition-all"
+        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-semibold border border-[#0B3B33]/8 text-[#1A2E28]/60 hover:text-[#1A2E28]/70 hover:border-[#0B3B33]/20 transition-all"
       >
         <ArrowRight size={13} />
         جميع المقالات
@@ -206,23 +206,23 @@ function Sidebar({ post }) {
 /* ─── Inline formatting: **عريض** و [نص](/مسار) ─────────────── */
 function inline(line) {
   return line
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#1A2E28] font-bold">$1</strong>')
     .replace(/\[([^\]]+)\]\(((?:\/|https:\/\/)[^)\s]*)\)/g, (_, label, href) =>
       href.startsWith('/')
-        ? `<a href="${href}" class="text-white underline underline-offset-4 decoration-white/30 hover:decoration-white">${label}</a>`
-        : `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-white underline underline-offset-4 decoration-white/30 hover:decoration-white">${label}</a>`)
+        ? `<a href="${href}" class="text-[#1A2E28] underline underline-offset-4 decoration-[#1F6F52]/30 hover:decoration-[#1F6F52]">${label}</a>`
+        : `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-[#1A2E28] underline underline-offset-4 decoration-[#1F6F52]/30 hover:decoration-[#1F6F52]">${label}</a>`)
 }
 
 function TextLine({ line }) {
   const bullet = /^[-•]\s+/.test(line)
   const html   = inline(bullet ? line.replace(/^[-•]\s+/, '') : line)
   return bullet ? (
-    <p className="text-white/68 text-base leading-relaxed mb-2 flex gap-2">
-      <span className="text-white/30 flex-shrink-0">•</span>
+    <p className="text-[#1A2E28]/68 text-base leading-relaxed mb-2 flex gap-2">
+      <span className="text-[#1A2E28]/60 flex-shrink-0">•</span>
       <span dangerouslySetInnerHTML={{ __html: html }} />
     </p>
   ) : (
-    <p className="text-white/68 text-base leading-relaxed mb-2" dangerouslySetInnerHTML={{ __html: html }} />
+    <p className="text-[#1A2E28]/68 text-base leading-relaxed mb-2" dangerouslySetInnerHTML={{ __html: html }} />
   )
 }
 
@@ -253,9 +253,9 @@ function TemplateBlock({ title, text, catColor }) {
     }).catch(() => {})
   }
   return (
-    <div className="my-8 rounded-2xl border" style={{ borderColor: catColor + '30', background: 'rgba(255,255,255,0.025)' }}>
+    <div className="my-8 rounded-2xl border" style={{ borderColor: catColor + '30', background: 'rgba(11, 59, 51, 0.025)' }}>
       <div className="flex items-center justify-between gap-3 px-5 py-3 border-b" style={{ borderColor: catColor + '20' }}>
-        <span className="text-white font-bold text-sm">{title}</span>
+        <span className="text-[#1A2E28] font-bold text-sm">{title}</span>
         <div className="flex items-center gap-4">
         <button
           type="button"
@@ -277,7 +277,7 @@ function TemplateBlock({ title, text, catColor }) {
         </button>
         </div>
       </div>
-      <div className="px-5 py-4 text-white/75 text-sm leading-loose whitespace-pre-line">{text}</div>
+      <div className="px-5 py-4 text-[#1A2E28]/75 text-sm leading-loose whitespace-pre-line">{text}</div>
     </div>
   )
 }
@@ -286,13 +286,13 @@ function TemplateBlock({ title, text, catColor }) {
 function ArticleSources({ sources, title }) {
   if (!sources?.length) return null
   return (
-    <div className="mt-12 pt-6 border-t border-white/8">
-      <h2 className="text-white/60 font-bold text-sm mb-3">مصادر مقال «{title}»</h2>
+    <div className="mt-12 pt-6 border-t border-[#0B3B33]/8">
+      <h2 className="text-[#1A2E28]/60 font-bold text-sm mb-3">مصادر مقال «{title}»</h2>
       <ol className="space-y-2 list-decimal pr-5">
         {sources.map((s, i) => (
-          <li key={i} className="text-white/45 text-xs leading-relaxed">
+          <li key={i} className="text-[#1A2E28]/70 text-xs leading-relaxed">
             {s.url
-              ? <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 decoration-white/20 hover:text-white/70">{s.title}</a>
+              ? <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 decoration-[#1F6F52]/20 hover:text-[#1A2E28]/70">{s.title}</a>
               : s.title}
             {s.publisher ? ` — ${s.publisher}` : ''}
           </li>
@@ -314,7 +314,7 @@ function ArticleBody({ sections, catColor }) {
           return (
             <h2
               key={i}
-              className={`text-white font-black text-xl mb-4 flex items-center gap-3 ${isFirst ? '' : 'mt-10'}`}
+              className={`text-[#1A2E28] font-black text-xl mb-4 flex items-center gap-3 ${isFirst ? '' : 'mt-10'}`}
             >
               <span
                 className="w-1 h-5 rounded-full flex-shrink-0"
@@ -336,7 +336,7 @@ function ArticleBody({ sections, catColor }) {
               }}
             >
               {section.text.split('\n\n').map((para, j) => (
-                <p key={j} className="text-white/80 text-base leading-relaxed mb-3 last:mb-0">
+                <p key={j} className="text-[#1A2E28]/80 text-base leading-relaxed mb-3 last:mb-0">
                   {para}
                 </p>
               ))}
@@ -346,7 +346,7 @@ function ArticleBody({ sections, catColor }) {
 
         if (section.type === 'subheading') {
           return (
-            <h3 key={i} className="text-white font-bold text-lg mt-8 mb-3">{section.text}</h3>
+            <h3 key={i} className="text-[#1A2E28] font-bold text-lg mt-8 mb-3">{section.text}</h3>
           )
         }
 
@@ -356,13 +356,13 @@ function ArticleBody({ sections, catColor }) {
             <div
               key={i}
               className={`mb-8 rounded-2xl p-6 border ${isFirst ? '' : 'mt-6'}`}
-              style={{ background: 'rgba(255,255,255,0.03)', borderColor: catColor + '30' }}
+              style={{ background: 'rgba(11, 59, 51, 0.03)', borderColor: catColor + '30' }}
             >
               {section.term && (
                 <p className="text-xs font-bold mb-2" style={{ color: catColor }}>{section.term}</p>
               )}
               <p
-                className="text-white/85 text-base leading-relaxed"
+                className="text-[#1A2E28]/85 text-base leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: inline(section.text) }}
               />
             </div>
@@ -371,22 +371,22 @@ function ArticleBody({ sections, catColor }) {
 
         if (section.type === 'table') {
           return (
-            <figure key={i} className="my-8 overflow-x-auto rounded-2xl border border-white/8">
+            <figure key={i} className="my-8 overflow-x-auto rounded-2xl border border-[#0B3B33]/8">
               <table className="w-full text-sm text-right border-collapse min-w-[480px]">
                 <thead>
                   <tr style={{ background: catColor + '14' }}>
                     {section.columns.map((c, j) => (
-                      <th key={j} scope="col" className="px-4 py-3 text-white font-bold">{c}</th>
+                      <th key={j} scope="col" className="px-4 py-3 text-[#1A2E28] font-bold">{c}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {section.rows.map((row, r) => (
-                    <tr key={r} className="border-t border-white/6">
+                    <tr key={r} className="border-t border-[#0B3B33]/6">
                       {row.map((cell, c) => (
                         <td
                           key={c}
-                          className="px-4 py-3 text-white/70 leading-relaxed align-top"
+                          className="px-4 py-3 text-[#1A2E28]/70 leading-relaxed align-top"
                           dangerouslySetInnerHTML={{ __html: inline(String(cell)) }}
                         />
                       ))}
@@ -394,7 +394,7 @@ function ArticleBody({ sections, catColor }) {
                   ))}
                 </tbody>
               </table>
-              <figcaption className="flex items-center justify-between gap-3 px-4 py-2 text-white/40 text-xs border-t border-white/6">
+              <figcaption className="flex items-center justify-between gap-3 px-4 py-2 text-[#1A2E28]/60 text-xs border-t border-[#0B3B33]/6">
                 <span>{section.caption}</span>
                 <button
                   type="button"
@@ -418,10 +418,10 @@ function ArticleBody({ sections, catColor }) {
           return (
             <div key={i} className="my-8 space-y-3">
               {section.items.map((it, j) => (
-                <details key={j} className="rounded-xl border border-white/8 px-5 py-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <summary className="text-white font-bold text-sm cursor-pointer">{it.q}</summary>
+                <details key={j} className="rounded-xl border border-[#0B3B33]/8 px-5 py-4" style={{ background: 'rgba(11, 59, 51, 0.02)' }}>
+                  <summary className="text-[#1A2E28] font-bold text-sm cursor-pointer">{it.q}</summary>
                   <p
-                    className="text-white/65 text-sm leading-relaxed mt-3"
+                    className="text-[#1A2E28]/65 text-sm leading-relaxed mt-3"
                     dangerouslySetInnerHTML={{ __html: inline(it.a) }}
                   />
                 </details>
@@ -437,11 +437,11 @@ function ArticleBody({ sections, catColor }) {
               className="mt-12 rounded-2xl p-6 text-center"
               style={{ background: catColor + '10', border: `1px solid ${catColor}30` }}
             >
-              <p className="text-white/70 text-sm mb-4 leading-relaxed">{section.text}</p>
+              <p className="text-[#1A2E28]/70 text-sm mb-4 leading-relaxed">{section.text}</p>
               <Link
                 to={section.to || '/ihkaam'}
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm"
-                style={{ background: catColor, color: '#020F0E' }}
+                style={{ background: catColor, color: '#F8F5EC' }}
               >
                 {section.label || 'اكتشف إحكام'}
                 <ArrowLeft size={14} />
@@ -483,7 +483,7 @@ export default function BlogArticle() {
   const seo = blogSeo(post)
 
   return (
-    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#F8F5EC', minHeight: '100vh' }}>
       <PageMeta
         title={seo.title}
         description={seo.description}
@@ -539,12 +539,12 @@ export default function BlogArticle() {
 
         <div className="relative max-w-6xl mx-auto">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-white/30 mb-6 flex-wrap">
-            <Link to="/" className="hover:text-white/60 transition-colors">الرئيسية</Link>
+          <nav className="flex items-center gap-2 text-xs text-[#1A2E28]/60 mb-6 flex-wrap">
+            <Link to="/" className="hover:text-[#1A2E28]/60 transition-colors">الرئيسية</Link>
             <ChevronLeft size={11} />
-            <Link to="/blog" className="hover:text-white/60 transition-colors">المدونة</Link>
+            <Link to="/blog" className="hover:text-[#1A2E28]/60 transition-colors">المدونة</Link>
             <ChevronLeft size={11} />
-            <span className="text-white/50">{post.title}</span>
+            <span className="text-[#1A2E28]/70">{post.title}</span>
           </nav>
 
           {cat && (
@@ -560,27 +560,27 @@ export default function BlogArticle() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="text-white text-3xl md:text-4xl lg:text-5xl font-black mb-4 max-w-4xl"
+            className="text-[#1A2E28] text-3xl md:text-4xl lg:text-5xl font-black mb-4 max-w-4xl"
             style={{ lineHeight: 1.2 }}
           >
             {post.title}
           </motion.h1>
 
-          <p className="text-white/55 text-base md:text-lg leading-relaxed mb-6 max-w-2xl">
+          <p className="text-[#1A2E28]/70 text-base md:text-lg leading-relaxed mb-6 max-w-2xl">
             {post.excerpt}
           </p>
 
-          <div className="flex items-center gap-x-4 gap-y-2 flex-wrap text-white/30 text-xs">
+          <div className="flex items-center gap-x-4 gap-y-2 flex-wrap text-[#1A2E28]/60 text-xs">
             <span>{post.author}</span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span className="w-1 h-1 rounded-full bg-[#0B3B33]/20" />
             <span>{formatDate(post.date)}</span>
             {post.updated && post.updated !== post.date && (
               <>
-                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span className="w-1 h-1 rounded-full bg-[#0B3B33]/20" />
                 <span>حُدّث في {formatDate(post.updated)}</span>
               </>
             )}
-            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span className="w-1 h-1 rounded-full bg-[#0B3B33]/20" />
             <span className="flex items-center gap-1">
               <Clock size={12} />
               قراءة {readTimeLabel(post.readTime)}

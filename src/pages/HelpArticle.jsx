@@ -44,9 +44,9 @@ function StepCard({ step, num, color, isLast }) {
       </div>
 
       <div className={`flex-1 min-w-0 ${isLast ? 'pb-2' : 'pb-7'}`}>
-        <h3 className="text-white font-bold text-base mb-2">{step.title}</h3>
+        <h3 className="text-[#1A2E28] font-bold text-base mb-2">{step.title}</h3>
 
-        <div className="text-white/65 text-sm leading-relaxed space-y-2">
+        <div className="text-[#1A2E28]/65 text-sm leading-relaxed space-y-2">
           {blocks.map((block, i) =>
             block.type === 'text' ? (
               <p key={i}>{block.text}</p>
@@ -60,7 +60,7 @@ function StepCard({ step, num, color, isLast }) {
                       className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[0.5em]"
                       style={{ background: color }}
                     />
-                    <span className="flex-1 text-white/60">{item}</span>
+                    <span className="flex-1 text-[#1A2E28]/60">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -71,10 +71,10 @@ function StepCard({ step, num, color, isLast }) {
         {step.note && (
           <div
             className="mt-3 rounded-xl px-4 py-3 flex gap-3 items-start"
-            style={{ background: '#48D6CD' + '14', border: '1px solid #48D6CD' + '30' }}
+            style={{ background: '#1F6F52' + '14', border: '1px solid #1F6F52' + '30' }}
           >
-            <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#48D6CD' }} />
-            <p className="text-white/75 text-xs leading-relaxed">{step.note}</p>
+            <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#1F6F52' }} />
+            <p className="text-[#1A2E28]/75 text-xs leading-relaxed">{step.note}</p>
           </div>
         )}
 
@@ -83,8 +83,8 @@ function StepCard({ step, num, color, isLast }) {
             className="mt-3 rounded-xl px-4 py-3 flex gap-3 items-start"
             style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.25)' }}
           >
-            <AlertTriangle size={15} className="flex-shrink-0 mt-0.5 text-red-400" />
-            <p className="text-white/75 text-xs leading-relaxed">{step.warning}</p>
+            <AlertTriangle size={15} className="flex-shrink-0 mt-0.5 text-[#C0392B]" />
+            <p className="text-[#1A2E28]/75 text-xs leading-relaxed">{step.warning}</p>
           </div>
         )}
       </div>
@@ -111,10 +111,10 @@ function HelpSidebar({ article, catColor }) {
 
       {/* Steps overview — تكرارٌ محض على الموبايل: الخطوات كاملةً فوقه مباشرة */}
       <div
-        className="hidden lg:block rounded-2xl p-5 border border-white/7"
-        style={{ background: 'rgba(255,255,255,0.025)' }}
+        className="hidden lg:block rounded-2xl p-5 border border-[#0B3B33]/7"
+        style={{ background: 'rgba(11, 59, 51, 0.025)' }}
       >
-        <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+        <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
           الخطوات ({article.steps.length})
         </h3>
         <ol className="space-y-2.5">
@@ -126,7 +126,7 @@ function HelpSidebar({ article, catColor }) {
               >
                 {i + 1}
               </span>
-              <span className="text-white/55 text-xs leading-snug">{step.title}</span>
+              <span className="text-[#1A2E28]/70 text-xs leading-snug">{step.title}</span>
             </li>
           ))}
         </ol>
@@ -135,10 +135,10 @@ function HelpSidebar({ article, catColor }) {
       {/* Related articles */}
       {related.length > 0 && (
         <div
-          className="rounded-2xl p-5 border border-white/7"
-          style={{ background: 'rgba(255,255,255,0.025)' }}
+          className="rounded-2xl p-5 border border-[#0B3B33]/7"
+          style={{ background: 'rgba(11, 59, 51, 0.025)' }}
         >
-          <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+          <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
             مقالات ذات صلة
           </h3>
           <div className="space-y-3">
@@ -149,8 +149,8 @@ function HelpSidebar({ article, catColor }) {
                   to={`/help/${a.slug}`}
                   className="group flex items-start gap-2.5"
                 >
-                  <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
-                  <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">
+                  <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
+                  <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">
                     {a.title}
                   </p>
                 </Link>
@@ -163,17 +163,17 @@ function HelpSidebar({ article, catColor }) {
       {/* Same category */}
       {siblings.length > 0 && (
         <div
-          className="rounded-2xl p-5 border border-white/7"
-          style={{ background: 'rgba(255,255,255,0.025)' }}
+          className="rounded-2xl p-5 border border-[#0B3B33]/7"
+          style={{ background: 'rgba(11, 59, 51, 0.025)' }}
         >
-          <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+          <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
             من القسم نفسه
           </h3>
           <div className="space-y-3">
             {siblings.map(a => (
               <Link key={a.slug} to={`/help/${a.slug}`} className="group flex items-start gap-2.5">
-                <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
-                <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">{a.title}</p>
+                <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
+                <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">{a.title}</p>
               </Link>
             ))}
           </div>
@@ -182,32 +182,32 @@ function HelpSidebar({ article, catColor }) {
 
       {/* More articles + categories */}
       <div
-        className="rounded-2xl p-5 border border-white/7"
-        style={{ background: 'rgba(255,255,255,0.025)' }}
+        className="rounded-2xl p-5 border border-[#0B3B33]/7"
+        style={{ background: 'rgba(11, 59, 51, 0.025)' }}
       >
         {more.length > 0 && (
           <>
-            <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+            <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
               مقالات أخرى في الدعم
             </h3>
             <div className="space-y-3 mb-5">
               {more.map(a => (
                 <Link key={a.slug} to={`/help/${a.slug}`} className="group flex items-start gap-2.5">
-                  <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
-                  <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">{a.title}</p>
+                  <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
+                  <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">{a.title}</p>
                 </Link>
               ))}
             </div>
           </>
         )}
-        <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+        <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
           أقسام الدعم
         </h3>
         <div className="space-y-3">
           {CATEGORIES.map(c => (
             <Link key={c.id} to={`/help/category/${c.id}`} className="group flex items-start gap-2.5">
-              <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
-              <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">{c.label}</p>
+              <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
+              <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">{c.label}</p>
             </Link>
           ))}
         </div>
@@ -219,7 +219,7 @@ function HelpSidebar({ article, catColor }) {
         style={{ background: catColor + '08', borderColor: catColor + '25' }}
       >
         <MessageCircle size={20} className="mx-auto mb-2" style={{ color: catColor }} />
-        <p className="text-white/60 text-xs leading-relaxed mb-3">
+        <p className="text-[#1A2E28]/60 text-xs leading-relaxed mb-3">
           المقالة لم تحل مشكلتك؟ تواصل مع الدعم مباشرة.
         </p>
         <Link
@@ -247,11 +247,11 @@ export default function HelpArticle() {
 
   if (!article) return null
 
-  const catColor = cat?.color || '#48D6CD'
+  const catColor = cat?.color || '#1F6F52'
   const Icon     = cat?.icon
 
   return (
-    <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: '#F8F5EC', minHeight: '100vh' }}>
       <PageMeta
         title={article.seoTitle || article.title}
         description={article.seoDescription || composeDescription([
@@ -308,18 +308,18 @@ export default function HelpArticle() {
 
         <div className="relative max-w-6xl mx-auto">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-white/35 mb-6 flex-wrap">
-            <Link to="/help" className="hover:text-white/70 transition-colors">الدعم الفني</Link>
+          <nav className="flex items-center gap-2 text-xs text-[#1A2E28]/60 mb-6 flex-wrap">
+            <Link to="/help" className="hover:text-[#1A2E28]/70 transition-colors">الدعم الفني</Link>
             <ChevronLeft size={12} />
             {cat && (
               <>
-                <Link to={`/help/category/${cat.id}`} className="hover:text-white/70 transition-colors">
+                <Link to={`/help/category/${cat.id}`} className="hover:text-[#1A2E28]/70 transition-colors">
                   {cat.label}
                 </Link>
                 <ChevronLeft size={12} />
               </>
             )}
-            <span className="text-white/55">{article.title}</span>
+            <span className="text-[#1A2E28]/70">{article.title}</span>
           </nav>
 
           {cat && Icon && (
@@ -336,7 +336,7 @@ export default function HelpArticle() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-white text-3xl md:text-4xl font-black mb-3 max-w-3xl"
+            className="text-[#1A2E28] text-3xl md:text-4xl font-black mb-3 max-w-3xl"
             style={{ lineHeight: 1.25 }}
           >
             {article.title}
@@ -345,14 +345,14 @@ export default function HelpArticle() {
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0, transition: { delay: 0.08, duration: 0.5 } }}
-            className="text-white/55 text-sm sm:text-base leading-relaxed mb-5 max-w-2xl"
+            className="text-[#1A2E28]/70 text-sm sm:text-base leading-relaxed mb-5 max-w-2xl"
           >
             {article.description}
           </motion.p>
 
           {article.whoFor?.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              <span className="text-white/35 text-xs self-center">مناسب لـ:</span>
+              <span className="text-[#1A2E28]/60 text-xs self-center">مناسب لـ:</span>
               {article.whoFor.map(w => (
                 <span
                   key={w}
@@ -374,11 +374,11 @@ export default function HelpArticle() {
           {/* Main content */}
           <main className="flex-1 min-w-0 pt-8 sm:pt-10">
             {article.intro && (
-              <p className="text-white/70 text-base leading-loose mb-8 sm:mb-10">
+              <p className="text-[#1A2E28]/70 text-base leading-loose mb-8 sm:mb-10">
                 {article.intro}
               </p>
             )}
-            <h2 className="text-white font-bold text-xl mb-6 sm:mb-8 flex items-center gap-3">
+            <h2 className="text-[#1A2E28] font-bold text-xl mb-6 sm:mb-8 flex items-center gap-3">
               <span
                 className="w-1 h-6 rounded-full inline-block"
                 style={{ background: catColor }}
@@ -399,16 +399,16 @@ export default function HelpArticle() {
                 className="mt-8 sm:mt-10 rounded-2xl p-5 sm:p-6"
                 style={{ background: 'rgba(255,213,75,0.06)', border: '1px solid rgba(255,213,75,0.18)' }}
               >
-                <h3 className="font-bold text-base mb-4 flex items-center gap-2" style={{ color: '#FFD54B' }}>
+                <h3 className="font-bold text-base mb-4 flex items-center gap-2" style={{ color: '#8A6425' }}>
                   <Lightbulb size={18} />
                   نصائح مفيدة
                 </h3>
                 <ul className="space-y-2.5">
                   {article.tips.map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-white/65 text-sm leading-relaxed">
+                    <li key={i} className="flex items-start gap-2.5 text-[#1A2E28]/65 text-sm leading-relaxed">
                       <span
                         className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
-                        style={{ background: '#FFD54B' }}
+                        style={{ background: '#B8863A' }}
                       />
                       {tip}
                     </li>
@@ -419,7 +419,7 @@ export default function HelpArticle() {
             {/* FAQ */}
             {article.faq?.length > 0 && (
               <section className="mt-10 sm:mt-12">
-                <h2 className="text-white font-bold text-xl mb-5 flex items-center gap-3">
+                <h2 className="text-[#1A2E28] font-bold text-xl mb-5 flex items-center gap-3">
                   <span
                     className="w-1 h-6 rounded-full inline-block"
                     style={{ background: catColor }}
@@ -430,11 +430,11 @@ export default function HelpArticle() {
                   {article.faq.map((f, i) => (
                     <div
                       key={i}
-                      className="rounded-2xl p-5 border border-white/8"
-                      style={{ background: 'rgba(255,255,255,0.03)' }}
+                      className="rounded-2xl p-5 border border-[#0B3B33]/8"
+                      style={{ background: 'rgba(11, 59, 51, 0.03)' }}
                     >
-                      <h3 className="text-white font-bold text-base mb-2">{f.q}</h3>
-                      <p className="text-white/60 text-sm leading-relaxed">{f.a}</p>
+                      <h3 className="text-[#1A2E28] font-bold text-base mb-2">{f.q}</h3>
+                      <p className="text-[#1A2E28]/60 text-sm leading-relaxed">{f.a}</p>
                     </div>
                   ))}
                 </div>

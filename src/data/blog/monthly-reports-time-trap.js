@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'reports',
   relatedPosts  : ['reading-recitation-data', 'first-90-days-director', 'attendance-register-template'],
   sources       : [],
-  coverColor    : '#D9B29C',
+  coverColor    : '#8A6425',
   cover         : '/og/blog/monthly-reports-time-trap.jpg',
   sections: [
     {

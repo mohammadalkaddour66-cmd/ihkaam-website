@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'star',
   relatedPosts  : ['quran-certificate-wording', 'angry-parent-trust-moment', 'why-students-leave'],
   sources       : [],
-  coverColor    : '#EBD3C2',
+  coverColor    : '#B8863A',
   cover         : '/og/blog/reputation-as-marketing.jpg',
   sections: [
     {

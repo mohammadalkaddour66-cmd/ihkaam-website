@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'daily',
   relatedPosts  : ['weekly-memorization-plan', 'how-long-to-memorize-quran', 'fair-recitation-system'],
   sources       : [],
-  coverColor    : '#2FAEB4',
+  coverColor    : '#2E7A5A',
   cover         : '/og/blog/quran-review-schedule.jpg',
   sections: [
     {

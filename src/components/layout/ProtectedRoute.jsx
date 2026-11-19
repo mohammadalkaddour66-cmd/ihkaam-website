@@ -25,12 +25,12 @@ export default function ProtectedRoute() {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
-        style={{ background: '#09201E' }}
+        style={{ background: '#FFFFFF' }}
         aria-label="جارٍ التحقق من صلاحيات الدخول"
       >
         <div
           className="w-10 h-10 rounded-full border-2 animate-spin"
-          style={{ borderColor: 'rgba(217,172,163,0.20)', borderTopColor: '#D9ACA3' }}
+          style={{ borderColor: 'rgba(184, 134, 58, 0.20)', borderTopColor: '#8A6425' }}
         />
       </div>
     )

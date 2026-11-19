@@ -1,0 +1,3 @@
+Generated scenes for the platform page (2026-11-19), made with gpt-image-2.5 via ElevenLabs (flow "إحكام — صور صفحة المنصة").
+Prompt style: cream studio backdrop, deep emerald #0B3B33 + brass #B8863A, no text.
+role-director.webp, role-parent.webp, platform-hero.webp: device screens replaced locally with real Ihkaam screenshots from gallery_items (Windows title bar and taskbar cropped).

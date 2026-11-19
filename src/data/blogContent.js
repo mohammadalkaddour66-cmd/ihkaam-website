@@ -69,13 +69,13 @@ import attendanceRegisterTemplate from './blog/attendance-register-template'
 import quranCertificateWording   from './blog/quran-certificate-wording'
 
 export const BLOG_CATEGORIES = [
-  { id: 'retention',   label: 'استبقاء الطلاب', color: '#48D6CD' },
-  { id: 'operations',  label: 'إدارة العمليات',  color: '#D9B29C' },
-  { id: 'finance',     label: 'الشؤون المالية',  color: '#6FE7DE' },
-  { id: 'staff',       label: 'إدارة الكادر',    color: '#B98A63' },
-  { id: 'growth',      label: 'النمو والتوسع',   color: '#EBD3C2' },
-  { id: 'parents',     label: 'علاقة الأهل',     color: '#2FAEB4' },
-  { id: 'daily',       label: 'المتابعة اليومية', color: '#2FAEB4' },
+  { id: 'retention',   label: 'استبقاء الطلاب', color: '#1F6F52' },
+  { id: 'operations',  label: 'إدارة العمليات',  color: '#8A6425' },
+  { id: 'finance',     label: 'الشؤون المالية',  color: '#0B3B33' },
+  { id: 'staff',       label: 'إدارة الكادر',    color: '#7A5A2E' },
+  { id: 'growth',      label: 'النمو والتوسع',   color: '#B8863A' },
+  { id: 'parents',     label: 'علاقة الأهل',     color: '#2E7A5A' },
+  { id: 'daily',       label: 'المتابعة اليومية', color: '#2E7A5A' },
 ]
 
 /* عناقيد الموضوعات، على تقسيم شيت «أفكار المقالات» في تقرير التحليل. */

@@ -27,9 +27,9 @@ function Spinner() {
     <div className="flex flex-col items-center justify-center gap-4 py-24">
       <div
         className="w-10 h-10 rounded-full border-2 animate-spin"
-        style={{ borderColor: 'rgba(217,172,163,0.35)', borderTopColor: '#D9ACA3' }}
+        style={{ borderColor: 'rgba(184, 134, 58, 0.35)', borderTopColor: '#8A6425' }}
       />
-      <p className="text-sm" style={{ color: '#96BCBE' }}>جاري جلب البيانات...</p>
+      <p className="text-sm" style={{ color: '#4A5D56' }}>جاري جلب البيانات...</p>
     </div>
   )
 }
@@ -39,9 +39,9 @@ function ErrorBanner({ msg }) {
     <div
       className="rounded-xl px-5 py-4 text-sm text-right"
       style={{
-        background: 'rgba(217,172,163,0.08)',
-        border    : '1px solid rgba(217,172,163,0.22)',
-        color     : '#D9ACA3',
+        background: 'rgba(184, 134, 58, 0.08)',
+        border    : '1px solid rgba(184, 134, 58, 0.22)',
+        color     : '#8A6425',
       }}
     >
       ⚠️ {msg}
@@ -54,11 +54,11 @@ function EmptyState({ msg }) {
     <div
       className="flex flex-col items-center justify-center gap-3 rounded-2xl py-20"
       style={{
-        background: 'rgba(255,255,255,0.02)',
-        border    : '1px dashed rgba(217,172,163,0.12)',
+        background: 'rgba(11, 59, 51, 0.02)',
+        border    : '1px dashed rgba(184, 134, 58, 0.12)',
       }}
     >
-      <p className="text-sm" style={{ color: '#6FA5A8' }}>{msg}</p>
+      <p className="text-sm" style={{ color: '#5E6E67' }}>{msg}</p>
     </div>
   )
 }
@@ -68,9 +68,9 @@ function StatsRow({ testimonials, subscriberCount, convertedCount, affiliateCoun
   const pending = testimonials.filter(t => t.status === 'pending').length
   const pendingAff = affiliateCount ?? 0
   const stats = [
-    { label: 'تقييمات بانتظار النشر', value: pending,                accent: '#D9ACA3' },
+    { label: 'تقييمات بانتظار النشر', value: pending,                accent: '#8A6425' },
     { label: 'مشتركو البريد',          value: subscriberCount ?? '—', accent: 'var(--cat-4)' },
-    { label: 'تحوّلوا إلى طلب',        value: convertedCount ?? '—',  accent: '#48D6CD' },
+    { label: 'تحوّلوا إلى طلب',        value: convertedCount ?? '—',  accent: '#1F6F52' },
     { label: 'طلبات شراكة معلّقة',     value: pendingAff,             accent: 'var(--cat-1)' },
   ]
   return (
@@ -80,14 +80,14 @@ function StatsRow({ testimonials, subscriberCount, convertedCount, affiliateCoun
           key={s.label}
           className="rounded-2xl px-5 py-5 text-right"
           style={{
-            background          : 'rgba(255,255,255,0.03)',
-            border              : '1px solid rgba(217,172,163,0.10)',
+            background          : 'rgba(11, 59, 51, 0.03)',
+            border              : '1px solid rgba(184, 134, 58, 0.10)',
             backdropFilter      : 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
           }}
         >
           <p className="text-2xl font-black mb-1" style={{ color: s.accent }}>{s.value}</p>
-          <p className="text-xs" style={{ color: '#96BCBE' }}>{s.label}</p>
+          <p className="text-xs" style={{ color: '#4A5D56' }}>{s.label}</p>
         </div>
       ))}
     </div>
@@ -102,9 +102,9 @@ const VARIANT_LABELS = {
   ihkaam  : 'متابعة إحكام',
 }
 const VARIANT_COLORS = {
-  pdf     : '#48D6CD',
+  pdf     : '#1F6F52',
   insights: 'var(--cat-4)',
-  blog    : '#D9C8A3',
+  blog    : '#7A6440',
   ihkaam  : 'var(--cat-1)',
 }
 
@@ -146,9 +146,9 @@ function SubscribersTab() {
             onClick={() => setFilter(v)}
             className="text-xs font-bold px-3 py-1.5 rounded-full transition-all"
             style={{
-              background: filter === v ? 'rgba(72,214,205,0.20)' : 'rgba(255,255,255,0.04)',
-              border    : `1px solid ${filter === v ? 'rgba(72,214,205,0.40)' : 'rgba(255,255,255,0.08)'}`,
-              color     : filter === v ? '#48D6CD' : '#96BCBE',
+              background: filter === v ? 'rgba(31, 111, 82, 0.20)' : 'rgba(11, 59, 51, 0.04)',
+              border    : `1px solid ${filter === v ? 'rgba(31, 111, 82, 0.40)' : 'rgba(11, 59, 51, 0.08)'}`,
+              color     : filter === v ? '#1F6F52' : '#4A5D56',
             }}
           >
             {v === 'all'       ? `الكل (${rows.length})`
@@ -167,8 +167,8 @@ function SubscribersTab() {
             className="hidden md:grid gap-3 px-5 py-3 rounded-xl text-xs font-semibold"
             style={{
               gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 0.9fr',
-              color              : '#A6756A',
-              background         : 'rgba(217,172,163,0.05)',
+              color              : '#7A5A2E',
+              background         : 'rgba(184, 134, 58, 0.05)',
               letterSpacing      : '0.06em',
             }}
           >
@@ -191,37 +191,37 @@ function SubscribersTab() {
                 alignItems         : 'center',
               }}
             >
-              <span className="font-semibold truncate" style={{ color: '#EAE4DF', direction: 'ltr', textAlign: 'right' }}>
+              <span className="font-semibold truncate" style={{ color: '#1A2E28', direction: 'ltr', textAlign: 'right' }}>
                 {r.email}
               </span>
-              <span className="text-xs truncate" style={{ color: '#96BCBE' }}>
+              <span className="text-xs truncate" style={{ color: '#4A5D56' }}>
                 {r.source_page || '—'}
               </span>
               <span
                 className="text-[11px] px-2.5 py-1 rounded-full w-fit font-bold"
                 style={{
-                  background: (VARIANT_COLORS[r.variant] ?? '#48D6CD') + '18',
-                  color     : VARIANT_COLORS[r.variant] ?? '#48D6CD',
+                  background: (VARIANT_COLORS[r.variant] ?? '#1F6F52') + '18',
+                  color     : VARIANT_COLORS[r.variant] ?? '#1F6F52',
                 }}
               >
                 {VARIANT_LABELS[r.variant] ?? r.variant ?? '—'}
               </span>
-              <span className="text-xs" style={{ color: '#6FA5A8' }}>
+              <span className="text-xs" style={{ color: '#5E6E67' }}>
                 {r.utm_source || '—'}
               </span>
-              <span className="text-xs" style={{ color: '#6FA5A8' }}>
+              <span className="text-xs" style={{ color: '#5E6E67' }}>
                 {formatDate(r.created_at)}
               </span>
               {r.converted_at ? (
                 <span
                   className="text-[11px] px-2.5 py-1 rounded-full w-fit font-bold"
-                  style={{ background: 'rgba(72,214,205,0.15)', color: '#48D6CD' }}
+                  style={{ background: 'rgba(31, 111, 82, 0.15)', color: '#1F6F52' }}
                   title={`تحوّل إلى طلب اشتراك — ${formatDate(r.converted_at)}`}
                 >
                   محوّل
                 </span>
               ) : (
-                <span className="text-xs" style={{ color: '#6FA5A8' }}>—</span>
+                <span className="text-xs" style={{ color: '#5E6E67' }}>—</span>
               )}
             </div>
           ))}
@@ -233,7 +233,7 @@ function SubscribersTab() {
 
 /* ─── Demo Requests Tab ──────────────────────────────────────── */
 const DEMO_STATUS_LABEL = { pending: 'معلّق', approved: 'تمت الموافقة', rejected: 'مرفوض' }
-const DEMO_STATUS_COLOR = { pending: '#D9C8A3', approved: '#48D6CD',   rejected: '#D9ACA3' }
+const DEMO_STATUS_COLOR = { pending: '#7A6440', approved: '#1F6F52',   rejected: '#8A6425' }
 
 function DemoRequestsTab() {
   const [rows,     setRows]    = useState([])
@@ -295,22 +295,22 @@ function DemoRequestsTab() {
       {waModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)' }}
+          style={{ background: 'rgba(11, 59, 51, 0.216)', backdropFilter: 'blur(10px)' }}
           onClick={() => setWaModal(null)}
         >
           <div
             className="w-full max-w-md rounded-2xl p-6 flex flex-col gap-4"
-            style={{ background: '#09201E', border: '1px solid rgba(37,211,102,0.28)' }}
+            style={{ background: '#FFFFFF', border: '1px solid rgba(37,211,102,0.28)' }}
             onClick={e => e.stopPropagation()}
           >
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#25D366' }}>
                 رسالة واتساب
               </p>
-              <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>
+              <p className="font-black text-sm" style={{ color: '#1A2E28' }}>
                 {waModal.row.name}
               </p>
-              <p className="text-xs font-mono mt-0.5" style={{ color: '#6FA5A8', direction: 'ltr' }}>
+              <p className="text-xs font-mono mt-0.5" style={{ color: '#5E6E67', direction: 'ltr' }}>
                 {waModal.row.phone}
               </p>
             </div>
@@ -322,9 +322,9 @@ function DemoRequestsTab() {
               dir="rtl"
               className="w-full rounded-xl p-3 text-sm resize-none outline-none"
               style={{
-                background : 'rgba(255,255,255,0.04)',
+                background : 'rgba(11, 59, 51, 0.04)',
                 border     : '1px solid rgba(37,211,102,0.22)',
-                color      : '#EAE4DF',
+                color      : '#1A2E28',
                 fontFamily : 'inherit',
                 lineHeight : 1.75,
               }}
@@ -334,7 +334,7 @@ function DemoRequestsTab() {
               <button
                 onClick={() => setWaModal(null)}
                 className="flex-1 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#96BCBE' }}
+                style={{ background: 'rgba(11, 59, 51, 0.04)', border: '1px solid rgba(11, 59, 51, 0.08)', color: '#4A5D56' }}
               >
                 إلغاء
               </button>
@@ -358,14 +358,14 @@ function DemoRequestsTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'إجمالي الطلبات',    value: counts.all,       accent: 'var(--cat-4)' },
-          { label: 'بانتظار المراجعة',  value: counts.pending,   accent: '#D9C8A3' },
-          { label: 'تمت الموافقة',      value: counts.approved,  accent: '#48D6CD' },
-          { label: 'مرفوضة',            value: counts.rejected,  accent: '#D9ACA3' },
+          { label: 'بانتظار المراجعة',  value: counts.pending,   accent: '#7A6440' },
+          { label: 'تمت الموافقة',      value: counts.approved,  accent: '#1F6F52' },
+          { label: 'مرفوضة',            value: counts.rejected,  accent: '#8A6425' },
         ].map(s => (
           <div key={s.label} className="rounded-xl px-4 py-3 text-right"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            style={{ background: 'rgba(11, 59, 51, 0.03)', border: '1px solid rgba(11, 59, 51, 0.06)' }}>
             <p className="font-black text-xl mb-0.5" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{s.label}</p>
+            <p className="text-[11px]" style={{ color: '#5E6E67' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -381,9 +381,9 @@ function DemoRequestsTab() {
           <button key={f.id} onClick={() => setFilter(f.id)}
             className="text-xs font-bold px-3 py-1.5 rounded-full transition-all"
             style={{
-              background: filter === f.id ? 'color-mix(in srgb, var(--cat-4) 20%, transparent)' : 'rgba(255,255,255,0.04)',
-              border    : `1px solid ${filter === f.id ? 'color-mix(in srgb, var(--cat-4) 40%, transparent)' : 'rgba(255,255,255,0.08)'}`,
-              color     : filter === f.id ? 'var(--cat-4)' : '#96BCBE',
+              background: filter === f.id ? 'color-mix(in srgb, var(--cat-4) 20%, transparent)' : 'rgba(11, 59, 51, 0.04)',
+              border    : `1px solid ${filter === f.id ? 'color-mix(in srgb, var(--cat-4) 40%, transparent)' : 'rgba(11, 59, 51, 0.08)'}`,
+              color     : filter === f.id ? 'var(--cat-4)' : '#4A5D56',
             }}>
             {f.label} ({counts[f.id]})
           </button>
@@ -397,16 +397,16 @@ function DemoRequestsTab() {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {filtered.map(r => {
             const status = r.status ?? 'pending'
-            const color  = DEMO_STATUS_COLOR[status] ?? '#D9C8A3'
+            const color  = DEMO_STATUS_COLOR[status] ?? '#7A6440'
             return (
               <div key={r.id} className="rounded-2xl p-5 flex flex-col gap-3"
                 style={{ background: 'color-mix(in srgb, var(--cat-4) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--cat-4) 14.000000000000002%, transparent)' }}>
 
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>{r.name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#96BCBE' }}>{r.institute}</p>
-                    <p className="text-xs mt-0.5 font-mono" style={{ color: '#6FA5A8', direction: 'ltr' }}>{r.phone}</p>
+                    <p className="font-black text-sm" style={{ color: '#1A2E28' }}>{r.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#4A5D56' }}>{r.institute}</p>
+                    <p className="text-xs mt-0.5 font-mono" style={{ color: '#5E6E67', direction: 'ltr' }}>{r.phone}</p>
                   </div>
                   <span className="text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                     style={{ background: `color-mix(in srgb, ${color} 9%, transparent)`, color }}>
@@ -415,10 +415,10 @@ function DemoRequestsTab() {
                 </div>
 
                 {r.notes && (
-                  <p className="text-xs leading-relaxed" style={{ color: '#509492' }}>{r.notes}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: '#5E6E67' }}>{r.notes}</p>
                 )}
 
-                <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{formatDate(r.created_at)}</p>
+                <p className="text-[11px]" style={{ color: '#5E6E67' }}>{formatDate(r.created_at)}</p>
 
                 {status === 'pending' && (
                   <div className="flex gap-2">
@@ -433,7 +433,7 @@ function DemoRequestsTab() {
                       onClick={() => reject(r.id)}
                       disabled={updating === r.id}
                       className="flex-1 py-2.5 rounded-xl text-xs font-bold disabled:opacity-50 cursor-pointer"
-                      style={{ background: 'rgba(217,172,163,0.10)', border: '1px solid rgba(217,172,163,0.22)', color: '#D9ACA3' }}>
+                      style={{ background: 'rgba(184, 134, 58, 0.10)', border: '1px solid rgba(184, 134, 58, 0.22)', color: '#8A6425' }}>
                       {updating === r.id ? '...' : '✕ رفض'}
                     </button>
                   </div>
@@ -461,7 +461,7 @@ function DemoRequestsTab() {
 
 /* ─── Tenants Tab ────────────────────────────────────────────── */
 const TENANT_STATUS = { pending: 'معلّق', active: 'نشط', rejected: 'مرفوض' }
-const TENANT_COLOR  = { pending: '#D9C8A3', active: '#48D6CD', rejected: '#D9ACA3' }
+const TENANT_COLOR  = { pending: '#7A6440', active: '#1F6F52', rejected: '#8A6425' }
 
 function TenantsTab() {
   const [rows,     setRows]     = useState([])
@@ -502,14 +502,14 @@ function TenantsTab() {
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'بانتظار المراجعة', value: pending,              accent: '#D9C8A3' },
-          { label: 'مراكز نشطة',       value: active,               accent: '#48D6CD' },
-          { label: 'إجمالي الإيرادات', value: `$${revenue.toFixed(2)}`, accent: '#D9ACA3' },
+          { label: 'بانتظار المراجعة', value: pending,              accent: '#7A6440' },
+          { label: 'مراكز نشطة',       value: active,               accent: '#1F6F52' },
+          { label: 'إجمالي الإيرادات', value: `$${revenue.toFixed(2)}`, accent: '#8A6425' },
         ].map(s => (
           <div key={s.label} className="rounded-xl px-4 py-3 text-right"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            style={{ background: 'rgba(11, 59, 51, 0.03)', border: '1px solid rgba(11, 59, 51, 0.06)' }}>
             <p className="font-black text-xl mb-0.5" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{s.label}</p>
+            <p className="text-[11px]" style={{ color: '#5E6E67' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -518,18 +518,18 @@ function TenantsTab() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {rows.map(r => (
           <div key={r.id} className="rounded-2xl p-6 flex flex-col gap-4"
-            style={{ background: 'rgba(72,214,205,0.04)', border: '1px solid rgba(72,214,205,0.14)' }}>
+            style={{ background: 'rgba(31, 111, 82, 0.04)', border: '1px solid rgba(31, 111, 82, 0.14)' }}>
 
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>{r.institute_name}</p>
-                <p className="text-xs mt-0.5" style={{ color: '#96BCBE' }}>{r.supervisor_name}</p>
+                <p className="font-black text-sm" style={{ color: '#1A2E28' }}>{r.institute_name}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#4A5D56' }}>{r.supervisor_name}</p>
                 {r.email && (
-                  <p className="text-xs" style={{ color: '#6FA5A8', direction: 'ltr' }}>{r.email}</p>
+                  <p className="text-xs" style={{ color: '#5E6E67', direction: 'ltr' }}>{r.email}</p>
                 )}
               </div>
               <span className="text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-                style={{ background: (TENANT_COLOR[r.status] ?? '#D9C8A3') + '18', color: TENANT_COLOR[r.status] ?? '#D9C8A3' }}>
+                style={{ background: (TENANT_COLOR[r.status] ?? '#7A6440') + '18', color: TENANT_COLOR[r.status] ?? '#7A6440' }}>
                 {TENANT_STATUS[r.status] ?? r.status}
               </span>
             </div>
@@ -537,19 +537,19 @@ function TenantsTab() {
             <div className="flex flex-wrap gap-2">
               {r.phone && (
                 <span className="text-xs font-mono px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(255,255,255,0.04)', color: '#96BCBE', direction: 'ltr' }}>
+                  style={{ background: 'rgba(11, 59, 51, 0.04)', color: '#4A5D56', direction: 'ltr' }}>
                   {r.phone}
                 </span>
               )}
               {r.subscription_tier && (
                 <span className="text-xs px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(72,214,205,0.08)', color: '#48D6CD' }}>
+                  style={{ background: 'rgba(31, 111, 82, 0.08)', color: '#1F6F52' }}>
                   {r.subscription_tier}
                 </span>
               )}
               {r.billing_cycle && (
                 <span className="text-xs px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--cat-4)' }}>
+                  style={{ background: 'rgba(11, 59, 51, 0.04)', color: 'var(--cat-4)' }}>
                   {r.billing_cycle}
                 </span>
               )}
@@ -562,10 +562,10 @@ function TenantsTab() {
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-xs font-black" style={{ color: '#D9C8A3' }}>
+              <p className="text-xs font-black" style={{ color: '#7A6440' }}>
                 ${(r.total_amount ?? 0).toFixed(2)}
               </p>
-              <p className="text-[11px]" style={{ color: '#6FA5A8' }}>
+              <p className="text-[11px]" style={{ color: '#5E6E67' }}>
                 {formatDate(r.created_at)}
               </p>
             </div>
@@ -574,12 +574,12 @@ function TenantsTab() {
               <div className="flex gap-2">
                 <button onClick={() => updateStatus(r.id, 'active')} disabled={updating === r.id}
                   className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                  style={{ background: 'rgba(72,214,205,0.15)', border: '1px solid rgba(72,214,205,0.30)', color: '#48D6CD', cursor: 'pointer' }}>
+                  style={{ background: 'rgba(31, 111, 82, 0.15)', border: '1px solid rgba(31, 111, 82, 0.30)', color: '#1F6F52', cursor: 'pointer' }}>
                   {updating === r.id ? '...' : '✓ تفعيل'}
                 </button>
                 <button onClick={() => updateStatus(r.id, 'rejected')} disabled={updating === r.id}
                   className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                  style={{ background: 'rgba(217,172,163,0.10)', border: '1px solid rgba(217,172,163,0.22)', color: '#D9ACA3', cursor: 'pointer' }}>
+                  style={{ background: 'rgba(184, 134, 58, 0.10)', border: '1px solid rgba(184, 134, 58, 0.22)', color: '#8A6425', cursor: 'pointer' }}>
                   {updating === r.id ? '...' : '✕ رفض'}
                 </button>
               </div>
@@ -593,14 +593,14 @@ function TenantsTab() {
 
 /* ─── Affiliates Tab ──────────────────────────────────────────── */
 const AFF_STATUS = { pending: 'معلّق', approved: 'مقبول', rejected: 'مرفوض' }
-const AFF_COLOR  = { pending: '#D9C8A3', approved: '#48D6CD', rejected: '#D9ACA3' }
+const AFF_COLOR  = { pending: '#7A6440', approved: '#1F6F52', rejected: '#8A6425' }
 
 function AffMiniStat({ label, value, accent }) {
   return (
     <div className="rounded-xl px-4 py-3 text-right"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+      style={{ background: 'rgba(11, 59, 51, 0.03)', border: '1px solid rgba(11, 59, 51, 0.06)' }}>
       <p className="font-black text-xl mb-0.5" style={{ color: accent }}>{value}</p>
-      <p className="text-[11px]" style={{ color: '#6FA5A8' }}>{label}</p>
+      <p className="text-[11px]" style={{ color: '#5E6E67' }}>{label}</p>
     </div>
   )
 }
@@ -663,9 +663,9 @@ function AffiliatesTab() {
       {/* ── Summary strip ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <AffMiniStat label="إجمالي الشركاء"    value={rows.length}             accent="var(--cat-1)" />
-        <AffMiniStat label="شركاء مقبولون"     value={approvedCount}           accent="#48D6CD" />
-        <AffMiniStat label="تحويلات نشطة"      value={activeTenants.length}    accent="#16B3AE" />
-        <AffMiniStat label="عمولات محتسبة"     value={`$${totalCommission.toFixed(2)}`} accent="#D9C8A3" />
+        <AffMiniStat label="شركاء مقبولون"     value={approvedCount}           accent="#1F6F52" />
+        <AffMiniStat label="تحويلات نشطة"      value={activeTenants.length}    accent="#2E7A5A" />
+        <AffMiniStat label="عمولات محتسبة"     value={`$${totalCommission.toFixed(2)}`} accent="#7A6440" />
       </div>
 
       {/* ── Affiliate cards ── */}
@@ -685,13 +685,13 @@ function AffiliatesTab() {
               {/* Header */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-black text-sm" style={{ color: '#EAE4DF' }}>{r.full_name}</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#96BCBE', direction: 'ltr' }}>{r.email}</p>
-                  {r.phone && <p className="text-xs" style={{ color: '#6FA5A8', direction: 'ltr' }}>{r.phone}</p>}
+                  <p className="font-black text-sm" style={{ color: '#1A2E28' }}>{r.full_name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#4A5D56', direction: 'ltr' }}>{r.email}</p>
+                  {r.phone && <p className="text-xs" style={{ color: '#5E6E67', direction: 'ltr' }}>{r.phone}</p>}
                 </div>
                 <span
                   className="text-[11px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-                  style={{ background: (AFF_COLOR[r.status] ?? '#D9C8A3') + '18', color: AFF_COLOR[r.status] ?? '#D9C8A3' }}
+                  style={{ background: (AFF_COLOR[r.status] ?? '#7A6440') + '18', color: AFF_COLOR[r.status] ?? '#7A6440' }}
                 >
                   {AFF_STATUS[r.status] ?? r.status}
                 </span>
@@ -699,11 +699,11 @@ function AffiliatesTab() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
-                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--cat-1)' }}>
+                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(11, 59, 51, 0.04)', color: 'var(--cat-1)' }}>
                   {r.relation || '—'}
                 </span>
                 {r.referral_code && (
-                  <span className="text-xs font-mono px-2.5 py-1 rounded-full" style={{ background: 'rgba(72,214,205,0.08)', color: '#48D6CD' }}>
+                  <span className="text-xs font-mono px-2.5 py-1 rounded-full" style={{ background: 'rgba(31, 111, 82, 0.08)', color: '#1F6F52' }}>
                     {r.referral_code}
                   </span>
                 )}
@@ -713,13 +713,13 @@ function AffiliatesTab() {
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { label: 'إحالات',  value: tenants.length, color: 'var(--cat-1)' },
-                  { label: 'نشطة',    value: active.length,  color: '#16B3AE' },
-                  { label: 'عمولة',   value: `$${earned.toFixed(0)}`, color: '#D9C8A3' },
+                  { label: 'نشطة',    value: active.length,  color: '#2E7A5A' },
+                  { label: 'عمولة',   value: `$${earned.toFixed(0)}`, color: '#7A6440' },
                 ].map(s => (
                   <div key={s.label} className="rounded-xl px-3 py-2.5 text-center"
-                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    style={{ background: 'rgba(11, 59, 51, 0.03)', border: '1px solid rgba(11, 59, 51, 0.05)' }}>
                     <p className="font-black text-base leading-none mb-1" style={{ color: s.color }}>{s.value}</p>
-                    <p className="text-[10px]" style={{ color: '#374D56' }}>{s.label}</p>
+                    <p className="text-[10px]" style={{ color: '#A9C8BD' }}>{s.label}</p>
                   </div>
                 ))}
               </div>
@@ -730,9 +730,9 @@ function AffiliatesTab() {
                   onClick={() => setExpanded(isOpen ? null : r.id)}
                   className="text-xs font-bold py-2 rounded-xl w-full transition-colors"
                   style={{
-                    background: isOpen ? 'rgba(72,214,205,0.08)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${isOpen ? 'rgba(72,214,205,0.20)' : 'rgba(255,255,255,0.07)'}`,
-                    color: isOpen ? '#48D6CD' : '#96BCBE',
+                    background: isOpen ? 'rgba(31, 111, 82, 0.08)' : 'rgba(11, 59, 51, 0.03)',
+                    border: `1px solid ${isOpen ? 'rgba(31, 111, 82, 0.20)' : 'rgba(11, 59, 51, 0.07)'}`,
+                    color: isOpen ? '#1F6F52' : '#4A5D56',
                     cursor: 'pointer',
                   }}
                 >
@@ -743,26 +743,26 @@ function AffiliatesTab() {
               {/* Referrals list */}
               {isOpen && (
                 <div className="rounded-xl overflow-hidden"
-                  style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+                  style={{ border: '1px solid rgba(11, 59, 51, 0.07)' }}>
                   {tenants.map((t, i) => (
                     <div key={i}
                       className="px-4 py-3 flex items-center justify-between gap-3"
-                      style={{ borderBottom: i < tenants.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
+                      style={{ borderBottom: i < tenants.length - 1 ? '1px solid rgba(11, 59, 51, 0.05)' : 'none' }}
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold truncate" style={{ color: '#C4D8D4' }}>
+                        <p className="text-xs font-semibold truncate" style={{ color: '#33463F' }}>
                           {t.institute_name}
                         </p>
-                        <p className="text-[10px] mt-0.5" style={{ color: '#374D56' }}>
+                        <p className="text-[10px] mt-0.5" style={{ color: '#A9C8BD' }}>
                           {t.subscription_tier} · ${(t.total_amount ?? 0).toFixed(2)} · {formatDate(t.created_at).split('،')[0]}
                         </p>
                       </div>
                       <span
                         className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
                         style={{
-                          background: t.status === 'active' ? 'rgba(22,179,174,0.12)' : 'rgba(251,191,36,0.10)',
-                          border    : `1px solid ${t.status === 'active' ? 'rgba(22,179,174,0.28)' : 'rgba(251,191,36,0.25)'}`,
-                          color     : t.status === 'active' ? '#6EE7E3' : '#FCD34D',
+                          background: t.status === 'active' ? 'rgba(46, 122, 90, 0.12)' : 'rgba(251,191,36,0.10)',
+                          border    : `1px solid ${t.status === 'active' ? 'rgba(46, 122, 90, 0.28)' : 'rgba(251,191,36,0.25)'}`,
+                          color     : t.status === 'active' ? '#0B3B33' : '#A16207',
                         }}
                       >
                         {t.status === 'active' ? 'نشط' : 'معلق'}
@@ -773,7 +773,7 @@ function AffiliatesTab() {
               )}
 
               {r.note && (
-                <p className="text-xs leading-relaxed" style={{ color: '#96BCBE' }}>{r.note}</p>
+                <p className="text-xs leading-relaxed" style={{ color: '#4A5D56' }}>{r.note}</p>
               )}
 
               {/* Approve / Reject */}
@@ -783,7 +783,7 @@ function AffiliatesTab() {
                     onClick={() => updateStatus(r.id, 'approved')}
                     disabled={updating === r.id}
                     className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                    style={{ background: 'rgba(72,214,205,0.15)', border: '1px solid rgba(72,214,205,0.30)', color: '#48D6CD', cursor: 'pointer' }}
+                    style={{ background: 'rgba(31, 111, 82, 0.15)', border: '1px solid rgba(31, 111, 82, 0.30)', color: '#1F6F52', cursor: 'pointer' }}
                   >
                     {updating === r.id ? '...' : '✓ قبول'}
                   </button>
@@ -791,14 +791,14 @@ function AffiliatesTab() {
                     onClick={() => updateStatus(r.id, 'rejected')}
                     disabled={updating === r.id}
                     className="flex-1 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
-                    style={{ background: 'rgba(217,172,163,0.10)', border: '1px solid rgba(217,172,163,0.22)', color: '#D9ACA3', cursor: 'pointer' }}
+                    style={{ background: 'rgba(184, 134, 58, 0.10)', border: '1px solid rgba(184, 134, 58, 0.22)', color: '#8A6425', cursor: 'pointer' }}
                   >
                     {updating === r.id ? '...' : '✕ رفض'}
                   </button>
                 </div>
               )}
 
-              <p className="text-[11px] mt-auto" style={{ color: '#6FA5A8' }}>{formatDate(r.created_at)}</p>
+              <p className="text-[11px] mt-auto" style={{ color: '#5E6E67' }}>{formatDate(r.created_at)}</p>
             </div>
           )
         })}
@@ -824,18 +824,18 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
             key={t.id ?? i}
             className="flex flex-col gap-4 rounded-2xl p-6"
             style={{
-              background          : isPending ? 'rgba(217,172,163,0.06)' : 'rgba(17,49,44,0.14)',
-              border              : isPending ? '1px solid rgba(217,172,163,0.16)' : '1px solid rgba(26,148,155,0.20)',
+              background          : isPending ? 'rgba(184, 134, 58, 0.06)' : 'rgba(241, 236, 223, 0.14)',
+              border              : isPending ? '1px solid rgba(184, 134, 58, 0.16)' : '1px solid rgba(11, 59, 51, 0.20)',
               backdropFilter      : 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
             }}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-col gap-0.5">
-                <span className="font-black text-sm" style={{ color: '#EAE4DF' }}>
+                <span className="font-black text-sm" style={{ color: '#1A2E28' }}>
                   {t.client_name || '—'}
                 </span>
-                <span className="text-xs" style={{ color: '#96BCBE' }}>
+                <span className="text-xs" style={{ color: '#4A5D56' }}>
                   {t.client_role || '—'}
                 </span>
               </div>
@@ -846,13 +846,13 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
                   disabled={isApproving}
                   className="flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full cursor-pointer transition-all duration-250 disabled:opacity-60"
                   style={{
-                    background: isApproving ? 'rgba(217,172,163,0.10)' : 'rgba(217,172,163,0.15)',
-                    border    : '1px solid rgba(217,172,163,0.30)',
-                    color     : '#D9ACA3',
+                    background: isApproving ? 'rgba(184, 134, 58, 0.10)' : 'rgba(184, 134, 58, 0.15)',
+                    border    : '1px solid rgba(184, 134, 58, 0.30)',
+                    color     : '#8A6425',
                     whiteSpace: 'nowrap',
                   }}
-                  onMouseEnter={e => { if (!isApproving) e.currentTarget.style.background = 'rgba(217,172,163,0.28)' }}
-                  onMouseLeave={e => { if (!isApproving) e.currentTarget.style.background = 'rgba(217,172,163,0.15)' }}
+                  onMouseEnter={e => { if (!isApproving) e.currentTarget.style.background = 'rgba(184, 134, 58, 0.28)' }}
+                  onMouseLeave={e => { if (!isApproving) e.currentTarget.style.background = 'rgba(184, 134, 58, 0.15)' }}
                 >
                   {isApproving ? '...' : '✓ موافقة ونشر'}
                 </button>
@@ -860,9 +860,9 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
                 <span
                   className="flex-shrink-0 text-[10px] font-bold px-3 py-1.5 rounded-full"
                   style={{
-                    background: 'rgba(26,148,155,0.18)',
-                    border    : '1px solid rgba(26,148,155,0.28)',
-                    color     : '#48D6CD',
+                    background: 'rgba(11, 59, 51, 0.18)',
+                    border    : '1px solid rgba(11, 59, 51, 0.28)',
+                    color     : '#1F6F52',
                   }}
                 >
                   ✓ تم النشر
@@ -872,16 +872,16 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
 
             <span
               className="self-end text-[10px] font-semibold px-3 py-1 rounded-full w-fit"
-              style={{ background: 'rgba(166,117,106,0.12)', color: '#A6756A' }}
+              style={{ background: 'rgba(122, 90, 46, 0.12)', color: '#7A5A2E' }}
             >
               {t.service_type || '—'}
             </span>
 
-            <p className="text-sm leading-[1.9]" style={{ color: '#B0CBC6' }}>
+            <p className="text-sm leading-[1.9]" style={{ color: '#344F45' }}>
               {t.content || '—'}
             </p>
 
-            <p className="text-[11px] mt-auto" style={{ color: '#6FA5A8' }}>
+            <p className="text-[11px] mt-auto" style={{ color: '#5E6E67' }}>
               {formatDate(t.created_at)}
             </p>
           </div>
@@ -893,12 +893,12 @@ function TestimonialsTab({ data, loading, error, onApprove, approving }) {
 
 /* ─── Interfaces Tab ─────────────────────────────────────────── */
 const pInputBase = {
-  background          : 'rgba(255,255,255,0.04)',
+  background          : 'rgba(11, 59, 51, 0.04)',
   borderWidth         : '1px',
   borderStyle         : 'solid',
-  borderColor         : 'rgba(217,172,163,0.18)',
+  borderColor         : 'rgba(184, 134, 58, 0.18)',
   borderRadius        : '0.875rem',
-  color               : '#EAE4DF',
+  color               : '#1A2E28',
   fontSize            : '0.875rem',
   padding             : '0.875rem 1.125rem',
   width               : '100%',
@@ -908,8 +908,8 @@ const pInputBase = {
   fontFamily          : 'inherit',
 }
 const pInputFocus = {
-  borderColor: 'rgba(217,172,163,0.55)',
-  boxShadow  : '0 0 0 3px rgba(217,172,163,0.08)',
+  borderColor: 'rgba(184, 134, 58, 0.55)',
+  boxShadow  : '0 0 0 3px rgba(184, 134, 58, 0.08)',
 }
 
 /* ── File input helper (used by InterfacesTab) ── */
@@ -919,14 +919,14 @@ function FileInput({ label, icon, name, onFile, fileName }) {
       <label
         className="flex items-center gap-3 cursor-pointer rounded-xl px-4 py-3 transition-all duration-300"
         style={{
-          background  : 'rgba(255,255,255,0.03)',
-          border      : `1px solid ${fileName ? 'rgba(72,214,205,0.40)' : 'rgba(217,172,163,0.18)'}`,
+          background  : 'rgba(11, 59, 51, 0.03)',
+          border      : `1px solid ${fileName ? 'rgba(31, 111, 82, 0.40)' : 'rgba(184, 134, 58, 0.18)'}`,
           borderRadius: '0.875rem',
         }}
       >
-        <span style={{ color: fileName ? '#48D6CD' : '#D9ACA3', fontSize: '1.05rem' }}>{icon}</span>
+        <span style={{ color: fileName ? '#1F6F52' : '#8A6425', fontSize: '1.05rem' }}>{icon}</span>
         <span className="text-sm flex-1 text-right truncate"
-          style={{ color: fileName ? '#48D6CD' : 'rgba(127, 163, 166,0.65)' }}>
+          style={{ color: fileName ? '#1F6F52' : 'rgba(89, 128, 114, 0.65)' }}>
           {fileName || `اختر صورة ${name} (JPG, PNG, WEBP)`}
         </span>
         <input type="file" accept="image/*" className="hidden"
@@ -939,7 +939,7 @@ function FileInput({ label, icon, name, onFile, fileName }) {
 function PField({ label, children }) {
   return (
     <div className="flex flex-col gap-2 text-right">
-      <label className="text-xs font-semibold" style={{ color: '#A6756A', letterSpacing: '0.07em' }}>
+      <label className="text-xs font-semibold" style={{ color: '#7A5A2E', letterSpacing: '0.07em' }}>
         {label}
       </label>
       {children}
@@ -1126,14 +1126,14 @@ function InterfacesTab() {
       {/* ── Add / Edit form ── */}
       <div className="rounded-2xl p-7"
         style={{
-          background          : editingId ? 'rgba(72,214,205,0.05)' : 'rgba(217,172,163,0.05)',
-          border              : editingId ? '1px solid rgba(72,214,205,0.22)' : '1px solid rgba(217,172,163,0.14)',
+          background          : editingId ? 'rgba(31, 111, 82, 0.05)' : 'rgba(184, 134, 58, 0.05)',
+          border              : editingId ? '1px solid rgba(31, 111, 82, 0.22)' : '1px solid rgba(184, 134, 58, 0.14)',
           backdropFilter      : 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
         }}
       >
         <div className="flex items-center justify-between mb-6">
-          <h4 className="font-black text-base text-right" style={{ color: '#EAE4DF' }}>
+          <h4 className="font-black text-base text-right" style={{ color: '#1A2E28' }}>
             {editingId ? 'تعديل الواجهة' : 'إضافة واجهة جديدة'}
           </h4>
           {editingId && (
@@ -1141,9 +1141,9 @@ function InterfacesTab() {
               type="button"
               onClick={resetForm}
               className="text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer transition-all duration-250"
-              style={{ background: 'rgba(72,214,205,0.10)', border: '1px solid rgba(72,214,205,0.25)', color: '#48D6CD' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(72,214,205,0.20)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(72,214,205,0.10)'}
+              style={{ background: 'rgba(31, 111, 82, 0.10)', border: '1px solid rgba(31, 111, 82, 0.25)', color: '#1F6F52' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(31, 111, 82, 0.20)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(31, 111, 82, 0.10)'}
             >
               ✕ إلغاء التعديل
             </button>
@@ -1194,13 +1194,13 @@ function InterfacesTab() {
           {/* Feedback */}
           {formError && (
             <p className="text-xs text-right rounded-xl px-4 py-3"
-              style={{ color: '#D9ACA3', background: 'rgba(217,172,163,0.08)', border: '1px solid rgba(217,172,163,0.18)' }}>
+              style={{ color: '#8A6425', background: 'rgba(184, 134, 58, 0.08)', border: '1px solid rgba(184, 134, 58, 0.18)' }}>
               {formError}
             </p>
           )}
           {formOk && (
             <p className="text-xs text-right rounded-xl px-4 py-3"
-              style={{ color: '#48D6CD', background: 'rgba(26,148,155,0.08)', border: '1px solid rgba(26,148,155,0.20)' }}>
+              style={{ color: '#1F6F52', background: 'rgba(11, 59, 51, 0.08)', border: '1px solid rgba(11, 59, 51, 0.20)' }}>
               {editingId ? '✓ تم تحديث الواجهة بنجاح.' : '✓ تم رفع الواجهة بنجاح.'}
             </p>
           )}
@@ -1210,13 +1210,13 @@ function InterfacesTab() {
             className="font-bold rounded-xl py-3 cursor-pointer transition-all duration-300 disabled:opacity-60"
             style={{
               background: saving
-                ? 'rgba(217,172,163,0.12)'
+                ? 'rgba(184, 134, 58, 0.12)'
                 : editingId
-                  ? 'linear-gradient(135deg, rgba(72,214,205,0.85) 0%, rgba(26,148,155,0.90) 100%)'
-                  : 'linear-gradient(135deg, rgba(217,172,163,0.85) 0%, rgba(166,117,106,0.90) 100%)',
-              color      : saving ? '#D9ACA3' : '#09201E',
+                  ? 'linear-gradient(135deg, rgba(31, 111, 82, 0.85) 0%, rgba(11, 59, 51, 0.90) 100%)'
+                  : 'linear-gradient(135deg, rgba(184, 134, 58, 0.85) 0%, rgba(122, 90, 46, 0.90) 100%)',
+              color      : saving ? '#8A6425' : '#FFFFFF',
               borderWidth: '1px', borderStyle: 'solid',
-              borderColor: saving ? 'rgba(217,172,163,0.25)' : 'transparent',
+              borderColor: saving ? 'rgba(184, 134, 58, 0.25)' : 'transparent',
               fontSize   : '0.9rem',
             }}
           >
@@ -1229,21 +1229,21 @@ function InterfacesTab() {
 
       {/* ── List ── */}
       <div>
-        <h4 className="font-black text-base mb-5 text-right" style={{ color: '#D9ACA3' }}>
+        <h4 className="font-black text-base mb-5 text-right" style={{ color: '#8A6425' }}>
           الواجهات المضافة
           {interfaces.length > 0 && (
             <span className="mr-2 text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(217,172,163,0.12)', color: '#A6756A' }}>
+              style={{ background: 'rgba(184, 134, 58, 0.12)', color: '#7A5A2E' }}>
               {interfaces.length}
             </span>
           )}
         </h4>
-        <div className="h-px mb-5" style={{ background: 'rgba(217,172,163,0.10)' }} />
+        <div className="h-px mb-5" style={{ background: 'rgba(184, 134, 58, 0.10)' }} />
 
         {loadingList ? (
           <div className="flex justify-center py-10">
             <div className="w-8 h-8 rounded-full border-2 animate-spin"
-              style={{ borderColor: 'rgba(217,172,163,0.20)', borderTopColor: '#D9ACA3' }} />
+              style={{ borderColor: 'rgba(184, 134, 58, 0.20)', borderTopColor: '#8A6425' }} />
           </div>
         ) : listError ? (
           <ErrorBanner msg={listError} />
@@ -1254,13 +1254,13 @@ function InterfacesTab() {
             {interfaces.map(iface => (
               <div key={iface.id}
                 className="flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-250"
-                style={{ background: 'rgba(17,49,44,0.12)', border: '1px solid rgba(26,148,155,0.14)' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(17,49,44,0.20)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(17,49,44,0.12)'}
+                style={{ background: 'rgba(241, 236, 223, 0.12)', border: '1px solid rgba(11, 59, 51, 0.14)' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(241, 236, 223, 0.20)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(241, 236, 223, 0.12)'}
               >
                 {/* Desktop thumbnail */}
                 <div className="w-20 h-12 rounded-lg flex-shrink-0 overflow-hidden"
-                  style={{ background: 'rgba(217,172,163,0.08)' }}>
+                  style={{ background: 'rgba(184, 134, 58, 0.08)' }}>
                   {iface.desktop_image
                     ? <img src={iface.desktop_image} alt={iface.title} width={64} height={48} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center text-lg">🖥</div>
@@ -1270,17 +1270,17 @@ function InterfacesTab() {
                 {/* Mobile thumbnail */}
                 {iface.mobile_image && (
                   <div className="w-7 h-12 rounded-lg flex-shrink-0 overflow-hidden"
-                    style={{ background: 'rgba(72,214,205,0.08)', border: '1px solid rgba(72,214,205,0.15)' }}>
+                    style={{ background: 'rgba(31, 111, 82, 0.08)', border: '1px solid rgba(31, 111, 82, 0.15)' }}>
                     <img src={iface.mobile_image} alt="واجهة الجوال" width={28} height={48} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </div>
                 )}
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 text-right">
-                  <p className="font-bold text-sm truncate" style={{ color: '#EAE4DF' }}>{iface.title}</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#6FA5A8' }}>
+                  <p className="font-bold text-sm truncate" style={{ color: '#1A2E28' }}>{iface.title}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#5E6E67' }}>
                     ترتيب: {iface.order_index}
-                    {iface.mobile_image && <span className="mr-2" style={{ color: '#48D6CD' }}>· 📱 يوجد صورة هاتف</span>}
+                    {iface.mobile_image && <span className="mr-2" style={{ color: '#1F6F52' }}>· 📱 يوجد صورة هاتف</span>}
                   </p>
                 </div>
 
@@ -1289,9 +1289,9 @@ function InterfacesTab() {
                   onClick={() => startEdit(iface)}
                   disabled={!!deletingId}
                   className="flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer transition-all duration-250 disabled:opacity-40"
-                  style={{ background: 'rgba(72,214,205,0.08)', border: '1px solid rgba(72,214,205,0.22)', color: '#48D6CD' }}
-                  onMouseEnter={e => { if (!deletingId) e.currentTarget.style.background = 'rgba(72,214,205,0.18)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(72,214,205,0.08)' }}
+                  style={{ background: 'rgba(31, 111, 82, 0.08)', border: '1px solid rgba(31, 111, 82, 0.22)', color: '#1F6F52' }}
+                  onMouseEnter={e => { if (!deletingId) e.currentTarget.style.background = 'rgba(31, 111, 82, 0.18)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(31, 111, 82, 0.08)' }}
                 >
                   <Pencil size={12} strokeWidth={2} />
                   تعديل
@@ -1300,9 +1300,9 @@ function InterfacesTab() {
                 {/* Delete */}
                 <button onClick={() => handleDelete(iface)} disabled={deletingId === iface.id}
                   className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer transition-all duration-250 disabled:opacity-50"
-                  style={{ background: 'rgba(217,172,163,0.08)', border: '1px solid rgba(217,172,163,0.18)', color: '#A6756A' }}
-                  onMouseEnter={e => { if (deletingId !== iface.id) e.currentTarget.style.background = 'rgba(217,172,163,0.18)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(217,172,163,0.08)' }}
+                  style={{ background: 'rgba(184, 134, 58, 0.08)', border: '1px solid rgba(184, 134, 58, 0.18)', color: '#7A5A2E' }}
+                  onMouseEnter={e => { if (deletingId !== iface.id) e.currentTarget.style.background = 'rgba(184, 134, 58, 0.18)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(184, 134, 58, 0.08)' }}
                 >
                   {deletingId === iface.id ? '...' : 'حذف'}
                 </button>
@@ -1323,8 +1323,8 @@ function Sidebar({ active, onChange, onLogout }) {
       style={{
         width               : '260px',
         flexShrink          : 0,
-        background          : 'rgba(2,15,14,0.75)',
-        borderLeft          : '1px solid rgba(217,172,163,0.10)',
+        background          : 'rgba(248, 245, 236, 0.75)',
+        borderLeft          : '1px solid rgba(184, 134, 58, 0.10)',
         backdropFilter      : 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
       }}
@@ -1333,11 +1333,11 @@ function Sidebar({ active, onChange, onLogout }) {
       <div className="mb-8 px-2 pt-2">
         <p
           className="text-[10px] font-semibold tracking-[0.22em] uppercase mb-1"
-          style={{ color: '#A6756A' }}
+          style={{ color: '#7A5A2E' }}
         >
           غرفة القيادة
         </p>
-        <h1 className="text-lg font-black leading-tight" style={{ color: '#EAE4DF' }}>
+        <h1 className="text-lg font-black leading-tight" style={{ color: '#1A2E28' }}>
           لوحة التحكم
         </h1>
       </div>
@@ -1351,14 +1351,14 @@ function Sidebar({ active, onChange, onLogout }) {
               onClick={() => onChange(tab.id)}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-right transition-all duration-250 cursor-pointer w-full"
               style={{
-                background: isActive ? 'rgba(217,172,163,0.12)' : 'transparent',
-                color     : isActive ? '#D9ACA3'                : '#96BCBE',
+                background: isActive ? 'rgba(184, 134, 58, 0.12)' : 'transparent',
+                color     : isActive ? '#8A6425'                : '#4A5D56',
                 border    : isActive
-                  ? '1px solid rgba(217,172,163,0.22)'
+                  ? '1px solid rgba(184, 134, 58, 0.22)'
                   : '1px solid transparent',
               }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#EAE4DF' }}
-              onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#96BCBE' }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#1A2E28' }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#4A5D56' }}
             >
               <span style={{ fontSize: '1rem', lineHeight: 1 }}>{tab.icon}</span>
               {tab.label}
@@ -1369,26 +1369,26 @@ function Sidebar({ active, onChange, onLogout }) {
 
       <div
         className="mt-auto px-2 pt-4 flex flex-col gap-3 border-t"
-        style={{ borderColor: 'rgba(217,172,163,0.08)' }}
+        style={{ borderColor: 'rgba(184, 134, 58, 0.08)' }}
       >
-        <p className="text-[11px]" style={{ color: '#6FA5A8' }}>
+        <p className="text-[11px]" style={{ color: '#5E6E67' }}>
           منصة إحكام — v1.0
         </p>
         <button
           onClick={onLogout}
           className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-250 cursor-pointer"
           style={{
-            background: 'rgba(217,172,163,0.06)',
-            border    : '1px solid rgba(217,172,163,0.14)',
-            color     : '#96BCBE',
+            background: 'rgba(184, 134, 58, 0.06)',
+            border    : '1px solid rgba(184, 134, 58, 0.14)',
+            color     : '#4A5D56',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(217,172,163,0.12)'
-            e.currentTarget.style.color      = '#D9ACA3'
+            e.currentTarget.style.background = 'rgba(184, 134, 58, 0.12)'
+            e.currentTarget.style.color      = '#8A6425'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = 'rgba(217,172,163,0.06)'
-            e.currentTarget.style.color      = '#96BCBE'
+            e.currentTarget.style.background = 'rgba(184, 134, 58, 0.06)'
+            e.currentTarget.style.color      = '#4A5D56'
           }}
         >
           <span style={{ fontSize: '0.85rem' }}>⏻</span>
@@ -1473,13 +1473,13 @@ export default function AdminDashboard() {
     <div
       className="flex min-h-screen"
       dir="rtl"
-      style={{ background: '#09201E', fontFamily: 'inherit' }}
+      style={{ background: '#FFFFFF', fontFamily: 'inherit' }}
     >
       {/* Ambient glow */}
       <div
         className="pointer-events-none fixed inset-0"
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 80% 20%, rgba(26,148,155,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 50% at 80% 20%, rgba(255, 255, 255, 0.35) 0%, transparent 70%)',
           zIndex    : 0,
         }}
         aria-hidden
@@ -1499,23 +1499,23 @@ export default function AdminDashboard() {
         <div
           className="rounded-2xl px-8 py-7 mb-8 flex items-center gap-5"
           style={{
-            background          : 'rgba(217,172,163,0.07)',
-            border              : '1px solid rgba(217,172,163,0.14)',
+            background          : 'rgba(184, 134, 58, 0.07)',
+            border              : '1px solid rgba(184, 134, 58, 0.14)',
             backdropFilter      : 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
           }}
         >
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-xl"
-            style={{ background: 'rgba(217,172,163,0.13)', border: '1px solid rgba(217,172,163,0.25)' }}
+            style={{ background: 'rgba(184, 134, 58, 0.13)', border: '1px solid rgba(184, 134, 58, 0.25)' }}
           >
             ⚙️
           </div>
           <div>
-            <h2 className="font-black text-lg mb-0.5" style={{ color: '#EAE4DF' }}>
+            <h2 className="font-black text-lg mb-0.5" style={{ color: '#1A2E28' }}>
               مرحباً بفريق منصة إحكام، هذه غرفة القيادة.
             </h2>
-            <p className="text-sm" style={{ color: '#96BCBE' }}>
+            <p className="text-sm" style={{ color: '#4A5D56' }}>
               تحكّم بكامل محتوى الموقع من هنا بعيداً عن أعين الزوار.
             </p>
           </div>
@@ -1538,8 +1538,8 @@ export default function AdminDashboard() {
 
         {/* Tab heading */}
         <div className="mb-6">
-          <h3 className="text-xl font-black" style={{ color: '#D9ACA3' }}>{activeLabel}</h3>
-          <div className="mt-2 h-px w-16" style={{ background: 'rgba(217,172,163,0.25)' }} />
+          <h3 className="text-xl font-black" style={{ color: '#8A6425' }}>{activeLabel}</h3>
+          <div className="mt-2 h-px w-16" style={{ background: 'rgba(184, 134, 58, 0.25)' }} />
         </div>
 
         {/* Tab body */}

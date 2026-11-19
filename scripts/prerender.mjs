@@ -109,6 +109,46 @@ async function fetchStats() {
   }
 }
 const stats = await fetchStats()
+/* المعاهد المفعّلة (migration 20261119): تُجلب إن طُبّقت الدالة، وإلا تبقى
+   لقطة src/config/activeInstitutes.js */
+async function fetchActiveIds() {
+  const url = process.env.VITE_SUPABASE_URL, key = process.env.VITE_SUPABASE_ANON_KEY
+  if (!url || !key) return null
+  try {
+    const base = url.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '')
+    const res = await fetch(`${base}/rest/v1/rpc/get_active_institute_ids`, {
+      method: 'POST',
+      headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: '{}',
+    })
+    if (!res.ok) return null
+    const rows = await res.json()
+    return Array.isArray(rows) ? rows.map(r => r.institute_id) : null
+  } catch { return null }
+}
+const activeIds = await fetchActiveIds()
+/* أرقام القرآن (migration 20261119b): ختمات، صفحات يومية، نمو شهري — للمعاهد المفعّلة */
+async function fetchQuranStats() {
+  const url = process.env.VITE_SUPABASE_URL, key = process.env.VITE_SUPABASE_ANON_KEY
+  if (!url || !key) return null
+  try {
+    const base = url.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '')
+    const res = await fetch(`${base}/rest/v1/rpc/get_public_quran_stats`, {
+      method: 'POST',
+      headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'Content-Profile': 'public' },
+      body: '{}',
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return await res.json()
+  } catch (err) {
+    log('تعذّر جلب أرقام القرآن:', err.message)
+    return null
+  }
+}
+const quranStats = await fetchQuranStats()
+if (stats && quranStats) stats.quran = quranStats
+if (stats && activeIds?.length) stats.active_ids = activeIds
+if (activeIds?.length) globalThis.__ACTIVE_IDS__ = activeIds
 /* تاريخ البناء يُخبز مع الأرقام: «آخر تحديث» في الواجهة يقرؤه (ISS-41). */
 if (stats) stats.updated_at = new Date().toISOString().slice(0, 10)
 if (stats) globalThis.__LANDING_STATS_RAW__ = stats
@@ -196,7 +236,7 @@ function buildPage(htmlBody, meta) {
     /* الهيرو (الرئيسية وحدها): قائمة لقطاته كتلةَ بيانات، و preload لأول صورة
        بحسب الشاشة. يسجّلها HeroSection أثناء التصيير، فلا تظهر إلا حيث يُرسم. */
     m.heroShots   && `<script type="application/json" id="hero-shots">${JSON.stringify(m.heroShots).replace(/</g, '\\u003c')}</script>`,
-    ...(m.preloadImages || []).map((img) => `<link rel="preload" as="image" href="${esc(img.href)}" media="${esc(img.media)}" fetchpriority="high" />`),
+    ...(m.preloadImages || []).map((img) => `<link rel="preload" as="image" href="${esc(img.href)}"${img.media ? ` media="${esc(img.media)}"` : ''} fetchpriority="high" />`),
   ].filter(Boolean).join('\n    ')
 
   out = out.replace(/(<meta\s+name="viewport"[^>]*>)/i, `$1\n    ${tags}`)

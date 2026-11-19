@@ -30,10 +30,10 @@ const ARAB_COUNTRIES = [
 
 /* ── Shared input style ── */
 const inputStyle = {
-  background : 'rgba(9,32,30,0.80)',
-  border     : '1px solid rgba(72,214,205,0.18)',
-  color      : '#EAE4DF',
-  caretColor : '#48D6CD',
+  background : 'rgba(255, 255, 255, 0.80)',
+  border     : '1px solid rgba(31, 111, 82, 0.18)',
+  color      : '#1A2E28',
+  caretColor : '#1F6F52',
   borderRadius: 12,
   padding    : '0.75rem 1rem',
   fontSize   : '1rem',
@@ -42,14 +42,14 @@ const inputStyle = {
   fontFamily : 'inherit',
   transition : 'border-color 200ms ease',
 }
-const iFocus = e => (e.target.style.borderColor = 'rgba(72,214,205,0.55)')
-const iBlur  = e => (e.target.style.borderColor = 'rgba(72,214,205,0.18)')
+const iFocus = e => (e.target.style.borderColor = 'rgba(31, 111, 82, 0.55)')
+const iBlur  = e => (e.target.style.borderColor = 'rgba(31, 111, 82, 0.18)')
 
 /* ── Text field ── */
 function Field({ label, htmlFor, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-xs font-semibold" style={{ color: '#8AAFA8' }}>{label}</label>
+      <label htmlFor={htmlFor} className="text-xs font-semibold" style={{ color: '#5E6E67' }}>{label}</label>
       {children}
     </div>
   )
@@ -134,7 +134,7 @@ export default function DemoRequestForm({ onClose }) {
       <motion.div
         dir="rtl"
         className="relative w-full max-w-md rounded-2xl p-8"
-        style={{ background: 'linear-gradient(160deg,#09201E 0%,#020F0E 100%)', border: '1px solid rgba(72,214,205,0.18)', boxShadow: '0 40px 100px rgba(0,0,0,0.70)' }}
+        style={{ background: 'linear-gradient(160deg,#FFFFFF 0%,#F8F5EC 100%)', border: '1px solid rgba(31, 111, 82, 0.18)', boxShadow: '0 40px 100px rgba(11, 59, 51, 0.21)' }}
         initial={{ opacity: 0, scale: 0.92, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -144,9 +144,9 @@ export default function DemoRequestForm({ onClose }) {
         {/* Close */}
         <button onClick={onClose}
           className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200"
-          style={{ background: 'rgba(255,255,255,0.05)', color: '#48D6CD' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+          style={{ background: 'rgba(11, 59, 51, 0.05)', color: '#1F6F52' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.10)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.05)')}
         >
           <X size={14} />
         </button>
@@ -155,12 +155,12 @@ export default function DemoRequestForm({ onClose }) {
           /* ── Success ── */
           <div className="flex flex-col items-center text-center gap-5 py-4">
             <div className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: 'rgba(72,214,205,0.12)', border: '1px solid rgba(72,214,205,0.30)' }}>
-              <CheckCircle2 size={32} style={{ color: '#48D6CD' }} strokeWidth={1.4} />
+              style={{ background: 'rgba(31, 111, 82, 0.12)', border: '1px solid rgba(31, 111, 82, 0.30)' }}>
+              <CheckCircle2 size={32} style={{ color: '#1F6F52' }} strokeWidth={1.4} />
             </div>
             <div>
-              <h2 className="font-black text-lg mb-2" style={{ color: '#EAE4DF' }}>وصل طلبك — بارك الله في معهدك!</h2>
-              <p className="text-sm leading-relaxed" style={{ color: '#48777A' }}>
+              <h2 className="font-black text-lg mb-2" style={{ color: '#1A2E28' }}>وصل طلبك — بارك الله في معهدك!</h2>
+              <p className="text-sm leading-relaxed" style={{ color: '#5E6E67' }}>
                 سنتواصل معك على واتساب لترتيب التجربة. وإن أردت أن تبدأ الآن، أرسل لنا الرسالة الجاهزة.
               </p>
             </div>
@@ -169,15 +169,15 @@ export default function DemoRequestForm({ onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 rounded-xl text-sm font-bold transition-colors"
-              style={{ background: '#48D6CD', color: '#020F0E' }}
+              style={{ background: '#1F6F52', color: '#F8F5EC' }}
             >
               أرسل الطلب على واتساب
             </a>
             <button onClick={onClose}
               className="px-6 py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-colors"
-              style={{ background: 'rgba(72,214,205,0.10)', border: '1px solid rgba(72,214,205,0.25)', color: '#48D6CD' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(72,214,205,0.20)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(72,214,205,0.10)')}>
+              style={{ background: 'rgba(31, 111, 82, 0.10)', border: '1px solid rgba(31, 111, 82, 0.25)', color: '#1F6F52' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.20)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.10)')}>
               إغلاق
             </button>
           </div>
@@ -187,20 +187,20 @@ export default function DemoRequestForm({ onClose }) {
             <div className="mb-7">
               {/* يطابق لفظ الزر الذي يفتح هذه اللوحة — الزائر يجب أن يقرأ
                  داخل النموذج نفس ما ضغط عليه. */}
-              <span className="text-xs font-semibold tracking-[0.20em] uppercase block mb-2" style={{ color: '#48D6CD' }}>
+              <span className="text-xs font-semibold tracking-[0.20em] uppercase block mb-2" style={{ color: '#1F6F52' }}>
                اطلب تجربة مجانية
               </span>
-              <h2 className="font-black text-xl leading-snug" style={{ color: '#EAE4DF' }}>
+              <h2 className="font-black text-xl leading-snug" style={{ color: '#1A2E28' }}>
                 ابدأ تجربتك في إحكام
               </h2>
-              <p className="text-xs mt-2 leading-relaxed" style={{ color: '#48777A' }}>
+              <p className="text-xs mt-2 leading-relaxed" style={{ color: '#5E6E67' }}>
                 التجربة مجانية. أرسل بياناتك ونتواصل معك على واتساب، أو{' '}
                 <a
                   href={trialWhatsAppUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-bold underline"
-                  style={{ color: '#48D6CD' }}
+                  style={{ color: '#1F6F52' }}
                 >
                   راسلنا مباشرة على واتساب
                 </a>
@@ -247,9 +247,9 @@ export default function DemoRequestForm({ onClose }) {
                             ...inputStyle,
                             width      : '5rem',
                             textAlign  : 'center',
-                            background : 'rgba(229,211,179,0.07)',
-                            border     : '1px solid rgba(229,211,179,0.20)',
-                            color      : '#E5D3B3',
+                            background : 'rgba(184, 134, 58, 0.07)',
+                            border     : '1px solid rgba(184, 134, 58, 0.20)',
+                            color      : '#7A6440',
                             fontWeight : 700,
                             padding    : '0.75rem 0.5rem',
                           }}
@@ -259,9 +259,9 @@ export default function DemoRequestForm({ onClose }) {
                           type="button"
                           onClick={() => { setCountryCode('+963'); setCustomCode('') }}
                           className="absolute -bottom-[1.1rem] start-0 text-[10px] cursor-pointer whitespace-nowrap transition-colors"
-                          style={{ color: '#6FA5A8' }}
-                          onMouseEnter={e => (e.currentTarget.style.color = '#48D6CD')}
-                          onMouseLeave={e => (e.currentTarget.style.color = '#6FA5A8')}
+                          style={{ color: '#5E6E67' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#1F6F52')}
+                          onMouseLeave={e => (e.currentTarget.style.color = '#5E6E67')}
                         >
                           ← تغيير
                         </button>
@@ -282,9 +282,9 @@ export default function DemoRequestForm({ onClose }) {
                             whiteSpace        : 'nowrap',
                             paddingInlineEnd  : '1.6rem',
                             paddingInlineStart: '0.6rem',
-                            background        : 'rgba(17,49,44,0.18)',
-                            border            : '1px solid rgba(26,148,155,0.22)',
-                            color             : '#48D6CD',
+                            background        : 'rgba(241, 236, 223, 0.18)',
+                            border            : '1px solid rgba(11, 59, 51, 0.22)',
+                            color             : '#1F6F52',
                             fontWeight        : 700,
                             cursor            : 'pointer',
                           }}
@@ -292,17 +292,17 @@ export default function DemoRequestForm({ onClose }) {
                         >
                           {ARAB_COUNTRIES.map(c => (
                             <option key={c.code} value={c.code}
-                              style={{ background: '#020F0E', color: '#EAE4DF', fontWeight: 'normal' }}>
+                              style={{ background: '#F8F5EC', color: '#1A2E28', fontWeight: 'normal' }}>
                               {c.flag} {c.name} ({c.code})
                             </option>
                           ))}
                           <option value="other"
-                            style={{ background: '#020F0E', color: '#9A8A74', fontStyle: 'italic' }}>
+                            style={{ background: '#F8F5EC', color: '#8B7B65', fontStyle: 'italic' }}>
                             🌍 دول أخرى...
                           </option>
                         </select>
                         <ChevronDown size={12} className="pointer-events-none absolute top-1/2 -translate-y-1/2"
-                          style={{ color: '#6FA5A8', insetInlineEnd: '0.45rem' }} />
+                          style={{ color: '#5E6E67', insetInlineEnd: '0.45rem' }} />
                       </>
                     )}
                   </div>
@@ -321,7 +321,7 @@ export default function DemoRequestForm({ onClose }) {
                 </div>
 
                 {/* Hint */}
-                <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: '#6FA5A8' }}>
+                <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: '#5E6E67' }}>
                   {isOther
                     ? 'اكتب مفتاح دولتك كاملاً مع + (مثال: +44)'
                     : currentCountry
@@ -331,7 +331,7 @@ export default function DemoRequestForm({ onClose }) {
               </Field>
 
               {error && (
-                <p className="text-xs text-center" style={{ color: '#E07070' }}>{error}</p>
+                <p className="text-xs text-center" style={{ color: '#872727' }}>{error}</p>
               )}
 
               <button
@@ -340,12 +340,12 @@ export default function DemoRequestForm({ onClose }) {
                 className="mt-2 flex items-center justify-center gap-2.5 w-full font-bold rounded-xl transition-all duration-200"
                 style={{
                   padding   : '0.9rem',
-                  background: loading ? 'rgba(72,214,205,0.30)' : 'linear-gradient(135deg,#48D6CD 0%,#1A949B 100%)',
+                  background: loading ? 'rgba(31, 111, 82, 0.30)' : 'linear-gradient(135deg,#1F6F52 0%,#2E7A5A 100%)',
                   color     : '#fff',
                   fontSize  : '0.9rem',
                   cursor    : loading ? 'not-allowed' : 'pointer',
                 }}
-                onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = '0 8px 28px rgba(72,214,205,0.25)' }}
+                onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = '0 8px 28px rgba(31, 111, 82, 0.25)' }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
               >
                 {loading ? <Loader2 size={17} className="animate-spin" /> : 'أرسل الطلب'}

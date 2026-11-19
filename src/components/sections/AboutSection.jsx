@@ -20,7 +20,7 @@ export default function AboutSection() {
 
             <span
               className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-              style={{ color: '#A6756A' }}
+              style={{ color: '#7A5A2E' }}
             >
               من نحن
             </span>
@@ -32,13 +32,13 @@ export default function AboutSection() {
               فريق منصة إحكام
             </h1>
 
-            <div className="flex flex-col gap-7 text-start flex-1" style={{ color: '#96BCBE' }}>
+            <div className="flex flex-col gap-7 text-start flex-1" style={{ color: '#4A5D56' }}>
 
               <p style={{ lineHeight: '2.1', fontSize: '0.95rem' }}>
                 بدأت إحكام من داخل حلقات التحفيظ. كان المعلم يكتب درجات التسميع
                 على ورقة، ثم ينقلها إلى دفتر، وفي آخر الشهر يسأله المدير عن طالب
                 فلا يجد الورقة. المشكلة لم تكن في المعلمين، كان ينقصهم{' '}
-                <span style={{ color: '#D9ACA3', fontWeight: 700 }}>نظام</span>{' '}
+                <span style={{ color: '#8A6425', fontWeight: 700 }}>نظام</span>{' '}
                 يحفظ ما يكتبونه.
               </p>
 
@@ -60,32 +60,32 @@ export default function AboutSection() {
           <div className="bento p-8 flex flex-col justify-center gap-6 text-start">
             <span
               className="text-xs font-semibold tracking-[0.22em] uppercase block"
-              style={{ color: '#A6756A' }}
+              style={{ color: '#7A5A2E' }}
             >
               تواصل معنا
             </span>
 
             <div className="flex flex-col gap-2">
-              <span className="text-sm" style={{ color: '#96BCBE' }}>واتساب</span>
+              <span className="text-sm" style={{ color: '#4A5D56' }}>واتساب</span>
               <a
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 dir="ltr"
                 className="font-bold text-start"
-                style={{ color: '#D9ACA3' }}
+                style={{ color: '#8A6425' }}
               >
                 +963 947 409 106
               </a>
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-sm" style={{ color: '#96BCBE' }}>البريد</span>
+              <span className="text-sm" style={{ color: '#4A5D56' }}>البريد</span>
               <a
                 href={`mailto:${EMAIL}`}
                 dir="ltr"
                 className="font-bold text-start break-all"
-                style={{ color: '#D9ACA3' }}
+                style={{ color: '#8A6425' }}
               >
                 {EMAIL}
               </a>

@@ -87,8 +87,8 @@ function WhatsAppButton() {
         padding   : hovered ? '0.72rem 1.1rem 0.72rem 0.72rem' : '0.72rem',
         background: '#25D366',
         boxShadow : hovered
-          ? '0 8px 32px rgba(37,211,102,0.50), 0 2px 8px rgba(0,0,0,0.25)'
-          : '0 4px 20px rgba(37,211,102,0.38), 0 2px 8px rgba(0,0,0,0.22)',
+          ? '0 8px 32px rgba(37,211,102,0.50), 0 2px 8px rgba(11, 59, 51, 0.075)'
+          : '0 4px 20px rgba(37,211,102,0.38), 0 2px 8px rgba(11, 59, 51, 0.066)',
         opacity      : shown ? 1 : 0,
         transform    : shown ? 'scale(1)' : 'scale(0.7)',
         pointerEvents: shown ? 'auto' : 'none',  /* لا يُلتقط وهو شفاف */
@@ -127,7 +127,9 @@ export default function Layout() {
   if (!navigated && location.pathname !== firstPath) setNavigated(true)
 
   return (
-    <div className="relative" style={{ overflowX: 'hidden' }}>
+    /* clip لا hidden: hidden يجعل الغلاف حاوية تمرير فيتعطّل position:sticky
+       في كل ما تحته (الشريط الفرعي لصفحة المنصة لم يكن يثبت أصلاً). */
+    <div className="relative" style={{ overflowX: 'clip' }}>
       <FloatingBg />
       {/* قبل <Outlet/> في الشجرة عمداً — انظر تعليق RouteMeta. */}
       <RouteMeta />

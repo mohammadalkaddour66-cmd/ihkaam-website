@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'finance',
   relatedPosts  : ['financial-chaos-not-money', 'why-centers-fail-to-scale', 'reputation-as-marketing'],
   sources       : [],
-  coverColor    : '#6FE7DE',
+  coverColor    : '#0B3B33',
   cover         : '/og/blog/setting-tuition-fees.jpg',
   sections: [
     {

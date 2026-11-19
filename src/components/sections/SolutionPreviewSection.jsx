@@ -18,7 +18,7 @@ function TiltCard({ children, style, className }) {
   )
 }
 
-/* كانت البطاقات الثلاث بثلاثة تيلات متقاربة (#48D6CD / #48D6CD / #D9ACA3) —
+/* كانت البطاقات الثلاث بثلاثة تيلات متقاربة (#1F6F52 / #1F6F52 / #8A6425) —
    فرقٌ لا يُقرأ كنيّة، بل كخطأ في أخذ اللون. لونٌ واحد، والتمييز بالأيقونة. */
 const SOLUTIONS = [
   {
@@ -67,8 +67,8 @@ export default function SolutionPreviewSection() {
           <span
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold tracking-widest uppercase"
             style={{
-              background: 'rgba(72, 214, 205,0.08)',
-              border    : '1px solid rgba(72, 214, 205,0.20)',
+              background: 'rgba(31, 111, 82, 0.08)',
+              border    : '1px solid rgba(31, 111, 82, 0.20)',
               color     : 'var(--accent)',
             }}
           >
@@ -111,14 +111,14 @@ export default function SolutionPreviewSection() {
             <TiltCard
               className="relative rounded-2xl p-6 flex flex-col gap-4 overflow-hidden h-full"
               style={{
-                background: 'linear-gradient(145deg, rgba(9,32,30,0.75) 0%, rgba(2,15,14,0.95) 100%)',
-                border    : '1px solid rgba(72, 214, 205,0.16)',
+                background: 'linear-gradient(145deg, rgba(253, 251, 247, 0.75) 0%, rgba(248, 245, 236, 0.95) 100%)',
+                border    : '1px solid rgba(31, 111, 82, 0.16)',
               }}
             >
               {/* Ambient glow top-right */}
               <div
                 className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full"
-                style={{ background: 'radial-gradient(circle, rgba(72, 214, 205,0.07), transparent 70%)' }}
+                style={{ background: 'radial-gradient(circle, rgba(31, 111, 82, 0.042), transparent 70%)' }}
                 aria-hidden
               />
 
@@ -130,8 +130,8 @@ export default function SolutionPreviewSection() {
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'rgba(72, 214, 205,0.07)',
-                    border    : '1px solid rgba(72, 214, 205,0.16)',
+                    background: 'rgba(31, 111, 82, 0.07)',
+                    border    : '1px solid rgba(31, 111, 82, 0.16)',
                     color     : 'var(--accent)',
                   }}
                 >
@@ -142,8 +142,8 @@ export default function SolutionPreviewSection() {
                 <span
                   className="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full"
                   style={{
-                    background: 'rgba(72, 214, 205,0.08)',
-                    border    : '1px solid rgba(72, 214, 205,0.18)',
+                    background: 'rgba(31, 111, 82, 0.08)',
+                    border    : '1px solid rgba(31, 111, 82, 0.18)',
                     color     : 'var(--accent)',
                   }}
                 >
@@ -161,7 +161,7 @@ export default function SolutionPreviewSection() {
               {/* Bottom accent line */}
               <div
                 className="absolute bottom-0 right-0 left-0 h-[2px] rounded-b-2xl"
-                style={{ background: 'linear-gradient(to left, rgba(72, 214, 205,0.25), transparent)' }}
+                style={{ background: 'linear-gradient(to left, rgba(31, 111, 82, 0.25), transparent)' }}
                 aria-hidden
               />
             </TiltCard>

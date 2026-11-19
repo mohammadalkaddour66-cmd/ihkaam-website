@@ -1,176 +1,126 @@
 import { motion } from 'framer-motion'
-import {
-  Smartphone, Zap, ShieldCheck, RefreshCw,
-  FileDown, UserCog,
-} from 'lucide-react'
+
+/* ══════════════════════════════════════════════════════════════════
+   «خصائص النظام» (إعادة تصميم 2026-11-19 ج)
+
+   كانت ستة صفوفٍ نصّية بأيقونةٍ صغيرة. صار قسماً داكناً بستّ بطاقات،
+   لكلٍّ رسمةٌ خطّية بالذهب تُرسم أمام الزائر حين تظهر (pathLength من
+   0 إلى 1)، ثم تبقى ساكنة: الأجهزة الثلاثة، يدٌ تنقر، درعٌ وقفل، سهما
+   التحديث، ورقة تنزل منها نسخة، وشجرة صلاحيات.
+   ══════════════════════════════════════════════════════════════════ */
+
+const GOLD = '#E0B562'
+
+const draw = (d = 0) => ({
+  hidden : { pathLength: 0, opacity: 0 },
+  visible: { pathLength: 1, opacity: 1, transition: { pathLength: { delay: d, duration: 1.1, ease: 'easeInOut' }, opacity: { delay: d, duration: 0.2 } } },
+})
+
+function P({ d, delay = 0, ...rest }) {
+  return <motion.path d={d} variants={draw(delay)} fill="none" stroke={GOLD} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...rest} />
+}
+function R({ delay = 0, ...rest }) {
+  return <motion.rect variants={draw(delay)} fill="none" stroke={GOLD} strokeWidth={2} strokeLinejoin="round" {...rest} />
+}
+function C({ delay = 0, ...rest }) {
+  return <motion.circle variants={draw(delay)} fill="none" stroke={GOLD} strokeWidth={2} {...rest} />
+}
+
+/* كل رسمة في مربّع 160×100 */
+const ART = {
+  devices: (
+    <>
+      <R x={30} y={18} width={78} height={50} rx={4} />
+      <P d="M20 76h98l-6 6H26z" delay={0.3} />
+      <R x={112} y={34} width={30} height={48} rx={4} delay={0.5} />
+      <C cx={127} cy={76} r={1.5} delay={0.9} />
+      <R x={8} y={40} width={22} height={40} rx={4} delay={0.7} />
+      <P d="M44 32h40M44 42h28M44 52h34" delay={0.9} strokeOpacity={0.6} />
+    </>
+  ),
+  easy: (
+    <>
+      <C cx={92} cy={38} r={10} delay={0.6} strokeOpacity={0.5} />
+      <C cx={92} cy={38} r={20} delay={0.8} strokeOpacity={0.3} />
+      <P d="M70 90V52a6 6 0 0 1 12 0v22l18 4a8 8 0 0 1 6 9l-2 10" />
+      <P d="M82 62a6 6 0 0 1 12 0v12M94 66a6 6 0 0 1 12 0v10" delay={0.3} />
+    </>
+  ),
+  security: (
+    <>
+      <P d="M80 10l34 12v26c0 22-16 36-34 44C62 84 46 70 46 48V22z" />
+      <R x={66} y={46} width={28} height={22} rx={4} delay={0.5} />
+      <P d="M72 46v-6a8 8 0 0 1 16 0v6" delay={0.7} />
+      <C cx={80} cy={56} r={2.5} delay={0.9} />
+    </>
+  ),
+  updates: (
+    <>
+      <P d="M112 46a32 32 0 0 0-58-16" />
+      <P d="M50 18l4 12 12-3" delay={0.4} />
+      <P d="M48 54a32 32 0 0 0 58 16" delay={0.2} />
+      <P d="M110 82l-4-12-12 3" delay={0.6} />
+      <C cx={80} cy={50} r={8} delay={0.8} />
+    </>
+  ),
+  export: (
+    <>
+      <P d="M50 10h40l18 18v62H50z" />
+      <P d="M90 10v18h18" delay={0.3} />
+      <P d="M60 40h34M60 50h34M60 60h22" delay={0.5} strokeOpacity={0.6} />
+      <P d="M124 44v34M114 68l10 10 10-10" delay={0.8} />
+    </>
+  ),
+  roles: (
+    <>
+      <C cx={80} cy={18} r={9} />
+      <P d="M80 27v14M34 41h92M34 41v12M80 41v12M126 41v12" delay={0.4} />
+      <C cx={34} cy={64} r={8} delay={0.7} />
+      <C cx={80} cy={64} r={8} delay={0.8} />
+      <C cx={126} cy={64} r={8} delay={0.9} />
+      <P d="M22 90a12 12 0 0 1 24 0M68 90a12 12 0 0 1 24 0M114 90a12 12 0 0 1 24 0" delay={1} strokeOpacity={0.6} />
+    </>
+  ),
+}
 
 const FEATURES = [
-  {
-    icon : Smartphone,
-    title: 'يعمل على جميع الأجهزة',
-    desc : 'يعمل من المتصفح على أي جهاز: الحاسوب أو الجهاز اللوحي أو الهاتف، دون تثبيت تطبيق.',
-    color: '#48D6CD',
-    glow : 'rgba(72,214,205,0.12)',
-  },
-  {
-    icon : Zap,
-    title: 'سهل الاستخدام',
-    desc : 'لا يتطلب النظام أي خبرة تقنية مسبقة. صُمّم بحيث يتعلمه المعلم في دقائق ويستخدمه يومياً دون أي تعقيد.',
-    color: '#D9ACA3',
-    glow : 'rgba(217,172,163,0.12)',
-  },
-  {
-    icon : ShieldCheck,
-    title: 'الأمن والحماية',
-    desc : 'بُني النظام وفق أفضل معايير الأمن السحابي، مع تشفير البيانات وصلاحيات محكمة تضمن خصوصية كل معهد ومستخدم.',
-    color: '#48D6CD',
-    glow : 'rgba(72,214,205,0.12)',
-  },
-  {
-    icon : RefreshCw,
-    title: 'تحديثات مستمرة',
-    desc : 'يحصل كل معهد تلقائياً على كل تحديث وتطوير جديد دون أي تدخل منه — النظام يتطور معك باستمرار.',
-    color: '#D9ACA3',
-    glow : 'rgba(217,172,163,0.12)',
-  },
- 
-  {
-    icon : FileDown,
-    title: 'تقارير قابلة للتصدير',
-    desc : 'صدّر أي تقرير — غياب، تسميع، اختبارات، مالي — بصيغة PDF أو Excel بضغطة واحدة، مع التصفية حسب الحلقة أو الطالب أو الفترة الزمنية.',
-    color: '#48D6CD',
-    glow : 'rgba(72,214,205,0.12)',
-  },
- 
-  {
-    icon : UserCog,
-    title: 'صلاحيات متعددة المستويات',
-    desc : 'سبع صفات وظيفية جاهزة — مدير، إداري، مشرف، معلم، معلم مساعد، مُختبِر، مشرف مالي — ولكل موظف صلاحياته المستقلة تُضبط تبويبةً تبويبة.',
-    color: '#48D6CD',
-    glow : 'rgba(72,214,205,0.12)',
-  },
+  { art: 'devices',  title: 'يعمل على جميع الأجهزة',     desc: 'من المتصفح على الحاسوب أو الجهاز اللوحي أو الهاتف، دون تثبيت تطبيق.' },
+  { art: 'easy',     title: 'سهل الاستخدام',             desc: 'لا يحتاج خبرة تقنية. يتعلمه المعلم في دقائق ويستخدمه كل يوم دون تعقيد.' },
+  { art: 'security', title: 'الأمن والحماية',            desc: 'بيانات مشفّرة وصلاحيات محكمة، ولكل معهدٍ بياناته لا يراها غيره.' },
+  { art: 'updates',  title: 'تحديثات مستمرة',            desc: 'كل تحديثٍ جديد يصل إلى معهدك تلقائياً، دون أي تدخّل منك.' },
+  { art: 'export',   title: 'تقارير قابلة للتصدير',       desc: 'غياب، تسميع، اختبارات، مالية: بصيغة PDF أو Excel بضغطة، مصفّاةً بالحلقة أو الطالب أو الفترة.' },
+  { art: 'roles',    title: 'صلاحيات متعددة المستويات',  desc: 'سبع صفات جاهزة من المدير إلى المشرف المالي، ولكل موظف صلاحياته تبويبةً تبويبة.' },
 ]
-
-const containerVariants = {
-  hidden : {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
-const cardVariants = {
-  hidden : { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.50, ease: [0.22, 1, 0.36, 1] } },
-}
-
-function FeatureRow({ feature }) {
-  const Icon = feature.icon
-  return (
-    <motion.div
-      variants={cardVariants}
-      className="flex items-start gap-5 rounded-2xl px-6 py-5 cursor-default"
-      style={{
-        background: 'rgba(2,15,14,0.55)',
-        border    : `1px solid rgba(229,211,179,0.06)`,
-        borderRight: `3px solid ${feature.color}50`,
-      }}
-      whileHover={{ x: -4 }}
-      transition={{ duration: 0.20, ease: 'easeOut' }}
-      onMouseEnter={e => {
-        e.currentTarget.style.background   = 'rgba(2,15,14,0.80)'
-        e.currentTarget.style.borderRight  = `3px solid ${feature.color}`
-        e.currentTarget.style.boxShadow    = `4px 0 24px ${feature.color}18`
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.background   = 'rgba(2,15,14,0.55)'
-        e.currentTarget.style.borderRight  = `3px solid ${feature.color}50`
-        e.currentTarget.style.boxShadow    = 'none'
-      }}
-    >
-      {/* Round icon */}
-      <div
-        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-        style={{
-          background: feature.glow,
-          border    : `1px solid ${feature.color}35`,
-        }}
-      >
-        <Icon size={20} style={{ color: feature.color }} strokeWidth={1.65} />
-      </div>
-
-      {/* Text */}
-      <div className="flex flex-col gap-1.5 min-w-0">
-        <h3
-          className="font-black leading-snug"
-          style={{ color: '#EAE4DF', fontSize: '0.95rem' }}
-        >
-          {feature.title}
-        </h3>
-        <p
-          className="text-sm leading-[1.85]"
-          style={{ color: '#6A9490' }}
-        >
-          {feature.desc}
-        </p>
-      </div>
-    </motion.div>
-  )
-}
 
 export default function IhkaamSystemFeatures() {
   return (
-    <section className="relative z-10 py-24 px-6 overflow-hidden">
-
-      {/* Ambient glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(26,148,155,0.07) 0%, transparent 70%)',
-        }}
-        aria-hidden
-      />
-
+    <section className="section-dark relative z-10 py-24 px-6 overflow-hidden" dir="rtl">
+      <div className="pattern-layer pattern-khatam" aria-hidden />
       <div className="relative max-w-6xl mx-auto">
-
-        {/* Header */}
-        <motion.div
-          className="text-center mb-14"
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <span
-            className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-            style={{ color: '#48777A' }}
-          >
-            المنصة التقنية
-          </span>
-          <h2
-            className="font-black leading-tight mx-auto mb-5"
-            style={{ color: '#EAE4DF', fontSize: 'clamp(1.6rem, 3.2vw, 2.4rem)', maxWidth: '600px' }}
-          >
-            خصائص النظام
+        <div className="text-center mb-14">
+          <span className="eyebrow">المنصة التقنية</span>
+          <h2 className="font-bold leading-tight mx-auto mt-5 mb-5" style={{ color: '#F8F5EC', fontSize: 'clamp(1.9rem, 3.6vw, 2.8rem)', maxWidth: 700 }}>
+            مبنيّ ليبقى <span className="title-mark">سنواتٍ لا موسماً</span>
           </h2>
-          <p
-            className="text-sm mx-auto leading-[2]"
-            style={{ color: '#96BCBE', maxWidth: '540px' }}
-          >
-            بُني نظام إحكام على أسس تقنية راسخة تجعله موثوقاً وسهلاً وآمناً،
-            ليس فقط يوم تشغيله — بل لسنوات قادمة.
+          <p className="text-lg mx-auto" style={{ color: 'rgba(248,245,236,0.8)', maxWidth: 560, lineHeight: 1.9 }}>
+            ستّ خصائص تقنية تجعل إحكام موثوقاً وسهلاً وآمناً، يوم تشغيله وبعده بسنوات.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Two-column list of horizontal rows */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-3"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <FeatureRow key={i} feature={f} />
+            <motion.div key={f.art} className="card-on-dark p-7 flex flex-col gap-4"
+              initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
+              variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, delay: (i % 3) * 0.1, ease: [0.22, 1, 0.36, 1] } } }}>
+              <svg viewBox="0 0 160 100" className="w-full h-auto max-w-[220px] mx-auto" aria-hidden
+                   style={{ filter: 'drop-shadow(0 0 6px rgba(224,181,98,0.25))' }}>
+                {ART[f.art]}
+              </svg>
+              <h3 className="font-bold text-xl" style={{ color: '#F8F5EC' }}>{f.title}</h3>
+              <p className="text-base" style={{ color: 'rgba(248,245,236,0.78)', lineHeight: 1.85 }}>{f.desc}</p>
+            </motion.div>
           ))}
-        </motion.div>
-
+        </div>
       </div>
     </section>
   )

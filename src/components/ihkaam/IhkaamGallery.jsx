@@ -29,24 +29,24 @@ function useMedia(query) {
 function ChromeBar({ dark = false }) {
   return (
     <div style={{
-      background   : dark ? '#09201E' : '#09201E',
+      background   : dark ? '#FFFFFF' : '#FFFFFF',
       padding      : '9px 14px',
       display      : 'flex',
       alignItems   : 'center',
       gap          : 6,
-      borderBottom : '1px solid rgba(255,255,255,0.05)',
+      borderBottom : '1px solid rgba(11, 59, 51, 0.05)',
       flexShrink   : 0,
     }}>
-      {['#FF5F57','#FFBD2E','#28C8C3'].map((c,i) => (
+      {['#FF5F57','#FFBD2E','#2E7A5A'].map((c,i) => (
         <div key={i} style={{ width:10,height:10,borderRadius:'50%',background:c,opacity:0.75 }} />
       ))}
       <div style={{
         flex:'1',height:18,borderRadius:8,
-        background:'rgba(255,255,255,0.06)',
+        background:'rgba(11, 59, 51, 0.06)',
         marginInlineStart:8,
         display:'flex',alignItems:'center',justifyContent:'center',
       }}>
-        <span style={{ fontSize:'0.6rem',color:'rgba(255,255,255,0.20)',fontFamily:'monospace',letterSpacing:'0.04em' }}>
+        <span style={{ fontSize:'0.6rem',color:'rgba(11, 59, 51, 0.20)',fontFamily:'monospace',letterSpacing:'0.04em' }}>
           ihkaam.app
         </span>
       </div>
@@ -63,14 +63,14 @@ function NavBtn({ dir, canGo, zoom, onClick, size = 52 }) {
       disabled={!canGo && zoom === 1}
       style={{
         flexShrink:0, width:size, height:size, borderRadius:'50%',
-        border:`1px solid ${(canGo||zoom>1)?'rgba(72,214,205,0.45)':'rgba(255,255,255,0.06)'}`,
-        background:(canGo||zoom>1)?'rgba(72,214,205,0.14)':'rgba(255,255,255,0.02)',
-        color:(canGo||zoom>1)?'#48D6CD':'rgba(255,255,255,0.12)',
+        border:`1px solid ${(canGo||zoom>1)?'rgba(31, 111, 82, 0.45)':'rgba(11, 59, 51, 0.06)'}`,
+        background:(canGo||zoom>1)?'rgba(31, 111, 82, 0.14)':'rgba(11, 59, 51, 0.02)',
+        color:(canGo||zoom>1)?'#1F6F52':'rgba(11, 59, 51, 0.12)',
         display:'flex', alignItems:'center', justifyContent:'center',
         cursor:(canGo||zoom>1)?'pointer':'not-allowed', transition:'all 180ms ease',
       }}
-      onMouseEnter={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(72,214,205,0.28)')}
-      onMouseLeave={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(72,214,205,0.14)')}
+      onMouseEnter={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(31, 111, 82, 0.28)')}
+      onMouseLeave={e => (canGo||zoom>1) && (e.currentTarget.style.background='rgba(31, 111, 82, 0.14)')}
     >
       {dir === -1 ? <ChevronRight size={iconSize} strokeWidth={2}/> : <ChevronLeft size={iconSize} strokeWidth={2}/>}
     </button>
@@ -82,13 +82,13 @@ function ZoomBtn({ icon: Icon, onClick: handle, disabled: dis }) {
   return (
     <button onClick={handle} disabled={dis} style={{
       width:34, height:34, borderRadius:'50%', border:'none',
-      background: dis ? 'rgba(255,255,255,0.04)' : 'rgba(72,214,205,0.14)',
-      color: dis ? 'rgba(255,255,255,0.20)' : '#48D6CD',
+      background: dis ? 'rgba(11, 59, 51, 0.04)' : 'rgba(31, 111, 82, 0.14)',
+      color: dis ? 'rgba(11, 59, 51, 0.20)' : '#1F6F52',
       display:'flex', alignItems:'center', justifyContent:'center',
       cursor: dis ? 'not-allowed' : 'pointer', transition:'background 180ms ease',
     }}
-      onMouseEnter={e => { if(!dis) e.currentTarget.style.background='rgba(72,214,205,0.28)' }}
-      onMouseLeave={e => { if(!dis) e.currentTarget.style.background='rgba(72,214,205,0.14)' }}
+      onMouseEnter={e => { if(!dis) e.currentTarget.style.background='rgba(31, 111, 82, 0.28)' }}
+      onMouseLeave={e => { if(!dis) e.currentTarget.style.background='rgba(31, 111, 82, 0.14)' }}
     >
       <Icon size={15} strokeWidth={2}/>
     </button>
@@ -219,16 +219,16 @@ function Lightbox({ items, index, onClose, onNav }) {
             : { position:'absolute', top:-52, inset:'auto 0 auto 0', display:'flex', alignItems:'center', justifyContent:'space-between' }
         }>
           {/* العدّاد — انظر .num-seq في index.css */}
-          <span className="num-seq" style={{ color:'rgba(229,211,179,0.35)', fontSize:'0.75rem', fontWeight:700, letterSpacing:'0.06em', lineHeight:'40px' }}>
+          <span className="num-seq" style={{ color:'rgba(184, 134, 58, 0.35)', fontSize:'0.75rem', fontWeight:700, letterSpacing:'0.06em', lineHeight:'40px' }}>
             {index+1} / {items.length}
           </span>
 
           {/* Zoom controls */}
           <div style={{ display:'flex', alignItems:'center', gap:6,
-            background:'rgba(2,15,14,0.80)', borderRadius:24, padding:'4px 10px',
-            border:'1px solid rgba(72,214,205,0.18)' }}>
+            background:'rgba(248, 245, 236, 0.80)', borderRadius:24, padding:'4px 10px',
+            border:'1px solid rgba(31, 111, 82, 0.18)' }}>
             <ZoomBtn icon={ZoomOut} onClick={() => setZoom(z => { const n=Math.max(1,+(z-0.5).toFixed(1)); if(n===1)setPan({x:0,y:0}); return n })} disabled={zoom<=1}/>
-            <span style={{ color: zoom>1?'#6AFFF5':'rgba(229,211,179,0.30)', fontSize:'0.70rem', fontWeight:800,
+            <span style={{ color: zoom>1?'#0B3B33':'rgba(184, 134, 58, 0.30)', fontSize:'0.70rem', fontWeight:800,
               minWidth:36, textAlign:'center', letterSpacing:'0.04em', transition:'color 200ms ease' }}>
               {Math.round(zoom*100)}%
             </span>
@@ -241,8 +241,8 @@ function Lightbox({ items, index, onClose, onNav }) {
           {/* Close */}
           <button onClick={onClose} style={{
             width:40, height:40, borderRadius:'50%',
-            border:'1px solid rgba(229,211,179,0.18)', background:'rgba(9,32,30,0.70)',
-            display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'#EAE4DF',
+            border:'1px solid rgba(184, 134, 58, 0.18)', background:'rgba(255, 255, 255, 0.70)',
+            display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'#1A2E28',
           }}>
             <X size={16}/>
           </button>
@@ -259,18 +259,18 @@ function Lightbox({ items, index, onClose, onNav }) {
           </div>
 
           <div ref={imgWrap} style={full ? {
-            flex:1, height:'100%', overflow:'hidden', userSelect:'none', background:'#020F0E',
+            flex:1, height:'100%', overflow:'hidden', userSelect:'none', background:'#F8F5EC',
           } : {
             flex:1, borderRadius:18, overflow:'hidden',
-            border:`1px solid ${zoom>1?'rgba(72,214,205,0.25)':'rgba(229,211,179,0.08)'}`,
-            boxShadow: zoom>1 ? '0 60px 140px rgba(0,0,0,0.80), 0 0 0 1px rgba(72,214,205,0.15)' : '0 60px 140px rgba(0,0,0,0.80)',
+            border:`1px solid ${zoom>1?'rgba(31, 111, 82, 0.25)':'rgba(184, 134, 58, 0.08)'}`,
+            boxShadow: zoom>1 ? '0 60px 140px rgba(0,0,0,0.80), 0 0 0 1px rgba(31, 111, 82, 0.15)' : '0 60px 140px rgba(0,0,0,0.80)',
             transition:'border 250ms ease, box-shadow 250ms ease',
             userSelect:'none',
           }}>
             {/* شريط المتصفح زخرفة — يُحذف بملء الشاشة لصالح البكسلات */}
             {!full && <ChromeBar dark />}
             {/* Overflow viewport */}
-            <div style={{ overflow:'hidden', position:'relative', background:'#020F0E',
+            <div style={{ overflow:'hidden', position:'relative', background:'#F8F5EC',
               ...(full ? { height:'100%', display:'flex', alignItems:'center', justifyContent:'center' } : null) }}>
               <AnimatePresence mode="wait">
                 <motion.div key={item.id}
@@ -304,8 +304,8 @@ function Lightbox({ items, index, onClose, onNav }) {
               {zoom === 1 && (
                 <div style={{
                   position:'absolute', bottom: full ? 48 : 10, left:'50%', transform:'translateX(-50%)',
-                  background:'rgba(0,0,0,0.60)', borderRadius:20, padding:'4px 12px',
-                  color:'rgba(255,255,255,0.42)', fontSize: compact ? '0.6rem' : '0.65rem', fontWeight:600,
+                  background:'rgba(11, 59, 51, 0.18)', borderRadius:20, padding:'4px 12px',
+                  color:'rgba(11, 59, 51, 0.42)', fontSize: compact ? '0.6rem' : '0.65rem', fontWeight:600,
                   pointerEvents:'none', whiteSpace:'nowrap', letterSpacing:'0.04em',
                   display:'flex', alignItems:'center', gap:6,
                 }}>
@@ -330,18 +330,18 @@ function Lightbox({ items, index, onClose, onNav }) {
         <div style={full ? {
           position:'absolute', insetInline:0, bottom:0, zIndex:10,
           display:'flex', alignItems:'center', gap:10, padding:'28px 16px 10px',
-          background:'linear-gradient(to top, rgba(0,0,0,0.75), transparent)',
+          background:'linear-gradient(to top, rgba(11, 59, 51, 0.225), transparent)',
           pointerEvents:'none',
         } : {
           marginTop: compact ? 10 : 20, display:'flex', alignItems:'center', gap:10,
           paddingInline: compact ? 8 : 68,
         }}>
           <span style={{
-            background:'rgba(72,214,205,0.15)', border:'1px solid rgba(72,214,205,0.30)',
-            color:'#48D6CD', fontSize:'0.68rem', fontWeight:700, padding:'3px 12px',
+            background:'rgba(31, 111, 82, 0.15)', border:'1px solid rgba(31, 111, 82, 0.30)',
+            color:'#1F6F52', fontSize:'0.68rem', fontWeight:700, padding:'3px 12px',
             borderRadius:20, whiteSpace:'nowrap',
           }}>{item.category}</span>
-          <h3 style={{ color:'#EAE4DF', fontWeight:800, fontSize: full ? '0.9rem' : 'clamp(0.95rem,2vw,1.2rem)', margin:0 }}>
+          <h3 style={{ color:'#1A2E28', fontWeight:800, fontSize: full ? '0.9rem' : 'clamp(0.95rem,2vw,1.2rem)', margin:0 }}>
             {item.title}
           </h3>
         </div>
@@ -365,19 +365,19 @@ function GalleryCard({ item, onClick }) {
       style={{
         borderRadius: 18,
         overflow    : 'hidden',
-        background  : '#020F0E',
-        border      : `1px solid ${hov ? 'rgba(72,214,205,0.50)' : 'rgba(255,255,255,0.07)'}`,
+        background  : '#F8F5EC',
+        border      : `1px solid ${hov ? 'rgba(31, 111, 82, 0.50)' : 'rgba(11, 59, 51, 0.07)'}`,
         cursor      : 'pointer',
         boxShadow   : hov
-          ? '0 32px 72px rgba(0,0,0,0.65), 0 0 40px rgba(72,214,205,0.12)'
-          : '0 8px 32px rgba(0,0,0,0.40)',
+          ? '0 32px 72px rgba(11, 59, 51, 0.195), 0 0 40px rgba(31, 111, 82, 0.12)'
+          : '0 8px 32px rgba(11, 59, 51, 0.12)',
         transition  : 'border 220ms ease, box-shadow 220ms ease',
       }}
     >
       <ChromeBar />
 
       {/* Image */}
-      <div style={{ position:'relative', aspectRatio:'16/9', overflow:'hidden', background:'#020F0E' }}>
+      <div style={{ position:'relative', aspectRatio:'16/9', overflow:'hidden', background:'#F8F5EC' }}>
         <img
           src={galleryImage(item.image_url, 600)} alt={item.title} width={600} height={338} loading="lazy" decoding="async"
           style={{
@@ -389,18 +389,18 @@ function GalleryCard({ item, onClick }) {
         {/* Hover overlay */}
         <div style={{
           position:'absolute', inset:0,
-          background:'linear-gradient(to top, rgba(2,15,14,0.85) 0%, rgba(2,15,14,0.20) 60%, transparent 100%)',
+          background:'linear-gradient(to top, rgba(248, 245, 236, 0.85) 0%, rgba(248, 245, 236, 0.20) 60%, transparent 100%)',
           opacity: hov ? 1 : 0, transition:'opacity 220ms ease', pointerEvents:'none',
           display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8,
         }}>
           <div style={{
             width:52, height:52, borderRadius:'50%',
-            background:'rgba(72,214,205,0.20)', border:'1px solid rgba(72,214,205,0.50)',
+            background:'rgba(31, 111, 82, 0.20)', border:'1px solid rgba(31, 111, 82, 0.50)',
             display:'flex', alignItems:'center', justifyContent:'center',
           }}>
-            <Maximize2 size={20} style={{ color:'#6AFFF5' }}/>
+            <Maximize2 size={20} style={{ color:'#0B3B33' }}/>
           </div>
-          <span style={{ color:'#E5D3B3', fontSize:'0.75rem', fontWeight:700, letterSpacing:'0.10em' }}>
+          <span style={{ color:'#7A6440', fontSize:'0.75rem', fontWeight:700, letterSpacing:'0.10em' }}>
             عرض مكبّر
           </span>
         </div>
@@ -409,17 +409,17 @@ function GalleryCard({ item, onClick }) {
       {/* Footer */}
       <div style={{
         padding:'14px 18px', display:'flex', alignItems:'center', gap:10,
-        background: hov ? 'rgba(72,214,205,0.05)' : 'transparent',
+        background: hov ? 'rgba(31, 111, 82, 0.05)' : 'transparent',
         transition:'background 220ms ease',
-        borderTop:'1px solid rgba(255,255,255,0.04)',
+        borderTop:'1px solid rgba(11, 59, 51, 0.04)',
       }}>
         <span style={{
-          background:'rgba(72,214,205,0.13)', border:'1px solid rgba(72,214,205,0.25)',
-          color:'#48D6CD', fontSize:'0.62rem', fontWeight:700,
+          background:'rgba(31, 111, 82, 0.13)', border:'1px solid rgba(31, 111, 82, 0.25)',
+          color:'#1F6F52', fontSize:'0.62rem', fontWeight:700,
           padding:'2px 10px', borderRadius:20, flexShrink:0, whiteSpace:'nowrap',
         }}>{item.category}</span>
         <span style={{
-          color: hov ? '#EAE4DF' : '#B0C8C4',
+          color: hov ? '#1A2E28' : '#374F46',
           fontSize:'0.83rem', fontWeight:600,
           overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
           transition:'color 200ms ease',
@@ -437,20 +437,20 @@ function Arrow({ icon: Icon, onClick, disabled }) {
       className="w-8 h-8 sm:w-[52px] sm:h-[52px]"
       style={{
       borderRadius:'50%', flexShrink:0,
-      border:`1px solid ${disabled ? 'rgba(255,255,255,0.05)' : 'rgba(72,214,205,0.40)'}`,
-      background: disabled ? 'rgba(255,255,255,0.02)' : 'rgba(72,214,205,0.10)',
-      color: disabled ? 'rgba(255,255,255,0.15)' : '#48D6CD',
+      border:`1px solid ${disabled ? 'rgba(11, 59, 51, 0.05)' : 'rgba(31, 111, 82, 0.40)'}`,
+      background: disabled ? 'rgba(11, 59, 51, 0.02)' : 'rgba(31, 111, 82, 0.10)',
+      color: disabled ? 'rgba(11, 59, 51, 0.15)' : '#1F6F52',
       display:'flex', alignItems:'center', justifyContent:'center',
       cursor: disabled ? 'not-allowed' : 'pointer', transition:'all 200ms ease',
     }}
       onMouseEnter={e => { if(!disabled){
-        e.currentTarget.style.background='rgba(72,214,205,0.24)'
-        e.currentTarget.style.borderColor='rgba(72,214,205,0.70)'
-        e.currentTarget.style.boxShadow='0 0 20px rgba(72,214,205,0.20)'
+        e.currentTarget.style.background='rgba(31, 111, 82, 0.24)'
+        e.currentTarget.style.borderColor='rgba(31, 111, 82, 0.70)'
+        e.currentTarget.style.boxShadow='0 0 20px rgba(31, 111, 82, 0.20)'
       }}}
       onMouseLeave={e => { if(!disabled){
-        e.currentTarget.style.background='rgba(72,214,205,0.10)'
-        e.currentTarget.style.borderColor='rgba(72,214,205,0.40)'
+        e.currentTarget.style.background='rgba(31, 111, 82, 0.10)'
+        e.currentTarget.style.borderColor='rgba(31, 111, 82, 0.40)'
         e.currentTarget.style.boxShadow='none'
       }}}
     >
@@ -484,7 +484,15 @@ export default function IhkaamGallery() {
     supabase.from('gallery_items').select('id,title,category,image_url,order_index')
       .eq('is_active', true).order('order_index', { ascending: true })
       .then(({ data, error }) => {
-        if (!error && data) setItems(data.filter(d => d.category !== 'هاتف'))
+        if (!error && data) {
+          const list = data.filter(d => d.category !== 'هاتف')
+          setItems(list)
+          /* ‎?cat=‎ من «جولة داخل إحكام» في الرئيسية: يفتح المعرض على أول
+             شاشةٍ من فئة الدور الذي كان الزائر يتصفّحه */
+          const cat = new URLSearchParams(window.location.search).get('cat')
+          const at  = cat ? list.findIndex(d => d.category === cat) : -1
+          if (at > 0) setIdx(at)
+        }
         setLoading(false)
       })
   }, [])
@@ -501,12 +509,12 @@ export default function IhkaamGallery() {
     <>
       <section
         className="relative z-10 py-24 overflow-hidden"
-        style={{ background:'#020F0E' }}
+        style={{ background:'#F8F5EC' }}
         dir="rtl"
       >
         {/* Top ambient */}
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[300px]"
-          style={{ background:'radial-gradient(ellipse at top, rgba(72,214,205,0.06) 0%, transparent 70%)' }} aria-hidden/>
+          style={{ background:'radial-gradient(ellipse at top, rgba(31, 111, 82, 0.036) 0%, transparent 70%)' }} aria-hidden/>
 
         {/* ── Header ── */}
         <div className="max-w-6xl mx-auto px-6 mb-14">
@@ -515,15 +523,15 @@ export default function IhkaamGallery() {
             {/* Left: text */}
             <div>
               <span className="block text-xs font-semibold tracking-[0.22em] uppercase mb-4"
-                style={{ color:'#48D6CD' }}>
+                style={{ color:'#1F6F52' }}>
                 معرض لقطات النظام
               </span>
               <h2 className="font-black leading-tight mb-3"
-                style={{ color:'#EAE4DF', fontSize:'clamp(1.6rem,3.2vw,2.4rem)' }}>
+                style={{ color:'#1A2E28', fontSize:'clamp(1.6rem,3.2vw,2.4rem)' }}>
                 كل واجهة صُممت بعناية فائقة
               </h2>
               <p className="leading-[1.9] mx-auto md:mx-0"
-                style={{ color:'#96BCBE', fontSize:'clamp(0.82rem,1.3vw,0.92rem)', maxWidth:420 }}>
+                style={{ color:'#4A5D56', fontSize:'clamp(0.82rem,1.3vw,0.92rem)', maxWidth:420 }}>
                 استعرض واجهات النظام التي يتعامل معها الإداريون والمعلمون يومياً.
               </p>
             </div>
@@ -536,19 +544,19 @@ export default function IhkaamGallery() {
               transition={{ duration:0.55, ease:[0.22,1,0.36,1], delay:0.15 }}
               className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl px-5 py-3 sm:px-8 sm:py-5 self-center md:self-auto"
               style={{
-                background:'linear-gradient(135deg, rgba(72,214,205,0.10) 0%, rgba(9,32,30,0.80) 100%)',
-                border:'1px solid rgba(72,214,205,0.28)',
-                boxShadow:'0 0 40px rgba(72,214,205,0.08)',
+                background:'linear-gradient(135deg, rgba(31, 111, 82, 0.10) 0%, rgba(255, 255, 255, 0.80) 100%)',
+                border:'1px solid rgba(31, 111, 82, 0.28)',
+                boxShadow:'0 0 40px rgba(31, 111, 82, 0.08)',
               }}
             >
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="font-black" style={{ fontSize:'clamp(1.8rem,7vw,3.2rem)', color:'#6AFFF5', lineHeight:1 }}>
+                <span className="font-black" style={{ fontSize:'clamp(1.8rem,7vw,3.2rem)', color:'#0B3B33', lineHeight:1 }}>
                   +{displayCount}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Layers size={13} style={{ color:'#48D6CD' }}/>
-                <span className="text-xs font-bold tracking-wide" style={{ color:'#96BCBE' }}>
+                <Layers size={13} style={{ color:'#1F6F52' }}/>
+                <span className="text-xs font-bold tracking-wide" style={{ color:'#4A5D56' }}>
                  واجهة لخدمة أهل القرآن
                 </span>
               </div>
@@ -600,8 +608,8 @@ export default function IhkaamGallery() {
                   padding: 0,
                   cursor: 'pointer',
                   background: i === currentPage
-                    ? 'linear-gradient(90deg, #48D6CD, #6AFFF5)'
-                    : 'rgba(72,214,205,0.18)',
+                    ? 'linear-gradient(90deg, #1F6F52, #0B3B33)'
+                    : 'rgba(31, 111, 82, 0.18)',
                   transition: 'width 300ms cubic-bezier(0.22,1,0.36,1), background 300ms ease',
                   outline: 'none',
                 }}
@@ -609,7 +617,7 @@ export default function IhkaamGallery() {
             ))}
             {/* num-seq: يمنع انقلاب «1/37» إلى «37/1» في صفحة RTL */}
             <span className="num-seq" style={{
-              color:'rgba(72,214,205,0.35)', fontSize:'0.68rem', fontWeight:700,
+              color:'rgba(31, 111, 82, 0.35)', fontSize:'0.68rem', fontWeight:700,
               marginInlineStart:8, letterSpacing:'0.06em',
             }}>
               {currentPage + 1}/{pageCount}

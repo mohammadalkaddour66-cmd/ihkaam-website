@@ -20,7 +20,7 @@ export default function IhkaamCTABanner() {
        اللوحة نداءٌ للفعل — والزرّ هو ما يجب أن تقع عليه العين،
        لا الإطارُ ينبض حوله. بقي الطفو وحده. */}
     <motion.div
-      className="relative rounded-3xl overflow-hidden"
+      className="section-dark relative rounded-3xl overflow-hidden" style={{ boxShadow: 'var(--shadow-lg)' }}
       animate={reduce ? undefined : { y: [0, -6, 0] }}
       transition={{
         duration: 4.5,
@@ -30,53 +30,29 @@ export default function IhkaamCTABanner() {
         delay: 0.7,
       }}
     >
-      {/* Background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(135deg, #11312C 0%, #09201E 50%, #09201E 100%)',
-        }}
-      />
-
-      {/* Ambient glows */}
-      <div
-        className="pointer-events-none absolute -top-20 -right-20 w-64 h-64 rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(72, 214, 205,0.18) 0%, transparent 70%)' }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -bottom-16 -left-16 w-56 h-56 rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(227, 169, 63,0.09) 0%, transparent 70%)' }}
-        aria-hidden
-      />
-
-      {/* Border — ثابت الآن، بلون اللوحة */}
+      {/* لوحة داكنة (2026-11-19): الأخضر الحبريّ ونقش النجمة، بحدٍّ ذهبيّ رفيع */}
+      <div className="pattern-layer pattern-khatam" aria-hidden />
       <div
         className="absolute inset-0 rounded-3xl pointer-events-none"
-        style={{
-          border: '1px solid rgba(72, 214, 205,0.30)',
-          boxShadow: 'inset 0 0 28px rgba(72, 214, 205,0.07)',
-        }}
+        style={{ boxShadow: 'inset 0 0 0 1px rgba(224,181,98,0.30)' }}
         aria-hidden
       />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 px-10 py-12" dir="rtl">
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 px-8 md:px-14 py-14" dir="rtl">
         {/* Text */}
         <div className="flex flex-col gap-3 text-center md:text-right">
-          <p className="text-xs font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--accent)' }}>
-            الخطوة التالية
-          </p>
+          <span className="eyebrow self-center md:self-start">الخطوة التالية</span>
           <h2
-            className="font-black leading-[1.3]"
-            style={{ color: 'var(--text-1)', fontSize: 'clamp(1.3rem, 2.8vw, 2rem)' }}
+            className="font-bold"
+            style={{ color: 'var(--text-1)', fontSize: 'clamp(1.7rem, 3.2vw, 2.6rem)' }}
           >
             معهدك يستحق نظاماً{' '}
-            <span className="text-gold-grad">يليق برسالته</span>
+            <span className="title-mark">يليق برسالته</span>
             <br className="hidden sm:block" />
             — ابدأ اليوم.
           </h2>
-          <p className="text-sm leading-[1.9]" style={{ color: 'var(--text-2)', maxWidth: '440px' }}>
+          <p className="text-base leading-[1.9]" style={{ color: 'var(--text-2)', maxWidth: '460px' }}>
             معاهد قرآنية اختارت إحكام اليوم.
             فريقنا يرافقك خطوة بخطوة — من أول يوم حتى تنطلق.
           </p>
@@ -86,8 +62,8 @@ export default function IhkaamCTABanner() {
         <div className="flex-shrink-0">
           <Link
             to="/request"
-            className="btn-cta inline-flex items-center gap-2.5 rounded-xl whitespace-nowrap"
-            style={{ fontSize: '0.95rem', padding: '1rem 2.4rem' }}
+            className="btn-cta inline-flex items-center gap-2.5 rounded-full whitespace-nowrap"
+            style={{ fontSize: '1.05rem', padding: '1.05rem 2.6rem' }}
           >
             احسب اشتراك معهدك
             <ArrowLeft size={17} strokeWidth={2} />

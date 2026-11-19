@@ -8,7 +8,7 @@
 
    1) خلفيته بيضاء. وشريطُ التبويب داكنٌ عند أكثر المستخدمين، فيظهر
       الشعارُ مربّعاً أبيض ناصعاً يقطع الشريط. فنضعه على --canvas
-      (#020F0E) ليُقرأ على الشريطين الفاتح والداكن معاً.
+      (#F8F5EC) ليُقرأ على الشريطين الفاتح والداكن معاً.
 
    2) حوله هامشٌ أبيض واسع. وعند 32px يأكل الهامشُ نصفَ المساحة
       فيبقى الشعارُ نقطة. فنقصّه أولاً (trim) ثم نُكبّره في الإطار.
@@ -22,9 +22,9 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 const root   = join(dirname(fileURLToPath(import.meta.url)), '..')
-const SOURCE = join(root, 'public', 'ihkaam-logo.png')
+const SOURCE = join(root, 'public', 'ihkaam-logo-light.png')
 
-const CANVAS = { r: 2, g: 15, b: 14, alpha: 1 }   // #020F0E — لوحة الموقع
+const CANVAS = { r: 248, g: 245, b: 236, alpha: 1 }   // #F8F5EC — لوحة الموقع الفاتحة
 
 /* نسبةُ الشعار من الإطار — تختلف بالمقاس عن قصد.
    الشعار طوليّ (290×381 بعد القصّ)، فحين يُحصَر في مربّع يحكمه ارتفاعُه

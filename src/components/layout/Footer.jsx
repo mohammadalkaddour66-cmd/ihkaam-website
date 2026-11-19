@@ -108,7 +108,7 @@ const navGroups = [
   },
 ]
 
-const linkStyle = { color: '#1A949B', transition: 'color 300ms' }
+const linkStyle = { color: 'rgba(248, 245, 236, 0.80)', transition: 'color 300ms' }
 
 /* ── Channel card ─────────────────────────────────────────────── */
 function ChannelCard({ ch }) {
@@ -159,10 +159,10 @@ function ChannelCard({ ch }) {
          على سطرين، فتتفاوت ارتفاعات البطاقات الأربع وتبدو مبعثرة.
          واسم القناة يغني عن وصفها — أحدٌ لا يحتاج شرحاً لـ«واتساب». */}
       <div className="flex flex-col gap-0.5 text-right flex-1 min-w-0">
-        <span style={{ color: 'var(--text-1)', fontWeight: 700, fontSize: '0.85rem' }}>
+        <span style={{ color: 'var(--text-1)', fontWeight: 700, fontSize: '0.95rem' }}>
           {ch.label}
         </span>
-        <span className="hidden sm:block truncate" style={{ color: 'var(--text-3)', fontSize: '0.72rem' }}>
+        <span className="hidden sm:block truncate" style={{ color: 'var(--text-3)', fontSize: '0.8125rem' }}>
           {ch.sublabel}
         </span>
       </div>
@@ -170,9 +170,9 @@ function ChannelCard({ ch }) {
       {/* Soon badge or arrow */}
       {ch.soon ? (
         <span style={{
-          background: 'rgba(229, 211, 179,0.10)',
-          border    : '1px solid rgba(229, 211, 179,0.18)',
-          color     : '#A6756A',
+          background: 'rgba(184, 134, 58, 0.10)',
+          border    : '1px solid rgba(184, 134, 58, 0.18)',
+          color     : '#7A5A2E',
           fontSize  : '0.60rem',
           fontWeight: 700,
           padding   : '0.18rem 0.55rem',
@@ -196,8 +196,10 @@ function ChannelCard({ ch }) {
 /* ── Main export ──────────────────────────────────────────────── */
 export default function Footer() {
   return (
-    <footer id="footer" className="relative z-10" style={{ borderTop: '1px solid rgba(26, 148, 155,0.15)' }}>
-      <div style={{ background: 'rgba(2,15,14,0.85)', backdropFilter: 'blur(20px)' }}>
+    <footer id="footer" className="section-dark relative z-10 overflow-hidden" style={{ borderTop: '1px solid rgba(224, 181, 98, 0.30)' }}>
+      {/* تذييلٌ داكن (2026-11-19): يُغلق الصفحة بالأخضر الحبريّ كما يفتحها الهيرو */}
+      <div className="pattern-layer pattern-khatam" aria-hidden />
+      <div>
         {/* pt-16 و mb-14 مقاسا سطح مكتب: 64px و56px بلا بادئة lg.
            هما مصدر الفجوتين اللتين أظهرهما القياس (57px و65px). */}
         <div className="max-w-6xl mx-auto px-6 pt-8 lg:pt-16 pb-6 lg:pb-8">
@@ -205,7 +207,7 @@ export default function Footer() {
           {/* ── Social channels band ── */}
           <div className="mb-6 lg:mb-14">
             <p className="text-xs font-semibold tracking-[0.20em] uppercase text-center mb-6"
-              style={{ color: '#1A949B' }}>
+              style={{ color: 'rgba(248, 245, 236, 0.80)' }}>
               ابقَ على تواصل معنا
             </p>
             {/* 4 قنوات: صفّان متساويان على الجوال، وصفّ واحد على الشاشات الكبيرة —
@@ -233,15 +235,15 @@ export default function Footer() {
             {/* Brand */}
             <div className="col-span-2 lg:col-span-2">
               <Link to="/" className="inline-flex items-center gap-2.5 mb-4">
-                <span className="w-7 h-7 rounded-md flex items-center justify-center text-[#09201E] text-xs font-black"
-                  style={{ background: '#48D6CD' }}>
+                <span className="w-7 h-7 rounded-md flex items-center justify-center text-[#FFFFFF] text-xs font-black"
+                  style={{ background: '#E0B562', color: '#0B3B33' }}>
                   إ
                 </span>
-                <span className="text-sm font-bold tracking-wider" style={{ color: '#EAE4DF' }}>
+                <span className="text-sm font-bold tracking-wider" style={{ color: '#F8F5EC' }}>
                   إحكام
                 </span>
               </Link>
-              <p className="text-xs leading-relaxed mb-6 max-w-xs" style={{ color: '#6FA5A8' }}>
+              <p className="text-sm leading-relaxed mb-6 max-w-xs" style={{ color: 'rgba(248, 245, 236, 0.66)' }}>
                 نظام سحابي لإدارة المعاهد القرآنية — يتولى الحضور والمحاسبة والجدولة والتقارير تلقائياً.
               </p>
               {/* mailto: مباشر (لا تحويلات عبر Gmail Compose): رابط البريد الحقيقي أوضح
@@ -249,17 +251,17 @@ export default function Footer() {
                   يخدم من لا برنامج بريد عنده. */}
               <a href="mailto:ihkaamapp@gmail.com?subject=%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A5%D8%AD%D9%83%D8%A7%D9%85"
                 className="flex items-center gap-2 text-xs transition-colors duration-300"
-                style={{ color: '#6FA5A8' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#D9ACA3')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#6FA5A8')}>
+                style={{ color: 'rgba(248, 245, 236, 0.66)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#E0B562')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(248, 245, 236, 0.66)')}>
                 <Mail size={12} />
                 ihkaamapp@gmail.com
               </a>
               <a href="tel:+963947409106"
                 className="flex items-center gap-2 text-xs mt-2 transition-colors duration-300"
-                style={{ color: '#6FA5A8' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#D9ACA3')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#6FA5A8')}>
+                style={{ color: 'rgba(248, 245, 236, 0.66)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#E0B562')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(248, 245, 236, 0.66)')}>
                 <Phone size={12} />
                 <span dir="ltr">+963 947 409 106</span>
               </a>
@@ -268,8 +270,8 @@ export default function Footer() {
             {/* Link columns */}
             {navGroups.map(group => (
               <div key={group.title}>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-2 lg:mb-4"
-                  style={{ color: 'var(--clay)' }}>
+                <p className="text-sm font-bold mb-2 lg:mb-4"
+                  style={{ color: '#E0B562' }}>
                   {group.title}
                 </p>
                 {/* space-y-2.5 كان يضيف 10px فوق ارتفاع 44px لكل رابط —
@@ -278,10 +280,10 @@ export default function Footer() {
                 <ul className="space-y-0 lg:space-y-2.5">
                   {group.links.map(l => (
                     <li key={l.label}>
-                      <Link to={l.to} className="text-xs transition-colors duration-300"
+                      <Link to={l.to} className="text-sm transition-colors duration-300"
                         style={linkStyle}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#D9ACA3')}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#1A949B')}>
+                        onMouseEnter={e => (e.currentTarget.style.color = '#E0B562')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(248, 245, 236, 0.80)')}>
                         {l.label}
                       </Link>
                     </li>
@@ -296,7 +298,7 @@ export default function Footer() {
 
           {/* Bottom bar */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-[10px]" style={{ color: '#1C423A' }}>
+            <p className="text-xs" style={{ color: 'rgba(248, 245, 236, 0.66)' }}>
               © {new Date().getFullYear()} إحكام — جميع الحقوق محفوظة
             </p>
             {/* Social icon row */}
@@ -309,9 +311,9 @@ export default function Footer() {
                     aria-label={ch.label}
                     className="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300"
                     style={{
-                      background : 'rgba(17,49,44,0.30)',
-                      border     : '1px solid rgba(26, 148, 155,0.18)',
-                      color      : ch.soon ? '#1C423A' : '#6FA5A8',
+                      background : 'rgba(255, 255, 255, 0.06)',
+                      border     : '1px solid rgba(224, 181, 98, 0.25)',
+                      color      : ch.soon ? 'rgba(248, 245, 236, 0.4)' : 'rgba(248, 245, 236, 0.66)',
                       cursor     : ch.soon ? 'default' : 'pointer',
                       opacity    : ch.soon ? 0.45 : 1,
                     }}
@@ -324,9 +326,9 @@ export default function Footer() {
                     }}
                     onMouseLeave={e => {
                       if (!ch.soon) {
-                        e.currentTarget.style.color       = '#6FA5A8'
-                        e.currentTarget.style.borderColor = 'rgba(26, 148, 155,0.18)'
-                        e.currentTarget.style.background  = 'rgba(17,49,44,0.30)'
+                        e.currentTarget.style.color       = 'rgba(248, 245, 236, 0.66)'
+                        e.currentTarget.style.borderColor = 'rgba(224, 181, 98, 0.25)'
+                        e.currentTarget.style.background  = 'rgba(255, 255, 255, 0.06)'
                       }
                     }}>
                     <div style={{ transform: 'scale(0.55)', lineHeight: 0 }}>

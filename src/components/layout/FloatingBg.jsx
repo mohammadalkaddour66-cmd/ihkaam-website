@@ -33,13 +33,13 @@ export default function FloatingBg() {
           يصبغ خلفيتها وحده. الذهب هو ثانويّ اللوحة المعتمد. */}
       <div
         className="orb-a absolute -top-1/3 -right-1/4 w-[900px] h-[900px] rounded-full"
-        style={{ background: 'radial-gradient(circle at center, rgba(227,169,63,0.07) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(circle at center, rgba(184, 134, 58, 0.07) 0%, transparent 65%)' }}
       />
 
-      {/* وهجٌ تركوازيّ — أسفل اليسار */}
+      {/* وهجٌ أبيض — أسفل اليسار */}
       <div
         className="orb-b absolute -bottom-1/3 -left-1/4 w-[750px] h-[750px] rounded-full"
-        style={{ background: 'radial-gradient(circle at center, rgba(26,148,155,0.12) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(circle at center, rgba(255, 255, 255, 0.60) 0%, transparent 65%)' }}
       />
 
       {/* الحبيبات — ساكنة تماماً. 3% هو الحدّ الذي يُحَسّ ولا يُرى:

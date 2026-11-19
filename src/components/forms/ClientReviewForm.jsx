@@ -15,12 +15,12 @@ const initialForm = {
 }
 
 const inputBase = {
-  background          : 'rgba(255,255,255,0.04)',
+  background          : 'rgba(11, 59, 51, 0.04)',
   borderWidth         : '1px',
   borderStyle         : 'solid',
-  borderColor         : 'rgba(217,172,163,0.18)',
+  borderColor         : 'rgba(184, 134, 58, 0.18)',
   borderRadius        : '0.875rem',
-  color               : '#EAE4DF',
+  color               : '#1A2E28',
   fontSize            : '1rem',
   padding             : '0.9rem 1.125rem',
   width               : '100%',
@@ -33,8 +33,8 @@ const inputBase = {
 }
 
 const inputFocus = {
-  borderColor: 'rgba(217,172,163,0.55)',
-  boxShadow  : '0 0 0 3px rgba(217,172,163,0.08)',
+  borderColor: 'rgba(184, 134, 58, 0.55)',
+  boxShadow  : '0 0 0 3px rgba(184, 134, 58, 0.08)',
 }
 
 function Field({ label, htmlFor, children }) {
@@ -43,7 +43,7 @@ function Field({ label, htmlFor, children }) {
       <label
         htmlFor={htmlFor}
         className="text-xs font-semibold"
-        style={{ color: '#A6756A', letterSpacing: '0.07em' }}
+        style={{ color: '#7A5A2E', letterSpacing: '0.07em' }}
       >
         {label}
       </label>
@@ -113,7 +113,7 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
       <div
         className="pointer-events-none absolute top-0 right-0 w-[480px] h-[480px]"
         style={{
-          background: 'radial-gradient(circle at top right, rgba(217,172,163,0.07) 0%, transparent 65%)',
+          background: 'radial-gradient(circle at top right, rgba(184, 134, 58, 0.07) 0%, transparent 65%)',
         }}
         aria-hidden
       />
@@ -121,7 +121,7 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
       <div
         className="pointer-events-none absolute bottom-0 left-0 w-[420px] h-[420px]"
         style={{
-          background: 'radial-gradient(circle at bottom left, rgba(26,148,155,0.08) 0%, transparent 65%)',
+          background: 'radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.40) 0%, transparent 65%)',
         }}
         aria-hidden
       />
@@ -132,23 +132,23 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
         <div className="text-center mb-12">
           <span
             className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-            style={{ color: '#A6756A' }}
+            style={{ color: '#7A5A2E' }}
           >
             جدار الثقة
           </span>
           <Heading
             className="font-black leading-tight mb-5 mx-auto"
             style={{
-              color   : '#EAE4DF',
+              color   : '#1A2E28',
               fontSize: 'clamp(1.6rem, 3.5vw, 2.5rem)',
             }}
           >
             شاركنا{' '}
-            <span style={{ color: '#D9ACA3' }}>تجربة التحول الرقمي</span>
+            <span style={{ color: '#8A6425' }}>تجربة التحول الرقمي</span>
           </Heading>
           <p
             className="text-sm leading-[2] mx-auto"
-            style={{ color: '#96BCBE', maxWidth: '520px' }}
+            style={{ color: '#4A5D56', maxWidth: '520px' }}
           >
             رأيك هو المقياس الحقيقي لنجاح أنظمتنا. يسعدنا تدوين تجربتك في العمل معنا.
           </p>
@@ -158,11 +158,11 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
         <div
           className="rounded-[2rem] p-8 md:p-12"
           style={{
-            background          : 'rgba(17,49,44,0.15)',
-            border              : '1px solid rgba(217,172,163,0.14)',
+            background          : 'rgba(241, 236, 223, 0.15)',
+            border              : '1px solid rgba(184, 134, 58, 0.14)',
             backdropFilter      : 'blur(22px)',
             WebkitBackdropFilter: 'blur(22px)',
-            boxShadow           : '0 8px 48px rgba(2,15,14,0.35)',
+            boxShadow           : '0 8px 48px rgba(248, 245, 236, 0.35)',
           }}
         >
           {sent ? (
@@ -172,32 +172,32 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
-                  background: 'rgba(217,172,163,0.12)',
-                  border    : '1px solid rgba(217,172,163,0.30)',
+                  background: 'rgba(184, 134, 58, 0.12)',
+                  border    : '1px solid rgba(184, 134, 58, 0.30)',
                 }}
               >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D9ACA3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A6425" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
               <h3
                 className="text-xl font-black"
-                style={{ color: '#EAE4DF' }}
+                style={{ color: '#1A2E28' }}
               >
                 شكراً لك..
               </h3>
               <p
                 className="text-sm leading-[2] max-w-sm"
-                style={{ color: '#96BCBE' }}
+                style={{ color: '#4A5D56' }}
               >
                 تم استلام تقييمك بنجاح وسيتم إضافته لجدار الثقة قريباً.
               </p>
               <button
                 onClick={() => { setSent(false); setForm(initialForm) }}
                 className="text-xs font-semibold mt-2 cursor-pointer transition-colors duration-300"
-                style={{ color: '#A6756A' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#D9ACA3')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#A6756A')}
+                style={{ color: '#7A5A2E' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#8A6425')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#7A5A2E')}
               >
                 إرسال تقييم آخر
               </button>
@@ -256,14 +256,14 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
                     backgroundPosition  : 'left 14px center',
                     paddingLeft         : '2.5rem',
                     cursor              : 'pointer',
-                    color               : form.service ? '#EAE4DF' : 'rgba(127, 163, 166,0.65)',
+                    color               : form.service ? '#1A2E28' : 'rgba(89, 128, 114, 0.65)',
                   }}
                 >
                   {serviceOptions.map(o => (
                     <option
                       key={o.value}
                       value={o.value}
-                      style={{ background: '#09201E', color: '#EAE4DF' }}
+                      style={{ background: '#FFFFFF', color: '#1A2E28' }}
                     >
                       {o.label}
                     </option>
@@ -299,15 +299,15 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
                 style={{
                   padding         : '1rem',
                   fontSize        : '0.92rem',
-                  background      : 'linear-gradient(135deg, rgba(217,172,163,0.90) 0%, rgba(166,117,106,0.95) 100%)',
-                  color           : '#09201E',
+                  background      : 'linear-gradient(135deg, rgba(184, 134, 58, 0.90) 0%, rgba(122, 90, 46, 0.95) 100%)',
+                  color           : '#FFFFFF',
                   border          : 'none',
                   letterSpacing   : '0.04em',
                 }}
                 onMouseEnter={e => {
                   if (loading) return
                   e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(217,172,163,0.35)'
+                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(184, 134, 58, 0.35)'
                   e.currentTarget.style.animation = 'pulse-btn 0.7s ease-in-out infinite'
                 }}
                 onMouseLeave={e => {
@@ -323,9 +323,9 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
                 <p
                   className="text-xs text-start rounded-xl px-4 py-3"
                   style={{
-                    color     : '#D9ACA3',
-                    background: 'rgba(217,172,163,0.08)',
-                    border    : '1px solid rgba(217,172,163,0.18)',
+                    color     : '#8A6425',
+                    background: 'rgba(184, 134, 58, 0.08)',
+                    border    : '1px solid rgba(184, 134, 58, 0.18)',
                   }}
                 >
                   {error}
@@ -334,7 +334,7 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
 
               <p
                 className="text-center text-[11px]"
-                style={{ color: '#6FA5A8' }}
+                style={{ color: '#5E6E67' }}
               >
                 تقييمك سيُنشر كشهادة حقيقية بعد المراجعة
               </p>
@@ -347,8 +347,8 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
       {/* Pulse keyframes injected inline */}
       <style>{`
         @keyframes pulse-btn {
-          0%, 100% { box-shadow: 0 8px 32px rgba(217,172,163,0.35); }
-          50%       { box-shadow: 0 8px 48px rgba(217,172,163,0.60); }
+          0%, 100% { box-shadow: 0 8px 32px rgba(184, 134, 58, 0.35); }
+          50%       { box-shadow: 0 8px 48px rgba(184, 134, 58, 0.60); }
         }
       `}</style>
     </section>

@@ -18,7 +18,7 @@ export default {
   relatedFeature: 'admin',
   relatedPosts  : ['why-centers-fail-to-scale', 'monthly-reports-time-trap', 'how-to-know-teacher-is-working'],
   sources       : [],
-  coverColor    : '#D9B29C',
+  coverColor    : '#8A6425',
   cover         : '/og/blog/first-90-days-director.jpg',
   sections: [
     {

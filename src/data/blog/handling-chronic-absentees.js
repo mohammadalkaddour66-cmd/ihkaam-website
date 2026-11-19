@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'daily',
   relatedPosts  : ['attendance-register-template', 'why-students-leave', 'delivering-bad-news-to-parents'],
   sources       : [],
-  coverColor    : '#48D6CD',
+  coverColor    : '#1F6F52',
   cover         : '/og/blog/handling-chronic-absentees.jpg',
   sections: [
     {

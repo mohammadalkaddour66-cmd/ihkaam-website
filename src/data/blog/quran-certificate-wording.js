@@ -37,7 +37,7 @@ export default {
       accessed : '2026-11-13',
     },
   ],
-  coverColor    : '#2FAEB4',
+  coverColor    : '#2E7A5A',
   cover         : '/og/blog/quran-certificate-wording.jpg',
   sections: [
     {

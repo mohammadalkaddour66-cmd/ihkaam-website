@@ -32,7 +32,7 @@
   #               static.cloudflareinsights.com   سكربت Cloudflare Web Analytics (ISS-32)
   #   style-src   'unsafe-inline'                 الأنماط الحرجة المضمَّنة في رأس كل صفحة (ISS-31)،
   #                                               و style على العناصر من framer-motion والمكوّنات
-  #               (الخط Cairo مستضاف ذاتياً في /fonts، فلا أصل خارجياً للخطوط)
+  #               (الخط قمرة مستضاف ذاتياً في /fonts، فلا أصل خارجياً للخطوط)
   #   font-src    'self'                          ملفات الخط من /fonts
   #   img-src     Supabase                        شعارات المعاهد وصور الواجهات
   #   connect-src Supabase (https و wss)          الأرقام والبيانات

@@ -2,7 +2,7 @@ import IhkaamCheckout from '../components/ihkaam/IhkaamCheckout'
 
 export default function CheckoutPage() {
   return (
-    <div style={{ background: '#020F0E', minHeight: '100svh' }}>
+    <div style={{ background: '#F8F5EC', minHeight: '100svh' }}>
       <IhkaamCheckout />
     </div>
   )

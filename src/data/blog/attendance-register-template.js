@@ -18,7 +18,7 @@ export default {
   relatedFeature: 'daily',
   relatedPosts  : ['handling-chronic-absentees', 'why-students-leave', 'monthly-reports-time-trap'],
   sources       : [],
-  coverColor    : '#48D6CD',
+  coverColor    : '#1F6F52',
   cover         : '/og/blog/attendance-register-template.jpg',
   sections: [
     {

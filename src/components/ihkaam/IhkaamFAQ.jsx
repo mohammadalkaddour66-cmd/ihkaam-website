@@ -58,7 +58,7 @@ export default function IhkaamFAQ({
       {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[240px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(26,148,155,0.05) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(255, 255, 255, 0.25) 0%, transparent 70%)' }}
         aria-hidden
       />
 
@@ -68,13 +68,13 @@ export default function IhkaamFAQ({
         <div className="text-center mb-12">
           <span
             className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-            style={{ color: '#A6756A' }}
+            style={{ color: '#7A5A2E' }}
           >
             {eyebrow}
           </span>
           <h2
             className="font-black leading-tight"
-            style={{ color: '#EAE4DF', fontSize: 'clamp(1.4rem, 2.8vw, 2rem)' }}
+            style={{ color: '#1A2E28', fontSize: 'clamp(1.4rem, 2.8vw, 2rem)' }}
           >
             {title}
           </h2>
@@ -91,8 +91,8 @@ export default function IhkaamFAQ({
                 data-faq-a={faq.a}
                 className="rounded-[18px] overflow-hidden"
                 style={{
-                  background  : '#09201E',
-                  border      : `1px solid ${isOpen ? 'rgba(72,214,205,0.28)' : 'rgba(229,211,179,0.09)'}`,
+                  background  : '#FFFFFF',
+                  border      : `1px solid ${isOpen ? 'rgba(31, 111, 82, 0.28)' : 'rgba(184, 134, 58, 0.09)'}`,
                   transition  : 'border-color 240ms ease',
                 }}
               >
@@ -105,7 +105,7 @@ export default function IhkaamFAQ({
                 >
                   <span
                     className="font-bold text-sm leading-snug"
-                    style={{ color: isOpen ? '#EAE4DF' : '#B0CBC6' }}
+                    style={{ color: isOpen ? '#1A2E28' : '#344F45' }}
                   >
                     {faq.q}
                   </span>
@@ -114,7 +114,7 @@ export default function IhkaamFAQ({
                     strokeWidth={2.2}
                     className="flex-shrink-0"
                     style={{
-                      color    : '#48D6CD',
+                      color    : '#1F6F52',
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                       transition: 'transform 280ms ease',
                     }}
@@ -139,11 +139,11 @@ export default function IhkaamFAQ({
                     <div
                       className="mx-6 mb-5"
                       style={{
-                        borderTop : '1px solid rgba(72,214,205,0.12)',
+                        borderTop : '1px solid rgba(31, 111, 82, 0.12)',
                         paddingTop: '1rem',
                       }}
                     >
-                      <p className="text-sm" style={{ color: '#96BCBE', lineHeight: '1.95' }}>
+                      <p className="text-sm" style={{ color: '#4A5D56', lineHeight: '1.95' }}>
                         {faq.a}
                       </p>
                     </div>
@@ -155,16 +155,16 @@ export default function IhkaamFAQ({
         </div>
 
         {/* Bottom contact note */}
-        <p className="text-center mt-10 text-sm" style={{ color: '#3C555F' }}>
+        <p className="text-center mt-10 text-sm" style={{ color: '#A0C3B6' }}>
          
           <a
             href="https://wa.me/963947409106"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold transition-colors duration-200"
-            style={{ color: '#48D6CD' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#A3D9D3'}
-            onMouseLeave={e => e.currentTarget.style.color = '#48D6CD'}
+            style={{ color: '#1F6F52' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#265C48'}
+            onMouseLeave={e => e.currentTarget.style.color = '#1F6F52'}
           >
             تواصل معنا مباشرة عبر الواتساب
           </a>

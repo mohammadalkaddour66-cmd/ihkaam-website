@@ -41,28 +41,28 @@ const esc  = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
 
 function html(post) {
   const cat    = BLOG_CATEGORIES.find(c => c.id === post.category)
-  const accent = post.coverColor || cat?.color || '#E3A93F'
+  const accent = post.coverColor || cat?.color || '#1F6F52'
   const size   = post.title.length > 60 ? 50 : post.title.length > 40 ? 58 : 66
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <style>
-  @font-face { font-family: Cairo; src: url('${file('fonts/cairo-arabic.woff2')}') format('woff2'); font-weight: 200 1000; }
-  @font-face { font-family: Cairo; src: url('${file('fonts/cairo-latin.woff2')}') format('woff2'); font-weight: 200 1000; unicode-range: U+0000-00FF; }
+  @font-face { font-family: Qomra; src: url('${file('fonts/qomra-bold.woff2')}') format('woff2'); font-weight: 550 1000; }
+  @font-face { font-family: Qomra; src: url('${file('fonts/qomra-regular.woff2')}') format('woff2'); font-weight: 100 549; }
   * { margin: 0; box-sizing: border-box; }
-  body { width: 1200px; height: 630px; overflow: hidden; background: #020F0E; font-family: Cairo, sans-serif; }
-  .bg { position: absolute; inset: 0; background: url('${file('og-cover.jpg')}') center / cover; }
-  .shade { position: absolute; inset: 0; background: linear-gradient(to left, rgba(2,15,14,0.92) 0%, rgba(2,15,14,0.86) 55%, rgba(2,15,14,0.55) 100%); }
+  body { width: 1200px; height: 630px; overflow: hidden; background: #F8F5EC; font-family: Qomra, sans-serif; }
+  .bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 90% at 0% 100%, rgba(184,134,58,0.16), transparent 60%), radial-gradient(ellipse 60% 80% at 100% 0%, rgba(31,111,82,0.10), transparent 60%), #F8F5EC; }
+  .shade { position: absolute; inset: 22px; border: 1.5px solid rgba(184,134,58,0.45); border-radius: 18px; }
   .wrap { position: absolute; inset: 0; padding: 64px 72px; display: flex; flex-direction: column; }
   .top { display: flex; align-items: center; gap: 16px; }
   .top img { width: 76px; height: 76px; }
-  .brand { color: #EAE4DF; font-weight: 800; font-size: 30px; }
+  .brand { color: #0B3B33; font-weight: 800; font-size: 30px; }
   .cat { margin-top: auto; color: ${accent}; font-weight: 700; font-size: 26px; display: flex; align-items: center; gap: 14px; }
   .cat::before { content: ''; width: 44px; height: 3px; background: ${accent}; border-radius: 2px; }
-  h1 { margin-top: 18px; color: #EAE4DF; font-weight: 900; font-size: ${size}px; line-height: 1.45; max-width: 1000px; }
-  .foot { margin-top: 30px; color: #E5D3B3; font-size: 24px; font-weight: 600; direction: ltr; text-align: right; }
+  h1 { margin-top: 18px; color: #0B3B33; font-weight: 900; font-size: ${size}px; line-height: 1.45; max-width: 1000px; }
+  .foot { margin-top: 30px; color: #8A6425; font-size: 24px; font-weight: 600; direction: ltr; text-align: right; }
 </style></head><body>
   <div class="bg"></div><div class="shade"></div>
   <div class="wrap">
-    <div class="top"><img src="${file('ihkaam-logo.png')}" alt=""><span class="brand">مدونة إحكام</span></div>
+    <div class="top"><img src="${file('ihkaam-logo-light.png')}" alt=""><span class="brand">مدونة إحكام</span></div>
     <div class="cat">${esc(cat?.label || '')}</div>
     <h1>${esc(post.title)}</h1>
     <div class="foot">ihkaam.app/blog</div>

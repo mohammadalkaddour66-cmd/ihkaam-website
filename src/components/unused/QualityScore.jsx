@@ -11,12 +11,12 @@ function ScoreRing({ score = 73 }) {
   const circ = 2 * Math.PI * r
   const offset = circ * (1 - score / 100)
 
-  const hue = score >= 80 ? '#48D6CD' : score >= 60 ? '#D9C8A3' : '#D9ACA3'
+  const hue = score >= 80 ? '#1F6F52' : score >= 60 ? '#7A6440' : '#8A6425'
 
   return (
     <svg width="140" height="140" viewBox="0 0 140 140" className="mx-auto">
       {/* Track */}
-      <circle cx="70" cy="70" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+      <circle cx="70" cy="70" r={r} fill="none" stroke="rgba(11, 59, 51, 0.06)" strokeWidth="10" />
       {/* Progress */}
       <circle
         cx="70" cy="70" r={r}
@@ -31,11 +31,11 @@ function ScoreRing({ score = 73 }) {
       />
       {/* Score text */}
       <text x="70" y="66" textAnchor="middle" fill={hue}
-        style={{ fontSize: 28, fontWeight: 900, fontFamily: 'Cairo, sans-serif' }}>
+        style={{ fontSize: 28, fontWeight: 900, fontFamily: 'Qomra, sans-serif' }}>
         {score}
       </text>
-      <text x="70" y="84" textAnchor="middle" fill="rgba(255,255,255,0.35)"
-        style={{ fontSize: 11, fontFamily: 'Cairo, sans-serif' }}>
+      <text x="70" y="84" textAnchor="middle" fill="rgba(11, 59, 51, 0.35)"
+        style={{ fontSize: 11, fontFamily: 'Qomra, sans-serif' }}>
         / 100
       </text>
     </svg>
@@ -43,7 +43,7 @@ function ScoreRing({ score = 73 }) {
 }
 
 /* خمسة عوامل موزونة، ولكل واحدٍ لون. كانت الألوان مرتجلةً خمسةً
-   لا يجمعها جامع — ومنها البنفسجيّ #B5A3D9 والأزرق #A3C4D9، وكلاهما
+   لا يجمعها جامع — ومنها البنفسجيّ #6E5AA8 والأزرق #3F6E8F، وكلاهما
    خارج اللوحة كلياً. الآن من --cat-* المعتمد في :root، وبالتناوب
    بين العائلتين لأن الشريطين المتجاورين يجب أن يفترقا بالعين. */
 const FACTORS = [
@@ -71,10 +71,10 @@ function FactorBar({ icon: Icon, label, weight, color, desc, index }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-xs font-bold" style={{ color: '#C8B8B0' }}>{label}</span>
+          <span className="text-xs font-bold" style={{ color: '#5C4F48' }}>{label}</span>
           <span className="text-xs font-black tabular-nums" style={{ color }}>{weight}%</span>
         </div>
-        <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.07)' }}>
+        <div className="h-1.5 rounded-full" style={{ background: 'rgba(11, 59, 51, 0.07)' }}>
           <motion.div
             className="h-full rounded-full"
             style={{
@@ -87,7 +87,7 @@ function FactorBar({ icon: Icon, label, weight, color, desc, index }) {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.3 + index * 0.07 }}
           />
         </div>
-        <p className="text-[10px] mt-0.5" style={{ color: '#6FA5A8' }}>{desc}</p>
+        <p className="text-[10px] mt-0.5" style={{ color: '#5E6E67' }}>{desc}</p>
       </div>
     </motion.div>
   )
@@ -96,7 +96,7 @@ function FactorBar({ icon: Icon, label, weight, color, desc, index }) {
 export default function QualityScore() {
   return (
     <section id="quality-score" dir="rtl" className="relative py-20 overflow-hidden"
-      style={{ background: '#020F0E', borderTop: '1px solid rgba(229,211,179,0.06)' }}>
+      style={{ background: '#F8F5EC', borderTop: '1px solid rgba(184, 134, 58, 0.06)' }}>
 
       {/* Glow */}
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px]" aria-hidden style={{
@@ -124,11 +124,11 @@ export default function QualityScore() {
             <Award size={12} />
             نقطة جودة إحكام
           </div>
-          <h2 className="font-black mb-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', color: '#EAE4DF', lineHeight: 1.2 }}>
+          <h2 className="font-black mb-3" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', color: '#1A2E28', lineHeight: 1.2 }}>
             مركزك يستحق تقييماً{' '}
             <span style={{ color: 'var(--warm)' }}>موضوعياً ومستمراً</span>
           </h2>
-          <p className="mx-auto text-sm leading-relaxed" style={{ color: '#96BCBE', maxWidth: 500 }}>
+          <p className="mx-auto text-sm leading-relaxed" style={{ color: '#4A5D56', maxWidth: 500 }}>
             نقطة الجودة تُحسب تلقائياً من بياناتك — تعكس صحة مركزك بشكل عملي لا تخميني
           </p>
         </motion.div>
@@ -140,11 +140,11 @@ export default function QualityScore() {
           viewport={{ once: true }}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-0 rounded-3xl overflow-hidden"
-          style={{ background: '#09201E', border: '1px solid rgba(229,211,179,0.09)' }}
+          style={{ background: '#FFFFFF', border: '1px solid rgba(184, 134, 58, 0.09)' }}
         >
           {/* LEFT: Score display */}
           <div className="flex flex-col items-center justify-center gap-6 p-10"
-            style={{ borderLeft: '1px solid rgba(229,211,179,0.07)' }}>
+            style={{ borderLeft: '1px solid rgba(184, 134, 58, 0.07)' }}>
 
             {/* Sample badge */}
             <span className="text-xs font-bold px-3 py-1 rounded-full"
@@ -160,8 +160,8 @@ export default function QualityScore() {
 
             {/* Level label */}
             <div className="text-center">
-              <p className="font-black text-base" style={{ color: '#D9C8A3' }}>مستوى متقدم</p>
-              <p className="text-xs mt-1" style={{ color: '#6FA5A8' }}>
+              <p className="font-black text-base" style={{ color: '#7A6440' }}>مستوى متقدم</p>
+              <p className="text-xs mt-1" style={{ color: '#5E6E67' }}>
                 تُحدَّث تلقائياً كل شهر مع بياناتك
               </p>
             </div>
@@ -174,9 +174,9 @@ export default function QualityScore() {
                 { val: '٧٢٪', lbl: 'تفاعل أهل' },
               ].map(({ val, lbl }) => (
                 <div key={lbl} className="text-center rounded-xl py-2.5 px-1"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  style={{ background: 'rgba(11, 59, 51, 0.03)', border: '1px solid rgba(11, 59, 51, 0.07)' }}>
                   <p className="font-black text-sm" style={{ color: 'var(--warm)' }}>{val}</p>
-                  <p className="text-[10px] mt-0.5" style={{ color: '#6FA5A8' }}>{lbl}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: '#5E6E67' }}>{lbl}</p>
                 </div>
               ))}
             </div>
@@ -185,10 +185,10 @@ export default function QualityScore() {
           {/* RIGHT: Factor breakdown + explanation */}
           <div className="flex flex-col justify-between p-8 lg:p-10">
             <div>
-              <h3 className="font-black text-base mb-1" style={{ color: '#EAE4DF' }}>
+              <h3 className="font-black text-base mb-1" style={{ color: '#1A2E28' }}>
                 ما الذي تُقيسه النقطة؟
               </h3>
-              <p className="text-xs mb-6 leading-relaxed" style={{ color: '#96BCBE' }}>
+              <p className="text-xs mb-6 leading-relaxed" style={{ color: '#4A5D56' }}>
                 5 عوامل موزونة تُحلّل بيانات مركزك تلقائياً كل شهر
               </p>
 
@@ -200,8 +200,8 @@ export default function QualityScore() {
             </div>
 
             {/* Benefits */}
-            <div className="mt-8 pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="text-xs font-bold mb-3" style={{ color: '#48D6CD' }}>ما الذي تحصل عليه؟</p>
+            <div className="mt-8 pt-6" style={{ borderTop: '1px solid rgba(11, 59, 51, 0.07)' }}>
+              <p className="text-xs font-bold mb-3" style={{ color: '#1F6F52' }}>ما الذي تحصل عليه؟</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
                   'مقارنة شهرية بمراكز مشابهة',
@@ -211,7 +211,7 @@ export default function QualityScore() {
                 ].map(benefit => (
                   <div key={benefit} className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--warm)' }} />
-                    <span className="text-xs" style={{ color: '#96BCBE' }}>{benefit}</span>
+                    <span className="text-xs" style={{ color: '#4A5D56' }}>{benefit}</span>
                   </div>
                 ))}
               </div>

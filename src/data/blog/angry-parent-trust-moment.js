@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'messages',
   relatedPosts  : ['delivering-bad-news-to-parents', 'why-students-leave', 'reputation-as-marketing'],
   sources       : [],
-  coverColor    : '#2FAEB4',
+  coverColor    : '#2E7A5A',
   cover         : '/og/blog/angry-parent-trust-moment.jpg',
   sections: [
     {

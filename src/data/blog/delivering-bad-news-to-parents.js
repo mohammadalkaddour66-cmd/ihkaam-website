@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'parents',
   relatedPosts  : ['angry-parent-trust-moment', 'handling-chronic-absentees', 'why-students-leave'],
   sources       : [],
-  coverColor    : '#2FAEB4',
+  coverColor    : '#2E7A5A',
   cover         : '/og/blog/delivering-bad-news-to-parents.jpg',
   sections: [
     {

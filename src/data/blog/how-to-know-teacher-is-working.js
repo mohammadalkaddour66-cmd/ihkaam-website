@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'admin',
   relatedPosts  : ['motivating-teachers', 'reading-recitation-data', 'fair-recitation-system'],
   sources       : [],
-  coverColor    : '#B98A63',
+  coverColor    : '#7A5A2E',
   cover         : '/og/blog/how-to-know-teacher-is-working.jpg',
   sections: [
     {

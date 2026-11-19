@@ -15,13 +15,13 @@ import HeroSection from '../components/sections/HeroSection'
    ينتظر الحزم كلها.
    ══════════════════════════════════════════════════════════════════ */
 const IhkaamTrustStats       = lazy(() => import('../components/ihkaam/IhkaamTrustStats'))
-const PainSection            = lazy(() => import('../components/sections/PainSection'))
-const SolutionPreviewSection = lazy(() => import('../components/sections/SolutionPreviewSection'))
+const BeforeAfterSection     = lazy(() => import('../components/sections/BeforeAfterSection'))
 const HowItWorksSection      = lazy(() => import('../components/sections/HowItWorksSection'))
+const ProductTourSection     = lazy(() => import('../components/sections/ProductTourSection'))
+const MissionPhotoSection    = lazy(() => import('../components/sections/MissionPhotoSection'))
 const IhkaamPartners         = lazy(() => import('../components/ihkaam/IhkaamPartners'))
 const TestimonialsSection    = lazy(() => import('../components/sections/TestimonialsSection'))
 const IhkaamSuccessStories   = lazy(() => import('../components/ihkaam/IhkaamSuccessStories'))
-const IhkaamByNumbers        = lazy(() => import('../components/ihkaam/IhkaamByNumbers'))
 const FeatureLinksSection    = lazy(() => import('../components/sections/FeatureLinksSection'))
 const HomeFAQSection         = lazy(() => import('../components/sections/HomeFAQSection'))
 const IhkaamCTABanner        = lazy(() => import('../components/ihkaam/IhkaamCTABanner'))
@@ -38,17 +38,19 @@ export default function Home() {
       <Deferred><IhkaamTrustStats /></Deferred>
 
       {/* ── الفصل الثاني: المشكلة، والجواب، والطريق ── */}
-      <Deferred><PainSection /></Deferred>
-      <Deferred><SolutionPreviewSection /></Deferred>
+      {/* المشكلة والجواب مشهدٌ واحد يتبدّل (2026-11-19) — كانا قسمين من البطاقات */}
+      <Deferred><BeforeAfterSection /></Deferred>
       <Deferred><HowItWorksSection /></Deferred>
 
       {/* ── الفصل الثالث: البرهان — بأصواتٍ ليست صوتنا ── */}
       <Deferred><IhkaamPartners /></Deferred>
+      {/* جولة بلقطات حقيقية، ثم الشهادات، ثم رسالة إحكام بصور حقيقية (2026-11-19) */}
+      <Deferred><ProductTourSection /></Deferred>
       <Deferred><TestimonialsSection /></Deferred>
+      <Deferred><MissionPhotoSection /></Deferred>
       <Deferred><IhkaamSuccessStories /></Deferred>
-      <Deferred><IhkaamByNumbers /></Deferred>
 
-      <Deferred><FeatureLinksSection extraLinks /></Deferred>
+      <Deferred><FeatureLinksSection extraLinks visual /></Deferred>
 
       {/* أسئلة المشتري قبل القرار (ISS-56) */}
       <Deferred><HomeFAQSection /></Deferred>

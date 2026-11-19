@@ -9,7 +9,7 @@ const NOTES = [
 
 export default function RequestPage() {
   return (
-    <div style={{ background: '#020F0E', minHeight: '100svh', paddingTop: '72px' }}>
+    <div style={{ background: '#F8F5EC', minHeight: '100svh', paddingTop: '72px' }}>
       <IhkaamPricing />
       <PageNotes title="أسئلة قبل الطلب" items={NOTES} />
     </div>

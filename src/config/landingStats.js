@@ -1,3 +1,4 @@
+import { getActiveIds } from './activeInstitutes'
 // كل أرقام الموقع تأتي من دالة تجميع واحدة (get_public_landing_stats) بدل
 // عدّ الصفوف من المتصفح — الصفوف نفسها مقفلة على anon بعد تحصين RLS.
 // الوعد مُخزَّن على مستوى الوحدة: الصفحة الواحدة قد تعرض HeroSection و
@@ -21,7 +22,8 @@ let pending = null
 
 function normalize(r) {
   return {
-    institutes        : Number(r.institutes)           || 0,
+    /* «معهد نشط» = المفعّل فعلاً (activeInstitutes.js)، لا كل مسجّل */
+    institutes        : getActiveIds().size || Number(r.institutes) || 0,
     students          : Number(r.students)             || 0,
     staff             : Number(r.staff)                || 0,
     groups            : Number(r.groups)               || 0,
@@ -36,6 +38,28 @@ function normalize(r) {
     absences          : Number(r.absences)             || 0,
     absences30d       : Number(r.absences_30d)         || 0,
     updatedAt         : typeof r.updated_at === 'string' ? r.updated_at : null,
+    /* أرقام القرآن للمعاهد المفعّلة (get_public_quran_stats، 2026-11-19):
+       تُخبز مع البقية تحت المفتاح quran، أو تُجلب في المتصفح */
+    quran             : normalizeQuran(r.quran),
+  }
+}
+
+export const KHATMA_PAGES = 604
+
+function normalizeQuran(q) {
+  if (!q || typeof q !== 'object') return null
+  const n = (v) => Number(v) || 0
+  return {
+    institutes   : n(q.institutes),
+    pages        : n(q.quran_pages),
+    ghaybPages   : n(q.ghayb_pages),
+    pages30d     : n(q.pages_30d),
+    hadiths      : n(q.hadiths),
+    juzPassed    : n(q.juz_passed),
+    notifications: n(q.notifications),
+    students     : n(q.students),
+    staff        : n(q.staff),
+    monthly      : Array.isArray(q.monthly) ? q.monthly.map(x => ({ m: String(x.m), pages: n(x.pages) })) : [],
   }
 }
 
@@ -82,7 +106,13 @@ export function fetchLandingStats() {
   }
 
   pending = import('./supabaseClient')
-    .then(({ supabase }) => supabase.rpc('get_public_landing_stats'))
+    .then(({ supabase }) => Promise.all([
+      supabase.rpc('get_public_landing_stats'),
+      supabase.rpc('get_public_quran_stats').then(x => x.data ?? null, () => null),
+    ]).then(([res, quran]) => {
+      const row = Array.isArray(res.data) ? res.data[0] : res.data
+      return { ...res, data: row ? { ...row, quran } : row }
+    }))
     .catch((err) => {
       // إعدادات ناقصة أو فشل تحميل العميل — نفس معالجة خطأ الـ RPC أدناه:
       // نسجّل بصوت عالٍ ونعيد الأصفار بدل أن نُسقط الصفحة كلها.

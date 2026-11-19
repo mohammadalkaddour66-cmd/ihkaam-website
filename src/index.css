@@ -1,144 +1,131 @@
 @import "tailwindcss";
 
 /* ── Font ──
-   Cairo مستضاف ذاتياً من public/fonts (ISS-29). كان يُجلب من نطاقين خارجيين
-   (fonts.googleapis.com للورقة ثم fonts.gstatic.com للملف): رحلتا DNS وTLS
-   قبل أول حرف. الملفات الثلاثة ملفٌّ متغيّر واحد (300..900) مقسوم بحسب
-   الحروف، فلا يُنزَّل منها إلا ما تحتاجه الصفحة، والعربي مُحمَّل مسبقاً
-   في index.html. swap: النص يظهر بخط النظام فوراً ثم يتبدّل. */
+   قمرة (itf Qomra Arabic) خط إحكام المعتمد، لكل نصوص الموقع (2026-11-19).
+   مستضاف ذاتياً في public/fonts، ثلاثة أوزان فقط: 300 و400 و700.
+   الأوزان 500–600 تُعرض 700 و800–900 تُعرض 700 (قاعدة اختيار الوزن في CSS)،
+   فلا يُركَّب عريضٌ زائف. الملف يحمل العربي واللاتيني والأرقام معاً.
+   swap: النص يظهر بخط النظام فوراً ثم يتبدّل. */
 @font-face {
-  font-family: 'Cairo';
+  font-family: 'Qomra';
   font-style: normal;
-  font-weight: 300 900;
+  font-weight: 100 349;
   font-display: swap;
-  src: url('/fonts/cairo-arabic.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EEFF;
+  src: url('/fonts/qomra-light.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Cairo';
+  font-family: 'Qomra';
   font-style: normal;
-  font-weight: 300 900;
+  font-weight: 350 549;
   font-display: swap;
-  src: url('/fonts/cairo-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url('/fonts/qomra-regular.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Cairo';
+  font-family: 'Qomra';
   font-style: normal;
-  font-weight: 300 900;
+  font-weight: 550 1000;
+  font-display: swap;
+  src: url('/fonts/qomra-bold.woff2') format('woff2');
+}
+/* الأرقام اللاتينية وحدها من Cairo: «1» في قمرة بلا رأس فيُقرأ حرف I.
+   تحذير: يجب أن يحمل كل وجهٍ هنا مدى الوزن نفسه لوجه قمرة المقابل حرفياً.
+   وجهٌ واحد بمدى 100–1000 جعل كروم يختاره وحده لكل الأوزان، فسقطت
+   الحروف العربية إلى Segoe UI ولم تظهر قمرة أصلاً (2026-11-19). */
+@font-face {
+  font-family: 'Qomra';
+  font-style: normal;
+  font-weight: 100 349;
   font-display: swap;
   src: url('/fonts/cairo-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0030-0039;
 }
-/* خط النظام الذي يظهر قبل وصول Cairo، بمقاييس Cairo العمودية (مقروءة من
-   ملفه: ascent 1303 و descent 571 من 1000). هكذا يأخذ السطر الارتفاع نفسه
-   قبل التبديل وبعده، فلا تقفز الصفحة حين يصل الخط. */
 @font-face {
-  font-family: 'Cairo Fallback';
+  font-family: 'Qomra';
+  font-style: normal;
+  font-weight: 350 549;
+  font-display: swap;
+  src: url('/fonts/cairo-latin.woff2') format('woff2');
+  unicode-range: U+0030-0039;
+}
+@font-face {
+  font-family: 'Qomra';
+  font-style: normal;
+  font-weight: 550 1000;
+  font-display: swap;
+  src: url('/fonts/cairo-latin.woff2') format('woff2');
+  unicode-range: U+0030-0039;
+}
+/* خط النظام قبل وصول قمرة، بمقاييسها العمودية (ascent 723 و descent 390 من 800) */
+@font-face {
+  font-family: 'Qomra Fallback';
   src: local('Segoe UI'), local('Tahoma'), local('Arial'), local('Geeza Pro'), local('Noto Sans Arabic'), local('Roboto');
-  ascent-override: 130.3%;
-  descent-override: 57.1%;
+  ascent-override: 90.4%;
+  descent-override: 48.8%;
   line-gap-override: 0%;
 }
 
 @theme {
-  --font-arabic: 'Cairo', 'Cairo Fallback', sans-serif;
+  --font-arabic: 'Qomra', 'Qomra Fallback', sans-serif;
+  /* مقياس النصّ (2026-11-19): أصغر نصّ 13px والمتن 17px — كان 12 و13 و16 */
+  --text-xs  : 0.8125rem;  --text-xs--line-height : 1.6;
+  --text-sm  : 0.9375rem;  --text-sm--line-height : 1.75;
+  --text-base: 1.0625rem;  --text-base--line-height: 1.85;
+  --text-lg  : 1.1875rem;  --text-lg--line-height : 1.8;
+  --text-xl  : 1.3125rem;  --text-xl--line-height : 1.6;
 }
 
 /* ══════════════════════════════════════════════════════
-   SEMANTIC TOKENS
-   الهوية تركوازية. انحرفت مرّتين لأنّ القيم كانت تُستبدَل
-   في مكانها بينما التعليقات تبقى تقول «تركوازي»: آخر مرّة
-   صار الـaccent ذهبياً والـrose أخضر، و319 استعمالاً عبر
-   18 ملفاً تبعتهما. التعليق لا يُلزم أحداً — المتغيّر يُلزم.
-   كل لون جديد من الآن يمرّ من هنا، ودرجته (hue) خارج 70–166.
+   SEMANTIC TOKENS — الهوية الفاتحة (2026-11-19)
+   خلفية كريمية مريحة + أخضر حبريّ + بيج وذهب اللوغو.
+   التركوازي القديم وعائلته محذوف كلياً ولا يعود.
+   كل لون جديد يمرّ من هنا. التباين مقيس على --canvas.
    ══════════════════════════════════════════════════════ */
 :root {
-  /* ── Surfaces — سلّم A المضبوط (2026-07-30) ──────────────────
-     اللوحة المعتمدة هي A: الدرجة تبقى في 168°–176° فتبقى «الروح».
-     والتخفيف جاء من التشبّع لا من الدرجة، بقاعدة واحدة:
-     **التشبّع ينزل كلما كبرت المساحة** — لأن الطغيان يجيء من
-     التشبّع. الأخضرية المدرَكة (فارق G عن B مرجَّحاً بـ0.7152)
-     نزلت 59% على surface-1 و44% على surface-2، وهما السطحان
-     اللذان يغطّيان مساحة الصفحة فعلاً.
+  /* Surfaces — من الأفتح إلى الأعمق */
+  --canvas    : #F8F5EC;   /* خلفية الصفحة: كريمي دافئ، لا أبيض ناصع */
+  --canvas-2  : #FFFFFF;   /* واجهة البطاقة: ورقٌ أبيض على الكريمي */
+  --surface-1 : #F1ECDF;   /* لوح داخليّ */
+  --surface-2 : #E9E3D5;   /* لوح بارز / بيج */
+  --ink       : #0B3B33;   /* أخضر الحبر: أزرار أساسية وأقسام داكنة */
 
-     قبل هذا كانت أسطح الموقع الداكنة **54 قيمة مختلفة في 275
-     موضعاً** — لا أربعاً. جُمعت كلّها على هذه الأربع بالإضاءة. */
-  --canvas    : #020F0E;   /* hue 176° · تشبّع 72% · خلفية الصفحة */
-  --canvas-2  : #09201E;   /* hue 174° · تشبّع 58% · واجهة البطاقة */
-  --surface-1 : #11312C;   /* hue 171° · تشبّع 48% · لوحٌ داخليّ   */
-  --surface-2 : #1C423A;   /* hue 168° · تشبّع 40% · لوحٌ بارز     */
+  /* Brand — الأخضر */
+  --accent      : #1F6F52; /* 5.6:1 — الروابط والأيقونات واللكنة */
+  --accent-hover: #0B3B33; /* 11.4:1 — التحويم يُغمِّق */
+  --accent-deep : #2E7A5A; /* 4.9:1 — تنويع داخل العائلة */
 
-  /* Brand — أساسيّ واحد */
-  --accent      : #48D6CD; /* muted turquoise — the ONLY teal */
-  --accent-hover: #6FE7DE;
-  --accent-deep : #2FAEB4; /* تركوازي أغمق — تنويع داخل العائلة نفسها */
+  /* الثانويّ: ذهب اللوغو وبيجه — نصيبه عُشر الصفحة لا أكثر */
+  --gold      : #B8863A; /* 3.0:1 — زخرفة وحشو وأرقام كبيرة فقط */
+  --gold-soft : #E0B562; /* لمعة للتدرّجات */
+  --gold-deep : #8A6425; /* 4.9:1 — نصّ ذهبيّ */
+  --sand      : #7A6440; /* 5.2:1 — نصّ ثانويّ دافئ */
 
-  /* ── الثانويّ: ذهب اللوغو وبيجه ──
-     نسبةٌ لا نيّة. «ثانويّ» تعني ألّا يزيد نصيبه على عُشر ألوان
-     الصفحة، لا أن نصفه بذلك ثم نوزّعه على تسع بطاقات. حدّه أعلاه.
-     المدى اللوني 35°–41° كلّه — عائلة واحدة لا أربع عشرة درجة
-     مرتجلة كما كانت (E0B15E و F0C97A و E0C79A و C9A67E و B98A63
-     و C97F5A و C97F45 و D98841 و E8B93E و D9A03A … كلّها ذهبٌ
-     ظنّ كاتبُه أنه يختار لوناً جديداً).
-     الأرقام تباينٌ مقيس على --canvas. */
-  --gold      : #E3A93F; /*  9.4:1 — ذهب الحرف في اللوغو. النصّ والرقم */
-  --gold-soft : #F0CE8A; /* 14.1:1 — لمعة الحرف. للتدرّجات والوهج */
-  --gold-deep : #B8781F; /*  4.6:1 — ظلّ الحرف. حدودٌ وأطرافُ تدرّج، لا نصّ */
-  --sand      : #E5D3B3; /* 13.5:1 — بيج تذييل اللوغو. نصّ ثانويّ دافئ */
+  /* موروثة بأسمائها القديمة، قيمها الآن من الذهب والأخضر */
+  --rose      : #8A6425;
+  --clay      : #7A5A2E;
 
-  /* موروثتان: لا وجود لهما في اللوغو، وقد خرجتا من الرئيسية.
-     تبقيان لأن ثماني صفحاتٍ أخرى تستعملهما بعد. لا تُزادا. */
-  --rose        : #D9ACA3;
-  --clay        : #A6756A;
+  --pine-lit  : #3A8A68;
+  --pine      : #1F6F52;
+  --pine-deep : #0B3B33;
+  --warm-lit  : #B8863A;
+  --warm      : #8A6425;
+  --warm-deep : #7A5A2E;
 
-  /* ══ عائلتا اللوحة المعتمدة (2026-07-30) ══════════════════════
-     اللوحة الجديدة لونان لا أكثر: صنوبرٌ ودفءٌ طينيّ. وأدوارهما
-     تتبادل حسب الوسط، والتباين هو الذي فرض ذلك لا الذوق:
+  /* المقياس التصنيفيّ: ثلاث درجات ذهب + ثلاث أخضر */
+  --cat-1: #B8863A;
+  --cat-2: #8A6425;
+  --cat-3: #7A5A2E;
+  --cat-4: #0B3B33;
+  --cat-5: #1F6F52;
+  --cat-6: #2E7A5A;
 
-       #24735C  →  3.5:1 على الداكن  ·  5.7:1 على الأبيض
-       #D9B29C  → 10.2:1 على الداكن  ·  1.9:1 على الأبيض
-
-     أي: على الداكن يحمل الدفءُ النصَّ والصنوبرُ الحشوَ، وعلى
-     الأبيض ينقلب الأمر. ولهذا لا يحمل الأخضر حرفاً على خلفيةٍ
-     داكنة أبداً — فلا يقع في «الحشيش» الذي رُفض مرّتين. */
-  --pine-lit  : #41AA8C; /*  6.9:1 — حشوٌ فقط. فاقعٌ مقصود حصرُه */
-  --pine      : #24735C; /*  3.5:1 — حشوٌ وسطح. لا نصّ على الداكن */
-  --pine-deep : #0D4F41; /*  2.1:1 — حشوٌ أعمق. مساحةٌ صغيرة، فيبقى
-                              تشبّعه عالياً: قاعدةُ «التشبّع ينزل
-                              كلما كبرت المساحة» تعمل في الاتجاهين */
-  --warm-lit  : #EBD3C2; /* 13.8:1 */
-  --warm      : #D9B29C; /* 10.2:1 — لكنة الداكن ونصّه المميّز */
-  --warm-deep : #B98A63; /*  6.5:1 */
-
-  /* ══ المقياس التصنيفيّ ══════════════════════════════════════
-     ستّ درجات لِما يحتاج لوناً لكل بندٍ: مؤشّر الجودة، حاسبة
-     العائد، تصنيفات المقالات، بطاقات لوحة الإدارة.
-
-     غيابُه هو ما وَلَّد البنفسجيّ #B5A3D9 والأزرق #A3C4D9: ستّة
-     مكوّنات احتاجت مقياساً فاخترع كلٌّ منها واحداً. القاعدة معه:
-     اللونُ في النقطة والحشو، والعنوانُ نصٌّ من --text-* دائماً.
-     فتكفي ستّ درجاتٍ لأيّ عدد تصنيفات.
-
-     القيم الآن من عائلة التركواز القائمة + الدفء، حتى لا يُقحَم
-     الأخضر على أسطحٍ تركوازية فيقرأ اشتباكاً. عند قلب الأسطح
-     (المرحلة ٣) تُبدَّل الثلاث الأخيرة إلى --pine-lit و--pine
-     و--pine-deep، وهذا كل ما يلزم — ثلاثة أسطر في مكانٍ واحد. */
-  --cat-1: #EBD3C2;
-  --cat-2: #D9B29C;
-  --cat-3: #B98A63;
-  --cat-4: #6FE7DE;
-  --cat-5: #48D6CD;
-  --cat-6: #2FAEB4;
-
-  /* Text — كلها ≥4.5:1 على --canvas (مقيسة، لا مقدَّرة) */
-  --text-1: #EAE4DF;       /* 16.8:1 */
-  --text-2: #96BCBE;       /*  6.7:1 */
-  --text-3: #6FA5A8;       /*  5.0:1 — الحدّ الأدنى، لا تُعتِمه أكثر */
+  /* Text — كلها ≥4.5:1 على --canvas */
+  --text-1: #1A2E28;       /* 13.2:1 */
+  --text-2: #4A5D56;       /*  6.4:1 */
+  --text-3: #5E6E67;       /*  4.9:1 — الحدّ الأدنى */
 
   /* Borders */
-  --border    : rgba(26, 148, 155, 0.16);
-  --border-hi : rgba(72, 214, 205, 0.28);
+  --border    : rgba(11, 59, 51, 0.12);
+  --border-hi : rgba(31, 111, 82, 0.28);
 
   /* Motion — نغمة واحدة لكل الحركة (motion-consistency) */
   --ease-out : cubic-bezier(0.22, 1, 0.36, 1);
@@ -202,9 +189,9 @@
 html  { scroll-behavior: smooth; }
 body  {
   margin: 0;
-  font-family: 'Cairo', 'Cairo Fallback', sans-serif;
-  background-color: #020F0E;
-  color: #EAE4DF;
+  font-family: 'Qomra', 'Qomra Fallback', sans-serif;
+  background-color: #F8F5EC;
+  color: #1A2E28;
   direction: rtl;
   -webkit-font-smoothing: antialiased;
 }
@@ -267,40 +254,40 @@ body  {
 
 /* ════════════════════════════════════════════
    BENTO BOX — the core UI atom
-   Solid dark surface (#09201E), 1px teal
+   Solid dark surface (#FFFFFF), 1px teal
    border, 20px radius. Hover: border glows,
    box lifts 3px. No blur — true bento,
    not glassmorphism.
    ════════════════════════════════════════════ */
 .bento {
-  background   : #09201E;
-  border       : 1px solid rgba(26, 148, 155, 0.16);
+  background   : #FFFFFF;
+  border       : 1px solid rgba(11, 59, 51, 0.16);
   border-radius: 20px;
   transition   : border-color 400ms ease-out,
                  box-shadow   400ms ease-out,
                  transform    400ms ease-out;
 }
 .bento:hover {
-  border-color : rgba(72, 214, 205, 0.28);
-  box-shadow   : 0 0 0 1px rgba(72, 214, 205, 0.06),
-                 0 24px 64px rgba(0, 0, 0, 0.50);
+  border-color : rgba(31, 111, 82, 0.28);
+  box-shadow   : 0 0 0 1px rgba(31, 111, 82, 0.06),
+                 0 24px 64px rgba(11, 59, 51, 0.15);
   transform    : translateY(-3px);
 }
 
 /* card-glass → bento alias — keeps all
    unmodified components visually consistent */
 .card-glass {
-  background   : #09201E;
-  border       : 1px solid rgba(26, 148, 155, 0.16);
+  background   : #FFFFFF;
+  border       : 1px solid rgba(11, 59, 51, 0.16);
   border-radius: 20px;
   transition   : border-color 400ms ease-out,
                  box-shadow   400ms ease-out,
                  transform    400ms ease-out;
 }
 .card-glass:hover {
-  border-color : rgba(72, 214, 205, 0.28);
-  box-shadow   : 0 0 0 1px rgba(72, 214, 205, 0.06),
-                 0 24px 64px rgba(0, 0, 0, 0.50);
+  border-color : rgba(31, 111, 82, 0.28);
+  box-shadow   : 0 0 0 1px rgba(31, 111, 82, 0.06),
+                 0 24px 64px rgba(11, 59, 51, 0.15);
   transform    : translateY(-3px);
 }
 
@@ -342,7 +329,7 @@ body  {
 .stat-card:hover {
   transform   : translateY(-4px);
   border-color: color-mix(in srgb, var(--gc) 34%, transparent);
-  box-shadow  : 0 18px 40px rgba(0, 0, 0, 0.34);
+  box-shadow  : 0 18px 40px rgba(11, 59, 51, 0.102);
 }
 
 /* الشريط العلويّ — علامةُ المجموعة. يخبو نحو النهاية فلا يصير خطاً
@@ -377,9 +364,9 @@ body  {
    المادّة لا في اللون — ولا يُصلحه تغييرُ درجة.
 
    ثم في 2026-07-30 سأل المستخدم: «الأخضر في بطاقات الشهادات من
-   أين؟» — وكان من موضعين: `--canvas-2` (#09201E · درجة 174° ·
+   أين؟» — وكان من موضعين: `--canvas-2` (#FFFFFF · درجة 174° ·
    تشبّع 58% · إضاءة 8%) مبسوطاً **مصمتاً** على كامل البطاقة،
-   و`--pine` (#24735C · درجة **162°**) في شريحة الشعار ووهج القسم.
+   و`--pine` (#1F6F52 · درجة **162°**) في شريحة الشعار ووهج القسم.
    و162° داخل النطاق المحرَّم 70–166 أصلاً. والمصمت هو الجاني
    الأكبر: نفس `--canvas-2` موجودٌ في بطاقة «كيف يعمل» ولا يُقرأ
    أخضر — لأنه هناك 70% شفافية تهبط إلى `--canvas` 95%، فالدرجة
@@ -404,8 +391,8 @@ body  {
   background    : linear-gradient(145deg,
                     color-mix(in srgb, var(--canvas-2) 70%, transparent) 0%,
                     color-mix(in srgb, var(--canvas)   95%, transparent) 100%);
-  border        : 1px solid rgba(72, 214, 205, 0.15);
-  box-shadow    : inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  border        : 1px solid rgba(31, 111, 82, 0.15);
+  box-shadow    : inset 0 1px 0 0 rgba(11, 59, 51, 0.05);
   transition    : transform    400ms var(--ease-out),
                   border-color 400ms var(--ease-out),
                   box-shadow   400ms var(--ease-out);
@@ -413,8 +400,8 @@ body  {
 .testimonial-card:hover {
   transform   : translateY(-4px);
   border-color: var(--border-hi);
-  box-shadow  : inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
-                0 18px 40px rgba(0, 0, 0, 0.34);
+  box-shadow  : inset 0 1px 0 0 rgba(11, 59, 51, 0.09),
+                0 18px 40px rgba(11, 59, 51, 0.102);
 }
 
 /* القاعدة الرأسية — التمييز الوحيد. تبدأ باللكنة وتخبو نزولاً. */
@@ -466,7 +453,7 @@ body  {
 /* ── Warm Sand → Dusty Rose headline gradient ──
    موروث: ثماني صفحاتٍ خارج الرئيسية تستعمله. لا يُمسّ. */
 .text-rose-grad {
-  background: linear-gradient(135deg, #E5D3B3 10%, #D9ACA3 55%, #A6756A 95%);
+  background: linear-gradient(135deg, #7A6440 10%, #8A6425 55%, #7A5A2E 95%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -486,14 +473,14 @@ body  {
 
 /* ── Subtle dot grid texture ── */
 .pattern-dots {
-  background-image: radial-gradient(circle, rgba(26, 148, 155,0.14) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.70) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 /* ── Divider — teal gradient line ── */
 .divider {
   height: 1px;
-  background: linear-gradient(to left, transparent, rgba(26, 148, 155,0.24), transparent);
+  background: linear-gradient(to left, transparent, rgba(11, 59, 51, 0.24), transparent);
 }
 
 /* ════════════════════════════════════════════
@@ -539,7 +526,7 @@ body  {
 }
 .btn-cta:hover {
   background : var(--accent-hover);
-  box-shadow : 0 8px 32px rgba(72, 214, 205, 0.28);
+  box-shadow : 0 8px 32px rgba(31, 111, 82, 0.28);
   transform  : translateY(-2px);
 }
 /* الضغط بلا ارتداد بصري يجعل الزر يبدو معطّلاً على اللمس،
@@ -548,7 +535,7 @@ body  {
 
 /* ── Ghost / outline button ── */
 .btn-outline {
-  border      : 1.5px solid rgba(72, 214, 205, 0.30);
+  border      : 1.5px solid rgba(31, 111, 82, 0.30);
   color       : var(--accent);
   font-weight : 700;
   cursor      : pointer;
@@ -559,8 +546,8 @@ body  {
                 transform    var(--dur-base) var(--ease-out);
 }
 .btn-outline:hover {
-  border-color: rgba(72, 214, 205, 0.65);
-  background  : rgba(72, 214, 205, 0.07);
+  border-color: rgba(31, 111, 82, 0.65);
+  background  : rgba(31, 111, 82, 0.07);
   transform   : translateY(-2px);
 }
 .btn-outline:active { transform: translateY(0) scale(0.97); transition-duration: var(--dur-fast); }
@@ -574,16 +561,16 @@ body  {
    تتناسب مع حجم الحرف. فالحدّ الأدنى هنا لكل العروض، وطبقة
    الجوال تاليةً تشدّده أكثر لضيق الشاشة.
    ══════════════════════════════════════════════════════════════ */
-h1 { line-height: 1.30 !important; }
-h2 { line-height: 1.35 !important; }
+h1 { line-height: 1.22 !important; letter-spacing: -0.005em; }
+h2 { line-height: 1.3 !important; }
 h3 { line-height: 1.45 !important; }
 
 /* الوسط بين الجوال وسطح المكتب: القياسات هنا كانت تُترك للحدّ
    الأدنى في clamp أيضاً، فبقي اللوح اللوحي بعناوين 40px مضغوطة */
 @media (min-width: 641px) and (max-width: 1024px) {
-  h1 { font-size: clamp(1.9rem, 4.6vw, 2.6rem) !important; line-height: 1.34 !important; }
-  h2 { font-size: clamp(1.5rem, 3.4vw, 1.9rem) !important; line-height: 1.38 !important; }
-  h3 { font-size: clamp(1.15rem, 2.4vw, 1.35rem) !important; line-height: 1.5 !important; }
+  h1 { font-size: clamp(2.4rem, 5.6vw, 3.4rem) !important; line-height: 1.24 !important; }
+  h2 { font-size: clamp(1.9rem, 4vw, 2.5rem) !important; line-height: 1.32 !important; }
+  h3 { font-size: clamp(1.2rem, 2.4vw, 1.4rem) !important; line-height: 1.5 !important; }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -632,9 +619,9 @@ h3 { line-height: 1.45 !important; }
 @media (max-width: 640px) {
 
   /* ── العناوين: مقاس يتنفّس داخل مدى الجوال نفسه ── */
-  h1 { font-size: clamp(1.5rem,  7vw,   1.85rem) !important; line-height: 1.45 !important; }
-  h2 { font-size: clamp(1.25rem, 5.2vw, 1.5rem)  !important; line-height: 1.45 !important; }
-  h3 { font-size: clamp(1.05rem, 4.2vw, 1.2rem)  !important; line-height: 1.55 !important; }
+  h1 { font-size: clamp(2rem, 8.6vw, 2.5rem) !important; line-height: 1.3 !important; }
+  h2 { font-size: clamp(1.6rem, 6.6vw, 1.95rem)  !important; line-height: 1.36 !important; }
+  h3 { font-size: clamp(1.15rem, 4.6vw, 1.3rem)  !important; line-height: 1.5 !important; }
 
   /* التوازن البصري: العنوان الطويل بلا كسرٍ لطيف يترك كلمة يتيمة */
   h1, h2, h3 { text-wrap: balance; }
@@ -662,7 +649,7 @@ h3 { line-height: 1.45 !important; }
      الواسعة، وغيرُ مقروءٍ على شاشة الهاتف.
 
      أرقام صريحة لا 0.7* عامة: 0.75rem و 0.78rem سليمتان أصلاً. */
-  .text-\[8\.5px\], .text-\[9px\], .text-\[10px\], .text-\[11px\] { font-size: 0.75rem; line-height: 1.6; }
+  .text-\[8\.5px\], .text-\[9px\], .text-\[10px\], .text-\[11px\] { font-size: 0.8125rem; line-height: 1.6; }
 
   /* (ب) قيم rem سطرية، و(ج) أصناف tailwind الحرّة text-[0.72rem].
      تُطابَق سمتا style و class نصّياً — أيسر من هروب الأقواس
@@ -675,21 +662,23 @@ h3 { line-height: 1.45 !important; }
   [style*="font-size: 0.72"], [class*="text-[0.72"],
   [style*="font-size: 0.73"], [class*="text-[0.73"],
   [style*="font-size: 0.74"], [class*="text-[0.74"] {
-    font-size: 0.75rem !important;
+    font-size: 0.8125rem !important;
   }
   /* ضُبطت نزولاً بعد المعاينة: 1.75 و1.8 كانتا سخيّتين داخل
      البطاقة — تنفخ ارتفاعها وتطيل الصفحة بلا مقابل في الوضوح.
      1.6–1.7 مريحة للعربية وتوفّر سطراً كاملاً في كل فقرة.
      الضيق المعطوب كان في العناوين (1.14) لا في المتن. */
   .text-xs  { line-height: 1.60; }
-  .text-sm  { font-size: 0.82rem; line-height: 1.65; }  /* 14   → 13.1 */
-  .text-base{ font-size: 0.9rem;  line-height: 1.70; }  /* 16   → 14.4 */
-  .text-lg  { font-size: 1rem;    line-height: 1.70; }  /* 18   → 16   */
-  .text-xl  { font-size: 1.1rem;  line-height: 1.55; }  /* 20   → 17.6 */
+  /* كانت تصغّر المتن على الجوال (14→13.1 و16→14.4): أصل «عدم الوضوح».
+     صار الجوال يأخذ مقياس :root نفسه مع تخفيفٍ طفيف للعناوين الفرعية. */
+  .text-sm  { font-size: 0.9375rem; line-height: 1.75; }
+  .text-base{ font-size: 1rem;      line-height: 1.8; }
+  .text-lg  { font-size: 1.0625rem; line-height: 1.75; }
+  .text-xl  { font-size: 1.1875rem; line-height: 1.6; }
 
   /* عناوين البطاقات — h3 أُضيف له أعلاه مقاسٌ عام، ويُشدّ هنا
      قليلاً لأن عنوان البطاقة يجاور متناً أصغر فيبدو ضخماً بجانبه */
-  h3 { font-size: clamp(0.98rem, 3.9vw, 1.12rem) !important; }
+  h3 { font-size: clamp(1.1rem, 4.4vw, 1.25rem) !important; }
 
   /* مربّعات الأيقونات: 44px داخل بطاقةٍ عرضها 342 كتلةٌ ثقيلة */
   .w-11.h-11 { width: 2.25rem; height: 2.25rem; }  /* 44 → 36 */
@@ -719,8 +708,8 @@ h3 { line-height: 1.45 !important; }
 
   /* ── الأزرار: كانت تبتلع الشاشة عرضاً وارتفاعاً ── */
   .btn-cta, .btn-outline {
-    padding    : 0.8rem 1.5rem !important;
-    font-size  : 0.95rem       !important;
+    padding    : 0.85rem 1.6rem !important;
+    font-size  : 1rem          !important;
     line-height: 1.5           !important;
   }
 
@@ -810,8 +799,8 @@ h3 { line-height: 1.45 !important; }
   to   { opacity: 1; transform: scale(1);    }
 }
 @keyframes pulse-btn {
-  0%,100% { box-shadow: 0 0 0 0   rgba(72, 214, 205, 0.40); }
-  50%     { box-shadow: 0 0 0 12px rgba(72, 214, 205, 0.00); }
+  0%,100% { box-shadow: 0 0 0 0   rgba(31, 111, 82, 0.40); }
+  50%     { box-shadow: 0 0 0 12px rgba(31, 111, 82, 0.00); }
 }
 
 /* ════════════════════════════════════════════
@@ -867,3 +856,253 @@ h3 { line-height: 1.45 !important; }
 }
 .hero-lift { animation: hero-lift 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--rise-delay, 0s) both; }
 @media (prefers-reduced-motion: reduce) { .hero-lift { animation: none !important; } }
+
+/* ══════════════════════════════════════════════════════════════════
+   نظام التصميم — الجولة الثانية (2026-11-19)
+   قمرة لكل النصوص، وتناوب الأقسام بين الكريمي والأخضر الحبريّ،
+   وبطاقاتٌ بيضاء بحدٍّ دافئ وظلٍّ ناعم واحد بدل الوهج.
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+  --paper       : #FFFFFF;                     /* سطح البطاقة على الكريمي */
+  --line-warm   : #E6DFCF;                     /* حدّ البطاقة: بيجٌ لا رماديّ */
+  --ink-deep    : #082C26;                     /* أعمق الأخضر: أسفل التدرّج الداكن */
+  --shadow-sm   : 0 1px 2px rgba(11, 59, 51, 0.05), 0 4px 14px -6px rgba(11, 59, 51, 0.10);
+  --shadow-md   : 0 2px 4px rgba(11, 59, 51, 0.04), 0 14px 34px -14px rgba(11, 59, 51, 0.20);
+  --shadow-lg   : 0 30px 70px -28px rgba(8, 44, 38, 0.45);
+  --ring-gold   : 0 0 0 1px rgba(184, 134, 58, 0.35);
+}
+
+/* نقش النجمة الثُّمانية — بلاطة 80px، خطّ ذهبيّ رفيع */
+.pattern-khatam {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23E0B562' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='7'/%3E%3Cpath d='M0 0L22 22M80 0L58 22M0 80L22 58M80 80L58 58M40 0v14.5M40 80v-14.5M0 40h14.5M80 40h-14.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+.pattern-khatam-ink {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%230B3B33' stroke-width='1'%3E%3Crect x='22' y='22' width='36' height='36'/%3E%3Crect x='22' y='22' width='36' height='36' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='7'/%3E%3Cpath d='M0 0L22 22M80 0L58 22M0 80L22 58M80 80L58 58M40 0v14.5M40 80v-14.5M0 40h14.5M80 40h-14.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* ── القسم الداكن ──
+   يعيد تعريف متغيّرات النصّ والسطح داخله، فكل ما بُني على var(--text-*)
+   ينقلب وحده. اللكنة على الداكن ذهبٌ فاتح لا أخضر (7:1 على --ink). */
+.section-dark {
+  position  : relative;
+  isolation : isolate;
+  color     : #F8F5EC;
+  background: radial-gradient(ellipse 80% 70% at 85% 0%, rgba(224, 181, 98, 0.10), transparent 60%),
+              linear-gradient(170deg, var(--ink) 0%, var(--ink-deep) 100%);
+  --text-1     : #F8F5EC;
+  --text-2     : rgba(248, 245, 236, 0.80);
+  --text-3     : rgba(248, 245, 236, 0.66);
+  --accent      : #E0B562;
+  --accent-hover: #F8F5EC;
+  --accent-deep : #A8D5BA;
+  --canvas-2   : rgba(255, 255, 255, 0.05);
+  --border     : rgba(224, 181, 98, 0.20);
+  --border-hi  : rgba(224, 181, 98, 0.45);
+}
+.section-dark > .pattern-layer {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.07;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 85%);
+          mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 85%);
+}
+.section-dark .btn-cta       { background: #E0B562; color: var(--ink); }
+.section-dark .btn-cta:hover { background: #ECC77D; box-shadow: 0 10px 30px -8px rgba(224, 181, 98, 0.55); }
+.section-dark .btn-outline       { border-color: rgba(248, 245, 236, 0.35); color: #F8F5EC; }
+.section-dark .btn-outline:hover { border-color: rgba(248, 245, 236, 0.7); background: rgba(248, 245, 236, 0.08); }
+
+/* بطاقة على الداكن: زجاجٌ معتم بحدّ ذهبيّ رفيع */
+.card-on-dark {
+  background   : rgba(255, 255, 255, 0.045);
+  border       : 1px solid rgba(224, 181, 98, 0.20);
+  border-radius: 18px;
+  box-shadow   : inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── البطاقات على الفاتح: ورقٌ أبيض، حدٌّ بيج، ظلٌّ واحد ── */
+.bento, .card-glass {
+  background  : var(--paper);
+  border-color: var(--line-warm);
+  box-shadow  : var(--shadow-sm);
+}
+.bento:hover, .card-glass:hover {
+  border-color: rgba(184, 134, 58, 0.45);
+  box-shadow  : var(--shadow-md);
+}
+.stat-card, .testimonial-card {
+  background  : var(--paper);
+  border-color: var(--line-warm);
+  box-shadow  : var(--shadow-sm);
+}
+.stat-card:hover, .testimonial-card:hover { box-shadow: var(--shadow-md); }
+
+/* ── كلمة العنوان الذهبية وتحتها خطّ مرسوم ── */
+.title-mark {
+  position   : relative;
+  display    : inline-block;
+  white-space: nowrap;
+  color      : var(--gold);
+}
+.section-dark .title-mark { color: #E0B562; }
+.title-mark::after {
+  content : '';
+  position: absolute;
+  inset-inline: -2%;
+  bottom  : -0.08em;
+  height  : 0.22em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C 50 2, 120 2, 197 7' fill='none' stroke='%23B8863A' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  opacity : 0.9;
+}
+
+/* ── شارة القسم (eyebrow) ── */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .4rem 1rem; border-radius: 999px;
+  font-size: .8125rem; font-weight: 700;
+  color: var(--gold-deep);
+  background: rgba(184, 134, 58, 0.09);
+  border: 1px solid rgba(184, 134, 58, 0.28);
+}
+.section-dark .eyebrow { color: #E0B562; background: rgba(224, 181, 98, 0.10); border-color: rgba(224, 181, 98, 0.32); }
+
+/* ── شريط زخرفيّ بين الأقسام الكبرى ── */
+.ornament-band {
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'%3E%3Cg fill='none' stroke='%23B8863A' stroke-width='1'%3E%3Cpath d='M14 2l5 5-5 5-5-5z'/%3E%3Cpath d='M0 7h7M21 7h7'/%3E%3C/g%3E%3C/svg%3E") center / 28px 14px repeat-x;
+  opacity: .55;
+}
+
+/* ── الشريط العائم ── */
+.nav-pill {
+  background: rgba(253, 251, 247, 0.92);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+          backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* أرضية القراءة على الشاشات الواسعة أيضاً */
+@media (min-width: 641px) {
+  .text-\[8\.5px\], .text-\[9px\], .text-\[10px\], .text-\[11px\] { font-size: 0.75rem; }
+}
+
+/* بطاقات الأرقام والشهادات داخل قسمٍ داكن */
+.section-dark .stat-card, .section-dark .testimonial-card {
+  background  : rgba(255, 255, 255, 0.045);
+  border-color: rgba(224, 181, 98, 0.20);
+  box-shadow  : inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.section-dark .stat-card:hover { border-color: rgba(224, 181, 98, 0.45); box-shadow: 0 20px 44px -20px rgba(0, 0, 0, 0.6); }
+.section-dark .divider { background: linear-gradient(to left, transparent, rgba(224, 181, 98, 0.32), transparent); }
+
+/* حلقة الحضور في موك-أب الهيرو: تُرسم مرّة عند الدخول */
+@keyframes hero-ring-draw { from { stroke-dashoffset: var(--ring-len); } to { stroke-dashoffset: 0; } }
+.hero-ring { stroke-dashoffset: 0; animation: hero-ring-draw 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both; }
+@media (prefers-reduced-motion: reduce) { .hero-ring { animation: none; } }
+
+/* الشهادات: دخول النصّ وشريط التقدّم */
+@keyframes testi-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.testi-in { animation: testi-in 600ms var(--ease-out) both; }
+@keyframes testi-progress { from { width: 0%; } to { width: 100%; } }
+.testi-progress { animation: testi-progress var(--testi-ms, 9000ms) linear both; }
+.testi-list { scrollbar-width: thin; scrollbar-color: rgba(184,134,58,0.4) transparent; }
+@media (prefers-reduced-motion: reduce) { .testi-in, .testi-progress { animation: none; } }
+
+/* ── مشهد «قبل إحكام»: قطعٌ من مكتب المعهد ── */
+.ba-paper {
+  position: relative; background: #FFFEF8; border-radius: 0.4cqw;
+  box-shadow: 0 1.6cqw 3cqw -1.2cqw rgba(60, 40, 10, 0.45), 0 0 0 1px rgba(0,0,0,0.04);
+  background-image: linear-gradient(90deg, transparent 2.2cqw, rgba(185, 28, 28, 0.25) 2.2cqw, rgba(185, 28, 28, 0.25) calc(2.2cqw + 1px), transparent calc(2.2cqw + 1px));
+}
+.ba-chat {
+  border-radius: 1.4cqw; overflow: hidden;
+  box-shadow: 0 2cqw 3.5cqw -1.4cqw rgba(0, 0, 0, 0.45);
+}
+.ba-sticky {
+  background: linear-gradient(170deg, #FFE98A, #F9D85A);
+  box-shadow: 0 1.4cqw 2.4cqw -1cqw rgba(110, 80, 0, 0.5);
+  border-radius: 0.2cqw 0.2cqw 1.4cqw 0.2cqw;
+}
+.ba-notebook {
+  border-radius: 0.8cqw 1.4cqw 1.4cqw 0.8cqw;
+  background: linear-gradient(135deg, #5B3A22, #3E2615);
+  box-shadow: 0 2cqw 3.5cqw -1.4cqw rgba(40, 20, 5, 0.6), inset -0.6cqw 0 0 rgba(0,0,0,0.25);
+}
+
+/* ── الأزرار: لمعةٌ تمرّ عند التحويم، والسهم يتقدّم نحو الفعل ── */
+.btn-cta { position: relative; overflow: hidden; isolation: isolate; box-shadow: 0 8px 22px -10px rgba(11, 59, 51, 0.55), inset 0 1px 0 rgba(255,255,255,0.18); }
+.btn-cta::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 48%, transparent 66%);
+  transform: translateX(110%); transition: transform 700ms var(--ease-out);
+}
+.btn-cta:hover::before { transform: translateX(-110%); }
+.btn-cta svg, .btn-outline svg { transition: transform var(--dur-base) var(--ease-out); }
+.btn-cta:hover svg, .btn-outline:hover svg { transform: translateX(-4px); }
+.section-dark .btn-cta { box-shadow: 0 10px 26px -10px rgba(224, 181, 98, 0.6), inset 0 1px 0 rgba(255,255,255,0.4); }
+@media (prefers-reduced-motion: reduce) { .btn-cta::before { display: none; } }
+/* وحدة المشهد: 1% من عرضه على الشاشات الواسعة، وأكبر على الجوال كي تُقرأ القطع */
+.ba-stage { --u: 1cqw; }
+@media (max-width: 639px) { .ba-stage { --u: 1.75cqw; } }
+
+/* سطح المكتب الخشبي في مشهد «اليوم» */
+.ba-wood {
+  background:
+    radial-gradient(ellipse 70% 60% at 70% 30%, rgba(255, 235, 200, 0.35), transparent 70%),
+    repeating-linear-gradient(92deg, rgba(90, 55, 25, 0.0) 0 22px, rgba(90, 55, 25, 0.06) 22px 23px, rgba(90, 55, 25, 0.0) 23px 61px, rgba(90, 55, 25, 0.04) 61px 63px),
+    repeating-linear-gradient(88deg, rgba(120, 75, 35, 0.05) 0 3px, transparent 3px 9px),
+    linear-gradient(160deg, #C9A57A 0%, #B48A5C 55%, #9C744A 100%);
+}
+.ba-wood::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 120px rgba(40, 20, 5, 0.45); }
+
+/* بطاقة الميزة: الشاشة الحقيقية ترتفع قليلاً عند التحويم */
+.feat-card { transition: transform 350ms var(--ease-out), box-shadow 350ms var(--ease-out); }
+.feat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md), inset 0 0 0 1px rgba(184,134,58,0.5) !important; }
+.feat-shot { transition: transform 600ms var(--ease-out); }
+.feat-card:hover .feat-shot { transform: translateY(-3px) scale(1.035); }
+
+/* ── حياةٌ خافتة في الأقسام الداكنة (2026-11-19 ج) ──
+   طلب المالك «شيئاً حيوياً في الخلفية» بلا تثقيل. ضوءٌ ذهبيّ واحد يسبح
+   ببطء فوق كل قسمٍ داكن، والنقش يتنفّس معه. transform وopacity فقط
+   (يُحسبان على المعالج الرسومي، لا إعادة رسم)، وoverflow: clip يقصّ
+   الضوء عند حدّ القسم دون أن يكسر sticky. ويقف لمن طلب حركةً أقل. */
+.section-dark { overflow: clip; }
+.section-dark::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  width: 70vmax; height: 70vmax; top: -35vmax; right: -20vmax;
+  background: radial-gradient(circle, rgba(224, 181, 98, 0.16) 0%, rgba(224, 181, 98, 0.05) 35%, transparent 62%);
+  animation: dark-drift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes dark-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-45%, 35%, 0) scale(1.15); }
+  100% { transform: translate3d(-90%, 10%, 0) scale(0.95); }
+}
+.section-dark > .pattern-layer { animation: pattern-breathe 9s ease-in-out infinite alternate; }
+@keyframes pattern-breathe {
+  from { opacity: 0.05; }
+  to   { opacity: 0.11; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-dark::before, .section-dark > .pattern-layer { animation: none; }
+}
+
+/* بطاقات الأدوار في صفحة المنصة */
+.aud-card { transition: transform 400ms var(--ease-out), box-shadow 400ms var(--ease-out); }
+.aud-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md), inset 0 0 0 1px rgba(184,134,58,0.5); }
+.aud-img { transition: transform 900ms var(--ease-out); }
+.aud-card:hover .aud-img { transform: scale(1.05); }
+
+/* ── الشريط الفرعي لصفحة المنصة (2026-11-19 هـ) ──
+   يبدأ تحت الشريط الرئيسي (76px) ويثبت عنده، وحين يختفي الرئيسي
+   مع النزول (html[data-nav-hidden]) يصعد إلى أعلى الشاشة. */
+.subnav { top: 84px; margin-top: 88px; transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+html[data-nav-hidden] .subnav { top: 12px; }
+.subnav-track { scrollbar-width: none; }
+.subnav-track::-webkit-scrollbar { display: none; }
+@media (max-width: 760px) {
+  .subnav-track {
+    -webkit-mask-image: linear-gradient(to left, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+            mask-image: linear-gradient(to left, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) { .subnav { transition: none; } }

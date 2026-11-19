@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'admin',
   relatedPosts  : ['why-centers-fail-to-scale', 'monthly-reports-time-trap', 'attendance-register-template'],
   sources       : [],
-  coverColor    : '#EBD3C2',
+  coverColor    : '#B8863A',
   cover         : '/og/blog/digital-transformation-quran-centers.jpg',
   sections: [
     {

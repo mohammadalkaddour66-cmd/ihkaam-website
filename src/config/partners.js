@@ -13,6 +13,7 @@
      طلبٌ واحد يتشاركه الثلاثة (supabaseClient يوحّد الطلبات المتطابقة).
    ══════════════════════════════════════════════════════════════════ */
 import { supabase } from './supabaseClient'
+import { getActiveIds } from './activeInstitutes'
 
 const USE_VIEW = import.meta.env.VITE_PARTNERS_VIEW === '1'
 
@@ -63,4 +64,8 @@ export function dedupe(list) {
   return [...seen.values()]
 }
 
-export const cleanPartners = (rows) => dedupe((rows || []).filter(p => !isExcluded(p)))
+/* يظهر في الموقع المعهد المفعّل وحده (activeInstitutes.js) */
+export const cleanPartners = (rows) => {
+  const active = getActiveIds()
+  return dedupe((rows || []).filter(p => !isExcluded(p) && active.has(p.institute_id)))
+}

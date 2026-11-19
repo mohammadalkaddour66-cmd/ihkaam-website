@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   LayoutDashboard, UserCheck, Users, GraduationCap,
@@ -11,230 +10,116 @@ const AUDIENCES = [
     icon       : LayoutDashboard,
     num        : '01',
     title      : 'الإدارة',
+    img        : '/scenes/role-director.webp',
     sub        : 'قيادة المعهد واتخاذ القرار',
     bullets    : [
       'تقارير ومؤشرات أداء لحظية شاملة',
       'رصد جميع العمليات والكادر من مكان واحد',
       'قرارات مدعومة بالبيانات لا بالتخمين',
     ],
-    accent     : '#48D6CD',
-    bgGlow     : 'rgba(72,214,205,0.12)',
-    borderColor: 'rgba(72,214,205,0.18)',
+    accent     : '#1F6F52',
+    bgGlow     : 'rgba(31, 111, 82, 0.12)',
+    borderColor: 'rgba(31, 111, 82, 0.18)',
   },
   {
     icon       : UserCheck,
     num        : '02',
     title      : 'المعلم',
+    img        : '/scenes/role-teacher.webp',
     sub        : 'إدارة الحلقة بكفاءة عالية',
     bullets    : [
       'تسميع وحضور وملاحظات بلمسة واحدة',
       'اختبارات ونتائج فورية بدون ورق',
       'وقته للتعليم — إحكام يتولى الباقي',
     ],
-    accent     : '#48D6CD',
-    bgGlow     : 'rgba(72,214,205,0.12)',
-    borderColor: 'rgba(72,214,205,0.18)',
+    accent     : '#1F6F52',
+    bgGlow     : 'rgba(31, 111, 82, 0.12)',
+    borderColor: 'rgba(31, 111, 82, 0.18)',
   },
   {
     icon       : ClipboardList,
     num        : '03',
     title      : 'المختبر',
+    img        : '/scenes/role-examiner.webp',
     sub        : 'اختبارات الأجزاء والأحاديث',
     bullets    : [
       'اختبارات الأجزاء القرآنية والأحاديث النبوية',
       'توثيق نتائج كل اختبار وتاريخه تلقائياً',
       'نتائج الاختبارات تظهر في بوابة ولي الأمر فور تسجيلها'
     ],
-    accent     : '#D4A06A',
-    bgGlow     : 'rgba(212,160,106,0.12)',
-    borderColor: 'rgba(212,160,106,0.18)',
+    accent     : '#95612B',
+    bgGlow     : 'rgba(149, 97, 43, 0.12)',
+    borderColor: 'rgba(149, 97, 43, 0.18)',
   },
   {
     icon       : Users,
     num        : '04',
     title      : 'ولي الأمر',
+    img        : '/scenes/role-parent.webp',
     sub        : 'متابعة فورية للأبناء',
     bullets    : [
       'تقدم الابن في الحفظ لحظة بلحظة',
       'معلومات الغياب والتأخير',
       'بوابة خاصة بخصوصية تامة — بلا مراسلات',
     ],
-    accent     : '#8ABDB2',
-    bgGlow     : 'rgba(138, 186, 189,0.12)',
-    borderColor: 'rgba(138, 186, 189,0.18)',
+    accent     : '#427562',
+    bgGlow     : 'rgba(66, 117, 98, 0.12)',
+    borderColor: 'rgba(66, 117, 98, 0.18)',
   },
   {
     icon       : GraduationCap,
     num        : '05',
     title      : 'الطالب',
+    img        : '/scenes/role-student.webp',
     sub        : 'بيئة تعليمية محفزة',
     bullets    : [
       'مساره الكامل في الحفظ في مكان واحد',
       'رصد أدائه وتقدمه في الحلقة أسبوعاً بأسبوع',
       'متابعة ملاحظات المعلم ونتائج الحصص من البوابة مباشرة',
     ],
-    accent     : '#A3D9D3',
-    bgGlow     : 'rgba(163,217,211,0.12)',
-    borderColor: 'rgba(163,217,211,0.18)',
+    accent     : '#265C48',
+    bgGlow     : 'rgba(38, 92, 72, 0.12)',
+    borderColor: 'rgba(38, 92, 72, 0.18)',
   },
 ]
 
+/* بطاقة الدور (2026-11-19 ج): مشهدٌ مصوَّر بهوية إحكام في رأسها (مولَّد،
+   وشاشات الحاسوب والجوال فيه لقطاتٌ حقيقية من التطبيق) بدل الأيقونة في حلقتين.
+   والنصوص بحجمٍ مقروء: كانت النقاط 12px والوسم 9px. */
 function AudienceCard({ item, index, className = '' }) {
-  const [hov, setHov] = useState(false)
-  const Icon = item.icon
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 36, filter: 'blur(6px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.60, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      className={`relative flex flex-col rounded-[22px] overflow-hidden ${className}`}
-      style={{
-        background          : 'rgba(2,15,14,0.88)',
-        border              : `1px solid ${hov ? item.borderColor : 'rgba(255,255,255,0.05)'}`,
-        backdropFilter      : 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        boxShadow           : hov
-          ? `0 24px 56px rgba(0,0,0,0.55), 0 0 36px ${item.bgGlow}`
-          : '0 4px 20px rgba(0,0,0,0.35)',
-        transform : hov ? 'translateY(-7px)' : 'translateY(0)',
-        transition: 'all 260ms ease',
-      }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+      className={`aud-card group relative flex flex-col rounded-[24px] overflow-hidden bg-white ${className}`}
+      style={{ boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}
     >
-      {/* Radial light-leak from top — intensifies on hover */}
-      <div
-        className="pointer-events-none absolute top-0 inset-x-0 h-48"
-        style={{
-          background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${item.bgGlow} 0%, transparent 100%)`,
-          opacity   : hov ? 1 : 0.5,
-          transition: 'opacity 300ms ease',
-        }}
-        aria-hidden
-      />
-
-      {/* Top row: number + badge */}
-      <div className="relative flex items-center justify-between px-6 pt-6 mb-2">
-        <span
-          className="font-black text-[10px] tracking-[0.16em]"
-          style={{ color: `${item.accent}50` }}
-        >
+      <div className="relative overflow-hidden" style={{ aspectRatio: '16 / 9', background: '#F1ECDF' }}>
+        <img src={item.img} alt="" aria-hidden width={1280} height={720} loading="lazy" decoding="async"
+             className="aud-img absolute inset-0 w-full h-full object-cover" />
+        <span className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold tabular-nums"
+              style={{ background: 'linear-gradient(145deg,#ECC77D,#B8863A)', color: '#0B3B33', boxShadow: '0 6px 14px -6px rgba(0,0,0,0.4)' }}>
           {item.num}
         </span>
-        <span
-          className="text-[9px] font-bold tracking-[0.15em] uppercase px-2.5 py-0.5 rounded-full"
-          style={{
-            color     : item.accent,
-            background: `${item.accent}14`,
-            border    : `1px solid ${item.accent}30`,
-          }}
-        >
-          {item.sub.split(' ').slice(0, 2).join(' ')}
-        </span>
       </div>
-
-      {/* Icon — double-ring frame */}
-      <div className="relative flex items-center justify-center py-6">
-        {/* Outer faint ring */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width : 88,
-            height: 88,
-            border: `1px solid ${item.accent}20`,
-            opacity: hov ? 1 : 0.6,
-            transition: 'opacity 300ms ease',
-          }}
-          aria-hidden
-        />
-        {/* Inner glow ring */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width    : 66,
-            height   : 66,
-            background: `radial-gradient(circle, ${item.bgGlow} 0%, transparent 70%)`,
-            border   : `1px solid ${item.accent}35`,
-          }}
-          aria-hidden
-        />
-        {/* Icon itself */}
-        <motion.div
-          className="relative w-14 h-14 rounded-full flex items-center justify-center"
-          animate={hov ? { scale: 1.10 } : { scale: 1 }}
-          transition={{ duration: 0.25 }}
-          style={{
-            background: `${item.accent}16`,
-            border    : `1.5px solid ${item.accent}40`,
-            boxShadow : hov ? `0 0 22px ${item.bgGlow}, 0 0 44px ${item.bgGlow}` : 'none',
-            transition: 'box-shadow 300ms ease',
-          }}
-        >
-          <Icon size={24} style={{ color: item.accent }} strokeWidth={1.5} />
-        </motion.div>
-      </div>
-
-      {/* Title + sub */}
-      <div className="px-6 mb-4 text-center">
-        <h3
-          className="font-black mb-1"
-          style={{ color: '#EAE4DF', fontSize: 'clamp(1.1rem, 1.6vw, 1.25rem)' }}
-        >
-          {item.title}
-        </h3>
-        <span
-          className="text-xs font-semibold"
-          style={{ color: item.accent, letterSpacing: '0.02em' }}
-        >
-          {item.sub}
-        </span>
-      </div>
-
-      {/* Divider */}
-      <div
-        className="mx-6 mb-5"
-        style={{
-          height    : 1,
-          background: `linear-gradient(90deg, transparent, ${item.accent}30, transparent)`,
-        }}
-      />
-
-      {/* Bullets */}
-      <div className="flex flex-col gap-3 px-6 flex-1">
-        {item.bullets.map((b, i) => (
-          <div key={i} className="flex items-start gap-2.5">
-            <div
-              className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{
-                background: `${item.accent}16`,
-                border    : `1px solid ${item.accent}35`,
-              }}
-            >
-              <Check size={9} style={{ color: item.accent }} strokeWidth={3} />
-            </div>
-            <span className="text-xs leading-[1.80]" style={{ color: '#8AAFA8' }}>
+      <div className="p-6 flex flex-col gap-4 flex-1">
+        <div>
+          <h3 className="font-bold text-xl" style={{ color: '#0B3B33' }}>{item.title}</h3>
+          <span className="text-sm font-bold" style={{ color: '#8A6425' }}>{item.sub}</span>
+        </div>
+        <ul className="flex flex-col gap-2.5">
+          {item.bullets.map(b => (
+            <li key={b} className="flex items-start gap-2.5 text-[0.95rem]" style={{ color: 'var(--text-2)', lineHeight: 1.75 }}>
+              <span className="w-5 h-5 mt-0.5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(31,111,82,0.1)', color: '#1F6F52' }}>
+                <Check size={12} strokeWidth={3} />
+              </span>
               {b}
-            </span>
-          </div>
-        ))}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      <div className="pb-6" />
-
-      {/* Bottom accent line */}
-      <div
-        style={{
-          position  : 'absolute',
-          bottom    : 0,
-          left      : 0,
-          right     : 0,
-          height    : 2,
-          background: `linear-gradient(90deg, transparent, ${item.accent}${hov ? '60' : '25'}, transparent)`,
-          transition: 'all 300ms ease',
-        }}
-      />
     </motion.div>
   )
 }
@@ -246,7 +131,7 @@ export default function IhkaamAudiences() {
       {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[280px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(72,214,205,0.05) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(ellipse at top, rgba(31, 111, 82, 0.030) 0%, transparent 70%)' }}
         aria-hidden
       />
 
@@ -260,21 +145,16 @@ export default function IhkaamAudiences() {
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span
-            className="text-xs font-semibold tracking-[0.22em] uppercase block mb-5"
-            style={{ color: '#A6756A' }}
-          >
-            الفئات المستفيدة
-          </span>
+          <span className="eyebrow">الفئات المستفيدة</span>
           <h2
-            className="font-black leading-tight mx-auto mb-5"
-            style={{ color: '#EAE4DF', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', maxWidth: '600px' }}
+            className="font-bold leading-tight mx-auto mt-5 mb-5"
+            style={{ color: '#1A2E28', fontSize: 'clamp(1.9rem, 3.6vw, 2.8rem)', maxWidth: '700px' }}
           >
-            منصة واحدة لجميع أدوار المعهد القرآني
+            منصة واحدة <span className="title-mark">لكل أدوار المعهد</span>
           </h2>
           <p
-            className="text-sm mx-auto"
-            style={{ color: '#509492', maxWidth: '460px', lineHeight: '2' }}
+            className="text-lg mx-auto"
+            style={{ color: '#4A5D56', maxWidth: '560px', lineHeight: '1.9' }}
           >
             من الإدارة إلى الطالب — كل دور له واجهته المصممة خصيصاً داخل منظومة رقمية موحدة.
           </p>
@@ -310,15 +190,15 @@ export default function IhkaamAudiences() {
           <div
             className="inline-flex items-center gap-3 px-7 py-3.5 rounded-full"
             style={{
-              background: 'rgba(72,214,205,0.06)',
-              border    : '1px solid rgba(72,214,205,0.14)',
+              background: 'rgba(31, 111, 82, 0.06)',
+              border    : '1px solid rgba(31, 111, 82, 0.14)',
             }}
           >
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#48D6CD' }} />
-            <p className="text-sm" style={{ color: '#509492', lineHeight: '1.7' }}>
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#1F6F52' }} />
+            <p className="text-sm" style={{ color: '#5E6E67', lineHeight: '1.7' }}>
               جميع العمليات التعليمية والإدارية في مكان واحد — بواجهة تناسب كل مستخدم
             </p>
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#48D6CD' }} />
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#1F6F52' }} />
           </div>
         </motion.div>
 

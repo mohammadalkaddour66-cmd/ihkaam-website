@@ -18,7 +18,7 @@ export default {
   relatedFeature: 'admin',
   relatedPosts  : ['first-90-days-director', 'organizing-circles-medium-center', 'digital-transformation-quran-centers'],
   sources       : [],
-  coverColor    : '#EBD3C2',
+  coverColor    : '#B8863A',
   cover         : '/og/blog/why-centers-fail-to-scale.jpg',
   sections: [
     {

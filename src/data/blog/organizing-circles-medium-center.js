@@ -17,7 +17,7 @@ export default {
   relatedFeature: 'academic',
   relatedPosts  : ['why-centers-fail-to-scale', 'weekly-memorization-plan', 'how-to-know-teacher-is-working'],
   sources       : [],
-  coverColor    : '#D9B29C',
+  coverColor    : '#8A6425',
   cover         : '/og/blog/organizing-circles-medium-center.jpg',
   sections: [
     {
