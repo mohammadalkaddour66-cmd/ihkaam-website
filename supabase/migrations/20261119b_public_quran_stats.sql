@@ -2,11 +2,13 @@
 -- أرقام القرآن للموقع العام (2026-11-19)
 --
 -- قرار المالك: «إحكام بالأرقام» يعرض الختمات (الصفحات ÷ 604) لا جلسات
--- التسميع، مع سطرٍ يومي، وعمودين، ورسمٍ لنمو الصفحات شهرياً. النطاق:
--- المعاهد المفعّلة وحدها (التعريف نفسه في 20261119_active_institutes.sql:
--- أول نشاطٍ قبل 30 يوماً أو أكثر، وآخر نشاطٍ خلال آخر 30 يوماً)، دون demo
--- و!showcase. التعريف مكتوبٌ هنا داخلياً كي لا تتوقف هذه الدالة على تطبيق
--- تلك.
+-- التسميع، مع سطرٍ يومي، وعمودين، ورسمٍ لنمو الصفحات شهرياً.
+-- النطاق (قرار المالك المعدَّل، 2026-11-19): كل معهدٍ عمل على المنصة شهراً
+-- فأكثر ببيانات حقيقية، سواء ما زال يعمل أو توقّف — «ممكن يكون شغال وترك،
+-- عادي جداً». أي: بين أول نشاطٍ وآخره 30 يوماً فأكثر، وفي 10 أيام عملٍ على
+-- الأقل، والمعهد غير محذوف، دون demo و!showcase والمعرّفات التجريبية.
+-- (عدّاد «معهد نشط» في الموقع شيءٌ آخر: المعاهد العاملة حالياً،
+-- 20261119_active_institutes.sql.)
 --
 -- تنقية الأخطاء (مراجَعة بطلب المالك «لا ننقص صحيحاً»): صفحات القرآن هي
 -- جلسات category='قرآن' دون التمهيد، وتُقبل الجلسة إن كانت:
@@ -40,7 +42,8 @@ DECLARE
 BEGIN
   SELECT coalesce(array_agg(per.institute_id), '{}') INTO v_ids
   FROM (
-    SELECT institute_id, min(created_at) AS first_at, max(created_at) AS last_at
+    SELECT institute_id, min(created_at) AS first_at, max(created_at) AS last_at,
+           count(DISTINCT created_at::date) AS work_days
     FROM (
       SELECT institute_id, created_at FROM recitations WHERE coalesce(is_deleted, false) = false
       UNION ALL
@@ -48,8 +51,8 @@ BEGIN
     ) act GROUP BY institute_id
   ) per
   JOIN institutes i ON i.id = per.institute_id AND i.is_deleted = false
-  WHERE per.first_at <= now() - interval '30 days'
-    AND per.last_at  >= now() - interval '30 days'
+  WHERE per.last_at - per.first_at >= interval '30 days'   -- عمل شهراً فأكثر، ولو توقّف بعدها
+    AND per.work_days >= 10                                 -- استعمالٌ فعليّ لا تجربة يومٍ أو يومين
     AND per.institute_id NOT IN ('demo', '!showcase')
     AND per.institute_id !~* '(demo|test|showcase|ihkam|superadmin|system)';
 
