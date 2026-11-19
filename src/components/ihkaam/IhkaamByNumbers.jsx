@@ -194,7 +194,7 @@ export default function IhkaamByNumbers({ titleLead = 'هذا ما فعله إح
             {titleLead} <span className="title-mark">{titleAccent}</span>
           </h2>
           <p className="text-base mx-auto" style={{ color: 'rgba(248,245,236,0.72)', maxWidth: 560, lineHeight: 1.9 }}>
-            من سجلات {q.institutes ? `${fmt(q.institutes)} معهداً عمل على المنصة شهراً فأكثر` : 'المعاهد التي عملت على المنصة'}، كما سجّلها معلموها: لا تقديرات ولا متوسّطات.
+            من سجلات {q.institutes ? `${fmt(q.institutes)} معهداً شريكاً` : 'المعاهد الشريكة'}، كما سجّلها معلموها: لا تقديرات ولا متوسّطات.
           </p>
         </motion.div>
 
