@@ -1,68 +1,29 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { fetchLandingStats, getBakedLandingStats } from '../../config/landingStats'
+import { fetchLandingStats, getBakedLandingStats, KHATMA_PAGES } from '../../config/landingStats'
 
-const pickData = (s) => s && ({
-  recitations : s.recitations,        // المجموعة 1 — تفصيل التسميع
-  quranRecs   : s.recitationsQuran,
-  hadithRecs  : s.recitationsHadith,
-  tests       : s.tests,              // المجموعة 2 — الإنجاز
-  stars       : s.stars,
-  subjects    : s.subjects,
-  students    : s.students,           // المجموعة 3 — المعهد
-  staff       : s.staff,
-  absences    : s.absences,
-})
+/* ══════════════════════════════════════════════════════════════════
+   «إحكام بالأرقام» (2026-11-19 هـ، ثم و)
 
-/* ══════════════════════════════════════════════════════
-   لونٌ واحد لكل مجموعة، لا لونٌ لكل بطاقة.
+   قرار المالك: الرقم البطل هو الختمات لا جلسات التسميع — «252 ختمة
+   سُمِّعت ووُثِّقت» (صفحات القرآن ÷ 604)، وتحته سطرٌ يومي (ما يعادل كم
+   ختمة يُسمَّع كل يوم في آخر 30 يوماً)، ورسمٌ لنمو الصفحات شهراً بشهر،
+   ثم عمودان مسطّران: الحفظ والتسميع، والمعهد وأولياء الأمور.
 
-   كانت تسع بطاقاتٍ بستّة ألوان: ‎#D9ACA3‎ ثلاثاً، و‎#E0C79A‎ مرّتين،
-   و‎#C9A67E‎ و‎#F0C97A‎ و‎#96BCBE‎ و‎#48D6CD‎. سبعٌ من التسع دافئة —
-   أي أنّ الثانويّ كان يحكم أكبر قسمٍ رقميّ في الصفحة، والأساسيّ
-   ضيفاً فيه. ولم تكن الستّة تعني شيئاً: بطاقتان بلونين مختلفين
-   داخل المجموعة الواحدة، وبطاقتان بلونٍ واحد عبر مجموعتين.
+   النطاق: المعاهد المفعّلة وحدها، دون التجريبية. المصدر
+   get_public_quran_stats (migration 20261119b): يُحسب كل ساعة، ويُخبز في
+   HTML وقت البناء (ISS-41). قاعدة تنقية الأخطاء في رأس ملف الترحيل.
+   ══════════════════════════════════════════════════════════════════ */
 
-   المجموعة هي وحدة المعنى هنا، فهي وحدة اللون:
-     ١ التسميع والحفظ   → الأساسيّ. جوهر المنتج.
-     ٢ الإنجاز والتميّز  → الدفء. هذه دلالته، وهذا موضعه الوحيد
-                          في القسم — ثلاث بطاقاتٍ متجاورة تُقرأ
-                          كتلةً مقصودة، لا كسبعٍ مبثوثةٍ عشواءً.
-     ٣ إدارة المعهد     → محايد. تشغيلٌ يوميّ لا إنجاز.
+const ease = [0.22, 1, 0.36, 1]
+const GOLD = '#E0B562', CREAM = '#F8F5EC'
+const MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+const fmt = (n) => Math.round(n || 0).toLocaleString('en-US')
 
-   المجموعة الثانية كانت الذهبَ ‎#E3A93F‎: درجته 39° وتشبّعه 76%،
-   فتُقرأ برتقالياً صاخباً — وثلاث بطاقاتٍ متجاورة تضاعف الصخب.
-   ثم صارت ‎--warm #D9B29C‎ (درجة 22°) بنفس الدلالة.
-
-   وفي 2026-07-30 صارت الثلاث درجاتٍ من اللكنة الواحدة، بعد ما
-   استُقرّ في بطاقات الشهادات: الدفءُ فوق سطحٍ درجتُه 174° يشدّ
-   الأخضر إلى الأمام — اللونان شبه متقابلين على العجلة، فيزيد كلٌّ
-   منهما تشبّعَ الآخر في العين. وثلاث بطاقاتٍ دافئة في المنتصف
-   كانت أكبرَ رقعةٍ يقع فيها هذا في الصفحة.
-
-   والمجموعة تبقى وحدةَ اللون كما هي، لكن **التمايز بالإضاءة داخل
-   العائلة** لا بدرجةٍ لونية جديدة:
-     ١ التسميع والحفظ  → ‎#48D6CD‎  اللكنة نفسها. جوهر المنتج ولون القسم.
-     ٢ الإنجاز والتميّز → ‎#6FE7DE‎  أعلى إضاءة — الإنجاز يلمع.
-     ٣ إدارة المعهد    → ‎#2FAEB4‎  أخفتها — تشغيلٌ يوميّ لا إنجاز.
-   وثلاثتها ≥7:1 على ‎--canvas‎، والرقم نصٌّ بلون المجموعة.
-
-   glowRgb ثلاثيةٌ صريحة لأن وميض العدّاد يُحرَّك عبر framer:
-   الحركة تستبدل السلاسل بينياً، وسلسلةُ color-mix لا تقبل ذلك. */
-const GROUPS = {
-  recite : { color: 'var(--accent)',       glowRgb: '72,214,205'  },
-  achieve: { color: 'var(--accent-hover)', glowRgb: '111,231,222' },
-  manage : { color: 'var(--accent-deep)',  glowRgb: '47,174,180'  },
-}
-
-// ── Animated counter — starts only when `trigger` becomes true ────────────────
-// Glow effect uses textShadow (not absolute positioning) so it never gets clipped
-function CountUp({ to, duration = 1600, trigger, glowRgb }) {
-  /* يبدأ من القيمة النهائية لا من الصفر: HTML المولَّد مسبقاً يحمل الرقم الحقيقي
-     (ISS-41) فيراه الزاحف ومن لا يشغّل JavaScript. وفي المتصفح يُصفَّر قبل أول
-     رسمٍ بعد الإقلاع ما دام القسم لم يظهر بعد، ثم يعدّ حين يظهر. */
-  const [val, setVal]       = useState(to || 0)
-  const [glowing, setGlowing] = useState(false)
+/* يبدأ من القيمة النهائية لا من الصفر: HTML المولَّد مسبقاً يحمل الرقم الحقيقي
+   (ISS-41). في المتصفح يُصفَّر قبل أول رسمٍ ما دام القسم لم يظهر، ثم يعدّ. */
+function CountUp({ to, duration = 1700, trigger }) {
+  const [val, setVal] = useState(to || 0)
   const raf = useRef(null)
   const counted = useRef(false)
 
@@ -76,281 +37,216 @@ function CountUp({ to, duration = 1600, trigger, glowRgb }) {
     cancelAnimationFrame(raf.current)
     const t0 = performance.now()
     const tick = now => {
-      const p     = Math.min((now - t0) / duration, 1)
-      const eased = 1 - Math.pow(1 - p, 4)
-      setVal(Math.round(to * eased))
-      if (p < 1) {
-        raf.current = requestAnimationFrame(tick)
-      } else {
-        // Trigger glow burst then clear it
-        setGlowing(true)
-        setTimeout(() => setGlowing(false), 900)
-      }
+      const p = Math.min((now - t0) / duration, 1)
+      setVal(Math.round(to * (1 - Math.pow(1 - p, 4))))
+      if (p < 1) raf.current = requestAnimationFrame(tick)
     }
     raf.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf.current)
   }, [to, trigger, duration])
 
-  return (
-    <motion.span
-      animate={glowing ? {
-        textShadow: [
-          `0 0 0px  rgba(${glowRgb},0)`,
-          `0 0 18px rgba(${glowRgb},1), 0 0 36px rgba(${glowRgb},0.53)`,
-          `0 0 8px  rgba(${glowRgb},0.27)`,
-          `0 0 0px  rgba(${glowRgb},0)`,
-        ],
-        scale: [1, 1.07, 1],
-      } : {}}
-      transition={{ duration: 0.75, ease: 'easeOut' }}
-    >
-      {val.toLocaleString('en-US')}
-    </motion.span>
-  )
+  return <>{fmt(val)}</>
 }
 
-// ── Single stat card ──────────────────────────────────────────────────────────
-function StatCard({ value, prefix = '+', label, desc, color, glowRgb, index, trigger }) {
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-30px' }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: index * 0.07 }}
-      className="stat-card flex flex-col gap-2.5 px-6 pt-7 pb-6 h-full"
-      style={{ '--gc': color }}
-    >
-      {/* وهجُ الزاوية */}
-      <div className="pointer-events-none absolute top-0 end-0 w-28 h-28" aria-hidden
-        style={{ background: 'radial-gradient(circle at top left, color-mix(in srgb, var(--gc) 11%, transparent), transparent 70%)' }} />
-
-      {/* بلورةُ الضوء تحت الشريط العلويّ — الشريط 2px مصمت يُقرأ
-          خطاً مطبوعاً؛ وهذه هالته، فيُقرأ باثّاً للضوء. الشهادات
-          نالت نفسها خطاً داخلياً على الحرف الأعلى، ولا يصلح هنا
-          لأن الشريط يغطّيه. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-10" aria-hidden
-        style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--gc) 9%, transparent), transparent)' }} />
-
-      {/* الرقم. الزائدةُ أصغرُ وأخفتُ فلا تُقرأ جزءاً من العدد،
-          و‏.num-seq تعزلها عن اتجاه الفقرة فلا تنقلب. */}
-      <div className="relative flex items-baseline gap-0.5 num-seq">
-        <span className="font-black tabular-nums leading-none"
-          style={{ fontSize: 'clamp(1.9rem,3.2vw,2.6rem)', color: 'var(--gc)' }}>
-          <CountUp to={value} trigger={trigger} glowRgb={glowRgb} />
-        </span>
-        {prefix && (
-          <span className="font-black leading-none"
-            style={{ fontSize: '0.95rem', color: 'color-mix(in srgb, var(--gc) 55%, transparent)' }}>
-            {prefix}
-          </span>
-        )}
-      </div>
-
-      {/* العنوان صار --text-1: كان --text-2 فيقرأ بوزن الوصف نفسه،
-          فلا هرميّة داخل البطاقة — رقمٌ ثم سطران متساويان. */}
-      <p className="relative font-bold text-sm leading-snug" style={{ color: 'var(--text-1)' }}>{label}</p>
-
-      <p className="relative text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>{desc}</p>
-    </motion.article>
-  )
+/* «ما يعادل قرابة ختمتين» — صياغة عربية للعدد اليومي */
+function khatmaPhrase(perDay) {
+  const r = perDay / KHATMA_PAGES
+  if (r < 0.75) return `ما يعادل ${fmt(perDay / 20)} جزءاً`
+  const n = Math.round(r)
+  const near = Math.abs(r - n) > 0.05 ? 'قرابة ' : ''
+  const word = n === 1 ? 'ختمة كاملة' : n === 2 ? 'ختمتين' : n <= 10 ? `${n} ختمات` : `${n} ختمة`
+  return `ما يعادل ${near}${word}`
 }
 
-// ── Skeleton card ─────────────────────────────────────────────────────────────
-function SkeletonCard() {
+/* ── نموّ الصفحات شهرياً: عمود لكل شهر، الأقدم يميناً ── */
+function Growth({ monthly, trigger }) {
+  const [hover, setHover] = useState(null)
+  /* على الجوال مساحة رسمٍ أضيق كي تبقى الخطوط مقروءة بحجمها الطبيعي */
+  const [small, setSmall] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)')
+    const fn = () => setSmall(mq.matches)
+    fn(); mq.addEventListener('change', fn)
+    return () => mq.removeEventListener('change', fn)
+  }, [])
+  if (!monthly.length) return null
+  const nowKey = new Date().toISOString().slice(0, 7)
+  const max = Math.max(...monthly.map(x => x.pages), 1)
+  const peak = monthly.reduce((a, b) => (b.pages > a.pages ? b : a))
+  const W = small ? 360 : 640, H = 230, TOP = 34, BOT = 186
+  const slot = (W - 20) / monthly.length
+  const bw = Math.min(46, slot - 10)
   return (
-    <div className="rounded-2xl p-6 animate-pulse h-44"
-      style={{
-        background: 'linear-gradient(145deg, color-mix(in srgb, var(--canvas-2) 70%, transparent), color-mix(in srgb, var(--canvas) 95%, transparent))',
-        border    : '1px solid rgba(255,255,255,0.06)',
-      }} />
-  )
-}
-
-// ── Group label bar ───────────────────────────────────────────────────────────
-function GroupLabel({ children, color }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -12 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: '-20px' }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="flex items-center gap-3 mb-4"
-    >
-      <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: color }} />
-      <span className="text-[11px] font-bold tracking-[0.20em] uppercase" style={{ color }}>{children}</span>
-      <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, color-mix(in srgb, ${color} 16%, transparent))` }} />
-    </motion.div>
-  )
-}
-
-// ── Smart grid: 1 col mobile, 2 cols tablet, 3 cols desktop.
-// A leftover card at the 2-col tablet breakpoint (odd count) spans both
-// columns so it doesn't strand itself next to an empty gap.
-function SmartGrid({ cards, loading, trigger }) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {loading
-        ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-        : cards.map((card, i) => {
-            const isOrphanAt2Col = i === cards.length - 1 && cards.length % 2 === 1
-            return (
-              <div key={i} className={isOrphanAt2Col ? 'sm:col-span-2 lg:col-span-1' : undefined}>
-                <StatCard index={i} trigger={trigger} {...card} />
-              </div>
-            )
-          })
-      }
+    <div className="relative">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" direction="rtl"
+           aria-label={`صفحات القرآن المسمَّعة شهرياً: ${monthly.map(x => `${MONTHS[Number(x.m.slice(5)) - 1]} ${fmt(x.pages)}`).join('، ')}`}>
+        <line x1="10" x2={W - 10} y1={BOT} y2={BOT} stroke="rgba(248,245,236,0.22)" />
+        {monthly.map((x, n) => {
+          const cx = W - 10 - slot * (n + 0.5)
+          const h = Math.max(4, (x.pages / max) * (BOT - TOP))
+          const partial = x.m === nowKey
+          const showLabel = hover === n || x === peak || (!small && n === 0)
+          return (
+            <g key={x.m} onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(null)} onClick={() => setHover(h => (h === n ? null : n))} style={{ cursor: 'default' }}>
+              <rect x={cx - slot / 2} y={TOP - 20} width={slot} height={BOT - TOP + 40} fill="transparent" />
+              <motion.path
+                fill={partial ? 'rgba(224,181,98,0.45)' : GOLD}
+                opacity={hover === null || hover === n ? 1 : 0.55}
+                initial={false}
+                animate={{ d: barPath(cx - bw / 2, BOT, bw, trigger ? h : 0) }}
+                transition={{ duration: 0.9, ease, delay: trigger ? 0.25 + n * 0.06 : 0 }}
+              />
+              {showLabel && trigger && (
+                <text x={cx} y={BOT - h - 8} textAnchor="middle" fontSize="13" fontWeight="700" fill={CREAM}>{fmt(x.pages)}</text>
+              )}
+              <text x={cx} y={BOT + 18} textAnchor="middle" fontSize={small ? 11 : 12} fill="rgba(248,245,236,0.62)">
+                {MONTHS[Number(x.m.slice(5)) - 1]}
+              </text>
+              {partial && <text x={cx} y={BOT + 33} textAnchor="middle" fontSize="10.5" fill="rgba(248,245,236,0.5)">حتى اليوم</text>}
+            </g>
+          )
+        })}
+      </svg>
     </div>
   )
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+/* عمودٌ بحافةٍ علوية مدوّرة 4px وقاعدةٍ مستقيمة على الخط */
+function barPath(x, base, w, h) {
+  const r = Math.min(4, h / 2, w / 2)
+  const y = base - h
+  return `M ${x} ${base} L ${x} ${y + r} Q ${x} ${y} ${x + r} ${y} L ${x + w - r} ${y} Q ${x + w} ${y} ${x + w} ${y + r} L ${x + w} ${base} Z`
+}
+
+/* عمودٌ مسطّر: عنوان، ثم سطرٌ لكل رقم */
+function Ledger({ title, rows, trigger, delay = 0 }) {
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-2">
+        <span className="text-sm font-bold" style={{ color: GOLD }}>{title}</span>
+        <span className="flex-1 h-px" style={{ background: 'linear-gradient(to left, rgba(224,181,98,0.45), transparent)' }} />
+      </div>
+      {rows.map((r, n) => (
+        <motion.div key={r.label}
+          className="grid grid-cols-[minmax(7.5rem,auto)_1fr] sm:grid-cols-[10rem_1fr] items-baseline gap-x-5 py-5"
+          style={{ borderBottom: '1px dashed rgba(224,181,98,0.22)' }}
+          initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-30px' }}
+          transition={{ duration: 0.55, ease, delay: delay + n * 0.08 }}>
+          <span className="font-bold tabular-nums leading-none num-seq" style={{ color: CREAM, fontSize: 'clamp(1.9rem, 3.4vw, 2.6rem)' }}>
+            <CountUp to={r.value} trigger={trigger} />
+          </span>
+          <span className="min-w-0">
+            <span className="block font-bold" style={{ color: CREAM, fontSize: '1.02rem' }}>{r.label}</span>
+            <span className="block text-sm mt-1" style={{ color: 'rgba(248,245,236,0.62)', lineHeight: 1.75 }}>{r.desc}</span>
+          </span>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
 /* العنوان يختلف بين الرئيسية وصفحة المنصة حتى لا يتكرر H2 واحد في صفحتين (ISS-16). */
 export default function IhkaamByNumbers({ titleLead = 'هذا ما فعله إحكام', titleAccent = 'حتى اليوم' } = {}) {
-  /* أرقام البناء نفسها التي تقرؤها بقية الأقسام (ISS-41) */
-  const [data, setData]       = useState(() => pickData(getBakedLandingStats()))
-  const [loading, setLoading] = useState(() => !getBakedLandingStats())
+  const [quran, setQuran] = useState(() => getBakedLandingStats()?.quran ?? null)
 
-  // Trigger counters only when section enters viewport (native IntersectionObserver)
   const sectionRef = useRef(null)
-  const [sectionVisible, setSectionVisible] = useState(false)
-
+  const [visible, setVisible] = useState(false)
   useEffect(() => {
     const el = sectionRef.current
     if (!el) return
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setSectionVisible(true); obs.disconnect() } },
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } },
       { threshold: 0.15 }
     )
     obs.observe(el)
     return () => obs.disconnect()
   }, [])
 
-  const trigger = sectionVisible && !loading
-
   useEffect(() => {
-    fetchLandingStats().then(s => {
-      setData(pickData(s))
-      setLoading(false)
-    })
+    fetchLandingStats().then(s => { if (s?.quran) setQuran(s.quran) })
   }, [])
 
-  const group1 = data ? [
-    {
-      value : data.recitations,
-      label : 'جلسة تسميع موثقة',
-      desc  : 'كل جلسة مسجلة رقمياً — بتاريخها ودرجتها ومادتها، لكل طالب على حدة',
-      ...GROUPS.recite,
-    },
-    {
-      value : data.quranRecs,
-      label : 'جلسة تسميع قرآن كريم',
-      desc  : 'حفظاً ومراجعةً وتلاوةً — كل جلسة موثقة بصفحاتها ونتيجتها',
-      ...GROUPS.recite,
-    },
-    {
-      value : data.hadithRecs,
-      label : 'جلسة تسميع حديث نبوي',
-      desc  : 'المعلم يوثّق تسميع الأحاديث بنفس دقة القرآن — لا فرق في الأهمية',
-      ...GROUPS.recite,
-    },
-  ] : []
+  const trigger = visible && !!quran
+  const q = quran || { pages: 0, ghaybPages: 0, pages30d: 0, hadiths: 0, juzPassed: 0, notifications: 0, students: 0, staff: 0, institutes: 0, monthly: [] }
+  const khatmas = Math.floor(q.pages / KHATMA_PAGES)
+  const perDay  = q.pages30d / 30
 
-  const group2 = data ? [
-    {
-      value : data.tests,
-      label : 'اختبار موثق',
-      desc  : 'اختبارات المراحل والأجزاء مسجلة رقمياً — بالنتيجة والتاريخ والمادة',
-      ...GROUPS.achieve,
-    },
-    {
-      value : data.stars,
-      label : 'نجم حلقة تم تتويجه',
-      desc  : 'كل أسبوع يُختار نجم — يُعلَم أهله، يُسجَّل إنجازه، ويبقى في سجله للأبد',
-      ...GROUPS.achieve,
-    },
-    {
-      value  : data.subjects,
-      prefix : '',
-      label  : 'مادة شرعية رديفة تُدار',
-      desc   : 'الفقه، العقيدة، التجويد، السيرة وغيرها — تُتابَع بنفس دقة القرآن',
-      ...GROUPS.achieve,
-    },
-  ] : []
-
-  const group3 = data ? [
-    {
-      value : data.students,
-      label : 'طالب يُتابَع يومياً',
-      desc  : 'لكل طالب سجله الكامل: الحضور، التسميع، الملاحظات — بدون ورقة واحدة',
-      ...GROUPS.manage,
-    },
-    {
-      value : data.staff,
-      label : 'معلم يوثّق بدون ورق',
-      desc  : 'وقتهم للتعليم، لا لملء السجلات — إحكام يتولى الباقي',
-      ...GROUPS.manage,
-    },
-    {
-      value : data.absences,
-      label : 'حالة غياب وثّقت',
-      desc  : 'ولي الأمر يعلم في دقائق — لا في نهاية الأسبوع، ولا حين يسأل',
-      ...GROUPS.manage,
-    },
-  ] : []
+  const memorize = [
+    { value: Math.floor(q.ghaybPages / KHATMA_PAGES), label: 'ختمة سُمِّعت غيباً', desc: `${fmt(q.ghaybPages)} صفحة يسمّعها الطلاب من حفظهم` },
+    { value: q.hadiths,   label: 'حديث نبوي سُمِّع',    desc: 'يوثّقه المعلم بدقة القرآن نفسها' },
+    { value: q.juzPassed, label: 'اختبار جزء اجتازه طالب', desc: 'بنتيجته وتاريخه ومُختبِره' },
+  ]
+  const community = [
+    { value: q.students,      label: 'طالب يُتابَع يومياً',        desc: 'لكل طالب سجله الكامل: الحضور والتسميع والملاحظات' },
+    { value: q.notifications, label: 'إشعار وصل لأولياء الأمور', desc: 'حضورٌ وتسميعٌ واختبار، يصل الأهل في وقته' },
+    { value: q.staff,         label: 'معلم وإداري يوثّق بلا ورق', desc: 'وقتهم للتعليم، لا لملء الدفاتر' },
+  ]
 
   return (
-    <section ref={sectionRef} dir="rtl" className="relative py-20 overflow-hidden" style={{ background: 'var(--canvas)' }}>
+    <section ref={sectionRef} dir="rtl" className="section-dark relative py-24 overflow-hidden">
+      <div className="pattern-layer pattern-khatam" aria-hidden />
 
-      {/* Ambient */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden style={{
-        background: 'radial-gradient(ellipse 60% 40% at 50% 60%, rgba(26, 148, 155,0.06) 0%, transparent 70%)',
-      }} />
-
-      <div className="max-w-6xl mx-auto px-6">
-
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.60, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12 text-center"
-        >
-          {/* كان هذا القسم وحده غير موسّط بين أقسام الرئيسية الستّة —
-             الخمسة الأخرى تُوسّط ترويستها. والتوسيط هنا ليس ذوقاً
-             فحسب: العمود على الجوال ضيّق، والترويسة سطران أو ثلاثة،
-             فالتوسيط يوازنها. أما المتن الطويل فيبقى محاذى للبداية
-             حيث كان — النصّ الموسّط الطويل يُتعب العين لأن بداية كل
-             سطر تتزحزح فيضيع مكان الاستئناف. وهذه فقرة سطرين. */}
-          <span className="text-xs font-bold tracking-[0.22em] uppercase" style={{ color: 'var(--accent)' }}>
-            إحكام بالأرقام
-          </span>
-          <h2 className="font-black mt-2 mb-3" style={{ fontSize: 'clamp(1.9rem, 4vw, 3.1rem)', lineHeight: 1.28, color: 'var(--text-1)' }}>
-            {titleLead}{' '}
-            <span style={{ color: 'var(--accent)' }}>{titleAccent}</span>
+      <div className="relative max-w-6xl mx-auto px-6">
+        <motion.div className="text-center mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6, ease }}>
+          <span className="eyebrow">إحكام بالأرقام</span>
+          <h2 className="font-bold mt-5 mb-4" style={{ fontSize: 'clamp(1.9rem, 3.6vw, 2.8rem)', lineHeight: 1.3, color: CREAM }}>
+            {titleLead} <span className="title-mark">{titleAccent}</span>
           </h2>
-          <p className="text-sm leading-relaxed mx-auto" style={{ color: 'var(--text-2)', maxWidth: 480 }}>
-            أرقام حقيقية من قاعدة البيانات — لا متوسطات، لا مقارنات، فقط ما تم فعلاً
+          <p className="text-base mx-auto" style={{ color: 'rgba(248,245,236,0.72)', maxWidth: 560, lineHeight: 1.9 }}>
+            من سجلات {q.institutes ? `${fmt(q.institutes)} معهداً مفعّلاً` : 'المعاهد المفعّلة'} على المنصة، كما سجّلها معلموها: لا تقديرات ولا متوسّطات.
           </p>
         </motion.div>
 
-        {/* Group 1 — التسميع والحفظ */}
-        <GroupLabel color={GROUPS.recite.color}>التسميع والحفظ</GroupLabel>
-        <div className="mb-4">
-          <SmartGrid cards={group1} loading={loading} trigger={trigger} />
+        {/* الرقم البطل: الختمات */}
+        <motion.div className="text-center" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.7, ease }}>
+          <div className="font-bold tabular-nums leading-none num-seq" style={{ color: GOLD, fontSize: 'clamp(4.5rem, 14vw, 9rem)', letterSpacing: '-0.02em' }}>
+            {quran ? <CountUp to={khatmas} trigger={trigger} duration={2000} /> : '—'}
+          </div>
+          <div className="font-bold mt-3" style={{ color: CREAM, fontSize: 'clamp(1.35rem, 2.6vw, 1.9rem)' }}>
+            ختمة سُمِّعت ووُثِّقت
+          </div>
+          <div className="mt-2 text-base" style={{ color: 'rgba(248,245,236,0.66)' }}>
+            {fmt(q.pages)} صفحة من القرآن الكريم، صفحةً صفحة لكل طالب
+          </div>
+        </motion.div>
+
+        {/* السطر اليومي */}
+        {perDay > 0 && (
+          <motion.div className="mx-auto mt-10 mb-14 w-fit max-w-full rounded-full px-6 py-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center"
+            style={{ background: 'rgba(224,181,98,0.10)', boxShadow: 'inset 0 0 0 1px rgba(224,181,98,0.32)' }}
+            initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease, delay: 0.2 }}>
+            <span className="relative flex w-2 h-2" aria-hidden>
+              <span className="absolute inset-0 rounded-full animate-ping" style={{ background: GOLD, opacity: 0.6 }} />
+              <span className="relative w-2 h-2 rounded-full" style={{ background: GOLD }} />
+            </span>
+            <span className="font-bold" style={{ color: CREAM }}>
+              يُسمَّع في معاهد إحكام كل يوم {khatmaPhrase(perDay)}
+            </span>
+            <span className="text-sm" style={{ color: 'rgba(248,245,236,0.62)' }}>
+              ({fmt(perDay)} صفحة يومياً في آخر 30 يوماً)
+            </span>
+          </motion.div>
+        )}
+
+        {/* النموّ */}
+        {q.monthly.length > 1 && (
+          <motion.div className="rounded-[24px] px-4 sm:px-8 pt-6 pb-4 mb-14" style={{ background: 'rgba(248,245,236,0.04)', boxShadow: 'inset 0 0 0 1px rgba(248,245,236,0.10)' }}
+            initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.6, ease }}>
+            <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+              <span className="font-bold" style={{ color: CREAM, fontSize: '1.08rem' }}>صفحات القرآن المسمَّعة كل شهر</span>
+              <span className="text-sm" style={{ color: 'rgba(248,245,236,0.6)' }}>مرّر أو المس أي شهر لترى رقمه</span>
+            </div>
+            <Growth monthly={q.monthly} trigger={trigger} />
+          </motion.div>
+        )}
+
+        {/* العمودان المسطّران */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-14 gap-y-10">
+          <Ledger title="الحفظ والتسميع" rows={memorize} trigger={trigger} />
+          <Ledger title="المعهد وأولياء الأمور" rows={community} trigger={trigger} delay={0.12} />
         </div>
-
-        {/* Group 2 — الإنجاز والتميز */}
-        <GroupLabel color={GROUPS.achieve.color}>الإنجاز والتميز</GroupLabel>
-        <div className="mb-4">
-          <SmartGrid cards={group2} loading={loading} trigger={trigger} />
-        </div>
-
-        {/* Group 3 — إدارة المعهد */}
-        <GroupLabel color={GROUPS.manage.color}>إدارة المعهد</GroupLabel>
-        <SmartGrid cards={group3} loading={loading} trigger={trigger} />
-
       </div>
     </section>
   )
