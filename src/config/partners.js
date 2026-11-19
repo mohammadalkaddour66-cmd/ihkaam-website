@@ -64,7 +64,7 @@ export function dedupe(list) {
   return [...seen.values()]
 }
 
-/* يظهر في الموقع المعهد المفعّل وحده (activeInstitutes.js) */
+/* يظهر في الموقع المعهد الشريك وحده: عمل شهراً فأكثر ولو ترك (activeInstitutes.js) */
 export const cleanPartners = (rows) => {
   const active = getActiveIds()
   return dedupe((rows || []).filter(p => !isExcluded(p) && active.has(p.institute_id)))

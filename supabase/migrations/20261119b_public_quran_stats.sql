@@ -76,6 +76,7 @@ BEGIN
   )
   SELECT json_build_object(
     'institutes',    cardinality(v_ids),
+    'ids',           to_json(v_ids),   -- معرّفات المعاهد الشريكة (ظاهرة أصلاً في institute_settings): للعدّاد وشريط الشركاء
     'quran_pages',   (SELECT round(coalesce(sum(p), 0)) FROM q),
     'ghayb_pages',   (SELECT round(coalesce(sum(p), 0)) FROM q WHERE recitation_type ~ 'غيب'),
     'pages_30d',     (SELECT round(coalesce(sum(p), 0)) FROM q

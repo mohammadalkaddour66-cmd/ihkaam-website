@@ -38,7 +38,7 @@ function CountUp({ to, duration = 1800 }) {
    شريط الأرقام (2026-11-19): كان شريطاً واحداً ملتصقاً بالهيرو بخمسة
    أرقامٍ متساوية. صار قسماً قائماً: رقمٌ بطلٌ واحد (جلسات التسميع) على
    لوحٍ داكن مع ما أُضيف في آخر 30 يوماً، وأربعة أرقامٍ بأيقوناتٍ ذهبية.
-   «معهد نشط» = مفعّلٌ فعلاً (src/config/activeInstitutes.js).
+   «معهد شريك» = عمل على المنصة شهراً فأكثر ولو ترك (src/config/activeInstitutes.js).
    ══════════════════════════════════════════════════════════════════ */
 const fmtPlain = (n) => (n == null ? '—' : n.toLocaleString('en-US'))
 
@@ -56,7 +56,7 @@ export default function IhkaamTrustStats() {
   }, [])
 
   const SMALL = [
-    { key: 'institutes', Icon: Building2,     value: counts.institutes, label: 'معهد مفعّل',       note: 'يعمل منذ شهرٍ على الأقل' },
+    { key: 'institutes', Icon: Building2,     value: counts.institutes, label: 'معهد شريك',        note: 'عمل على إحكام شهراً فأكثر' },
     { key: 'students',   Icon: Users,         value: counts.students,   label: 'طالب في السجلات',  note: 'لكل طالب سجلٌّ كامل' },
     { key: 'staff',      Icon: GraduationCap, value: counts.staff,      label: 'معلم وإداري',      note: 'يسجّلون من جوالاتهم' },
     { key: 'circles',    Icon: LayoutGrid,    value: counts.circles,    label: 'حلقة',             note: 'حضورٌ وتسميعٌ يومي' },

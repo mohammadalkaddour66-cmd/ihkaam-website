@@ -147,8 +147,11 @@ async function fetchQuranStats() {
 }
 const quranStats = await fetchQuranStats()
 if (stats && quranStats) stats.quran = quranStats
-if (stats && activeIds?.length) stats.active_ids = activeIds
-if (activeIds?.length) globalThis.__ACTIVE_IDS__ = activeIds
+/* المعاهد الشريكة (قرار المالك 2026-11-19): كل معهدٍ عمل شهراً فأكثر ولو ترك —
+   «اسمه كان شريك». تأتي من get_public_quran_stats أولاً، وإلا من الدالة القديمة. */
+const partnerIds = Array.isArray(quranStats?.ids) && quranStats.ids.length ? quranStats.ids : activeIds
+if (stats && partnerIds?.length) stats.active_ids = partnerIds
+if (partnerIds?.length) globalThis.__ACTIVE_IDS__ = partnerIds
 /* تاريخ البناء يُخبز مع الأرقام: «آخر تحديث» في الواجهة يقرؤه (ISS-41). */
 if (stats) stats.updated_at = new Date().toISOString().slice(0, 10)
 if (stats) globalThis.__LANDING_STATS_RAW__ = stats

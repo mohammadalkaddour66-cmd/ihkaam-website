@@ -30,8 +30,7 @@ function normalize(r) {
   const u = r.quran && typeof r.quran === 'object' ? r.quran : null
   const pick = (unified, legacy) => Number(u ? unified : legacy) || 0
   return {
-    /* «معهد نشط» = العامل الآن (activeInstitutes.js) — عدّادٌ مختلف المعنى عن
-       «عمل شهراً فأكثر» في «إحكام بالأرقام»، وكلاهما مسمّى بمعناه في الصفحة */
+    /* «معهد شريك» = عمل شهراً فأكثر ولو ترك (activeInstitutes.js) — نفس نطاق بقية الأرقام */
     institutes        : getActiveIds().size || Number(r.institutes) || 0,
     students          : pick(u?.students, r.students),
     staff             : pick(u?.staff, r.staff),
