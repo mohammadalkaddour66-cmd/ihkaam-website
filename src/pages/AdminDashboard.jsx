@@ -994,7 +994,9 @@ function InterfacesTab() {
     const path = `${pathPrefix}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error: upErr } = await supabase.storage
       .from('showcase_images')
-      .upload(path, file, { cacheControl: '3600', upsert: false })
+      /* الاسم فريد (وقت + عشوائي) و upsert معطَّل، فالملف لا يتغيّر بعد رفعه:
+         يُخزَّن سنة بدل ساعة (ISS-30). يسري على ما يُرفع من الآن فقط. */
+      .upload(path, file, { cacheControl: '31536000', upsert: false })
     if (upErr) {
       console.error(`[InterfacesTab] Storage error → showcase_images/${path}: ${upErr.message}`, upErr)
       throw upErr
@@ -1260,7 +1262,7 @@ function InterfacesTab() {
                 <div className="w-20 h-12 rounded-lg flex-shrink-0 overflow-hidden"
                   style={{ background: 'rgba(217,172,163,0.08)' }}>
                   {iface.desktop_image
-                    ? <img src={iface.desktop_image} alt={iface.title} className="w-full h-full object-cover" />
+                    ? <img src={iface.desktop_image} alt={iface.title} width={64} height={48} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center text-lg">🖥</div>
                   }
                 </div>
@@ -1269,7 +1271,7 @@ function InterfacesTab() {
                 {iface.mobile_image && (
                   <div className="w-7 h-12 rounded-lg flex-shrink-0 overflow-hidden"
                     style={{ background: 'rgba(72,214,205,0.08)', border: '1px solid rgba(72,214,205,0.15)' }}>
-                    <img src={iface.mobile_image} alt="mobile" className="w-full h-full object-cover" />
+                    <img src={iface.mobile_image} alt="واجهة الجوال" width={28} height={48} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </div>
                 )}
 
@@ -1370,7 +1372,7 @@ function Sidebar({ active, onChange, onLogout }) {
         style={{ borderColor: 'rgba(217,172,163,0.08)' }}
       >
         <p className="text-[11px]" style={{ color: '#6FA5A8' }}>
-          نظام المهندس محمد — v1.0
+          منصة إحكام — v1.0
         </p>
         <button
           onClick={onLogout}
@@ -1511,7 +1513,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h2 className="font-black text-lg mb-0.5" style={{ color: '#EAE4DF' }}>
-              مرحباً مهندس محمد، هذه غرفة القيادة الخاصة بك.
+              مرحباً بفريق منصة إحكام، هذه غرفة القيادة.
             </h2>
             <p className="text-sm" style={{ color: '#96BCBE' }}>
               تحكّم بكامل محتوى الموقع من هنا بعيداً عن أعين الزوار.

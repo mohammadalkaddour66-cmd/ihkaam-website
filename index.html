@@ -16,17 +16,14 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020F0E" />
 
-    <!-- ⚠ هذه الوسوم هي النسخة الأولى التي يراها الزاحف قبل إقلاع الـJS،
-         وهي وسومُ الصفحة الرئيسية تحديداً. باقي المسارات تكتب وسومها بعد
-         الإقلاع عبر RouteMeta/PageMeta (src/config/seo.js).
-         لا تحذف وسم description أدناه — حذفُه في 2026-07-31 ترك
-         الموقع كلَّه بلا وصف، فصار جوجل يؤلّف المقتطف من نص الصفحة،
-         ويعرض وصفاً قديماً محفوظاً عنده يزعم «أكثر من 96 معهداً» — رقمٌ
-         لا وجود له في قاعدة البيانات. وكلُّ رقمٍ يُكتَب هنا يجب أن يكون
-         حدّاً أدنى مأخوذاً من get_public_landing_stats. -->
+    <!-- وسوم الصفحة الرئيسية، وهي القالب الذي يبني منه scripts/prerender.mjs كل مسار:
+         يُنزع منه العنوان والوصف والرابط المعياري ووسوم og/twitter ويُكتب بدلها ما يخصّ
+         المسار (من src/config/seo.js ومن بيانات المقالات والميزات والمساعدة). فما يبقى
+         هنا لكل الصفحات: الأيقونات، والمخطط العام للمنظمة والموقع، ووسوم الموقع الثابتة.
+         لا أرقام إحصائية في أي وصف: عدد المعاهد يُعرض من get_public_landing_stats وحده. -->
     <meta name="description" content="نظام عربي يُدير مركز التحفيظ كاملاً: التسميع والحضور والأقساط والتقارير في مكان واحد، وبوابة يتابع فيها ولي الأمر ابنه أولاً بأول. اطلب تجربة مجانية." />
-    <meta name="keywords" content="نظام إدارة المعاهد القرآنية, برنامج إدارة مركز تحفيظ القرآن, إدارة حلقات القرآن, متابعة طلاب التحفيظ, تسجيل حضور حلقة قرآن" />
     <link rel="canonical" href="https://ihkaam.app/" />
 
     <meta property="og:title" content="إحكام — نظام إدارة المعاهد والحلقات القرآنية" />
@@ -59,9 +56,10 @@
         {
           "@type": "Organization",
           "@id": "https://ihkaam.app/#organization",
-          "name": "إحكام",
+          "name": "منصة إحكام",
+          "alternateName": "إحكام",
           "url": "https://ihkaam.app/",
-          "logo": "https://ihkaam.app/favicon-192.png",
+          "logo": "https://ihkaam.app/ihkaam-logo.png",
           "description": "نظام عربي لإدارة المعاهد والحلقات القرآنية.",
           "contactPoint": {
             "@type": "ContactPoint",
@@ -80,6 +78,7 @@
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://ihkaam.app/ihkaam#software",
           "name": "إحكام",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Web",
@@ -92,33 +91,15 @@
     }
     </script>
 
-    <!-- الهيرو يقرأ صوره وإحصائياته من Supabase قبل أن يرسم شيئاً، فالـ DNS/TLS
-         نحوه على المسار الحرج. preconnect يدفع الرحلتين قبل أن يُقلع الـ JS. -->
+    <!-- صور الهيرو تأتي من تخزين Supabase، ورابط الأولى مكتوب في HTML المُصيَّر مسبقاً
+         مع preload (scripts/prerender.mjs). الصور طلبات بلا CORS والبيانات طلبات CORS،
+         والمتصفح يفتح لكلٍّ منهما اتصالاً مستقلاً، فيُفتح الاثنان مبكراً. -->
+    <link rel="preconnect" href="%VITE_SUPABASE_URL%" />
     <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- ملف متغيّر واحد (300..900) بدل ستة ملفات ثابتة. المكسب مزدوج: طلب واحد
-         بدل أربعة أو خمسة، و font-weight:600 — المستعمَل 123 مرة — كان خارج
-         القائمة الثابتة فيُصنَّع تصنيعاً؛ الآن له وزن حقيقي.
-         التحميل غير حاجب: preload ثم media=print يتحول إلى all عند الجهوز. -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300..900&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300..900&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300..900&display=swap"
-      />
-    </noscript>
+    <!-- خط Cairo من الموقع نفسه (ISS-29): @font-face في src/index.css والملفات في
+         public/fonts. الجزء العربي يُحمَّل مسبقاً لأنه أول ما يُرسم. -->
+    <link rel="preload" href="/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <div id="root"></div>

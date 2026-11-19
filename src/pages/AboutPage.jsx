@@ -1,12 +1,12 @@
-import AboutSection        from '../components/AboutSection'
-import TestimonialsSection from '../components/TestimonialsSection'
-import ClientReviewForm    from '../components/ClientReviewForm'
+import AboutSection        from '../components/sections/AboutSection'
+import TestimonialsSection from '../components/sections/TestimonialsSection'
+import ClientReviewForm    from '../components/forms/ClientReviewForm'
 
 export default function AboutPage() {
   return (
     <>
       <AboutSection />
-      <TestimonialsSection />
+      <TestimonialsSection titleLead="ماذا يقول" titleAccent="مديرو المعاهد عن إحكام" />
       <ClientReviewForm />
     </>
   )

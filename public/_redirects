@@ -1,1 +1,27 @@
-/*  /index.html  200
+# ─────────────────────────────────────────────────────────────
+# لا قاعدة شاملة هنا عمداً (ISS-03).
+#
+# كان في هذا الملف سطرٌ واحد:   /*  /index.html  200
+# وهو ما جعل كل رابطٍ لا وجود له يردّ بحالة 200 وبمحتوى الرئيسية.
+#
+# الآن كل صفحةٍ ملفٌّ حقيقي في dist يكتبه scripts/prerender.mjs:
+#   • الصفحات العامة        ← dist/<المسار>.html
+#   • مسارات التطبيق         ← dist/admin.html و dist/admin/login.html
+#                               و dist/checkout.html (قشرة فارغة، noindex)
+#   • أيّ رابطٍ آخر          ← dist/404.html بحالة 404 (يخدمه Cloudflare Pages
+#                               تلقائياً ما دام الملف في جذر dist)
+#
+# فلا حاجة إلى تحويلٍ داخلي لأيّ مسار. إن أُضيف مسارٌ جديد لا يُولَّد مسبقاً
+# فأضِفه إلى CLIENT_ONLY في scripts/prerender.mjs، لا هنا.
+#
+# الشرطة الختامية (ISS-14): لا قاعدة لها هنا أيضاً. Cloudflare Pages يحوّل
+# /about/ إلى /about بـ308 من نفسه لأن الملف about.html لا about/index.html.
+#
+# تحويل www إلى النطاق الأساسي (ISS-04) لا يُكتب هنا: هذا الملف لا يرى اسم
+# النطاق. خطواته في docs/cloudflare-steps.md.
+# ─────────────────────────────────────────────────────────────
+
+# دمج المقالات المتداخلة النية (ISS-62): ثلاثة مقالات دُمجت في مقالَين جامعَين.
+/blog/difference-20-200-students  /blog/why-centers-fail-to-scale  301
+/blog/systems-vs-personalities    /blog/why-centers-fail-to-scale  301
+/blog/common-director-mistakes    /blog/first-90-days-director     301

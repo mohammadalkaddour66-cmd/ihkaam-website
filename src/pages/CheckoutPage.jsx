@@ -1,4 +1,4 @@
-import IhkaamCheckout from '../components/IhkaamCheckout'
+import IhkaamCheckout from '../components/ihkaam/IhkaamCheckout'
 
 export default function CheckoutPage() {
   return (

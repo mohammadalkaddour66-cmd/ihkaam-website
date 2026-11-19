@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, ArrowLeft, BookOpen, ChevronDown, Check } from 'lucide-react'
-import { BLOG_POSTS, BLOG_CATEGORIES, getCategoryById } from '../data/blogContent'
-import PageMeta from '../components/PageMeta'
+import { BLOG_POSTS, BLOG_CATEGORIES, getCategoryById, readTimeLabel } from '../data/blogContent'
+import PageMeta from '../components/layout/PageMeta'
+import { BLOG_INDEX_SEO } from '../config/seo'
 
 const fadeUp = {
   hidden : { opacity: 0, y: 28 },
@@ -61,7 +62,7 @@ function PostCard({ post, index }) {
             )}
             <span className="flex items-center gap-1 text-white/30 text-xs">
               <Clock size={11} />
-              {post.readTime} دقائق
+              {readTimeLabel(post.readTime)}
             </span>
           </div>
 
@@ -200,9 +201,8 @@ export default function BlogList() {
   return (
     <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
       <PageMeta
-        title="مدونة إحكام — رؤى لمدير المركز القرآني"
-        description="مقالات معمّقة حول إدارة مراكز تحفيظ القرآن: استبقاء الطلاب، الشؤون المالية، إدارة الكادر، والنمو المستدام."
-        keywords="مدونة إدارة مراكز التحفيظ, مقالات مدرسة قرآنية, نصائح مدير حلقة القرآن, إدارة معهد قرآني"
+        title={BLOG_INDEX_SEO.title}
+        description={BLOG_INDEX_SEO.description}
       />
 
       {/* ─── Hero ─────────────────────────────────────── */}
@@ -257,6 +257,10 @@ export default function BlogList() {
             <PostCard key={post.slug} post={post} index={i} />
           ))}
         </div>
+        <p className="mt-12 text-center text-sm text-white/50">
+          تبحث عن شرح خطوة بخطوة داخل النظام؟{' '}
+          <Link to="/help" className="font-bold underline underline-offset-4" style={{ color: '#48D6CD' }}>افتح مركز المساعدة</Link>
+        </p>
       </section>
 
     </div>

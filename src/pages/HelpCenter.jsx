@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Search, ChevronLeft } from 'lucide-react'
 import { CATEGORIES, getAllArticles } from '../data/helpContent'
-import PageMeta from '../components/PageMeta'
+import PageMeta from '../components/layout/PageMeta'
+import { HELP_INDEX_SEO } from '../config/seo'
 
 /* ─── animation variants ─────────────────────────────────── */
 const fadeUp = {
@@ -39,7 +40,7 @@ function CategoryCard({ cat, articleCount }) {
           <Icon size={22} style={{ color: cat.color }} />
         </div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-white font-bold text-base">{cat.label}</h3>
+          <h2 className="text-white font-bold text-base">{cat.label}</h2>
           <span
             className="text-xs font-semibold px-2 py-0.5 rounded-full"
             style={{ background: cat.color + '22', color: cat.color }}
@@ -109,9 +110,8 @@ export default function HelpCenter() {
   return (
     <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
       <PageMeta
-        title="تعلم إدارة معهدك القرآني — مركز التعلم"
-        description="دليل شامل لإدارة مراكز تحفيظ القرآن: تسجيل الطلاب، المتابعة اليومية، الشؤون المالية، التقارير، وبوابة أولياء الأمور."
-        keywords="كيفية إدارة مركز تحفيظ القرآن, دليل نظام إحكام, تعلم إدارة المعهد القرآني, شرح برنامج تحفيظ القرآن"
+        title={HELP_INDEX_SEO.title}
+        description={HELP_INDEX_SEO.description}
       />
 
       {/* ─── Hero ─────────────────────────────────────── */}
@@ -222,9 +222,9 @@ export default function HelpCenter() {
           className="rounded-2xl border border-white/10 p-10 text-center"
           style={{ background: 'rgba(255,255,255,0.03)' }}
         >
-          <h3 className="text-white font-black text-2xl md:text-3xl mb-3" style={{ lineHeight: 1.35 }}>
+          <h2 className="text-white font-black text-2xl md:text-3xl mb-3" style={{ lineHeight: 1.35 }}>
             هل لديك مدرسة قرآنية وتريد تطويرها رقمياً ؟
-          </h3>
+          </h2>
           <p className="mb-7 text-sm" style={{ color: '#48D6CD' }}>
           نظام إحكام لإدارة جمعيات ومعاهد تحفيظ القرآن الكريم
           </p>
@@ -233,9 +233,13 @@ export default function HelpCenter() {
             className="inline-flex items-center px-7 py-3 rounded-xl font-bold text-sm"
             style={{ background: '#48D6CD', color: '#020F0E' }}
           >
-           اطلب نسختك الان
+           اكتشف نظام إحكام
           
           </Link>
+          <p className="mt-6 text-sm" style={{ color: '#96BCBE' }}>
+            تفضّل مقالات أطول عن إدارة الحلقات؟{' '}
+            <Link to="/blog" className="font-bold underline underline-offset-4" style={{ color: '#48D6CD' }}>تصفّح مدونة إحكام</Link>
+          </p>
         </div>
       </section>
 

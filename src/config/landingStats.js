@@ -14,12 +14,72 @@ const EMPTY = {
   recitations30d: 0, recitationsPrev30d: 0,
   tests: 0, stars: 0, subjects: 0,
   absences: 0, absences30d: 0,
+  updatedAt: null,
 }
 
 let pending = null
 
+function normalize(r) {
+  return {
+    institutes        : Number(r.institutes)           || 0,
+    students          : Number(r.students)             || 0,
+    staff             : Number(r.staff)                || 0,
+    groups            : Number(r.groups)               || 0,
+    recitations       : Number(r.recitations)          || 0,
+    recitationsQuran  : Number(r.recitations_quran)    || 0,
+    recitationsHadith : Number(r.recitations_hadith)   || 0,
+    recitations30d    : Number(r.recitations_30d)      || 0,
+    recitationsPrev30d: Number(r.recitations_prev_30d) || 0,
+    tests             : Number(r.tests)                || 0,
+    stars             : Number(r.stars)                || 0,
+    subjects          : Number(r.subjects)             || 0,
+    absences          : Number(r.absences)             || 0,
+    absences30d       : Number(r.absences_30d)         || 0,
+    updatedAt         : typeof r.updated_at === 'string' ? r.updated_at : null,
+  }
+}
+
+/* ISS-41: الأرقام المخبوزة وقت البناء. scripts/prerender.mjs يجلب الدالة مرة
+   واحدة ويضعها في globalThis.__LANDING_STATS_RAW__ أثناء التصيير، ويكتبها في
+   كل صفحة داخل <script type="application/json" id="landing-stats"> مع تاريخ
+   البناء (updated_at). فتظهر القيم نفسها في HTML الرئيسية وصفحة المنصة،
+   ويقرأ المتصفح الكتلة ذاتها فلا يختلف التهيئة عن التصيير. */
+let baked
+export function getBakedLandingStats() {
+  if (baked !== undefined) return baked
+  baked = null
+  try {
+    let raw = globalThis.__LANDING_STATS_RAW__
+    if (!raw && typeof document !== 'undefined') {
+      const el = document.getElementById('landing-stats')
+      if (el) raw = JSON.parse(el.textContent)
+    }
+    if (raw) baked = normalize(raw)
+  } catch { baked = null }
+  return baked
+}
+
+const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+
+/* "2026-11-13" ← «13 نوفمبر 2026». صياغة يدوية لا Intl، كي يطابق نصُّ
+   الخادم نصَّ المتصفح حرفاً بحرف عند الإماهة. */
+export function formatStatsDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '')
+  if (!m) return null
+  return `${Number(m[3])} ${AR_MONTHS[Number(m[2]) - 1]} ${m[1]}`
+}
+
 export function fetchLandingStats() {
   if (pending) return pending
+
+  /* نسخة البناء أولاً: الرقم والتاريخ يبقيان متطابقين في كل صفحة. الجلب
+     الحيّ احتياطٌ لبيئة التطوير أو لبناءٍ فشل فيه الجلب. */
+  const fromBuild = getBakedLandingStats()
+  if (fromBuild) {
+    pending = Promise.resolve(fromBuild)
+    return pending
+  }
 
   pending = import('./supabaseClient')
     .then(({ supabase }) => supabase.rpc('get_public_landing_stats'))
@@ -39,22 +99,7 @@ export function fetchLandingStats() {
       const r = Array.isArray(data) ? data[0] : data
       if (!r) return EMPTY
 
-      return {
-        institutes        : Number(r.institutes)           || 0,
-        students          : Number(r.students)             || 0,
-        staff             : Number(r.staff)                || 0,
-        groups            : Number(r.groups)               || 0,
-        recitations       : Number(r.recitations)          || 0,
-        recitationsQuran  : Number(r.recitations_quran)    || 0,
-        recitationsHadith : Number(r.recitations_hadith)   || 0,
-        recitations30d    : Number(r.recitations_30d)      || 0,
-        recitationsPrev30d: Number(r.recitations_prev_30d) || 0,
-        tests             : Number(r.tests)                || 0,
-        stars             : Number(r.stars)                || 0,
-        subjects          : Number(r.subjects)             || 0,
-        absences          : Number(r.absences)             || 0,
-        absences30d       : Number(r.absences_30d)         || 0,
-      }
+      return { ...normalize(r), updatedAt: new Date().toISOString().slice(0, 10) }
     })
 
   return pending

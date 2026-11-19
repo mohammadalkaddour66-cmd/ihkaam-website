@@ -102,7 +102,7 @@ export default function AdminLogin() {
             تسجيل الدخول
           </h1>
           <p className="text-xs" style={{ color: '#6FA5A8' }}>
-            منطقة مقيدة — للمهندس محمد القدور فقط
+            منطقة مقيدة — لمشرف المنصة فقط
           </p>
         </div>
 

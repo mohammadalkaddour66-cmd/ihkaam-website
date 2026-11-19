@@ -5,28 +5,27 @@
   "globalName": "Ihkaam",
   "srcDir": "src",
   "cssEntry": ".design-sync/compiled.css",
-  "extraFonts": [".design-sync/fonts/cairo.css"],
+  "extraFonts": [
+    ".design-sync/fonts/cairo.css"
+  ],
   "readmeHeader": ".design-sync/conventions.md",
   "overrides": {
-    "FloatingBg": { "cardMode": "single", "primaryStory": "BehindContent" }
+    "FloatingBg": {
+      "cardMode": "single",
+      "primaryStory": "BehindContent"
+    }
   },
   "componentSrcMap": {
-    "RippleButton": "src/components/RippleButton.jsx",
-    "QualityScore": "src/components/QualityScore.jsx",
-    "FloatingBg": "src/components/FloatingBg.jsx",
-    "GlowCursor": "src/components/GlowCursor.jsx",
-    "StatsSection": "src/components/StatsSection.jsx",
-    "SocialProof": "src/components/SocialProof.jsx",
-    "PainSection": "src/components/PainSection.jsx",
+    "QualityScore": "src/components/unused/QualityScore.jsx",
+    "FloatingBg": "src/components/layout/FloatingBg.jsx",
+    "PainSection": "src/components/sections/PainSection.jsx",
     "AboutSection": null,
-    "ServicesSection": "src/components/ServicesSection.jsx",
-    "ProductsSection": "src/components/ProductsSection.jsx",
-    "SolutionPreviewSection": "src/components/SolutionPreviewSection.jsx",
-    "IhkaamFAQ": "src/components/IhkaamFAQ.jsx",
-    "IhkaamByNumbers": "src/components/IhkaamByNumbers.jsx",
-    "IhkaamTrustStats": "src/components/IhkaamTrustStats.jsx",
-    "IhkaamAudiences": "src/components/IhkaamAudiences.jsx",
-    "IhkaamDetailedFeatures": "src/components/IhkaamDetailedFeatures.jsx",
-    "IhkaamSystemFeatures": "src/components/IhkaamSystemFeatures.jsx"
+    "SolutionPreviewSection": "src/components/sections/SolutionPreviewSection.jsx",
+    "IhkaamFAQ": "src/components/ihkaam/IhkaamFAQ.jsx",
+    "IhkaamByNumbers": "src/components/ihkaam/IhkaamByNumbers.jsx",
+    "IhkaamTrustStats": "src/components/ihkaam/IhkaamTrustStats.jsx",
+    "IhkaamAudiences": "src/components/ihkaam/IhkaamAudiences.jsx",
+    "IhkaamDetailedFeatures": "src/components/unused/IhkaamDetailedFeatures.jsx",
+    "IhkaamSystemFeatures": "src/components/ihkaam/IhkaamSystemFeatures.jsx"
   }
 }

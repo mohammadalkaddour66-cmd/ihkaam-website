@@ -1,9 +1,17 @@
-import IhkaamPricing from '../components/IhkaamPricing'
+import IhkaamPricing from '../components/ihkaam/IhkaamPricing'
+import PageNotes from '../components/sections/PageNotes'
+
+const NOTES = [
+  { q: 'ماذا يحدث بعد إرسال الطلب؟', a: 'يصل طلبك إلى فريق منصة إحكام فنتواصل معك لنتأكد من بيانات المعهد وعدد الطلاب والإضافات التي اخترتها. لا يُخصم منك شيء عند الإرسال، والطلب خطوة أولى لا التزام فيها.' },
+  { q: 'كيف أحسب الاشتراك المناسب؟', a: 'ابدأ بعدد الطلاب الحالي لا المتوقَّع، فالاشتراك يتبع حجم معهدك ويمكن تعديله حين يكبر. ثم اختر من الإضافات ما تحتاجه الآن فقط: الإدارة المالية، أو المواد الرديفة، أو نجم الحلقة. بقية الميزات داخلة في النسخة الأساسية.' },
+  { q: 'هل أحتاج تطبيقاً أو جهازاً خاصاً؟', a: 'لا. إحكام يعمل من المتصفح على أي جهاز: حاسوب المكتب، أو جوال المعلم، أو جهاز وليّ الأمر. ويمكن إضافته إلى الشاشة الرئيسية للجوال ليُفتح كأي تطبيق.' },
+]
 
 export default function RequestPage() {
   return (
     <div style={{ background: '#020F0E', minHeight: '100svh', paddingTop: '72px' }}>
       <IhkaamPricing />
+      <PageNotes title="أسئلة قبل الطلب" items={NOTES} />
     </div>
   )
 }

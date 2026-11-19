@@ -7,6 +7,8 @@ import {
   PieChart, Receipt, Coins, BellRing, Trophy,
   PlayCircle, Brain, Activity, Gauge, ScanLine, Compass,
 } from 'lucide-react'
+import { EXTRAS_CORE } from './features/extras-core'
+import { EXTRAS_ADDONS } from './features/extras-addons'
 
 /*
   layout:
@@ -21,7 +23,7 @@ import {
    slug: must match the URL param
 ────────────────────────────────────────────────────────────── */
 
-export const FEATURES = {
+const BASE = {
 
   /* ═══════════════════════════ CORE ═══════════════════════════ */
 
@@ -33,8 +35,8 @@ export const FEATURES = {
     badge  : 'النسخة الأساسية',
     color  : '#48D6CD',
     stats  : [
-      { value: '+8',   label: 'إحصائيات سريعة عن المعهد' },
-      { value: '٣ دقائق', label: 'لإضافة طالب جديد كاملاً' },
+      { value: 'لوحة واحدة',   label: 'تُظهر حال المعهد كل صباح' },
+      { value: 'ملف كامل', label: 'لكل طالب: بياناته وحلقته وولي أمره' },
       { value: '٧ صفات', label: 'وظيفية جاهزة + صلاحيات لكل موظف على حدة' },
     ],
     heroVisualItems: [
@@ -60,7 +62,7 @@ export const FEATURES = {
         'قاعدة بيانات مركزية — كل طالب، معلم وحلقة في مكان واحد',
         'المدير يرى نشاط المعهد كاملاً في لحظة، بدون مكالمات استفسار',
         'نقل الطلاب بين الحلقات بنقرة — مع احتفاظ كامل بالتاريخ',
-        'بيانات المعهد لا تتبع الأشخاص — تبقى في النظام للأبد',
+        'بيانات المعهد لا تتبع الأشخاص — تبقى في النظام حين يرحل صاحبها',
       ],
     },
     capabilities: [
@@ -86,7 +88,7 @@ export const FEATURES = {
     badge  : 'النسخة الأساسية',
     color  : '#D9ACA3',
     stats  : [
-      { value: '٣٠ ث',    label: 'لإنشاء حلقة جديدة كاملة' },
+      { value: 'نقرة',    label: 'تنقل الطالب بين الحلقات وسجله معه' },
       { value: 'لا سقف',  label: 'لعدد الحلقات أو الطلاب' },
       { value: 'فوري',    label: 'انعكاس أي تعديل على كل التقارير' },
     ],
@@ -139,9 +141,9 @@ export const FEATURES = {
     badge  : 'النسخة الأساسية',
     color  : '#48D6CD',
     stats  : [
-      { value: '٨ ث',  label: 'متوسط تسجيل جلسة تسميع واحدة' },
-      { value: '٦',    label: 'أنواع سجلات يومية في مكان واحد' },
-      { value: 'صفر',  label: 'دفاتر ورقية تحتاجها بعد اليوم' },
+      { value: 'كشف واحد',  label: 'يحفظ حضور الحلقة كلها باعتماد واحد' },
+      { value: 'بلا إنترنت',    label: 'الكشف والسجل يُحفظان ويُرفعان عند عودة الاتصال' },
+      { value: 'فوري',  label: 'ما يُسجَّل يظهر في بوابة ولي الأمر' },
     ],
     flowSteps: [
       { num: '١', label: 'اختر الطالب', desc: 'بحث فوري باسمه أو اسم حلقته' },
@@ -192,7 +194,7 @@ export const FEATURES = {
     badge  : 'النسخة الأساسية',
     color  : '#D9ACA3',
     stats  : [
-      { value: '٢٤/٧', label: 'ولي الأمر يرى تقدم ابنه في أي وقت' },
+      { value: 'من الهاتف', label: 'ولي الأمر يرى تقدم ابنه في أي وقت' },
       { value: '٥ تبويبات', label: 'تفصّل أداء الطالب من زواياه كلها' },
       { value: 'فوري', label: 'كل غياب أو نتيجة تظهر في البوابة لحظة تسجيلها' },
     ],
@@ -245,8 +247,8 @@ export const FEATURES = {
     color  : '#48D6CD',
     stats  : [
       { value: '٩',       label: 'أنواع تقارير جاهزة للتصدير' },
-      { value: 'PDF واحد', label: 'يجمع شهراً كاملاً من البيانات' },
-      { value: 'للأبد',   label: 'البيانات لا تُحذف ولا تُفقد أبداً' },
+      { value: 'PDF وExcel', label: 'تصدير بترويسة المعهد وتوقيعه وختمه' },
+      { value: 'لكل تقرير', label: 'صلاحية مستقلة تُمنح وتُسحب' },
     ],
     heroVisualItems: [
       { label: 'تقرير الحضور',    value: '٩٢٪',  color: '#48D6CD' },
@@ -271,7 +273,7 @@ export const FEATURES = {
         'كل سجل محفوظ بختم التاريخ والوقت — لا يُحذف ولا يُفقد',
         'استخرج تقرير حضور أي طالب لأي فترة في ثوانٍ',
         'صدّر التقارير PDF بضغطة واحدة — جاهزة للطباعة أو الإرسال',
-        'البيانات مشفرة على الخوادم السحابية — لا تتبع شخصاً ولا هاتفاً',
+        'البيانات على تخزين سحابي — لا تتبع شخصاً ولا هاتفاً',
       ],
     },
     capabilities: [
@@ -298,7 +300,7 @@ export const FEATURES = {
     color  : '#48D6CD',
     stats  : [
       { value: '٧',      label: 'مؤشرات تُقاس لكل حلقة ولكل طالب' },
-      { value: 'صفر',    label: 'إدخال إضافي — يقرأ سجلاتك اليومية نفسها' },
+      { value: 'بلا إدخال إضافي',    label: 'يقرأ سجلاتك اليومية نفسها' },
       { value: 'يمتنع',  label: 'عن الحكم حين لا تكفي البيانات' },
     ],
     insightVerdict: {
@@ -348,19 +350,19 @@ export const FEATURES = {
     whoFor: ['مدير المعهد', 'المشرف الأكاديمي', 'المعلم'],
   },
 
-  /* ═══════════════════════════ ADD-ONS ═══════════════════════════ */
+  /* ═══ finance / subjects / star = إضافات مدفوعة؛ library / exams / messages = نسخة أساسية ═══ */
 
   finance: {
     slug   : 'finance',
     layout : 'split',
     type   : 'addon',
     icon   : Wallet,
-    badge  : 'وحدة إضافية',
+    badge  : 'وحدة إضافية اختيارية',
     color  : '#D9ACA3',
     stats  : [
       { value: '٣ عملات', label: 'دولار، تركي، سوري — في نفس النظام' },
       { value: 'لحظي',   label: 'رؤية المتأخرين عن السداد فوراً' },
-      { value: '٠ ورق',  label: 'لا فواتير ورقية ولا ملفات إكسل' },
+      { value: 'مستقل',  label: 'رصيد منفصل لكل عملة، بلا تحويل تلقائي' },
     ],
     heroVisualItems: [
       { label: 'إيرادات الشهر',    value: '$٤,٢٠٠', color: '#22C5C0' },
@@ -408,7 +410,7 @@ export const FEATURES = {
     layout : 'showcase',
     type   : 'addon',
     icon   : Library,
-    badge  : 'وحدة إضافية',
+    badge  : 'وحدة إضافية اختيارية',
     color  : '#48D6CD',
     stats  : [
       { value: 'لا سقف',  label: 'لعدد المواد التي تضيفها' },
@@ -461,7 +463,7 @@ export const FEATURES = {
     layout : 'showcase',
     type   : 'addon',
     icon   : Award,
-    badge  : 'وحدة إضافية',
+    badge  : 'وحدة إضافية اختيارية',
     color  : '#D9ACA3',
     stats  : [
       { value: 'تلقائي',  label: 'ترشيح النجم بالنقاط — والمشرف يعتمده' },
@@ -512,9 +514,9 @@ export const FEATURES = {
   library: {
     slug   : 'library',
     layout : 'showcase',
-    type   : 'addon',
+    type   : 'core',
     icon   : Headphones,
-    badge  : 'وحدة إضافية',
+    badge  : 'النسخة الأساسية',
     color  : '#48D6CD',
     stats  : [
       { value: '٦٠٤',    label: 'صفحة قرآنية مرتبطة بتلاوة الشيخ الحصري' },
@@ -564,13 +566,13 @@ export const FEATURES = {
   exams: {
     slug   : 'exams',
     layout : 'flow',
-    type   : 'addon',
+    type   : 'core',
     icon   : Crosshair,
-    badge  : 'وحدة إضافية',
+    badge  : 'النسخة الأساسية',
     color  : '#D9ACA3',
     stats  : [
       { value: 'بضغطة',  label: 'يُحوَّل الطالب من حلقته إلى المختبِر' },
-      { value: 'صفر',   label: 'مكالمات لمعرفة من التالي في الدور' },
+      { value: 'دور واضح',   label: 'لكل طالب رقمه ومدة انتظاره' },
       { value: 'أوفلاين', label: 'التحويل والاختبار يعملان بلا إنترنت' },
     ],
     flowSteps: [
@@ -617,14 +619,14 @@ export const FEATURES = {
   messages: {
     slug   : 'messages',
     layout : 'flow',
-    type   : 'addon',
+    type   : 'core',
     icon   : Inbox,
-    badge  : 'وحدة إضافية',
+    badge  : 'النسخة الأساسية',
     color  : '#48D6CD',
     stats  : [
       { value: 'خاص',   label: 'كل رسالة تصل لمستلمها فقط' },
       { value: 'محفوظ', label: 'كل مراسلة موثقة بالتاريخ والحالة' },
-      { value: 'صفر',  label: 'جروبات واتساب مشتتة بعد اليوم' },
+      { value: 'صندوق واحد',  label: 'بدل مجموعات واتساب العامة' },
     ],
     flowSteps: [
       { num: '١', label: 'ولي الأمر يكتب',    desc: 'رسالته الخاصة عبر بوابته في التطبيق' },
@@ -668,5 +670,14 @@ export const FEATURES = {
   },
 }
 
-export const ADDONS = ['finance', 'subjects', 'star', 'library', 'exams', 'messages']
-export const CORE   = ['admin', 'academic', 'daily', 'insights', 'parents', 'reports']
+/* الوحدات المدفوعة ثلاث فقط: الإدارة المالية، المواد الرديفة، نجم الحلقة.
+   ما سواها (المكتبة الصوتية، طابور الاختبارات، الرسائل) ضمن النسخة الأساسية. */
+export const ADDONS = ['finance', 'subjects', 'star']
+export const CORE   = ['admin', 'academic', 'daily', 'insights', 'parents', 'reports', 'library', 'exams', 'messages']
+
+/* يُدمج المحتوى الإضافي (من يستخدم، سير عملي، ما يراه كل دور، أسئلة شائعة)
+   مع بيانات كل ميزة في كائن واحد يقرؤه FeatureDetailPage. */
+const EXTRAS = { ...EXTRAS_CORE, ...EXTRAS_ADDONS }
+export const FEATURES = Object.fromEntries(
+  Object.entries(BASE).map(([slug, f]) => [slug, { ...f, ...EXTRAS[slug] }])
+)

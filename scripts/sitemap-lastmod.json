@@ -1,0 +1,262 @@
+{
+  "/": {
+    "hash": "534bfc87a780e19e",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam": {
+    "hash": "918ae263f4c09c6f",
+    "lastmod": "2026-11-13"
+  },
+  "/about": {
+    "hash": "fbb9f05e60b0123e",
+    "lastmod": "2026-11-13"
+  },
+  "/contact": {
+    "hash": "17576c7d5391ce0d",
+    "lastmod": "2026-11-13"
+  },
+  "/request": {
+    "hash": "2b702da2fd1794c2",
+    "lastmod": "2026-11-13"
+  },
+  "/review": {
+    "hash": "49e36eb220659370",
+    "lastmod": "2026-11-13"
+  },
+  "/terms": {
+    "hash": "70bbb48ef43ef70c",
+    "lastmod": "2026-11-13"
+  },
+  "/privacy": {
+    "hash": "50de0aeb8059db7b",
+    "lastmod": "2026-11-13"
+  },
+  "/blog": {
+    "hash": "5835b56541c47be8",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/how-long-to-memorize-quran": {
+    "hash": "57585bb1c653cb87",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/quran-review-schedule": {
+    "hash": "6ceb52877d1fc1e2",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/first-90-days-director": {
+    "hash": "fe7e341a06e86fdd",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/why-centers-fail-to-scale": {
+    "hash": "d28631aa93b021b1",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/delivering-bad-news-to-parents": {
+    "hash": "ee872a2341c1575f",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/digital-transformation-quran-centers": {
+    "hash": "6069598162ef7754",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/reading-recitation-data": {
+    "hash": "5a900d15a2eae9f9",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/reputation-as-marketing": {
+    "hash": "df8dbce1313baefb",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/motivating-teachers": {
+    "hash": "9a5a18311f335543",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/setting-tuition-fees": {
+    "hash": "b0e4bdf7c6c5a4fc",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/weekly-memorization-plan": {
+    "hash": "a4cd64c4b199caed",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/fair-recitation-system": {
+    "hash": "e9029345acecfa88",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/handling-chronic-absentees": {
+    "hash": "bff5d6e3ab836841",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/organizing-circles-medium-center": {
+    "hash": "aef7032abd7f8aa3",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/angry-parent-trust-moment": {
+    "hash": "1850a943a9b64398",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/how-to-know-teacher-is-working": {
+    "hash": "636428f8901ec25f",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/financial-chaos-not-money": {
+    "hash": "76cc49d8d76c4f1b",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/monthly-reports-time-trap": {
+    "hash": "1326fdac27f086a5",
+    "lastmod": "2026-11-13"
+  },
+  "/blog/why-students-leave": {
+    "hash": "2898a1d5de0047da",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/admin": {
+    "hash": "a19c25fb577aeec4",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/academic": {
+    "hash": "eeaa1b40c92fe138",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/daily": {
+    "hash": "b6a861e0ad4e8912",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/insights": {
+    "hash": "ea8242ea08fbd3a1",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/parents": {
+    "hash": "39466fc9664d5cd4",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/reports": {
+    "hash": "87b2da1352946b94",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/library": {
+    "hash": "fb2b16af4ed3654e",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/exams": {
+    "hash": "9bb3fdfc6207511d",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/features/messages": {
+    "hash": "58a09556ee524de7",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/addons/finance": {
+    "hash": "c0c8d86f49088853",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/addons/subjects": {
+    "hash": "86086b1dddd06b80",
+    "lastmod": "2026-11-13"
+  },
+  "/ihkaam/addons/star": {
+    "hash": "e7fd70ccd46287c1",
+    "lastmod": "2026-11-13"
+  },
+  "/help": {
+    "hash": "a44fe2671db16d74",
+    "lastmod": "2026-11-13"
+  },
+  "/help/login": {
+    "hash": "7fc4adf8a1cc64d6",
+    "lastmod": "2026-11-13"
+  },
+  "/help/dashboard-overview": {
+    "hash": "245b18a6c12ec571",
+    "lastmod": "2026-11-13"
+  },
+  "/help/signup": {
+    "hash": "25427a29aa3fd7f0",
+    "lastmod": "2026-11-13"
+  },
+  "/help/payment": {
+    "hash": "66c9c4cd63252e80",
+    "lastmod": "2026-11-13"
+  },
+  "/help/install-home-screen": {
+    "hash": "c6b64954c9658984",
+    "lastmod": "2026-11-13"
+  },
+  "/help/moving-student-data": {
+    "hash": "5a4f318b29285a20",
+    "lastmod": "2026-11-13"
+  },
+  "/help/student-registration": {
+    "hash": "121159f30b35012c",
+    "lastmod": "2026-11-13"
+  },
+  "/help/groups-management": {
+    "hash": "22d979dd385f6740",
+    "lastmod": "2026-11-13"
+  },
+  "/help/student-transfer": {
+    "hash": "59d7b4dd1cce2634",
+    "lastmod": "2026-11-13"
+  },
+  "/help/attendance-batch": {
+    "hash": "88c67a2b8521e3f8",
+    "lastmod": "2026-11-13"
+  },
+  "/help/attendance-staff": {
+    "hash": "910e0164a6c7c596",
+    "lastmod": "2026-11-13"
+  },
+  "/help/daily-recitation": {
+    "hash": "36a75f8231b3032c",
+    "lastmod": "2026-11-13"
+  },
+  "/help/tests": {
+    "hash": "fcd7cf8697e9ae60",
+    "lastmod": "2026-11-13"
+  },
+  "/help/exam-queue": {
+    "hash": "c8f336c44689fa7d",
+    "lastmod": "2026-11-13"
+  },
+  "/help/monthly-eval": {
+    "hash": "979bab6636bf06e1",
+    "lastmod": "2026-11-13"
+  },
+  "/help/finance-tuitions": {
+    "hash": "a928822714641cf3",
+    "lastmod": "2026-11-13"
+  },
+  "/help/finance-ledger": {
+    "hash": "df5e6aad118547cb",
+    "lastmod": "2026-11-13"
+  },
+  "/help/reports-overview": {
+    "hash": "42b14b485b4f1c08",
+    "lastmod": "2026-11-13"
+  },
+  "/help/archiving": {
+    "hash": "7823ff5b9b3bf1a1",
+    "lastmod": "2026-11-13"
+  },
+  "/help/parent-portal": {
+    "hash": "d04c60040e8a854c",
+    "lastmod": "2026-11-13"
+  },
+  "/help/staff-management": {
+    "hash": "f2a30614e6de9a49",
+    "lastmod": "2026-11-13"
+  },
+  "/help/star-of-week": {
+    "hash": "10a7b80d06f7fda2",
+    "lastmod": "2026-11-13"
+  },
+  "/help/smart-insights": {
+    "hash": "3712d603f8176d91",
+    "lastmod": "2026-11-13"
+  },
+  "/help/insights-metrics": {
+    "hash": "8078d1fb9357982f",
+    "lastmod": "2026-11-13"
+  }
+}

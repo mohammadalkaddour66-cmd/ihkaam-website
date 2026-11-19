@@ -1,5 +1,17 @@
-import ContactSection from '../components/ContactSection'
+import ContactSection from '../components/sections/ContactSection'
+import PageNotes from '../components/sections/PageNotes'
+
+const NOTES = [
+  { q: 'ماذا أكتب في رسالتي؟', a: 'اذكر اسم المعهد أو المركز، وعدد الطلاب والحلقات تقريباً، وما الذي تريد ترتيبه أولاً: الحضور والتسميع، أو التواصل مع الأهل، أو الرسوم. هذه التفاصيل تختصر نصف الحديث وتجعل الرد الأول مفيداً من أول سطر.' },
+  { q: 'من يقرأ الرسالة؟', a: 'يصل كل طلب إلى فريق منصة إحكام مباشرة، ونرد عليك من القناة التي اخترتها: واتساب أو البريد أو الهاتف. لا تمرّ رسالتك على وسيط ولا تُستعمل لغير الرد عليك.' },
+  { q: 'هل يلزمني قرار قبل التواصل؟', a: 'لا. كثير من المديرين يراسلوننا وهم في مرحلة السؤال فقط. نشرح لك كيف يعمل النظام على حلقات مثل حلقاتك، ثم تقرر أنت متى تبدأ وبأي إضافة، أو ألا تبدأ أصلاً.' },
+]
 
 export default function ContactPage() {
-  return <ContactSection />
+  return (
+    <>
+      <ContactSection />
+      <PageNotes title="قبل أن ترسل" items={NOTES} />
+    </>
+  )
 }

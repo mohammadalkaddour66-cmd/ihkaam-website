@@ -2,19 +2,19 @@
 import { useLocation, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import DemoRequestForm from '../components/DemoRequestForm'
-import IhkaamGallery         from '../components/IhkaamGallery'
-import IhkaamMobileShowcase from '../components/IhkaamMobileShowcase'
-import IhkaamTrustStats   from '../components/IhkaamTrustStats'
-import IhkaamPartners     from '../components/IhkaamPartners'
-import IhkaamAudiences    from '../components/IhkaamAudiences'
-import IhkaamCoreFeatures    from '../components/IhkaamCoreFeatures'
-import IhkaamSmartInsights   from '../components/IhkaamSmartInsights'
-import IhkaamSystemFeatures from '../components/IhkaamSystemFeatures'
-import IhkaamConfigurator    from '../components/IhkaamConfigurator'
-import IhkaamFAQ             from '../components/IhkaamFAQ'
-import IhkaamByNumbers       from '../components/IhkaamByNumbers'
-import LeadMagnetSection     from '../components/LeadMagnetSection'
+import DemoRequestForm from '../components/forms/DemoRequestForm'
+import IhkaamGallery         from '../components/ihkaam/IhkaamGallery'
+import IhkaamMobileShowcase from '../components/ihkaam/IhkaamMobileShowcase'
+import IhkaamTrustStats   from '../components/ihkaam/IhkaamTrustStats'
+import IhkaamPartners     from '../components/ihkaam/IhkaamPartners'
+import IhkaamAudiences    from '../components/ihkaam/IhkaamAudiences'
+import IhkaamCoreFeatures    from '../components/ihkaam/IhkaamCoreFeatures'
+import IhkaamSmartInsights   from '../components/ihkaam/IhkaamSmartInsights'
+import IhkaamSystemFeatures from '../components/ihkaam/IhkaamSystemFeatures'
+import IhkaamConfigurator    from '../components/ihkaam/IhkaamConfigurator'
+import IhkaamFAQ             from '../components/ihkaam/IhkaamFAQ'
+import IhkaamByNumbers       from '../components/ihkaam/IhkaamByNumbers'
+import LeadMagnetSection     from '../components/sections/LeadMagnetSection'
 
 /* ── Shared scroll helper — uses offsetTop to avoid transform skew ── */
 function scrollToSection(id) {
@@ -217,7 +217,7 @@ export default function IhkaamSaaS() {
               className="btn-cta inline-flex items-center gap-2.5 rounded-xl w-full sm:w-auto justify-center"
               style={{ fontSize: '0.9rem', padding: '0.9rem 2.2rem' }}
             >
-              اطلب نسخة
+              احسب اشتراك معهدك
               <ArrowLeft size={16} strokeWidth={2} />
             </Link>
 
@@ -283,7 +283,7 @@ export default function IhkaamSaaS() {
               رأيت كيف يخدم إحكام كل دور في معهدك؟
             </p>
             <p className="text-sm" style={{ color: '#96BCBE' }}>
-              الخطوة التالية بسيطة — اطلب نسختك وفريقنا يرافقك من أول يوم.
+              الخطوة التالية: احسب اشتراك معهدك، وفريقنا يرافقك من أول يوم.
             </p>
           </div>
           <Link
@@ -291,7 +291,7 @@ export default function IhkaamSaaS() {
             className="btn-cta flex-shrink-0 rounded-xl whitespace-nowrap"
             style={{ fontSize: '0.9rem', padding: '0.9rem 2rem' }}
           >
-            اطلب نسخة
+            احسب اشتراك معهدك
           </Link>
         </div>
       </div>
@@ -354,7 +354,7 @@ export default function IhkaamSaaS() {
         whileInView="visible"
         viewport={{ once: true, margin: '-60px' }}
       >
-        <IhkaamByNumbers />
+        <IhkaamByNumbers titleLead="المعاهد التي تعمل على إحكام" titleAccent="بالأرقام" />
       </motion.div>
 
 
@@ -413,7 +413,7 @@ export default function IhkaamSaaS() {
               className="btn-cta inline-flex items-center gap-3 rounded-2xl w-full sm:w-auto justify-center"
               style={{ fontSize: '1rem', padding: '1rem 2.5rem', textDecoration: 'none' }}
             >
-              اطلب نسخة
+              احسب اشتراك معهدك
               <ArrowLeft size={18} strokeWidth={2} />
             </Link>
 

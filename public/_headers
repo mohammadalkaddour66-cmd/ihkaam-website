@@ -1,46 +1,70 @@
 # ─────────────────────────────────────────────────────────────
-# Security headers — the portable copy.
+# ترويسات الأمان والتخزين — النسخة الوحيدة.
 #
-# netlify.toml only runs when Netlify serves the request. The apex
-# (ihkaam.app) is served by Cloudflare, so everything declared there was
-# silently absent in production: only nosniff and Referrer-Policy survived.
-# This file is honoured by Cloudflare Pages, Workers Static Assets AND
-# Netlify, so the rules hold wherever the site lands. Keep it in sync with
-# netlify.toml, or drop netlify.toml once the apex is settled.
+# يقرؤه Cloudflare Pages (حيث يُنشر ihkaam.app) ويقرؤه Netlify أيضاً،
+# ولذلك لا نسخة ثانية في netlify.toml.
 # ─────────────────────────────────────────────────────────────
 
 /*
-  # Block clickjacking (no page here is meant to be embedded)
+  # لا صفحة هنا معدّة للتضمين في إطار
   X-Frame-Options: DENY
 
-  # Stop browsers from guessing content types
+  # لا يخمّن المتصفح نوع الملف
   X-Content-Type-Options: nosniff
 
-  # Origin only on cross-site navigation, full path same-site
+  # الأصل فقط عند الخروج إلى موقع آخر، والمسار كاملاً داخل الموقع
   Referrer-Policy: strict-origin-when-cross-origin
 
-  # Nothing here needs these device APIs
+  # لا شيء هنا يحتاج هذه الأجهزة
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
 
-  # Force HTTPS for a year.
-  # `preload` is deliberately omitted — submitting to the preload list is
-  # effectively irreversible. Add it only after the domain is settled.
+  # HTTPS لسنة. بلا `preload` عمداً: الإدراج في قائمة preload شبه نهائي.
   Strict-Transport-Security: max-age=31536000; includeSubDomains
 
-  # ── CSP — REPORT-ONLY on purpose ──
-  # This does NOT block anything yet; violations only log to the browser
-  # console. Open the deployed site, click through every page and form, and
-  # check the console for "Content Security Policy" reports.
-  #
-  # If the console stays clean, promote it by renaming the key below to
-  # `Content-Security-Policy` (drop the `-Report-Only` suffix).
-  #
-  # 'unsafe-inline' in style-src is required: framer-motion and the
-  # components style elements inline. Removing it would break the layout.
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kulpesdycuwdemjwzjyx.supabase.co; connect-src 'self' https://kulpesdycuwdemjwzjyx.supabase.co wss://kulpesdycuwdemjwzjyx.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  # نافذة تُفتح من الموقع (واتساب، فيسبوك…) لا تمسك مرجعاً إليه
+  Cross-Origin-Opener-Policy: same-origin
 
-# Vite fingerprints these filenames, so they can be cached forever.
-# Production currently serves them with max-age=14400, which makes repeat
-# visitors re-fetch the ~650KB entry chunk every four hours for nothing.
+  # ── CSP — مفروضة (ISS-34) ──
+  # تحجب كل ما لا تسمح به، والمخالفة تظهر في طرفية المتصفح.
+  #
+  # ما تسمح به، ولماذا:
+  #   script-src  'self'                          حزم Vite في /assets
+  #               static.cloudflareinsights.com   سكربت Cloudflare Web Analytics (ISS-32)
+  #   style-src   'unsafe-inline'                 الأنماط الحرجة المضمَّنة في رأس كل صفحة (ISS-31)،
+  #                                               و style على العناصر من framer-motion والمكوّنات
+  #               (الخط Cairo مستضاف ذاتياً في /fonts، فلا أصل خارجياً للخطوط)
+  #   font-src    'self'                          ملفات الخط من /fonts
+  #   img-src     Supabase                        شعارات المعاهد وصور الواجهات
+  #   connect-src Supabase (https و wss)          الأرقام والبيانات
+  #               cloudflareinsights.com          إرسال قياسات Web Analytics
+  #
+  # لا سكربت مضمَّناً قابلاً للتنفيذ في أيّ صفحة مولَّدة:
+  #   - الأرقام ولقطات الهيرو كتلُ بيانات <script type="application/json">،
+  #     و JSON-LD نوعه application/ld+json؛ المتصفح لا ينفّذ هذين النوعين.
+  #   - سكربتات Suspense التي كان React يضعها في الرئيسية ($RC…) لم تعد تُولَّد:
+  #     entry-server.jsx يكتب كل الحدود في مكانها (progressiveChunkSize).
+  #   - قلب ورقة الأنماط الكاملة من media="print" إلى all يجري في main.jsx،
+  #     لا في onload مضمَّن.
+  # جُرِّبت السياسة مفروضةً على البناء المحلي في متصفح (13 نوفمبر 2026): الرئيسية
+  # و/ihkaam وصفحة ميزة ومقال وشرح مساعدة و/request و/checkout و/admin/login
+  # و/about و/contact و/review وصفحة 404 — صفر مخالفة.
+  #
+  # شرطٌ في لوحة Cloudflare: Rocket Loader موقوف، فهو يحقن سكربتاً مضمَّناً
+  # تحجبه هذه السياسة (docs/cloudflare-steps.md، القسم 8).
+  # أيّ سكربت مضمَّن يُضاف لاحقاً سيُحجَب: اجعله ملفاً في /assets أو كتلة JSON.
+  #
+  # لا report-to هنا: لا عنوان عندنا يستقبل التقارير، وترويسةٌ تشير إلى
+  # عنوانٍ غير موجود لا تنفع.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://kulpesdycuwdemjwzjyx.supabase.co; connect-src 'self' https://kulpesdycuwdemjwzjyx.supabase.co wss://kulpesdycuwdemjwzjyx.supabase.co https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# أسماء هذه الملفات تحمل بصمة المحتوى (Vite)، فتُخزَّن سنة كاملة.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# ── مسارات لا تُفهرَس مهما وصلها رابط (robots.txt يمنع الزحف لا الفهرسة) ──
+/admin
+  X-Robots-Tag: noindex, nofollow
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+/checkout
+  X-Robots-Tag: noindex, nofollow

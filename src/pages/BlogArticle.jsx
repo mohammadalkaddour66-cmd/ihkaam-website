@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Clock, ArrowRight, ChevronLeft, ArrowLeft, BookOpen, Zap, Bell, Loader2, CheckCircle } from 'lucide-react'
-import { getPost, getCategoryById, BLOG_POSTS } from '../data/blogContent'
-import PageMeta from '../components/PageMeta'
+import { Clock, ArrowRight, ChevronLeft, ArrowLeft, BookOpen, Zap, Bell, Loader2, CheckCircle, Download } from 'lucide-react'
+import { getPost, getCategoryById, getRelatedPosts, readTimeLabel, featureHref } from '../data/blogContent'
+import { FEATURE_SEO } from '../config/seo'
+import PageMeta from '../components/layout/PageMeta'
+import { SITE, blogSeo } from '../config/seo'
 import { supabase } from '../config/supabaseClient'
 import { useFormGuard } from '../hooks/useFormGuard'
 
@@ -68,7 +70,7 @@ function SidebarEmailCapture({ catColor }) {
         <h3 className="text-white font-bold text-sm">لا تفوّتك المقالات القادمة</h3>
       </div>
       <p className="text-white/45 text-xs leading-relaxed mb-4">
-        نشرة أسبوعية — مقالات عملية لمديري مراكز التحفيظ. بدون إعلانات.
+        تصلك المقالات الجديدة على بريدك — مقالات عملية لمديري معاهد التحفيظ. بدون إعلانات.
       </p>
       <form onSubmit={submit} className="flex flex-col gap-2">
         {/* Bot trap — invisible to humans */}
@@ -111,7 +113,7 @@ function SidebarEmailCapture({ catColor }) {
 /* ─── Sidebar ────────────────────────────────────────────── */
 function Sidebar({ post }) {
   const catColor = post.coverColor
-  const related  = BLOG_POSTS.filter(p => p.slug !== post.slug).slice(0, 3)
+  const related  = getRelatedPosts(post)
 
   return (
     <aside className="space-y-5">
@@ -133,6 +135,15 @@ function Sidebar({ post }) {
         <p className="text-white/50 text-xs leading-relaxed mb-4">
           إحكام تجمع كل ما يحتاجه مدير المركز في مكان واحد — تسميع، حضور، ماليات، وتقارير.
         </p>
+        {post.relatedFeature && FEATURE_SEO[post.relatedFeature] && (
+          <Link
+            to={featureHref(post.relatedFeature)}
+            className="block text-xs font-bold leading-relaxed mb-3 underline underline-offset-4"
+            style={{ color: catColor }}
+          >
+            الميزة المرتبطة: {FEATURE_SEO[post.relatedFeature].title}
+          </Link>
+        )}
         <Link
           to="/ihkaam"
           className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-xs"
@@ -169,7 +180,7 @@ function Sidebar({ post }) {
                 </p>
                 <div className="flex items-center gap-1.5 mt-1.5">
                   <Clock size={10} className="text-white/25" />
-                  <span className="text-white/25 text-[10px]">{p.readTime} دقائق</span>
+                  <span className="text-white/25 text-[10px]">{readTimeLabel(p.readTime)}</span>
                 </div>
               </div>
             </Link>
@@ -189,6 +200,105 @@ function Sidebar({ post }) {
         جميع المقالات
       </Link>
     </aside>
+  )
+}
+
+/* ─── Inline formatting: **عريض** و [نص](/مسار) ─────────────── */
+function inline(line) {
+  return line
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+    .replace(/\[([^\]]+)\]\(((?:\/|https:\/\/)[^)\s]*)\)/g, (_, label, href) =>
+      href.startsWith('/')
+        ? `<a href="${href}" class="text-white underline underline-offset-4 decoration-white/30 hover:decoration-white">${label}</a>`
+        : `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-white underline underline-offset-4 decoration-white/30 hover:decoration-white">${label}</a>`)
+}
+
+function TextLine({ line }) {
+  const bullet = /^[-•]\s+/.test(line)
+  const html   = inline(bullet ? line.replace(/^[-•]\s+/, '') : line)
+  return bullet ? (
+    <p className="text-white/68 text-base leading-relaxed mb-2 flex gap-2">
+      <span className="text-white/30 flex-shrink-0">•</span>
+      <span dangerouslySetInnerHTML={{ __html: html }} />
+    </p>
+  ) : (
+    <p className="text-white/68 text-base leading-relaxed mb-2" dangerouslySetInnerHTML={{ __html: html }} />
+  )
+}
+
+/* تنزيل نموذجٍ كملفّ على جهاز الزائر (يُنشأ في المتصفح، بلا خادم).
+   BOM في أوله حتى يقرأ Excel والمفكرة العربية صحيحةً. */
+function downloadFile(name, content, type) {
+  const blob = new Blob(['﻿' + content], { type: type + ';charset=utf-8' })
+  const url  = URL.createObjectURL(blob)
+  const a    = document.createElement('a')
+  a.href = url; a.download = name
+  document.body.appendChild(a); a.click(); a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+const fileName = (t) => String(t || 'نموذج').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 60) || 'نموذج'
+const plainCell = (c) => String(c).replace(/\*\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+function tableToCsv(columns, rows) {
+  const esc = (v) => '"' + plainCell(v).replace(/"/g, '""') + '"'
+  return [columns, ...rows].map(r => r.map(esc).join(',')).join('\r\n')
+}
+
+/* نموذج جاهز: صندوق يُنسخ نصه بضغطة أو يُنزَّل ملفاً */
+function TemplateBlock({ title, text, catColor }) {
+  const [copied, setCopied] = useState(false)
+  const copy = () => {
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }).catch(() => {})
+  }
+  return (
+    <div className="my-8 rounded-2xl border" style={{ borderColor: catColor + '30', background: 'rgba(255,255,255,0.025)' }}>
+      <div className="flex items-center justify-between gap-3 px-5 py-3 border-b" style={{ borderColor: catColor + '20' }}>
+        <span className="text-white font-bold text-sm">{title}</span>
+        <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={copy}
+          className="flex items-center gap-1.5 text-xs font-semibold"
+          style={{ color: catColor, cursor: 'pointer' }}
+        >
+          {copied ? <CheckCircle size={13} /> : <BookOpen size={13} />}
+          {copied ? 'نُسخ' : 'انسخ النموذج'}
+        </button>
+        <button
+          type="button"
+          onClick={() => downloadFile(fileName(title) + '.txt', text, 'text/plain')}
+          className="flex items-center gap-1.5 text-xs font-semibold"
+          style={{ color: catColor, cursor: 'pointer' }}
+        >
+          <Download size={13} />
+          تنزيل
+        </button>
+        </div>
+      </div>
+      <div className="px-5 py-4 text-white/75 text-sm leading-loose whitespace-pre-line">{text}</div>
+    </div>
+  )
+}
+
+/* ─── Sources ────────────────────────────────────────────── */
+function ArticleSources({ sources, title }) {
+  if (!sources?.length) return null
+  return (
+    <div className="mt-12 pt-6 border-t border-white/8">
+      <h2 className="text-white/60 font-bold text-sm mb-3">مصادر مقال «{title}»</h2>
+      <ol className="space-y-2 list-decimal pr-5">
+        {sources.map((s, i) => (
+          <li key={i} className="text-white/45 text-xs leading-relaxed">
+            {s.url
+              ? <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 decoration-white/20 hover:text-white/70">{s.title}</a>
+              : s.title}
+            {s.publisher ? ` — ${s.publisher}` : ''}
+          </li>
+        ))}
+      </ol>
+    </div>
   )
 }
 
@@ -234,6 +344,92 @@ function ArticleBody({ sections, catColor }) {
           )
         }
 
+        if (section.type === 'subheading') {
+          return (
+            <h3 key={i} className="text-white font-bold text-lg mt-8 mb-3">{section.text}</h3>
+          )
+        }
+
+        /* فقرة الإجابة المباشرة: تعريفٌ قابل للاقتباس في أعلى المقال */
+        if (section.type === 'definition') {
+          return (
+            <div
+              key={i}
+              className={`mb-8 rounded-2xl p-6 border ${isFirst ? '' : 'mt-6'}`}
+              style={{ background: 'rgba(255,255,255,0.03)', borderColor: catColor + '30' }}
+            >
+              {section.term && (
+                <p className="text-xs font-bold mb-2" style={{ color: catColor }}>{section.term}</p>
+              )}
+              <p
+                className="text-white/85 text-base leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: inline(section.text) }}
+              />
+            </div>
+          )
+        }
+
+        if (section.type === 'table') {
+          return (
+            <figure key={i} className="my-8 overflow-x-auto rounded-2xl border border-white/8">
+              <table className="w-full text-sm text-right border-collapse min-w-[480px]">
+                <thead>
+                  <tr style={{ background: catColor + '14' }}>
+                    {section.columns.map((c, j) => (
+                      <th key={j} scope="col" className="px-4 py-3 text-white font-bold">{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {section.rows.map((row, r) => (
+                    <tr key={r} className="border-t border-white/6">
+                      {row.map((cell, c) => (
+                        <td
+                          key={c}
+                          className="px-4 py-3 text-white/70 leading-relaxed align-top"
+                          dangerouslySetInnerHTML={{ __html: inline(String(cell)) }}
+                        />
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <figcaption className="flex items-center justify-between gap-3 px-4 py-2 text-white/40 text-xs border-t border-white/6">
+                <span>{section.caption}</span>
+                <button
+                  type="button"
+                  onClick={() => downloadFile(fileName(section.caption) + '.csv', tableToCsv(section.columns, section.rows), 'text/csv')}
+                  className="flex items-center gap-1.5 font-semibold shrink-0"
+                  style={{ color: catColor, cursor: 'pointer' }}
+                >
+                  <Download size={13} />
+                  تنزيل Excel (CSV)
+                </button>
+              </figcaption>
+            </figure>
+          )
+        }
+
+        if (section.type === 'template') {
+          return <TemplateBlock key={i} title={section.title} text={section.text} catColor={catColor} />
+        }
+
+        if (section.type === 'faq') {
+          return (
+            <div key={i} className="my-8 space-y-3">
+              {section.items.map((it, j) => (
+                <details key={j} className="rounded-xl border border-white/8 px-5 py-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                  <summary className="text-white font-bold text-sm cursor-pointer">{it.q}</summary>
+                  <p
+                    className="text-white/65 text-sm leading-relaxed mt-3"
+                    dangerouslySetInnerHTML={{ __html: inline(it.a) }}
+                  />
+                </details>
+              ))}
+            </div>
+          )
+        }
+
         if (section.type === 'cta') {
           return (
             <div
@@ -243,11 +439,11 @@ function ArticleBody({ sections, catColor }) {
             >
               <p className="text-white/70 text-sm mb-4 leading-relaxed">{section.text}</p>
               <Link
-                to="/ihkaam"
+                to={section.to || '/ihkaam'}
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm"
                 style={{ background: catColor, color: '#020F0E' }}
               >
-                اكتشف إحكام
+                {section.label || 'اكتشف إحكام'}
                 <ArrowLeft size={14} />
               </Link>
             </div>
@@ -258,25 +454,11 @@ function ArticleBody({ sections, catColor }) {
         const paras = section.text.split('\n\n')
         return (
           <div key={i}>
-            {paras.map((para, j) => {
-              const lines = para.split('\n')
-              return (
-                <div key={j} className="mb-4">
-                  {lines.map((line, k) => {
-                    if (!line.trim()) return null
-                    return (
-                      <p
-                        key={k}
-                        className="text-white/68 text-base leading-relaxed mb-2"
-                        dangerouslySetInnerHTML={{
-                          __html: line.replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
-                        }}
-                      />
-                    )
-                  })}
-                </div>
-              )
-            })}
+            {paras.map((para, j) => (
+              <div key={j} className="mb-4">
+                {para.split('\n').map((line, k) => (line.trim() ? <TextLine key={k} line={line} /> : null))}
+              </div>
+            ))}
           </div>
         )
       })}
@@ -298,13 +480,39 @@ export default function BlogArticle() {
   if (!post) return null
 
   const catColor = post.coverColor
+  const seo = blogSeo(post)
 
   return (
     <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
       <PageMeta
-        title={post.title}
-        description={post.excerpt}
-        keywords={`إدارة مراكز التحفيظ, مدرسة قرآنية, ${getCategoryById(post.category)?.label || ''}, إحكام`}
+        title={seo.title}
+        description={seo.description}
+        image={seo.image}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BlogPosting',
+              headline: post.title,
+              description: seo.description,
+              datePublished: post.date,
+              dateModified: post.updated || post.date,
+              inLanguage: 'ar',
+              mainEntityOfPage: SITE.origin + '/blog/' + post.slug,
+              author: { '@id': SITE.origin + '/#organization' },
+              publisher: { '@id': SITE.origin + '/#organization' },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: SITE.origin + '/' },
+                { '@type': 'ListItem', position: 2, name: 'المدونة', item: SITE.origin + '/blog' },
+                { '@type': 'ListItem', position: 3, name: post.title },
+              ],
+            },
+          ],
+        }}
       />
 
       {/* ─── Hero ───────────────────────────────────── */}
@@ -362,12 +570,20 @@ export default function BlogArticle() {
             {post.excerpt}
           </p>
 
-          <div className="flex items-center gap-4 text-white/30 text-xs">
+          <div className="flex items-center gap-x-4 gap-y-2 flex-wrap text-white/30 text-xs">
+            <span>{post.author}</span>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
             <span>{formatDate(post.date)}</span>
+            {post.updated && post.updated !== post.date && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span>حُدّث في {formatDate(post.updated)}</span>
+              </>
+            )}
             <span className="w-1 h-1 rounded-full bg-white/20" />
             <span className="flex items-center gap-1">
               <Clock size={12} />
-              {post.readTime} دقائق قراءة
+              قراءة {readTimeLabel(post.readTime)}
             </span>
           </div>
         </div>
@@ -380,6 +596,7 @@ export default function BlogArticle() {
           {/* Main article */}
           <main className="flex-1 min-w-0 pt-4 lg:pt-8">
             <ArticleBody sections={post.sections} catColor={catColor} />
+            <ArticleSources sources={post.sources} title={post.title} />
           </main>
 
           {/* Sticky sidebar */}

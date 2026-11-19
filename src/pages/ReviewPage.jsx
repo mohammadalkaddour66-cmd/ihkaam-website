@@ -1,4 +1,11 @@
-import ClientReviewForm from '../components/ClientReviewForm'
+import ClientReviewForm from '../components/forms/ClientReviewForm'
+import PageNotes from '../components/sections/PageNotes'
+
+const NOTES = [
+  { q: 'لمن هذه الصفحة؟', a: 'لمديري المعاهد والمراكز الذين يستعملون إحكام فعلاً. رأيك يفيد مديراً آخر يقف حيث وقفت قبل أن تبدأ، ويفيدنا في معرفة ما يحتاج إلى تحسين.' },
+  { q: 'ماذا أكتب في التقييم؟', a: 'اكتب ما تغيّر في عملك اليومي بعد استعمال النظام، ولو كان شيئاً صغيراً: سجلّ حضور صار أسرع، أو سؤال من وليّ أمر لم يعد يتكرر. المثال الواحد الصادق أنفع من المديح العام. وإن وجدت شيئاً مزعجاً فاذكره كذلك.' },
+  { q: 'هل يُنشر تقييمي كما هو؟', a: 'نراجع التقييمات قبل عرضها على الموقع، ولا نغيّر كلامك. إن فضّلت ألا يظهر اسم معهدك فاذكر ذلك في رسالتك ونأخذ به.' },
+]
 
 /* خلوص الشريط العلوي الثابت (h-16) يُضاف هنا لا داخل النموذج:
    AboutPage يضمّ النموذج نفسه في وسط الصفحة، فحشوةٌ علوية داخله
@@ -6,7 +13,8 @@ import ClientReviewForm from '../components/ClientReviewForm'
 export default function ReviewPage() {
   return (
     <div className="pt-16">
-      <ClientReviewForm />
+      <ClientReviewForm headingLevel="h1" />
+      <PageNotes title="عن التقييم" items={NOTES} />
     </div>
   )
 }

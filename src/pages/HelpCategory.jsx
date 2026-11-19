@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ArrowRight } from 'lucide-react'
 import { CATEGORIES, ARTICLES } from '../data/helpContent'
+import PageMeta from '../components/layout/PageMeta'
+import { composeDescription } from '../config/seo'
 
 const fadeUp = {
   hidden : { opacity: 0, y: 20 },
@@ -28,6 +30,16 @@ export default function HelpCategory() {
 
   return (
     <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
+      <PageMeta
+        title={`${cat.label} — مركز المساعدة`}
+        description={composeDescription([
+          cat.description,
+          `${articles.length} شروحات خطوة بخطوة`,
+          articles.slice(0, 3).map(a => a.title).join('، '),
+          'في مركز مساعدة نظام إحكام',
+        ])}
+        noindex
+      />
 
       {/* ─── Header ─────────────────────────────────── */}
       <div
@@ -81,6 +93,30 @@ export default function HelpCategory() {
 
       {/* ─── Articles grid ───────────────────────────── */}
       <div className="max-w-4xl mx-auto px-6 pb-24">
+        {cat.intro && (
+          <p className="text-white/70 text-base leading-loose mb-8 max-w-3xl">
+            {cat.intro}
+          </p>
+        )}
+        {cat.points?.length > 0 && (
+          <div
+            className="rounded-2xl p-5 mb-8 border border-white/8"
+            style={{ background: 'rgba(255,255,255,0.03)' }}
+          >
+            <h2 className="text-white font-bold text-base mb-3">قبل أن تبدأ في قسم {cat.label}</h2>
+            <ul className="space-y-2">
+              {cat.points.map((p, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-white/60 text-sm leading-relaxed">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
+                    style={{ background: cat.color }}
+                  />
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="grid sm:grid-cols-2 gap-4">
           {articles.map((art, i) => (
             <motion.div

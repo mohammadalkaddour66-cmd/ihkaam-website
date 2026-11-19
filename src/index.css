@@ -1,8 +1,48 @@
 @import "tailwindcss";
 
-/* ── Font ── */
+/* ── Font ──
+   Cairo مستضاف ذاتياً من public/fonts (ISS-29). كان يُجلب من نطاقين خارجيين
+   (fonts.googleapis.com للورقة ثم fonts.gstatic.com للملف): رحلتا DNS وTLS
+   قبل أول حرف. الملفات الثلاثة ملفٌّ متغيّر واحد (300..900) مقسوم بحسب
+   الحروف، فلا يُنزَّل منها إلا ما تحتاجه الصفحة، والعربي مُحمَّل مسبقاً
+   في index.html. swap: النص يظهر بخط النظام فوراً ثم يتبدّل. */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/cairo-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EEFF;
+}
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/cairo-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/cairo-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* خط النظام الذي يظهر قبل وصول Cairo، بمقاييس Cairo العمودية (مقروءة من
+   ملفه: ascent 1303 و descent 571 من 1000). هكذا يأخذ السطر الارتفاع نفسه
+   قبل التبديل وبعده، فلا تقفز الصفحة حين يصل الخط. */
+@font-face {
+  font-family: 'Cairo Fallback';
+  src: local('Segoe UI'), local('Tahoma'), local('Arial'), local('Geeza Pro'), local('Noto Sans Arabic'), local('Roboto');
+  ascent-override: 130.3%;
+  descent-override: 57.1%;
+  line-gap-override: 0%;
+}
+
 @theme {
-  --font-arabic: 'Cairo', sans-serif;
+  --font-arabic: 'Cairo', 'Cairo Fallback', sans-serif;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -162,7 +202,7 @@
 html  { scroll-behavior: smooth; }
 body  {
   margin: 0;
-  font-family: 'Cairo', sans-serif;
+  font-family: 'Cairo', 'Cairo Fallback', sans-serif;
   background-color: #020F0E;
   color: #EAE4DF;
   direction: rtl;
@@ -773,3 +813,57 @@ h3 { line-height: 1.45 !important; }
   0%,100% { box-shadow: 0 0 0 0   rgba(72, 214, 205, 0.40); }
   50%     { box-shadow: 0 0 0 12px rgba(72, 214, 205, 0.00); }
 }
+
+/* ════════════════════════════════════════════
+   حركات الهيرو وانتقال الصفحات — CSS بدل framer-motion (ISS-26/27)
+   تعمل من أول رسم دون انتظار JavaScript، ولا تجعل نص العنوان أو صورة
+   الهيرو (أكبر عنصر مرئي) تبدأ شفافة.
+   ════════════════════════════════════════════ */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.page-enter { animation: page-enter 0.30s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* طفو لا نهائي: المدى والمدة والتأخير من متغيّرات يكتبها المكوّن */
+@keyframes hero-float {
+  0%, 100% { transform: translateY(calc(var(--float-range, 4px) * -1)); }
+  50%      { transform: translateY(var(--float-range, 4px)); }
+}
+.hero-float { animation: hero-float var(--float-dur, 5s) ease-in-out var(--float-delay, 0s) infinite; }
+
+/* دخول البطاقات والهاتف (ليست أكبر عنصر مرئي، فيصحّ أن تبدأ شفافة) */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(var(--rise-y, 15px)); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-rise { animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--rise-delay, 0s) both; }
+
+/* دخول كتلة الموك-أب: إزاحة فقط بلا شفافية، فصورة الشاشة مرئية من أول إطار */
+@keyframes hero-slide {
+  from { transform: translateX(-40px); }
+  to   { transform: none; }
+}
+.hero-slide { animation: hero-slide 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; }
+
+/* تبديل لقطة الهيرو كل بضع ثوانٍ */
+@keyframes hero-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.hero-fade { animation: hero-fade 0.5s ease-in-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-float, .hero-rise, .hero-slide, .page-enter { animation: none !important; }
+}
+
+/* دخول هاتف الجوال: إزاحة فقط. صورته أكبر عنصر مرئي على الجوال، ولو بدأت
+   شفافة لما حُسبت في أول رسم، ولصارت كل لقطة تالية في التبديل «أكبر عنصر
+   مرئي» جديداً متأخراً بثوانٍ. مرئية من أول إطار، فاللقطات التالية بنفس
+   مقاسها لا تُسجَّل. */
+@keyframes hero-lift {
+  from { transform: translateY(20px); }
+  to   { transform: none; }
+}
+.hero-lift { animation: hero-lift 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--rise-delay, 0s) both; }
+@media (prefers-reduced-motion: reduce) { .hero-lift { animation: none !important; } }

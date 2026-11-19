@@ -9,11 +9,15 @@ const FALLBACK_DISCOUNTS = { 1: 0, 3: 0.10, 6: 0.15, 12: 0.20 }
  *  controlled by the Super Admin (لوحة التحكم → إعدادات الدفع). */
 export const ALL_DURATIONS = [1, 3, 6, 12]
 
+/* ISS-50: ما يُعرض حين يغيب إعداد المدد أو يتلف = ما يُباع فعلاً (شهر و3 أشهر).
+   كان الاحتياط «الأربعة كلها»، فيظهر اشتراك 6 أشهر وسنوي لا يُقدَّمان. */
+const DEFAULT_DURATIONS = [1, 3]
+
 const FALLBACK = {
   baseFee  : 10,
   perStudent: 0.05,
   discounts : FALLBACK_DISCOUNTS,
-  enabledDurations: ALL_DURATIONS,
+  enabledDurations: DEFAULT_DURATIONS,
 }
 
 /**
@@ -27,12 +31,12 @@ const FALLBACK = {
 function sanitizeDurations(raw) {
   let parsed = raw
   if (typeof raw === 'string') {
-    try { parsed = JSON.parse(raw) } catch { return ALL_DURATIONS }
+    try { parsed = JSON.parse(raw) } catch { return DEFAULT_DURATIONS }
   }
-  if (!Array.isArray(parsed)) return ALL_DURATIONS
+  if (!Array.isArray(parsed)) return DEFAULT_DURATIONS
 
   const kept = ALL_DURATIONS.filter(m => parsed.includes(m))
-  return kept.length > 0 ? kept : ALL_DURATIONS
+  return kept.length > 0 ? kept : DEFAULT_DURATIONS
 }
 
 // Accepts both integer (20) and decimal (0.20) storage formats.

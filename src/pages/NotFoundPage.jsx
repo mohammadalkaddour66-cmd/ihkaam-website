@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import PageMeta from '../components/layout/PageMeta'
 
 export default function NotFoundPage() {
   return (
+    <>
+      <PageMeta title="الصفحة غير موجودة" description="الصفحة التي تبحث عنها غير موجودة أو نُقلت. عُد إلى الصفحة الرئيسية لنظام إحكام لإدارة المعاهد والحلقات القرآنية." noindex />
     <section
       className="relative z-10 min-h-[80vh] flex flex-col items-center justify-center px-6 py-24 text-center overflow-hidden"
       dir="rtl"
@@ -87,5 +90,6 @@ export default function NotFoundPage() {
 
       </div>
     </section>
+    </>
   )
 }

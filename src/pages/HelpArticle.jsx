@@ -4,7 +4,9 @@ import { motion } from 'framer-motion'
 import {
   ChevronLeft, Lightbulb, AlertTriangle, CheckCircle2, MessageCircle,
 } from 'lucide-react'
-import { getArticle, getCategoryForArticle, ARTICLES } from '../data/helpContent'
+import { getArticle, getCategoryForArticle, ARTICLES, CATEGORIES } from '../data/helpContent'
+import PageMeta from '../components/layout/PageMeta'
+import { SITE, composeDescription } from '../config/seo'
 
 /* ─── Step card ──────────────────────────────────────────── */
 
@@ -42,7 +44,7 @@ function StepCard({ step, num, color, isLast }) {
       </div>
 
       <div className={`flex-1 min-w-0 ${isLast ? 'pb-2' : 'pb-7'}`}>
-        <h4 className="text-white font-bold text-base mb-2">{step.title}</h4>
+        <h3 className="text-white font-bold text-base mb-2">{step.title}</h3>
 
         <div className="text-white/65 text-sm leading-relaxed space-y-2">
           {blocks.map((block, i) =>
@@ -93,6 +95,16 @@ function StepCard({ step, num, color, isLast }) {
 /* ─── Sidebar ────────────────────────────────────────────── */
 function HelpSidebar({ article, catColor }) {
   const related = article.related?.map(s => ARTICLES[s]).filter(Boolean) || []
+  /* بقية مقالات القسم نفسه: ربطٌ داخلي بين المقالات المتجاورة */
+  const siblings = Object.values(ARTICLES).filter(
+    a => a.category === article.category && a.slug !== article.slug && !related.includes(a),
+  )
+  /* ثلاث مقالات تالية من بقية الأقسام، دورانياً: كل مقالة تصلها روابط من غيرها */
+  const all = Object.values(ARTICLES)
+  const at = all.findIndex(a => a.slug === article.slug)
+  const more = [1, 2, 3]
+    .map(n => all[(at + n) % all.length])
+    .filter(a => a && a.slug !== article.slug && !related.includes(a) && !siblings.includes(a))
 
   return (
     <aside className="space-y-5">
@@ -148,6 +160,59 @@ function HelpSidebar({ article, catColor }) {
         </div>
       )}
 
+      {/* Same category */}
+      {siblings.length > 0 && (
+        <div
+          className="rounded-2xl p-5 border border-white/7"
+          style={{ background: 'rgba(255,255,255,0.025)' }}
+        >
+          <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+            من القسم نفسه
+          </h3>
+          <div className="space-y-3">
+            {siblings.map(a => (
+              <Link key={a.slug} to={`/help/${a.slug}`} className="group flex items-start gap-2.5">
+                <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
+                <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">{a.title}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* More articles + categories */}
+      <div
+        className="rounded-2xl p-5 border border-white/7"
+        style={{ background: 'rgba(255,255,255,0.025)' }}
+      >
+        {more.length > 0 && (
+          <>
+            <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+              مقالات أخرى في الدعم
+            </h3>
+            <div className="space-y-3 mb-5">
+              {more.map(a => (
+                <Link key={a.slug} to={`/help/${a.slug}`} className="group flex items-start gap-2.5">
+                  <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
+                  <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">{a.title}</p>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+        <h3 className="text-white/50 text-xs font-bold uppercase tracking-widest mb-4">
+          أقسام الدعم
+        </h3>
+        <div className="space-y-3">
+          {CATEGORIES.map(c => (
+            <Link key={c.id} to={`/help/category/${c.id}`} className="group flex items-start gap-2.5">
+              <ChevronLeft size={14} className="text-white/20 flex-shrink-0 mt-0.5 group-hover:text-white/50 transition-colors" />
+              <p className="text-white/60 text-xs leading-snug group-hover:text-white transition-colors">{c.label}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Need help */}
       <div
         className="rounded-2xl p-5 border text-center"
@@ -187,6 +252,37 @@ export default function HelpArticle() {
 
   return (
     <div dir="rtl" style={{ background: '#020F0E', minHeight: '100vh' }}>
+      <PageMeta
+        title={article.seoTitle || article.title}
+        description={article.seoDescription || composeDescription([
+          article.description,
+          `شرح من ${article.steps.length} خطوات`,
+          article.whoFor?.length ? `لـ${article.whoFor.join('، ')}` : null,
+          'في مركز مساعدة نظام إحكام',
+          'ضمن دليل استخدام النظام لمعاهد التحفيظ',
+        ])}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: SITE.origin + '/' },
+                { '@type': 'ListItem', position: 2, name: 'مركز المساعدة', item: SITE.origin + '/help' },
+                { '@type': 'ListItem', position: 3, name: article.title },
+              ],
+            },
+            ...(article.faq?.length ? [{
+              '@type': 'FAQPage',
+              mainEntity: article.faq.map(f => ({
+                '@type': 'Question',
+                name: f.q,
+                acceptedAnswer: { '@type': 'Answer', text: f.a },
+              })),
+            }] : []),
+          ],
+        }}
+      />
 
       {/* ─── Hero ───────────────────────────────────── */}
       <div
@@ -277,12 +373,17 @@ export default function HelpArticle() {
 
           {/* Main content */}
           <main className="flex-1 min-w-0 pt-8 sm:pt-10">
+            {article.intro && (
+              <p className="text-white/70 text-base leading-loose mb-8 sm:mb-10">
+                {article.intro}
+              </p>
+            )}
             <h2 className="text-white font-bold text-xl mb-6 sm:mb-8 flex items-center gap-3">
               <span
                 className="w-1 h-6 rounded-full inline-block"
                 style={{ background: catColor }}
               />
-              الخطوات التفصيلية
+              خطوة بخطوة: {article.title}
             </h2>
 
             <div>
@@ -314,6 +415,30 @@ export default function HelpArticle() {
                   ))}
                 </ul>
               </div>
+            )}
+            {/* FAQ */}
+            {article.faq?.length > 0 && (
+              <section className="mt-10 sm:mt-12">
+                <h2 className="text-white font-bold text-xl mb-5 flex items-center gap-3">
+                  <span
+                    className="w-1 h-6 rounded-full inline-block"
+                    style={{ background: catColor }}
+                  />
+                  أسئلة شائعة: {article.title}
+                </h2>
+                <div className="space-y-4">
+                  {article.faq.map((f, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl p-5 border border-white/8"
+                      style={{ background: 'rgba(255,255,255,0.03)' }}
+                    >
+                      <h3 className="text-white font-bold text-base mb-2">{f.q}</h3>
+                      <p className="text-white/60 text-sm leading-relaxed">{f.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
             )}
           </main>
 
