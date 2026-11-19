@@ -87,6 +87,12 @@ BEGIN
     'notifications', (SELECT count(*) FROM notifications n WHERE n.institute_id = ANY (v_ids)),
     'students',      (SELECT count(*) FROM students s WHERE s.institute_id = ANY (v_ids) AND coalesce(s.is_deleted, false) = false),
     'staff',         (SELECT count(*) FROM staff st   WHERE st.institute_id = ANY (v_ids) AND coalesce(st.is_deleted, false) = false),
+    -- لأرقام الرئيسية (IhkaamTrustStats) بالنطاق نفسه، كي لا يختلف رقمٌ بين صفحتين.
+    -- الجلسات تُعدّ كلها (غير المحذوفة) ولو كان عدد صفحاتها خطأً: الجلسة نفسها وقعت.
+    'groups',        (SELECT count(*) FROM groups g   WHERE g.institute_id = ANY (v_ids) AND coalesce(g.is_deleted, false) = false),
+    'sessions',      (SELECT count(*) FROM recitations x WHERE x.institute_id = ANY (v_ids) AND coalesce(x.is_deleted, false) = false),
+    'sessions_30d',  (SELECT count(*) FROM recitations x WHERE x.institute_id = ANY (v_ids) AND coalesce(x.is_deleted, false) = false
+                       AND x.record_date >= to_char(current_date - 30, 'YYYY-MM-DD')),
     'since',         (SELECT min(month) FROM m),
     'monthly',       (SELECT coalesce(json_agg(json_build_object('m', month, 'pages', pages) ORDER BY month), '[]'::json) FROM m)
   ) INTO v;

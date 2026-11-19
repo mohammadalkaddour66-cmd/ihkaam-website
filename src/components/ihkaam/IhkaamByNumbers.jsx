@@ -177,9 +177,9 @@ export default function IhkaamByNumbers({ titleLead = 'هذا ما فعله إح
     { value: q.juzPassed, label: 'اختبار جزء اجتازه طالب', desc: 'بنتيجته وتاريخه ومُختبِره' },
   ]
   const community = [
-    { value: q.students,      label: 'طالب يُتابَع يومياً',        desc: 'لكل طالب سجله الكامل: الحضور والتسميع والملاحظات' },
+    { value: q.students,      label: 'طالب في السجلات',       desc: 'لكل طالب سجله الكامل: الحضور والتسميع والملاحظات' },
     { value: q.notifications, label: 'إشعار وصل لأولياء الأمور', desc: 'حضورٌ وتسميعٌ واختبار، يصل الأهل في وقته' },
-    { value: q.staff,         label: 'معلم وإداري يوثّق بلا ورق', desc: 'وقتهم للتعليم، لا لملء الدفاتر' },
+    { value: q.staff,         label: 'معلم وإداري',           desc: 'وقتهم للتعليم، لا لملء الدفاتر' },
   ]
 
   return (

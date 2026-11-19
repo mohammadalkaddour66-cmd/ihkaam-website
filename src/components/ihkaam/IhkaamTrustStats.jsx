@@ -58,7 +58,7 @@ export default function IhkaamTrustStats() {
   const SMALL = [
     { key: 'institutes', Icon: Building2,     value: counts.institutes, label: 'معهد مفعّل',       note: 'يعمل منذ شهرٍ على الأقل' },
     { key: 'students',   Icon: Users,         value: counts.students,   label: 'طالب في السجلات',  note: 'لكل طالب سجلٌّ كامل' },
-    { key: 'staff',      Icon: GraduationCap, value: counts.staff,      label: 'معلم ومشرف',       note: 'يسجّلون من جوالاتهم' },
+    { key: 'staff',      Icon: GraduationCap, value: counts.staff,      label: 'معلم وإداري',      note: 'يسجّلون من جوالاتهم' },
     { key: 'circles',    Icon: LayoutGrid,    value: counts.circles,    label: 'حلقة',             note: 'حضورٌ وتسميعٌ يومي' },
   ]
 

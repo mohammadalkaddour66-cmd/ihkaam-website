@@ -20,17 +20,26 @@ const EMPTY = {
 
 let pending = null
 
+/* توحيد الأرقام (2026-11-19، قرار المالك): الطلاب والكادر والحلقات والجلسات
+   تُقرأ من get_public_quran_stats — نطاقٌ واحد في الموقع كله: كل معهدٍ عمل
+   شهراً فأكثر ببيانات حقيقية، دون المحذوف والتجريبي. get_public_landing_stats
+   القديمة كانت تعدّ كل صفٍّ بلا تصفية (المعاهد المحذوفة والعرض والتجريبي
+   والجلسات المحذوفة)، فتقول الرئيسية 324 معلماً وصفحة المنصة 239.
+   تبقى احتياطاً فقط إن تعذّر جلب الموحَّدة. */
 function normalize(r) {
+  const u = r.quran && typeof r.quran === 'object' ? r.quran : null
+  const pick = (unified, legacy) => Number(u ? unified : legacy) || 0
   return {
-    /* «معهد نشط» = المفعّل فعلاً (activeInstitutes.js)، لا كل مسجّل */
+    /* «معهد نشط» = العامل الآن (activeInstitutes.js) — عدّادٌ مختلف المعنى عن
+       «عمل شهراً فأكثر» في «إحكام بالأرقام»، وكلاهما مسمّى بمعناه في الصفحة */
     institutes        : getActiveIds().size || Number(r.institutes) || 0,
-    students          : Number(r.students)             || 0,
-    staff             : Number(r.staff)                || 0,
-    groups            : Number(r.groups)               || 0,
-    recitations       : Number(r.recitations)          || 0,
+    students          : pick(u?.students, r.students),
+    staff             : pick(u?.staff, r.staff),
+    groups            : pick(u?.groups, r.groups),
+    recitations       : pick(u?.sessions, r.recitations),
     recitationsQuran  : Number(r.recitations_quran)    || 0,
     recitationsHadith : Number(r.recitations_hadith)   || 0,
-    recitations30d    : Number(r.recitations_30d)      || 0,
+    recitations30d    : pick(u?.sessions_30d, r.recitations_30d),
     recitationsPrev30d: Number(r.recitations_prev_30d) || 0,
     tests             : Number(r.tests)                || 0,
     stars             : Number(r.stars)                || 0,
