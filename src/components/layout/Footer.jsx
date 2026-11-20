@@ -97,6 +97,7 @@ const navGroups = [
     title: 'شركاء',
     links: [
       { label: 'المدونة', to: '/blog' },
+      { label: 'برنامج الشراكة', to: '/affiliate' },
     ],
   },
   {

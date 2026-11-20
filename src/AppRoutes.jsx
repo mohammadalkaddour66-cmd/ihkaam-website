@@ -5,6 +5,7 @@ import Home          from './pages/Home'
 import NotFoundPage  from './pages/NotFoundPage'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import ErrorBoundary  from './components/layout/ErrorBoundary'
+import { useAffiliateRef } from './hooks/useAffiliateRef'
 
 const IhkaamSaaS            = lazy(() => import('./pages/IhkaamSaaS'))
 const AboutPage              = lazy(() => import('./pages/AboutPage'))
@@ -22,6 +23,7 @@ const HelpArticle            = lazy(() => import('./pages/HelpArticle'))
 const BlogList                = lazy(() => import('./pages/BlogList'))
 const BlogArticle             = lazy(() => import('./pages/BlogArticle'))
 const RequestPage             = lazy(() => import('./pages/RequestPage'))
+const AffiliatePage           = lazy(() => import('./pages/AffiliatePage'))
 /* معاينة الهوية — للتطوير فقط. import.meta.env.DEV ثابتٌ وقت البناء، فيُحذف
    الاستيراد والمسار معاً من حزمة الإنتاج ولا تُنشأ لها حزمةٌ أصلاً.
    (تقرير التحليل ISS-38: المسار كان مكشوفاً في الإنتاج). */
@@ -45,6 +47,8 @@ function PageLoader() {
 /* الشجرة بلا موجِّه: App.jsx يلفّها بـBrowserRouter في المتصفح، وentry-server.jsx
    يلفّها بـStaticRouter عند التوليد المسبق للصفحات (scripts/prerender.mjs). */
 export default function AppRoutes() {
+  /* يلتقط ?ref= من أي صفحة يصل إليها الزائر */
+  useAffiliateRef()
   return (
     <>
       <ErrorBoundary>
@@ -65,6 +69,7 @@ export default function AppRoutes() {
               <Route path="/blog"          element={<BlogList />}    />
               <Route path="/blog/:slug"    element={<BlogArticle />} />
               <Route path="/request"           element={<RequestPage />} />
+              <Route path="/affiliate"         element={<AffiliatePage />} />
               <Route path="/help"                    element={<HelpCenter />}  />
               <Route path="/help/category/:catId"  element={<HelpCategory />} />
               <Route path="/help/:slug"            element={<HelpArticle />} />

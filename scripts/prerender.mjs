@@ -404,7 +404,7 @@ const staticLlms = fs.readFileSync(path.join(ROOT, 'public', 'llms.txt'), 'utf8'
 const intro = staticLlms.split(/^## /m)[0].trimEnd()
 const llms = [
   intro + '\n',
-  section('الصفحات الرئيسية', ['/', '/ihkaam', '/request', '/about', '/contact', '/blog', '/help', '/terms', '/privacy']),
+  section('الصفحات الرئيسية', ['/', '/ihkaam', '/request', '/about', '/contact', '/affiliate', '/blog', '/help', '/terms', '/privacy']),
   section('ميزات النظام', [...outline.core, ...outline.addons]),
   section('مقالات المدونة', outline.blog),
   section('شروحات مركز المساعدة', outline.help),

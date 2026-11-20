@@ -8,6 +8,7 @@ import {
 import { supabase } from '../../config/supabaseClient'
 import { usePricingRates } from '../../hooks/usePricingRates'
 import { useFormGuard } from '../../hooks/useFormGuard'
+import { getStoredRef } from '../../hooks/useAffiliateRef'
 import { readPricingDraft, clearPricingDraft } from '../../config/pricingDraft'
 import { PAID_ADDON_IDS } from '../../config/addons'
 
@@ -636,6 +637,9 @@ export default function IhkaamCheckout() {
       }
       if (governorate.trim()) payload.governorate = governorate.trim()
       payload.email = email.trim()
+      /* رمز شريكٍ أحال هذا المعهد: محفوظ 30 يوماً من نقرته على رابطه */
+      const refCode = getStoredRef()
+      if (refCode) payload.referral_code = refCode
 
       const { error } = await supabase.from('tenant_requests').insert([payload])
       if (error) throw error
