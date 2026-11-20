@@ -1,5 +1,6 @@
 import ContactSection from '../components/sections/ContactSection'
 import PageNotes from '../components/sections/PageNotes'
+import AffiliateInvite from '../components/sections/AffiliateInvite'
 
 const NOTES = [
   { q: 'ماذا أكتب في رسالتي؟', a: 'اذكر اسم المعهد أو المركز، وعدد الطلاب والحلقات تقريباً، وما الذي تريد ترتيبه أولاً: الحضور والتسميع، أو التواصل مع الأهل، أو الرسوم. هذه التفاصيل تختصر نصف الحديث وتجعل الرد الأول مفيداً من أول سطر.' },
@@ -12,6 +13,7 @@ export default function ContactPage() {
     <>
       <ContactSection />
       <PageNotes title="قبل أن ترسل" items={NOTES} />
+      <AffiliateInvite />
     </>
   )
 }

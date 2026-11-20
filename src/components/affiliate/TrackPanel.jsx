@@ -17,7 +17,24 @@ const REQ_STATUS = {
   rejected: { label: 'لم يكتمل',      fg: '#9A3B28', bg: 'rgba(160,60,40,.08)' },
 }
 
-const isAnnual = (c) => c === 'annual' || c === 'yearly' || c === '12'
+const isAnnual = (c) => ['annual', 'yearly', '12', '12_months'].includes(String(c ?? '').trim().toLowerCase())
+
+/* حالة العمولة تأتي من الدالة في القاعدة (commission_state): أول اشتراك سنوي مدفوع فقط.
+   الاحتياط أدناه لدالةٍ أقدم لا تُرجع الحقل: يُستنتج من الحالة والدورة. */
+const stateOf = (r) => {
+  if (r.commission_state) return r.commission_state
+  if (r.status === 'rejected') return 'rejected'
+  if (r.status !== 'approved') return 'pending'
+  return isAnnual(r.billing_cycle) ? 'counted' : 'not_annual'
+}
+const STATE_NOTE = {
+  counted         : '',
+  awaiting_payment: 'بانتظار الدفع',
+  not_annual      : 'لا عمولة على الشهري',
+  repeat          : 'تجديد: لا عمولة',
+  pending         : 'بانتظار الدفع',
+  rejected        : 'لم يكتمل',
+}
 const money    = (n) => `${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}$`
 const dateAr   = (d) => { try { return new Date(d).toLocaleDateString('ar', { year: 'numeric', month: 'short', day: 'numeric' }) } catch { return '' } }
 
@@ -58,7 +75,7 @@ export default function TrackPanel({ prefill = '' }) {
   /* القاعدة الجارية: العمولة على أول اشتراك سنوي معتمد فقط. الدالة في القاعدة تحسب
      كل طلبٍ معتمد، فنُرشّح هنا بالدورة كي لا تظهر عمولةٌ على اشتراكٍ شهري. */
   const refs      = res?.referrals ?? []
-  const counted   = refs.filter(r => r.status === 'approved' && isAnnual(r.billing_cycle))
+  const counted   = refs.filter(r => stateOf(r) === 'counted')
   const earned    = counted.reduce((s, r) => s + Number(r.commission || 0), 0)
   const paid      = Number(res?.paid_out || 0)
   const remaining = Math.max(0, earned - paid)
@@ -94,7 +111,7 @@ export default function TrackPanel({ prefill = '' }) {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <Stat icon={Users}      label="معاهد سجّلت برمزك"     value={res.total ?? refs.length} />
-            <Stat icon={BadgeCheck} label="اشتراكات سنوية معتمدة" value={counted.length} tone="#1F6F52" />
+            <Stat icon={BadgeCheck} label="اشتراكات محتسبة لك" value={counted.length} tone="#1F6F52" />
             <Stat icon={TrendingUp} label="عمولتك المستحقة"       value={money(earned)} tone="#8A6425" />
             <Stat icon={Wallet}     label="المتبقي لك"            value={money(remaining)} tone="#8A6425" />
           </div>
@@ -119,11 +136,11 @@ export default function TrackPanel({ prefill = '' }) {
                       </div>
                       <span className="rounded-full px-3 py-1 text-[12px] font-bold" style={{ background: st.bg, color: st.fg }}>{st.label}</span>
                       <div className="min-w-[96px] text-end text-[14px] font-black" style={{ color: '#8A6425', unicodeBidi: 'plaintext' }}>
-                        {r.status === 'approved' && annual
+                        {stateOf(r) === 'counted'
                           ? `+${money(r.commission)}`
-                          : r.status === 'approved'
-                            ? <span className="font-bold text-[12px] text-[#5E6E67]">لا عمولة على الشهري</span>
-                            : <span className="font-bold text-[12px] text-[#5E6E67] inline-flex items-center gap-1"><Clock size={12} /> بانتظار الدفع</span>}
+                          : <span className="font-bold text-[12px] text-[#5E6E67] inline-flex items-center gap-1">
+                              {stateOf(r) === 'awaiting_payment' && <Clock size={12} />}{STATE_NOTE[stateOf(r)]}
+                            </span>}
                       </div>
                     </li>
                   )
