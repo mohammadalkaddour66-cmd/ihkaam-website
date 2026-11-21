@@ -24,6 +24,11 @@ const BlogList                = lazy(() => import('./pages/BlogList'))
 const BlogArticle             = lazy(() => import('./pages/BlogArticle'))
 const RequestPage             = lazy(() => import('./pages/RequestPage'))
 const AffiliatePage           = lazy(() => import('./pages/AffiliatePage'))
+const ToolsHub                = lazy(() => import('./pages/ToolsHub'))
+const HifzPlanTool            = lazy(() => import('./pages/tools/HifzPlanTool'))
+const ReviewPlanTool          = lazy(() => import('./pages/tools/ReviewPlanTool'))
+const KhatmTool               = lazy(() => import('./pages/tools/KhatmTool'))
+const CertificateTool         = lazy(() => import('./pages/tools/CertificateTool'))
 /* معاينة الهوية — للتطوير فقط. import.meta.env.DEV ثابتٌ وقت البناء، فيُحذف
    الاستيراد والمسار معاً من حزمة الإنتاج ولا تُنشأ لها حزمةٌ أصلاً.
    (تقرير التحليل ISS-38: المسار كان مكشوفاً في الإنتاج). */
@@ -70,6 +75,12 @@ export default function AppRoutes() {
               <Route path="/blog/:slug"    element={<BlogArticle />} />
               <Route path="/request"           element={<RequestPage />} />
               <Route path="/affiliate"         element={<AffiliatePage />} />
+              {/* الأدوات المجانية (src/config/tools.js) */}
+              <Route path="/tools"                   element={<ToolsHub />} />
+              <Route path="/tools/hifz-plan"         element={<HifzPlanTool />} />
+              <Route path="/tools/review-plan"       element={<ReviewPlanTool />} />
+              <Route path="/tools/khatm-calculator"  element={<KhatmTool />} />
+              <Route path="/tools/certificate"       element={<CertificateTool />} />
               <Route path="/help"                    element={<HelpCenter />}  />
               <Route path="/help/category/:catId"  element={<HelpCategory />} />
               <Route path="/help/:slug"            element={<HelpArticle />} />

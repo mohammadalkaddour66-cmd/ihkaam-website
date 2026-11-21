@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { Check, Copy, Link2, Send, ShieldCheck, Clock, KeyRound } from 'lucide-react'
 import { supabase } from '../../config/supabaseClient'
 import { useFormGuard } from '../../hooks/useFormGuard'
-import { AFFILIATE_PCT, generateAffiliateCode, affiliateLink } from '../../config/affiliate'
+import {
+  AFFILIATE_PCT, AFFILIATE_UPGRADE_D, AFFILIATE_TERMS, AFFILIATE_TERMS_VERSION,
+  generateAffiliateCode, affiliateLink,
+} from '../../config/affiliate'
 
 const INK = '#0B3B33'
 
@@ -58,6 +61,7 @@ export default function ApplyForm({ onCode }) {
   const [error,   setError]   = useState('')
   const [code,    setCode]    = useState('')
   const [copied,  setCopied]  = useState('')
+  const [agree,   setAgree]   = useState(false)
 
   const { honeypotProps, guardSubmit, markSubmitted } = useFormGuard('affiliate-apply')
 
@@ -80,6 +84,10 @@ export default function ApplyForm({ onCode }) {
       setError('اكتب بريداً إلكترونياً صحيحاً.')
       return
     }
+    if (!agree) {
+      setError('اقرأ شروط الشراكة أعلاه وأقرّ بها قبل إرسال الطلب.')
+      return
+    }
     const gate = guardSubmit()
     if (!gate.ok) {
       if (gate.message) { setError(gate.message); return }
@@ -93,7 +101,8 @@ export default function ApplyForm({ onCode }) {
       email        : form.email.trim().toLowerCase(),
       phone        : form.phone.trim() || null,
       relation     : form.relation,
-      note         : form.note.trim() || null,
+      /* لا عمود للموافقة في الجدول: نختم الملاحظة بنسخة الشروط التي أقرّ بها، دليلاً عند أي خلاف */
+      note         : [form.note.trim(), `[أقرّ بشروط الشراكة، نسخة ${AFFILIATE_TERMS_VERSION}]`].filter(Boolean).join('\n'),
       referral_code: newCode,
       status       : 'pending',
     }])
@@ -204,6 +213,26 @@ export default function ApplyForm({ onCode }) {
                 style={{ ...fs('note'), resize: 'vertical', lineHeight: '1.85', minHeight: '110px' }} />
             </Field>
 
+            {/* الشروط تُقرأ قبل الإرسال لا بعده: كل ما يحتمل خلافاً لاحقاً مكتوب هنا */}
+            <section aria-labelledby="af-terms-h" className="rounded-2xl p-5"
+              style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+              <h4 id="af-terms-h" className="font-black text-[14.5px] mb-3" style={{ color: INK }}>شروط الشراكة قبل أن تقدّم</h4>
+              <ol className="space-y-3">
+                {AFFILIATE_TERMS.map((r, i) => (
+                  <li key={r.t} className="flex gap-3 text-[13px] leading-[1.85]" style={{ color: '#2C423B' }}>
+                    <span className="shrink-0 w-5 h-5 mt-0.5 rounded-full grid place-items-center text-[11px] font-black"
+                      style={{ background: INK, color: '#E0B562' }}>{i + 1}</span>
+                    <span><b style={{ color: INK }}>{r.t}.</b> {r.d}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+            <label htmlFor="af-agree" className="flex items-start gap-3 text-[13.5px] leading-[1.8] cursor-pointer" style={{ color: '#1A2E28' }}>
+              <input id="af-agree" type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)}
+                className="mt-1.5 w-4 h-4 shrink-0 accent-[#1F6F52]" />
+              <span>قرأت الشروط أعلاه، وأفهم أن العمولة على أول دفعة سنوية فقط، وأن الترقية من الشهري تُحتسب إن أكّدنا دفعتها السنوية خلال {AFFILIATE_UPGRADE_D} يوماً من تفعيل المعهد.</span>
+            </label>
+
             <button type="submit" disabled={status === 'loading'} className="btn-cta w-full rounded-xl mt-1 disabled:opacity-60"
               style={{ padding: '0.95rem 1rem', fontSize: '0.95rem' }}>
               {status === 'loading' ? 'جاري الإرسال…' : 'قدّم طلب الشراكة'}
@@ -214,7 +243,7 @@ export default function ApplyForm({ onCode }) {
                 style={{ color: '#8A6425', background: 'rgba(184,134,58,.08)', border: '1px solid rgba(184,134,58,.22)' }}>{error}</p>
             )}
             <p className="text-center text-[12px]" style={{ color: '#5E6E67' }}>
-              لا رسوم ولا التزام. عمولتك {AFFILIATE_PCT}% من أول اشتراك سنوي لكل معهد تُحيله.
+              لا رسوم ولا التزام. عمولتك {AFFILIATE_PCT}% من أول اشتراك سنوي لكل معهد تُحيله، وفق الشروط أعلاه.
             </p>
           </form>
         )}

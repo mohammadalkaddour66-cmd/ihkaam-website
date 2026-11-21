@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import ApplyForm from '../components/affiliate/ApplyForm'
 import TrackPanel from '../components/affiliate/TrackPanel'
-import { AFFILIATE_PCT, AFFILIATE_WINDOW_D, AFFILIATE_EXAMPLES } from '../config/affiliate'
+import { AFFILIATE_PCT, AFFILIATE_UPGRADE_D, AFFILIATE_EXAMPLES, AFFILIATE_TERMS } from '../config/affiliate'
 import { TRIAL_DAYS, PLANS } from '../config/plans'
 import { DESKTOP_SHOTS } from '../data/appShots'
 
@@ -25,7 +25,7 @@ const DASH = DESKTOP_SHOTS.find(s => s.id === 'dashboard')
 
 const STEPS = [
   { img: 'share',     n: 1, t: 'تشارك رابطك',        d: 'تأخذ رمزاً خاصاً بك ورابطاً جاهزاً، وترسله لمدير معهد تعرفه على واتساب أو أي قناة.' },
-  { img: 'subscribe', n: 2, t: 'معهدٌ يشترك سنوياً', d: `يفتح المعهد رابطك، ويجرّب ${TRIAL_DAYS} يوماً مجاناً، ثم يدفع اشتراكه السنوي.` },
+  { img: 'subscribe', n: 2, t: 'معهدٌ يشترك سنوياً', d: `يفتح المعهد رابطك، ويجرّب ${TRIAL_DAYS} يوماً مجاناً، ثم يدفع اشتراكه السنوي. وإن بدأ شهرياً ثم دفع سنوياً خلال ${AFFILIATE_UPGRADE_D} يوماً من تفعيل حسابه، يُحتسب لك أيضاً.` },
   { img: 'earn',      n: 3, t: 'تصلك عمولتك',        d: `${AFFILIATE_PCT}% من أول دفعة سنوية، بعد أن تصلنا الدفعة فعلاً. وتتابعها من صفحتك.` },
 ]
 
@@ -35,16 +35,13 @@ const AUDIENCES = [
   { img: '/scenes/feat-messages.webp', t: 'صاحب محتوى أو مجتمع',  d: 'جمهورك من معلمي القرآن ومديري الحلقات. رابطٌ واحد يخدمهم ويعود عليك.' },
 ]
 
-const RULES = [
-  { icon: Clock,       t: 'بعد الدفع لا قبله',  d: 'لا تُحتسب عمولة عند التسجيل أو أثناء التجربة، بل بعد أن تصلنا الدفعة الفعلية.' },
-  { icon: Ban,         t: 'سنوي لمرة واحدة',    d: 'العمولة على أول اشتراك سنوي فقط. لا عمولة على الشهري ولا على الباقة المجانية ولا على التجديد.' },
-  { icon: Link2,       t: `رابطك يبقى ${AFFILIATE_WINDOW_D} يوماً`, d: 'من نقرة المعهد على رابطك، إن طلب النظام خلال هذه المدة سُجّل لك.' },
-  { icon: ShieldCheck, t: 'لا إحالة لنفسك',     d: 'يُرفض أي طلب من معهدك أو من رقمك أنت. نراجع كل إحالة قبل احتسابها.' },
-]
+/* النص من config/affiliate.js (AFFILIATE_TERMS): نفسه يقرؤه المسوّق في نموذج التقديم */
+const TERM_ICONS = [Ban, Clock, BadgeCheck, Link2, ShieldCheck, Handshake]
+const RULES = AFFILIATE_TERMS.map((r, i) => ({ icon: TERM_ICONS[i], ...r }))
 
 const FAQ = [
   { q: 'متى أستلم عمولتي وكيف؟', a: 'بعد أن يدفع المعهد ونتحقق من وصول الدفعة. نتفق معك على طريقة التحويل عند قبول طلبك، ويُسجَّل كل تحويل في حسابك لدينا وتراه في صفحتك.' },
-  { q: 'هل أربح إن اشترك المعهد شهرياً؟', a: 'لا. العمولة على أول اشتراك سنوي فقط، لأن الاشتراك الشهري مبلغه صغير لا يستحق منك العناء. وإن بدأ المعهد شهرياً ثم انتقل إلى السنوي فراسلنا لننظر في حالته.' },
+  { q: 'هل أربح إن اشترك المعهد شهرياً؟', a: `لا عمولة على الشهري نفسه، لأن مبلغه صغير. لكن إن بدأ المعهد شهرياً ثم دفع اشتراكاً سنوياً وأكّدنا استلامه خلال ${AFFILIATE_UPGRADE_D} يوماً من تفعيل حسابه (وتدخل فيها أيام التجربة)، تُحتسب لك ${AFFILIATE_PCT}% من أول دفعة سنوية. يُسجَّل المعهد باسمك من أول طلب، فلا تحتاج أن تذكّرنا به، وترى آخر موعد للترقية في صفحتك. وإن مرّت ${AFFILIATE_UPGRADE_D} يوماً قبل تأكيد الدفعة السنوية فلا عمولة، ولو كان المعهد قد طلب الترقية قبل ذلك.` },
   { q: 'هل تتكرر العمولة كل سنة؟', a: 'لا. هي مرة واحدة على أول اشتراك سنوي لكل معهد تحيله. هكذا يبقى الاتفاق واضحاً لك ولنا.' },
   { q: 'ضاع رمزي، ماذا أفعل؟', a: 'راسلنا من صفحة التواصل بالاسم والبريد الذي قدّمت به طلبك، ونعيده إليك بعد التحقق. لا نعرضه بالبريد وحده كي لا يطّلع عليه غيرك.' },
   { q: 'هل أستطيع أن أحيل معهدي أنا؟', a: 'لا. الإحالة لمعهدٍ تملكه أو تديره أو بنفس رقمك لا تُحتسب. الشراكة لمن يعرّف بإحكام لغيره.' },
@@ -143,8 +140,8 @@ export default function AffiliatePage() {
               أنت تعرف مديراً ما زال يكتب الحضور على الدفاتر. عرّفه بنظامٍ صُنع لحلقات التحفيظ، وإن اشترك سنوياً فلك عمولتك. بلا رسوم ولا التزام، وتتابع كل شيء من صفحة واحدة.
             </p>
             <div className="flex flex-wrap gap-3 mt-8">
-              <a href="#apply" className="btn-cta rounded-xl">قدّم طلب الشراكة <ArrowLeft size={16} className="ms-2" /></a>
-              <a href="#track" className="btn-outline rounded-xl">تابع إحالاتك</a>
+              <a href="#apply" className="btn-cta rounded-xl gap-2.5 px-10 py-4 min-w-[15rem] text-[16px]">قدّم طلب الشراكة <ArrowLeft size={17} /></a>
+              <a href="#track" className="btn-outline rounded-xl px-10 py-4 min-w-[15rem] text-[16px]">تابع إحالاتك</a>
             </div>
             <ul className="flex flex-wrap gap-x-6 gap-y-2 mt-7 text-[13.5px] font-bold text-[#4A5D56]">
               {['بلا رسوم اشتراك', 'عمولة بعد الدفع الفعلي', 'متابعة مباشرة برمزك'].map(t => (

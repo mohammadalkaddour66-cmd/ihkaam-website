@@ -114,7 +114,7 @@ export default function AppMobileShowcase() {
             على مسارٍ واحد، وكلٌّ يعرف بُعده عن المختار، فتنزلق كلها معاً:
             التالي من اليسار إلى الوسط والحالي إلى اليمين. ويُسحب بالإصبع. */}
         <motion.div
-          className="lg:col-span-7 order-1 lg:order-2 relative flex items-center justify-center select-none"
+          className="lg:col-span-7 order-1 lg:order-2 relative flex items-center justify-center select-none lg:pr-28"
           style={{ minHeight: small ? 520 : 620, touchAction: 'pan-y' }}
           onPanEnd={(_, info) => { if (info.offset.x > 50) go(1); else if (info.offset.x < -50) go(-1) }}
         >

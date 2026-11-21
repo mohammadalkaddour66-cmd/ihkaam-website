@@ -11,7 +11,9 @@
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:spa": "vite build"
+    "build:spa": "vite build",
+    "check:scheduled": "node scripts/check-scheduled.mjs",
+    "test": "node --test src/tools/quran/quran.test.mjs src/tools/files/files.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",

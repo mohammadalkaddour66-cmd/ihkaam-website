@@ -1,742 +1,259 @@
-﻿import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router-dom'
+﻿import { useState, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, ChevronDown, Plus } from 'lucide-react'
-import { usePricingRates } from '../../hooks/usePricingRates'
+import { Check, ArrowLeft, MessageCircle, Sparkles, Building2, Plus } from 'lucide-react'
 import { supabase } from '../../config/supabaseClient'
-import { useIsMobile } from '../../hooks/useIsMobile'
 import { readPricingDraft, writePricingDraft } from '../../config/pricingDraft'
-import { PAID_ADDON_IDS, INCLUDED_IN_BASE_NOTE } from '../../config/addons'
+import { INCLUDED_IN_BASE_NOTE, withSitePrices, ADDON_PRICE_USD, ADDONS_BUNDLE_USD, ADDON_INFO } from '../../config/addons'
+import { PLANS, CUSTOM_FROM_USD, TRIAL_DAYS, planPrice, addonPrice, usd, isPaid } from '../../config/plans'
+import { IHKAAM_WHATSAPP, waLink, FREE_PLAN_MESSAGE } from '../../config/whatsappOrder'
 
-const TIERS = [
-  { max: 200,  name: 'المراكز الناشئة'   },
-  { max: 500,  name: 'المعاهد المتوسطة' },
-  { max: 1000, name: 'المجمعات الكبرى'  },
+/* ══════════════════════════════════════════════════════════════════
+   صفحة الباقات /request (2026-11-20)
+
+   كانت حاسبةً بمنزلق طلاب ومدد. صارت أربع باقاتٍ ثابتة (src/config/plans.js)
+   ومفتاح شهري/سنوي، وسطرُ «عرض خاص» لما فوق 500 طالب. عدد الطلاب أكبر ما في
+   كل بطاقة وتحته مقياسٌ مرسوم، و«معهد متوسط» الأكثر اختياراً بطاقةٌ داكنة. اختيار الباقة يفتح صفحة الطلب،
+   وهناك تُضاف الإضافات المدفوعة.
+   ══════════════════════════════════════════════════════════════════ */
+
+const INK = '#0B3B33', GOLD_TXT = '#8A6425'
+const ease = [0.22, 1, 0.36, 1]
+
+/* امتلاء مقياس السعة لكل باقة: تدرّجٌ يقرأه العين لا نسبةٌ حسابية،
+   وإلا لاختفت «حلقة» (30 من 500) في أول المقياس */
+const FILL = { halaqa: 0.2, small: 0.4, medium: 0.7, large: 1 }
+
+const INCLUDED = [
+  'تسجيل الطلاب والكادر', 'الحلقات والأفواج', 'التسميع اليومي', 'الحضور والغياب',
+  'الاختبارات والسبر', 'تقييم السلوك', 'التقارير', 'التحليل الذكي', 'الأرشفة السحابية', 'بوابة ولي الأمر',
 ]
 
-function getTier(students) {
-  return TIERS.find(t => students <= t.max)
-}
-
-/* Hairline rule between the panel's steps */
-function Rule() {
-  return <div style={{ height: 1, background: 'rgba(11, 59, 51, 0.055)' }} aria-hidden />
-}
-
-/* Arabic count agreement: 1 مفردة، 2 مثنّى، 3–10 جمع، 11+ مفرد */
-function featureCount(n) {
-  if (n === 1) return 'ميزة'
-  if (n === 2) return 'ميزتان'
-  if (n <= 10) return `${n} ميزات`
-  return `${n} ميزة`
-}
-
-/* No diacritics here on purpose — a damma+shadda ("مُفعَّلة") smears into an
-   unreadable glyph at the pill's 0.7rem. */
-function selectedCountLabel(n) {
-  if (n === 1) return 'ميزة مختارة'
-  if (n === 2) return 'ميزتان مختارتان'
-  return `${featureCount(n)} مختارة`
-}
-
-/* ─────────────────────────────────────────────────────────────────────────
-   DURATION OPTIONS — mirrors system_settings duration_discounts keys
-   ───────────────────────────────────────────────────────────────────────── */
-
-const DURATION_OPTIONS = [
-  { months: 1,  label: 'شهر'    },
-  { months: 3,  label: '3 أشهر' },
-  { months: 6,  label: '6 أشهر' },
-  { months: 12, label: 'سنة'    },
-]
-
-const PERIOD_LABEL = { 1: 'شهر', 3: '3 أشهر', 6: '6 أشهر', 12: 'سنة' }
-
-/* ─────────────────────────────────────────────────────────────────────────
-   DURATION SELECTOR
-   4-pill horizontal segment bar. LTR container so pills read 1 → 12.
-   Each pill shows the period label + a "وفّر X%" sub-badge when applicable.
-   The 12-month pill carries an amber glow-dot to signal best value.
-   ───────────────────────────────────────────────────────────────────────── */
-
-function DurationSelector({ duration, onChange, discounts, enabledDurations }) {
-  /* المدد التي يبيعها السوبر أدمن فعلاً. المفتاح غائب أو تالف →
-     الأربعة كلها، وهو سلوك ما قبل الميزة حرفاً بحرف. */
-  const options = DURATION_OPTIONS.filter(o => enabledDurations.includes(o.months))
+/* ─── مفتاح الدورة ─── */
+function CycleToggle({ cycle, onChange }) {
   return (
-    <div>
-      <span className="block mb-2.5" style={{ color: '#5E6E67', fontSize: '0.75rem', fontWeight: 500 }}>
-        مدة الاشتراك
-      </span>
-      {/*
-        dir="rtl" + DOM order [1,3,6,12] → visual right-to-left:
-        [شهر] [3أشهر] [6أشهر] [سنة]  — 1 month on the right, 12 on the left.
-        4-col grid (not inline-flex) so the pills share the width evenly and
-        never crowd each other on narrow phones.
-      */}
-      <div
-        dir="rtl"
-        className="grid gap-1 rounded-2xl p-1"
-        style={{
-          /* كان grid-cols-4 مثبّتاً — فتعطيلُ مدّتين يترك زرّين
-             في نصف صفّ وفراغاً بجانبهما. */
-          gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
-          background: 'rgba(248, 245, 236, 0.60)',
-          border    : '1px solid rgba(31, 111, 82, 0.07)',
-        }}
-      >
-        {options.map(({ months, label }) => {
-          const discountPct = Math.round((discounts[months] ?? 0) * 100)
-          const isActive    = duration === months
-
-          return (
-            <button
-              key={months}
-              onClick={() => onChange(months)}
-              className="flex flex-col items-center justify-center rounded-xl cursor-pointer w-full"
-              style={{
-                paddingTop   : '0.45rem',
-                paddingBottom: discountPct > 0 ? '0.30rem' : '0.45rem',
-                paddingLeft  : '0.3rem',
-                paddingRight : '0.3rem',
-                background   : isActive ? 'rgba(31, 111, 82, 0.15)' : 'transparent',
-                boxShadow    : isActive ? 'inset 0 1px 0 rgba(31, 111, 82, 0.18)' : 'none',
-                border       : 'none',
-                outline      : 'none',
-                transition   : 'background 250ms cubic-bezier(0.4,0,0.2,1), box-shadow 250ms ease',
-              }}
-            >
-              <span
-                style={{
-                  display      : 'block',
-                  fontSize     : '0.85rem',
-                  fontWeight   : isActive ? 700 : 500,
-                  letterSpacing: '-0.01em',
-                  lineHeight   : 1.2,
-                  whiteSpace   : 'nowrap',
-                  color        : isActive ? '#33463F' : '#5E6E67',
-                  transition   : 'color 250ms ease',
-                }}
-              >
-                {label}
-              </span>
-
-              {discountPct > 0 && (
-                <span
-                  style={{
-                    display   : 'block',
-                    fontSize  : '0.58rem',
-                    fontWeight: 500,
-                    marginTop : '0.20rem',
-                    lineHeight: 1,
-                    color     : isActive ? '#52A587' : '#E9E3D5',
-                    transition: 'color 250ms ease',
-                  }}
-                >
-                  {/*
-                    Bidi fix: isolate the RTL Arabic word and LTR numeric % in
-                    explicit direction spans so the bidi algorithm cannot reorder
-                    them. Result: Arabic "وفّر" on the right, "20%" to its left —
-                    which an RTL reader reads as "وفّر 20%". ✓
-                  */}
-                  <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
-                    وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
-                  </span>
+    <div className="inline-flex items-center gap-1 rounded-full p-1" role="tablist" aria-label="دورة الدفع"
+      style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+      {[['monthly', 'شهري'], ['annual', 'سنوي']].map(([id, label]) => {
+        const on = cycle === id
+        return (
+          <button key={id} type="button" role="tab" aria-selected={on} onClick={() => onChange(id)}
+            className="relative rounded-full px-6 py-2.5 text-[15px] font-bold">
+            {on && <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full" style={{ background: INK }}
+              transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+            <span className="relative flex items-center gap-2" style={{ color: on ? '#F8F5EC' : '#2F4540' }}>
+              {label}
+              {id === 'annual' && (
+                <span className="text-[11px] font-bold rounded-full px-2 py-0.5"
+                  style={{ background: on ? '#E0B562' : 'rgba(184,134,58,.14)', color: on ? INK : GOLD_TXT }}>
+                  شهران مجاناً
                 </span>
               )}
-            </button>
-          )
-        })}
-      </div>
+            </span>
+          </button>
+        )
+      })}
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   STUDENT SLIDER — 10 to 1000, step 10, default 150.
-   Thin tick marks at tier boundaries (200 / 500 / 800).
-   dir="ltr" on the input so values increase left→right regardless of RTL.
-   ───────────────────────────────────────────────────────────────────────── */
-
-const BOUNDARIES = [200, 500, 800]
-const SLIDER_MIN  = 10
-const SLIDER_MAX  = 1000
-
-function sliderPct(val) {
-  return ((val - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100
+/* «30 طالباً» و«100 طالب» و«250 طالباً» و«500 طالب» */
+function studentsWord(n) {
+  const r = n % 100
+  if (r >= 3 && r <= 10) return 'طلاب'
+  if (r >= 11) return 'طالباً'
+  return 'طالب'
 }
 
-function StudentSlider({ value, onChange, tier }) {
-  const pct = sliderPct(value)
+/* ─── مقياس السعة: عشر خانات تمتلئ بحجم الباقة ─── */
+function Capacity({ plan, dark }) {
+  const filled = Math.round(FILL[plan.id] * 10)
+  return (
+    <div aria-hidden className="flex items-end gap-[3px] h-6">
+      {Array.from({ length: 10 }, (_, i) => (
+        <span key={i} className="flex-1 rounded-[3px]"
+          style={{
+            height: `${30 + i * 7.5}%`,
+            background: i < filled
+              ? (dark ? 'linear-gradient(to top,#B8863A,#E0B562)' : 'linear-gradient(to top,#1F6F52,#3E8E6F)')
+              : (dark ? 'rgba(248,245,236,.10)' : 'rgba(11,59,51,.07)'),
+          }} />
+      ))}
+    </div>
+  )
+}
 
+/* ─── عدد الطلاب: أكبر ما في البطاقة ─── */
+function Seats({ plan, dark }) {
   return (
     <div>
-      {/* Header row — one line: label + tier name on the right, live count on the left */}
-      <div className="flex items-center justify-between gap-3 mb-3.5" dir="rtl">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="flex-shrink-0" style={{ color: '#5E6E67', fontSize: '0.75rem', fontWeight: 500 }}>
-            عدد الطلاب
-          </span>
-          {tier && (
-            <span className="flex items-center gap-1.5 min-w-0">
-              <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#A3D3C1' }} />
-              <span className="text-[0.7rem] font-bold truncate" style={{ color: '#1F6F52' }}>
-                {tier.name}
-              </span>
-            </span>
-          )}
-        </div>
-        <div className="flex items-baseline gap-1.5 flex-shrink-0">
-          <span
-            className="font-black tabular-nums"
-            style={{ color: '#1F6F52', fontSize: '1.45rem', lineHeight: 1 }}
-          >
-            {value}
-          </span>
-          <span style={{ color: '#5E6E67', fontSize: '0.8rem' }}>طالب</span>
-        </div>
+      <div className="text-[13px] font-semibold mb-1" style={{ color: dark ? 'rgba(248,245,236,.66)' : '#5E6E67' }}>
+        {plan.note ? `${plan.note} · حتى` : 'حتى'}
       </div>
-
-      {/* Track + ticks — forced LTR */}
-      <div dir="ltr">
-        <div className="relative">
-          <input
-            type="range"
-            min={SLIDER_MIN}
-            max={SLIDER_MAX}
-            step={10}
-            value={value}
-            onChange={e => onChange(Number(e.target.value))}
-            className="ihkaam-slider"
-            style={{
-              background: `linear-gradient(to right, #1F6F52 0%, #1F6F52 ${pct}%, rgba(255, 255, 255, 0.70) ${pct}%, rgba(255, 255, 255, 0.70) 100%)`,
-            }}
-          />
-          {/* Tier boundary ticks — sit beneath the track.
-              Hidden on mobile: the price is linear in student count, so the
-              boundaries carry no cost consequence and only add clutter. */}
-          {BOUNDARIES.map(b => (
-            <div
-              key={b}
-              className="hidden sm:block absolute pointer-events-none"
-              style={{
-                left      : `calc(${sliderPct(b)}% - 0.5px)`,
-                bottom    : -8,
-                width     : 1,
-                height    : 6,
-                background: value >= b
-                  ? 'rgba(31, 111, 82, 0.50)'
-                  : 'rgba(184, 134, 58, 0.22)',
-                transition: 'background 300ms ease',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Min / max + boundary labels */}
-        <div className="relative mt-2.5 sm:mt-5 flex items-center justify-between text-[0.68rem]" style={{ color: '#5E6E67' }}>
-          <span>10</span>
-          {BOUNDARIES.map(b => (
-            <span
-              key={b}
-              className="hidden sm:inline"
-              style={{
-                position  : 'absolute',
-                left      : `${sliderPct(b)}%`,
-                transform : 'translateX(-50%)',
-                color     : value <= b && value > (b === 200 ? 0 : b === 500 ? 200 : 500)
-                  ? '#1F6F52' : '#5E6E67',
-                transition: 'color 300ms ease',
-                fontWeight: value <= b && value > (b === 200 ? 0 : b === 500 ? 200 : 500)
-                  ? 700 : 400,
-              }}
-            >
-              {b}
-            </span>
-          ))}
-          <span>1000</span>
-        </div>
+      <div className="flex items-baseline gap-2">
+        <span className="font-bold leading-none tabular-nums" style={{ color: dark ? '#E0B562' : '#1F6F52', fontSize: 'clamp(3rem, 5vw, 3.6rem)', fontFamily: 'cairo-latin, inherit', letterSpacing: '-0.02em' }}>
+          {plan.max}
+        </span>
+        <span className="text-[17px] font-bold" style={{ color: dark ? '#F8F5EC' : '#1A2E28' }}>{studentsWord(plan.max)}</span>
       </div>
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   ADD-ONS BAR — prominent trigger + animated grid of feature cards.
-   Sits between StudentSlider and SmartCard; owns its own open/close state.
-   ───────────────────────────────────────────────────────────────────────── */
-
-function AddonsBar({ storeFeatures, selectedFeatures, onToggleFeature, isOpen, onToggle }) {
-  if (!storeFeatures.length) return null
-
-  const selectedCount = storeFeatures.filter(f => selectedFeatures.has(f.id)).length
-
+/* ─── السعر ─── */
+function Price({ plan, cycle, dark }) {
+  const main = dark ? '#F8F5EC' : '#1A2E28'
+  const sub  = dark ? 'rgba(248,245,236,.66)' : '#5E6E67'
+  if (plan.kind === 'free') {
+    return (
+      <div>
+        <div className="font-bold leading-none" style={{ color: main, fontSize: '1.9rem' }}>مجاناً</div>
+        <div className="text-[13px] mt-2 h-5" style={{ color: sub }}>بلا مدّة ولا دفع</div>
+      </div>
+    )
+  }
+  const price = planPrice(plan, cycle)
   return (
-    <div dir="rtl">
+    <div>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div key={cycle} className="flex items-baseline gap-2"
+          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25, ease }}>
+          <span dir="ltr" className="font-bold leading-none tabular-nums" style={{ color: main, fontSize: '1.9rem', fontFamily: 'cairo-latin, inherit' }}>
+            {usd(price)}
+          </span>
+          <span className="text-[14px] font-semibold" style={{ color: sub }}>{cycle === 'annual' ? 'سنوياً' : 'شهرياً'}</span>
+        </motion.div>
+      </AnimatePresence>
+      <div className="text-[13px] mt-2 h-5" style={{ color: sub }}>
+        {cycle === 'annual'
+          ? <>بدل <span dir="ltr" className="line-through tabular-nums">{usd(plan.monthly * 12)}</span> · شهران مجاناً</>
+          : <>أو <span dir="ltr" className="tabular-nums">{usd(plan.annual)}</span> سنوياً</>}
+      </div>
+    </div>
+  )
+}
 
-      {/* ── Trigger row ───────────────────────────────────────────────
-           This row kept reading as a section heading, so people scrolled
-           past it. Three changes make it read as an action instead:
-           a verb-led label ("أضف" not "ميزات…"), a + tile at the head of
-           the row, and a tinted surface that separates it from the passive
-           rows above and below. */}
-      <button
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="w-full flex flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3.5 cursor-pointer text-right"
-        style={{
-          background : selectedCount > 0 ? 'rgba(31, 111, 82, 0.075)' : 'rgba(31, 111, 82, 0.042)',
-          border     : 'none',
-          outline    : 'none',
-          transition : 'background 200ms ease',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(31, 111, 82, 0.10)' }}
-        onMouseLeave={e => {
-          e.currentTarget.style.background = selectedCount > 0
-            ? 'rgba(31, 111, 82, 0.075)' : 'rgba(31, 111, 82, 0.042)'
-        }}
-      >
-        {/* Right: + tile then the action label */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <span
-            className="flex items-center justify-center rounded-lg flex-shrink-0"
-            style={{
-              width     : 26,
-              height    : 26,
-              background: 'rgba(31, 111, 82, 0.14)',
-              border    : '1px solid rgba(31, 111, 82, 0.28)',
-            }}
-          >
-            <Plus size={14} strokeWidth={2.6} style={{ color: '#1F6F52' }} />
-          </span>
-          <span className="truncate" style={{ color: '#33463F', fontSize: '0.85rem', fontWeight: 700 }}>
-            أضف إضافات مدفوعة
-          </span>
-        </div>
+/* ─── بطاقة باقة ─── */
+function PlanCard({ plan, cycle, index, onPick }) {
+  const dark = !!plan.popular
+  const cta = plan.kind === 'free' ? 'ابدأ مجاناً على واتساب' : `جرّبها ${TRIAL_DAYS} يوماً مجاناً`
+  const line = dark ? 'rgba(248,245,236,.12)' : 'rgba(11,59,51,.08)'
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, ease, delay: index * 0.07 }}
+      className={`relative flex flex-col rounded-[26px] p-6 overflow-hidden ${dark ? 'section-dark lg:-my-3' : ''}`}
+      style={dark
+        ? { boxShadow: '0 30px 60px -28px rgba(8,44,38,.7), inset 0 0 0 1px rgba(224,181,98,.35)' }
+        : { background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+      {dark && <div className="pattern-layer pattern-khatam" aria-hidden />}
+      {dark && (
+        <div aria-hidden className="absolute -top-20 -left-16 w-64 h-64 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, rgba(224,181,98,.22), transparent)' }} />
+      )}
 
-        {/* Left: state pill + rotating arrow */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <span
-            className="inline-flex items-center rounded-full"
-            style={{
-              padding   : '0.28rem 0.7rem',
-              background: selectedCount > 0 ? 'rgba(31, 111, 82, 0.20)' : 'transparent',
-              border    : `1px solid ${selectedCount > 0 ? 'rgba(31, 111, 82, 0.42)' : 'rgba(31, 111, 82, 0.22)'}`,
-              color     : selectedCount > 0 ? '#1F6F52' : '#47806B',
-              fontSize  : '0.7rem',
-              fontWeight: 700,
-              whiteSpace: 'nowrap',
-              transition: 'background 200ms ease, border-color 200ms ease, color 200ms ease',
-            }}
-          >
-            {selectedCount > 0
-              ? selectedCountLabel(selectedCount)
-              : featureCount(storeFeatures.length)}
+      <div className="relative flex items-center justify-between gap-2 mb-5 min-h-[28px]">
+        <h2 className="font-bold text-[20px]" style={{ color: dark ? '#F8F5EC' : '#1A2E28' }}>{plan.name}</h2>
+        {dark && (
+          <span className="inline-flex items-center gap-1 text-[11.5px] font-bold rounded-full px-2.5 py-1 whitespace-nowrap" style={{ background: '#E0B562', color: INK }}>
+            <Sparkles size={12} /> الأكثر اختياراً
           </span>
-          <ChevronDown
-            size={16}
-            strokeWidth={2.4}
-            style={{
-              color     : '#1F6F52',
-              transform : isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)',
-              flexShrink: 0,
-            }}
-          />
-        </div>
+        )}
+      </div>
+
+      <div className="relative mb-4"><Seats plan={plan} dark={dark} /></div>
+      <div className="relative mb-5"><Capacity plan={plan} dark={dark} /></div>
+
+      <div className="relative pt-5 mb-4" style={{ borderTop: `1px solid ${line}` }}>
+        <Price plan={plan} cycle={cycle} dark={dark} />
+      </div>
+
+      <p className="relative text-[14px] leading-[1.85] mb-6" style={{ color: dark ? 'rgba(248,245,236,.8)' : '#4A5D56' }}>{plan.pitch}</p>
+
+      <button type="button" onClick={() => onPick(plan)}
+        className={`relative mt-auto w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-bold text-[15px] ${dark ? 'btn-cta' : ''}`}
+        style={dark ? undefined : { background: 'rgba(31,111,82,.08)', color: INK, boxShadow: 'inset 0 0 0 1px rgba(31,111,82,.22)' }}>
+        {cta} <ArrowLeft size={16} />
       </button>
-
-      {/* ── Expandable grid of feature cards ── */}
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            key="addons-grid"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
-            /* Same tint as the trigger, so open trigger + grid read as one block */
-            style={{ overflow: 'hidden', background: 'rgba(31, 111, 82, 0.042)' }}
-          >
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 px-4 sm:px-6 pb-5 pt-1 w-full">
-              {storeFeatures.map(feature => {
-                const isActive = selectedFeatures.has(feature.id)
-                return (
-                  <button
-                    key={feature.id}
-                    onClick={() => onToggleFeature(feature.id)}
-                    title={feature.description || undefined}
-                    className="flex flex-col justify-between gap-2 p-2.5 sm:p-3.5 rounded-xl cursor-pointer text-right"
-                    style={{
-                      background : isActive ? 'rgba(31, 111, 82, 0.07)' : 'rgba(11, 59, 51, 0.03)',
-                      border     : `1px solid ${isActive ? 'rgba(31, 111, 82, 0.30)' : 'rgba(11, 59, 51, 0.05)'}`,
-                      outline    : 'none',
-                      minHeight  : '72px',
-                      transition : 'background 200ms ease, border-color 200ms ease',
-                    }}
-                    onMouseEnter={e => {
-                      if (!isActive) e.currentTarget.style.borderColor = 'rgba(31, 111, 82, 0.22)'
-                    }}
-                    onMouseLeave={e => {
-                      if (!isActive) e.currentTarget.style.borderColor = 'rgba(11, 59, 51, 0.05)'
-                    }}
-                  >
-                    {/* Card top: name (right) + checkbox (left) */}
-                    <div className="flex items-start justify-between gap-2">
-                      <span style={{
-                        color     : isActive ? '#33463F' : '#527568',
-                        fontSize  : '0.80rem',
-                        fontWeight: 700,
-                        lineHeight: 1.3,
-                        textAlign : 'right',
-                        transition: 'color 200ms ease',
-                      }}>
-                        {feature.name}
-                      </span>
-
-                      {/* Custom checkbox */}
-                      <div
-                        className="flex-shrink-0 flex items-center justify-center rounded"
-                        style={{
-                          marginTop : '0.08rem',
-                          width     : 16,
-                          height    : 16,
-                          background: isActive ? 'rgba(31, 111, 82, 0.20)' : 'transparent',
-                          border    : `1.5px solid ${isActive ? '#1F6F52' : 'rgba(134, 190, 169, 0.32)'}`,
-                          transition: 'background 200ms ease, border-color 200ms ease',
-                        }}
-                      >
-                        {isActive && (
-                          <svg width="8" height="6" viewBox="0 0 8 6" fill="none" aria-hidden>
-                            <path
-                              d="M1 3L3 5L7 1"
-                              stroke="#1F6F52"
-                              strokeWidth="1.6"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Card bottom: price. The description lives in the card's
-                        title attribute only — at this width it could never show
-                        more than a truncated fragment. */}
-                    <div className="flex items-baseline gap-0.5">
-                      <span
-                        dir="ltr"
-                        className="tabular-nums"
-                        style={{
-                          color     : isActive ? '#1F6F52' : '#5E6E67',
-                          fontSize  : '0.82rem',
-                          fontWeight: 600,
-                          transition: 'color 200ms ease',
-                        }}
-                      >
-                        +${(feature.price_usd_monthly || 0).toFixed(0)}
-                      </span>
-                      <span style={{ color: '#94C2B1', fontSize: '0.62rem' }}>&nbsp;/ شهر</span>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   SMART CARD — switches between Enterprise and Normal layouts.
-   Normal layout: vertical premium stack (4 blocks top→bottom).
-   Enterprise layout: centered, contact CTA.
-   ───────────────────────────────────────────────────────────────────────── */
-
-function SmartCard({
-  students, duration, onSubscribe, onContact, baseFee, perStudent, discounts,
-  addonsMonthlyTotal = 0, ctaRef,
-}) {
-  const tier            = getTier(students)
-  const discountFrac    = discounts[duration] ?? 0
-  const discountPct     = Math.round(discountFrac * 100)
-  const studentFeeM     = students * perStudent
-  const monthlyBase     = baseFee + studentFeeM
-  const monthlyTotal    = monthlyBase + addonsMonthlyTotal
-  const undiscounted    = monthlyTotal * duration
-  const periodTotal     = undiscounted * (1 - discountFrac)
-
-  const totalLabel = duration === 1
-    ? 'المجموع الشهري'
-    : duration === 12
-      ? 'المجموع النهائي للسنة'
-      : `المجموع النهائي لـ ${PERIOD_LABEL[duration]}`
-
-  const originalLabel = duration === 12
-    ? 'المجموع الأصلي للسنة'
-    : `المجموع الأصلي لـ ${PERIOD_LABEL[duration]}`
-
+/* ─── ما فوق 500 طالب: سطرٌ واحد تحت البطاقات لا بطاقة ─── */
+function CustomOffer() {
   return (
-    /* Deeper surface than the rest of the panel — reads as the receipt total */
-    <div
-      className="px-4 sm:px-6 pt-5 pb-5"
-      style={{ background: 'rgba(248, 245, 236, 0.55)' }}
-    >
-      <AnimatePresence mode="wait">
-
-        {/* ── ENTERPRISE MODE (> 800 students) ── */}
-        {tier.enterprise ? (
-          <motion.div
-            key="enterprise"
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
-            animate={{ opacity: 1, scale: 1,    y: 0  }}
-            exit={{ opacity: 0, scale: 0.96, y: 10 }}
-            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center py-4"
-            dir="rtl"
-          >
-            {/* Tier badge */}
-            <div className="flex justify-center mb-5">
-              <span
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2"
-                style={{
-                  background: 'rgba(184, 134, 58, 0.08)',
-                  border    : '1px solid rgba(184, 134, 58, 0.20)',
-                }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: '#7A6440', boxShadow: '0 0 7px rgba(184, 134, 58, 0.60)' }}
-                />
-                <span style={{ color: '#7A6440', fontSize: '0.85rem', fontWeight: 700 }}>
-                  {tier.name}
-                </span>
-              </span>
-            </div>
-
-            <p
-              className="mx-auto mb-2"
-              style={{ color: '#4A5D56', fontSize: '0.90rem', maxWidth: 520, lineHeight: 1.9 }}
-            >
-              للمجمعات التي يزيد عدد طلابها عن الحاسبة، نتفق معك على اشتراك يناسب حجمها.
-            </p>
-            <p
-              className="mx-auto mb-8"
-              style={{ color: '#5E6E67', fontSize: '0.82rem', maxWidth: 480, lineHeight: 1.9 }}
-            >
-              نسعد بتصميم حزمة تناسب حجمك تماماً — تواصل معنا وسنعدّ لك عرضاً في 24 ساعة.
-            </p>
-
-            <button
-              onClick={onContact}
-              className="inline-flex items-center gap-2.5 font-bold rounded-xl px-8 py-3.5 cursor-pointer text-sm"
-              style={{
-                background: 'rgba(184, 134, 58, 0.10)',
-                border    : '1px solid rgba(184, 134, 58, 0.28)',
-                color     : '#7A6440',
-                transition: 'background 250ms ease, border-color 250ms ease',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background  = 'rgba(184, 134, 58, 0.18)'
-                e.currentTarget.style.borderColor = 'rgba(184, 134, 58, 0.50)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background  = 'rgba(184, 134, 58, 0.10)'
-                e.currentTarget.style.borderColor = 'rgba(184, 134, 58, 0.28)'
-              }}
-            >
-              <MessageCircle size={16} />
-              تواصل معنا
-            </button>
-          </motion.div>
-
-        ) : (
-
-          /* ── NORMAL MODE — horizontal premium line-item block ── */
-          <motion.div
-            key="normal"
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
-            animate={{ opacity: 1, scale: 1,    y: 0  }}
-            exit={{ opacity: 0, scale: 0.96, y: 10 }}
-            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-            dir="rtl"
-            className="flex flex-col"
-          >
-
-            {/* ── Single price block — no line-item breakdown, just the number ── */}
-            <div className="flex flex-col items-center text-center py-2">
-
-              <span style={{ color: '#4A5D56', fontSize: '0.75rem', fontWeight: 600, lineHeight: 1.4 }}>
-                {totalLabel}
-              </span>
-
-              <div className="flex items-center justify-center gap-2.5 mt-2">
-                <span
-                  dir="ltr"
-                  className="font-black tabular-nums"
-                  style={{
-                    color        : duration === 1 ? '#1F6F52' : '#33463F',
-                    fontSize     : 'clamp(2.1rem, 5vw, 2.9rem)',
-                    lineHeight   : 1,
-                    letterSpacing: '-0.03em',
-                  }}
-                >
-                  ${periodTotal.toFixed(2)}
-                </span>
-                {discountPct > 0 && (
-                  <span
-                    className="rounded-full flex-shrink-0"
-                    style={{
-                      padding   : '0.22rem 0.62rem',
-                      background: 'rgba(31, 111, 82, 0.11)',
-                      border    : '1px solid rgba(31, 111, 82, 0.22)',
-                      color     : '#52A587',
-                      fontSize  : '0.62rem',
-                      fontWeight: 700,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
-                      وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
-                    </span>
-                  </span>
-                )}
-              </div>
-
-              {/* Struck original — only when a duration discount applies */}
-              {discountPct > 0 && (
-                <span
-                  className="mt-2"
-                  style={{ color: '#ABC9BE', fontSize: '0.74rem', lineHeight: 1.5 }}
-                >
-                  {originalLabel}:&nbsp;
-                  <span
-                    dir="ltr"
-                    className="tabular-nums"
-                    style={{ textDecoration: 'line-through', opacity: 0.45 }}
-                  >
-                    ${undiscounted.toFixed(2)}
-                  </span>
-                </span>
-              )}
-
-              {/* Scope line — what the number already covers. No per-item pricing. */}
-              <span className="mt-2" style={{ color: '#5E6E67', fontSize: '0.70rem', lineHeight: 1.6 }}>
-                شامل {students} طالب
-                {addonsMonthlyTotal > 0 && ' + الميزات المضافة'}
-              </span>
-            </div>
-
-            {/* ── CTA — full-width, anchored to bottom ── */}
-            <div className="flex flex-col mt-4">
-              <button
-                ref={ctaRef}
-                onClick={onSubscribe}
-                className="w-full font-black rounded-xl cursor-pointer"
-                style={{
-                  padding      : '0.85rem',
-                  background   : '#1F6F52',
-                  color        : '#FFFFFF',
-                  border       : 'none',
-                  fontSize     : '0.95rem',
-                  letterSpacing: '0.05em',
-                  transition   : 'background 200ms ease, transform 150ms ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = '#1F6F52'
-                  e.currentTarget.style.transform  = 'scale(1.01)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = '#1F6F52'
-                  e.currentTarget.style.transform  = 'scale(1)'
-                }}
-              >
-                أكمل طلب الاشتراك
-              </button>
-            </div>
-
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="mt-6 rounded-[22px] px-5 sm:px-7 py-5 flex flex-col sm:flex-row sm:items-center gap-4 justify-between"
+      style={{ background: '#F6F1E6', boxShadow: 'inset 0 0 0 1px rgba(184,134,58,.3)' }}>
+      <div className="flex items-center gap-4">
+        <span className="shrink-0 w-12 h-12 rounded-2xl grid place-items-center" style={{ background: INK, color: '#E0B562' }}>
+          <Building2 size={22} />
+        </span>
+        <p className="text-[16px] leading-[1.8] text-[#1A2E28]">
+          <span className="font-bold">أكثر من 500 طالب، أو جمعية، أو مكتب حلقات؟</span>{' '}
+          عرض خاص يبدأ من <span dir="ltr" className="font-bold tabular-nums" style={{ color: '#1F6F52' }}>{usd(CUSTOM_FROM_USD)}</span> شهرياً.
+        </p>
+      </div>
+      <Link to="/contact" className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold text-[15px]"
+        style={{ color: INK, boxShadow: 'inset 0 0 0 1.5px rgba(184,134,58,.5)', background: '#FDFBF7' }}>
+        <MessageCircle size={16} /> اطلب عرضاً
+      </Link>
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   MAIN EXPORT
-   ───────────────────────────────────────────────────────────────────────── */
+/* ─── الإضافات: تُعرض هنا وتُختار في صفحة الطلب ─── */
+function Addons({ features, cycle }) {
+  if (!features.length) return null
+  return (
+    <div className="rounded-[26px] p-6 sm:p-8" style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h2 className="font-bold text-[20px] text-[#1A2E28]">إضافات اختيارية</h2>
+          <p className="text-[14px] text-[#4A5D56] mt-1">تضيفها إلى أي باقة مدفوعة في خطوة الطلب، وتلغيها متى شئت.</p>
+        </div>
+        {/* الحزمة: الثلاث معاً بسعرٍ أقل من مجموعها */}
+        <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-bold"
+          style={{ background: INK, color: '#F8F5EC' }}>
+          الثلاث معاً
+          <span dir="ltr" className="tabular-nums" style={{ color: '#E0B562' }}>{usd(addonPrice(ADDONS_BUNDLE_USD, cycle))}</span>
+          <span className="text-[12.5px] font-semibold" style={{ color: 'rgba(248,245,236,.7)' }}>
+            {cycle === 'annual' ? 'سنوياً' : 'شهرياً'} بدل <span dir="ltr" className="line-through tabular-nums">{usd(addonPrice(Object.values(ADDON_PRICE_USD).reduce((a, b) => a + b, 0), cycle))}</span>
+          </span>
+        </div>
+      </div>
+      <div className="grid sm:grid-cols-3 gap-3">
+        {features.map(f => (
+          <div key={f.id} className="rounded-2xl p-4 flex flex-col gap-2" style={{ background: '#F6F1E6', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+            <div className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg grid place-items-center shrink-0" style={{ background: INK, color: '#E0B562' }}><Plus size={14} /></span>
+              <span className="font-bold text-[15px] text-[#1A2E28]">{f.name}</span>
+            </div>
+            {/* سطرٌ واحد هنا، والتفاصيل في صفحة الإضافة. المسوّدة محفوظة،
+                فالعودة من صفحة الإضافة تجد الدورة كما تركها الزائر. */}
+            <p className="text-[13.5px] leading-[1.8] text-[#4A5D56]">{ADDON_INFO[f.id]?.line || f.description}</p>
+            <div className="mt-auto pt-2 flex items-center justify-between gap-2">
+              <span className="text-[14px] font-bold" style={{ color: '#1F6F52' }}>
+                <span dir="ltr" className="tabular-nums">+{usd(addonPrice(f.price_usd_monthly, cycle))}</span>
+                <span className="text-[12.5px] font-semibold text-[#5E6E67]"> {cycle === 'annual' ? 'سنوياً' : 'شهرياً'}</span>
+              </span>
+              {ADDON_INFO[f.id] && (
+                <Link to={`/ihkaam/addons/${ADDON_INFO[f.id].slug}`} className="group inline-flex items-center gap-1 text-[13px] font-bold" style={{ color: GOLD_TXT }}>
+                  اعرف المزيد <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
+                </Link>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function IhkaamPricing() {
-  /* Restore the plan the user built before going to checkout, so coming back
-     doesn't reset them to 150 students / monthly / no add-ons. */
   const [draft] = useState(readPricingDraft)
-
-  const [rawDuration, setDuration]            = useState(() => draft?.duration ?? 1)
-  const [students, setStudents]               = useState(() => draft?.students ?? 150)
-  const [isAddonsOpen, setAddonsOpen]         = useState(() => (draft?.selectedFeatureIds?.length ?? 0) > 0)
-  const [storeFeatures, setStoreFeatures]     = useState([])
-  const [selectedFeatures, setSelectedFeatures] = useState(() => new Set(draft?.selectedFeatureIds ?? []))
+  const [cycle, setCycle] = useState(() => draft?.cycle ?? 'monthly')
+  const [features, setFeatures] = useState([])
   const navigate = useNavigate()
-  const isMobile = useIsMobile()
-
-  const { baseFee, perStudent, discounts, enabledDurations } = usePricingRates()
-
-  /* المدة الفعلية مشتقّة لا محفوظة.
-     المصدر (rawDuration) قد يحمل مدةً عطّلها السوبر أدمن بعد أن حُفظت في
-     مسوّدة المتصفّح — فزائرٌ بنى خطته على «6 أشهر» يعود إلى خيارٍ لا زرَّ له
-     في الشريط. والاشتقاق يعالج معه الفارقَ بين أول رسمٍ (الأربعة الافتراضية)
-     ووصولِ الإعداد من القاعدة.
-     واخترناه على تصحيحٍ داخل useEffect لأن الحالة المشتقّة لا تُخزَّن: تصحيحُ
-     الحالة في الأثر يرسم مرّتين، وقاعدة set-state-in-effect تمنعه. */
-  const duration = enabledDurations.includes(rawDuration)
-    ? rawDuration
-    : (enabledDurations[0] ?? 1)
-
-  /* Persist on every change — covers the in-app back button and the browser's
-     own back gesture alike.
-     يحفظ المدة **الفعلية** لا الخام، فالمسوّدة التي تحمل مدةً معطّلة تُشفى
-     من نفسها بمجرّد فتح الصفحة بدل أن تبقى تحمل خياراً لا يُباع. */
-  useEffect(() => {
-    writePricingDraft({ duration, students, selectedFeatureIds: [...selectedFeatures] })
-  }, [duration, students, selectedFeatures])
-
-  const tier = getTier(students)
-
-  /* The floating mobile CTA is a stand-in for the real one — it appears only
-     while we're inside this section AND the real button is off-screen, so the
-     two are never on screen together. */
-  const sectionRef = useRef(null)
-  const ctaRef     = useRef(null)
-  const [inSection, setInSection] = useState(false)
-  const [ctaOnScreen, setCtaOnScreen] = useState(true)
-
-  useEffect(() => {
-    if (!isMobile) return
-    const watch = (el, set, opts) => {
-      if (!el) return () => {}
-      const io = new IntersectionObserver(([entry]) => set(entry.isIntersecting), opts)
-      io.observe(el)
-      return () => io.disconnect()
-    }
-    /* -84px bottom inset ≈ the floating bar's own height, so it fades in
-       before it would cover the real button. */
-    const offSection = watch(sectionRef.current, setInSection)
-    const offCta     = watch(ctaRef.current, setCtaOnScreen, { rootMargin: '0px 0px -84px 0px' })
-    return () => { offSection(); offCta() }
-  }, [isMobile])
-
-  const showFloatingCta = isMobile && inSection && !ctaOnScreen
-
-  /* Lift Layout's WhatsApp button clear of the bar — only while it's up. */
-  useEffect(() => {
-    const root = document.documentElement
-    if (showFloatingCta) root.style.setProperty('--wa-lift', '5.5rem')
-    else                 root.style.removeProperty('--wa-lift')
-    return () => root.style.removeProperty('--wa-lift')
-  }, [showFloatingCta])
 
   useEffect(() => {
     supabase
@@ -745,227 +262,77 @@ export default function IhkaamPricing() {
       .eq('is_visible', true)
       .eq('is_deleted', false)
       /* ISS-46: الإضافات المدفوعة ثلاث فقط، مهما أعادت القاعدة. */
-      .then(({ data }) => { if (data) setStoreFeatures(data.filter(f => PAID_ADDON_IDS.includes(f.id))) })
+      .then(({ data }) => { if (data) setFeatures(withSitePrices(data)) })
   }, [])
 
-  function toggleFeature(id) {
-    setSelectedFeatures(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+  function pick(plan) {
+    /* «حلقة» المجانية بلا استمارة: معلم الحلقة لا يملأ نموذجاً لخدمةٍ مجانية */
+    if (!isPaid(plan)) { window.open(waLink(IHKAAM_WHATSAPP, FREE_PLAN_MESSAGE), '_blank', 'noopener'); return }
+    const next = {
+      planId: plan.id,
+      cycle : isPaid(plan) ? cycle : 'monthly',
+      selectedFeatureIds: isPaid(plan) ? (draft?.selectedFeatureIds ?? []) : [],
+    }
+    writePricingDraft(next)
+    navigate('/checkout', { state: next })
   }
 
-  const addonsMonthlyTotal = storeFeatures
-    .filter(f => selectedFeatures.has(f.id))
-    .reduce((sum, f) => sum + (f.price_usd_monthly || 0), 0)
-
   return (
-    <section ref={sectionRef} className="relative z-10 py-12 sm:py-16 px-5 sm:px-6" dir="rtl">
+    <section className="relative z-10 pt-12 sm:pt-16 pb-16 px-4 sm:px-6" dir="rtl">
+      <div className="absolute inset-x-0 top-0 h-[420px] pattern-khatam-ink pointer-events-none" aria-hidden
+        style={{ opacity: 0.035, maskImage: 'radial-gradient(ellipse 60% 70% at 50% 0%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(ellipse 60% 70% at 50% 0%, #000, transparent 75%)' }} />
 
-      {/* Slider thumb/track pseudo-element styles — scoped by class name */}
-      <style>{`
-        .ihkaam-slider {
-          -webkit-appearance : none;
-          appearance         : none;
-          width              : 100%;
-          height             : 6px;
-          border-radius      : 999px;
-          outline            : none;
-          cursor             : pointer;
-          display            : block;
-        }
-        .ihkaam-slider::-webkit-slider-thumb {
-          -webkit-appearance : none;
-          appearance         : none;
-          width              : 22px;
-          height             : 22px;
-          border-radius      : 50%;
-          background         : #1F6F52;
-          cursor             : pointer;
-          border             : 3px solid #FFFFFF;
-          box-shadow         : 0 0 0 2px rgba(31, 111, 82, 0.35), 0 2px 8px rgba(11, 59, 51, 0.135);
-          transition         : box-shadow 150ms ease, transform 150ms ease;
-        }
-        .ihkaam-slider::-webkit-slider-thumb:hover {
-          box-shadow : 0 0 0 5px rgba(31, 111, 82, 0.22), 0 2px 8px rgba(11, 59, 51, 0.135);
-          transform  : scale(1.10);
-        }
-        .ihkaam-slider:active::-webkit-slider-thumb {
-          box-shadow : 0 0 0 7px rgba(31, 111, 82, 0.14), 0 2px 8px rgba(11, 59, 51, 0.135);
-          transform  : scale(1.15);
-        }
-        .ihkaam-slider::-moz-range-thumb {
-          width         : 22px;
-          height        : 22px;
-          border-radius : 50%;
-          background    : #1F6F52;
-          cursor        : pointer;
-          border        : 3px solid #FFFFFF;
-          box-shadow    : 0 0 0 2px rgba(31, 111, 82, 0.35), 0 2px 8px rgba(11, 59, 51, 0.135);
-        }
-        .ihkaam-slider::-moz-range-track {
-          height        : 6px;
-          border-radius : 999px;
-          background    : transparent;
-        }
-      `}</style>
-
-      {/* Ambient glows */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(184, 134, 58, 0.18), transparent)' }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px]"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(31, 111, 82, 0.030) 0%, transparent 70%)' }}
-        aria-hidden
-      />
-
-      <div className="max-w-5xl mx-auto">
-
-        {/* Section header — the eyebrow repeats what the headline already says,
-            so it only earns its space where space is plentiful. */}
-        <div className="text-center mb-6 sm:mb-8">
-          <span
-            className="hidden sm:block text-xs font-semibold tracking-[0.22em] uppercase mb-3"
-            style={{ color: '#7A5A2E' }}
-          >
-            باقات الاشتراك
-          </span>
+      <div className="relative max-w-6xl mx-auto">
+        <div className="text-center mb-9">
+          <span className="eyebrow">باقات الاشتراك</span>
           {/* H1 الصفحة: IhkaamPricing لا يُركَّب إلا في /request */}
-          <h1
-            className="font-black leading-tight mx-auto"
-            style={{ color: '#8A6425', fontSize: 'clamp(1.4rem, 3vw, 2.1rem)', maxWidth: 600 }}
-          >
-            احسب اشتراكك،{' '}
-            <span style={{ color: '#1A2E28' }}>على حجم معهدك تماماً</span>
+          <h1 className="font-bold text-[#1A2E28] mt-5 mb-4 mx-auto" style={{ fontSize: 'clamp(1.9rem, 4vw, 3rem)', lineHeight: 1.3, maxWidth: 760 }}>
+            باقةٌ <span className="title-mark">على حجم معهدك</span>
           </h1>
+          <p className="text-[17px] leading-[1.9] text-[#4A5D56] mx-auto mb-7" style={{ maxWidth: 600 }}>
+            كل الباقات فيها النسخة الأساسية كاملة، والفرق بينها عدد الطلاب فقط. وكل باقة مدفوعة تبدأ بتجربة مجانية {TRIAL_DAYS} يوماً.
+          </p>
+          <CycleToggle cycle={cycle} onChange={setCycle} />
         </div>
 
-        {/* ── One panel, four steps, hairline dividers ──────────────────
-             Previously each step carried its own border + background, so on
-             a phone three competing frames stacked up. A single surface with
-             internal rules reads as one form instead of three cards. */}
-        <div
-          className="max-w-2xl mx-auto rounded-3xl overflow-hidden"
-          style={{
-            background: 'rgba(255, 255, 255, 0.55)',
-            border    : '1px solid rgba(11, 59, 51, 0.07)',
-            boxShadow : '0 24px 56px rgba(11, 59, 51, 0.102), inset 0 1px 0 rgba(11, 59, 51, 0.03)',
-          }}
-        >
-          {/* 1 — duration */}
-          <div className="px-4 sm:px-6 pt-5 pb-5">
-            <DurationSelector
-              duration={duration}
-              onChange={setDuration}
-              discounts={discounts}
-              enabledDurations={enabledDurations}
-            />
-          </div>
-
-          <Rule />
-
-          {/* 2 — student count */}
-          <div className="px-4 sm:px-6 py-5">
-            <StudentSlider value={students} onChange={setStudents} tier={tier} />
-          </div>
-
-          {/* 3 — optional add-ons (absent until store_features loads) */}
-          {storeFeatures.length > 0 && (
-            <>
-              <Rule />
-              <AddonsBar
-                isOpen={isAddonsOpen}
-                onToggle={() => setAddonsOpen(prev => !prev)}
-                storeFeatures={storeFeatures}
-                selectedFeatures={selectedFeatures}
-                onToggleFeature={toggleFeature}
-              />
-            </>
-          )}
-
-          <Rule />
-
-          {/* 4 — total + CTA */}
-          <SmartCard
-            students={students}
-            duration={duration}
-            baseFee={baseFee}
-            perStudent={perStudent}
-            discounts={discounts}
-            addonsMonthlyTotal={addonsMonthlyTotal}
-            ctaRef={ctaRef}
-            onSubscribe={() =>
-              navigate('/checkout', {
-                state: {
-                  tierName          : tier.name,
-                  students,
-                  duration,
-                  selectedFeatureIds: [...selectedFeatures],
-                },
-              })
-            }
-            onContact={() => navigate('/contact')}
-          />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
+          {PLANS.map((p, i) => <PlanCard key={p.id} plan={p} cycle={cycle} index={i} onPick={pick} />)}
         </div>
 
-        <p className="text-center mt-4" style={{ color: '#94C2B1', fontSize: '0.7rem' }}>
-          بدون عقود ملزمة · تدفع حسب الاستخدام
-        </p>
-        <p className="text-center mt-2 mx-auto" style={{ color: '#5E6E67', fontSize: '0.72rem', maxWidth: 520, lineHeight: 1.9 }}>
-          {INCLUDED_IN_BASE_NOTE}
+        <CustomOffer />
+
+        <p className="text-center text-[13px] text-[#5E6E67] mt-6">
+          الأسعار بالدولار الأمريكي · بلا عقود ملزمة · تنتقل إلى باقة أكبر متى زاد طلابك
         </p>
 
+        {/* ما في كل باقة */}
+        <div className="mt-14 rounded-[26px] overflow-hidden section-dark relative px-6 sm:px-10 py-9" style={{ boxShadow: 'var(--shadow-lg)' }}>
+          <div className="pattern-layer pattern-khatam" aria-hidden />
+          <div className="relative grid lg:grid-cols-[1fr_1.6fr] gap-7 items-center">
+            <div>
+              <span className="eyebrow">في كل باقة</span>
+              <h2 className="font-bold mt-4 mb-3" style={{ color: '#F8F5EC', fontSize: 'clamp(1.4rem, 2.6vw, 1.9rem)', lineHeight: 1.4 }}>
+                النسخة الأساسية <span className="title-mark">كاملةً</span> في كل باقة
+              </h2>
+              <p className="text-[14.5px] leading-[1.9]" style={{ color: 'rgba(248,245,236,.75)' }}>{INCLUDED_IN_BASE_NOTE}</p>
+            </div>
+            <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              {INCLUDED.map(t => (
+                <li key={t} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-semibold"
+                  style={{ background: 'rgba(248,245,236,.06)', color: '#F8F5EC', boxShadow: 'inset 0 0 0 1px rgba(224,181,98,.22)' }}>
+                  <Check size={15} className="shrink-0" style={{ color: '#E0B562' }} /> {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-6"><Addons features={features} cycle={cycle} /></div>
+
+        <p className="text-center text-[14px] text-[#4A5D56] mt-8">
+          لم تعرف أيّ باقة تناسبك؟ <Link to="/contact" className="font-bold underline underline-offset-4" style={{ color: '#1F6F52' }}>اسألنا على واتساب</Link>
+        </p>
       </div>
-
-      {/* ── Mobile: floating CTA — only while the real button is off-screen ──
-           Rendered via portal to escape Layout's motion.main (Framer Motion leaves a
-           lingering transform on it, which would otherwise break position:fixed here). */}
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {showFloatingCta && (
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0  }}
-              exit={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-x-0 bottom-0 z-40 px-4 pt-4"
-              style={{
-                paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))',
-                background: 'linear-gradient(to top, #F8F5EC 55%, transparent)',
-              }}
-            >
-              {/* Mirrors the in-panel total so the floating bar isn't a blind CTA */}
-              <button
-                onClick={tier.enterprise ? () => navigate('/contact') : () => navigate('/checkout', {
-                  state: {
-                    tierName          : tier.name,
-                    students,
-                    duration,
-                    selectedFeatureIds: [...selectedFeatures],
-                  },
-                })}
-                className="w-full font-black rounded-xl cursor-pointer flex items-center justify-center gap-2"
-                style={{
-                  padding      : '0.9rem',
-                  background   : '#1F6F52',
-                  color        : '#FFFFFF',
-                  border       : 'none',
-                  fontSize     : '0.95rem',
-                  letterSpacing: '0.05em',
-                  boxShadow    : '0 -4px 16px rgba(11, 59, 51, 0.09), 0 8px 24px rgba(31, 111, 82, 0.25)',
-                }}
-              >
-                {tier.enterprise ? (<><MessageCircle size={16} /> تواصل معنا</>) : 'أكمل طلب الاشتراك'}
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
     </section>
   )
 }

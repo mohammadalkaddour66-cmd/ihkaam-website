@@ -7,7 +7,7 @@ const STEPS = [
     num   : '01',
     Icon  : Building2,
     title : 'أرسل طلبك واختر باقتك',
-    body  : 'أدخل اسم معهدك واحسب اشتراكك، وفريقنا يتواصل معك لإتمام الإعداد وتفعيل المعهد خلال 24 ساعة من تأكيد الدفع.',
+    body  : 'اختر باقة معهدك وأدخل اسمه، ونفعّل معهدك خلال 24 ساعة لتبدأ تجربة مجانية 14 يوماً، والدفع بعدها.',
   },
   {
     num   : '02',
@@ -129,7 +129,7 @@ export default function HowItWorksSection() {
         >
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/request" className="btn-cta inline-flex items-center gap-2.5 rounded-full px-8 py-4" style={{ fontSize: '1rem' }}>
-              احسب اشتراك معهدك
+              اختر باقة معهدك
               <ArrowLeft size={17} strokeWidth={2.5} />
             </Link>
             <Link to="/ihkaam#features" className="btn-outline inline-flex items-center gap-2.5 rounded-full px-8 py-4" style={{ fontSize: '1rem' }}>

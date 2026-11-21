@@ -15,7 +15,9 @@
 import { supabase } from './supabaseClient'
 import { getActiveIds } from './activeInstitutes'
 
-const USE_VIEW = import.meta.env.VITE_PARTNERS_VIEW === '1'
+/* العَلَم نفسه يعني «طُبّقت ترحيلات القراءة العامة» (20260816 و20261120b):
+   المنظر public_partners والدالة get_institute_logos (ISS-35). */
+export const USE_VIEW = import.meta.env.VITE_PARTNERS_VIEW === '1'
 
 export function fetchPartnerRows() {
   const settings = () => supabase

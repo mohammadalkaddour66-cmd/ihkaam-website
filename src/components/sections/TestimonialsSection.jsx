@@ -3,6 +3,7 @@ import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../config/supabaseClient'
 import { galleryImage } from '../../config/imageUrl'
+import { USE_VIEW } from '../../config/partners'
 
 /* التمييز بين البطاقات بالإضاءة داخل عائلةٍ واحدة، لا بدرجةٍ لونية
    جديدة لكل بطاقة.
@@ -260,20 +261,27 @@ export default function TestimonialsSection({ titleLead = 'شركاء النجا
   /* الشعارات في طلبٍ منفصل: البطاقات لا تنتظرها — تُرسم بشعار إحكام ثم
      يحلُّ شعارُ المعهد مكانه حين يجيء. وتُطلب مُصغّرةً من الخادم لأن
      ملفاتها الأصلية بحجم الشاشة والشريحةُ 44px. */
+  /* ISS-35: بعد تطبيق ترحيل 20261120b (والبناء بـVITE_PARTNERS_VIEW=1) تأتي
+     الشعارات من الدالة get_institute_logos لمعرّفات المعاهد المعروفة هنا فقط،
+     لا من قراءة الجدول كله. قبله يبقى الاستعلام المشترك مع الشركاء (ISS-28). */
   useEffect(() => {
-    supabase
+    const toMap = (rows, pick) => {
+      const map = {}
+      for (const row of rows || []) {
+        const url = pick(row)
+        if (url) map[row.institute_id] = galleryImage(url, 96)
+      }
+      setLogos(map)
+    }
+    const fromTable = () => supabase
       .from('institute_settings')
-      .select('institute_id, name, theme_config')   // نفس استعلام الشركاء وقصص النجاح: طلب واحد يتشاركونه (ISS-28)
+      .select('institute_id, name, theme_config')
       .eq('is_deleted', false)
-      .then(({ data }) => {
-        if (!data) return
-        const map = {}
-        for (const row of data) {
-          const url = row.theme_config?.logo_url
-          if (url) map[row.institute_id] = galleryImage(url, 96)
-        }
-        setLogos(map)
-      })
+      .then(({ data }) => toMap(data, r => r.theme_config?.logo_url))
+    if (!USE_VIEW) { fromTable(); return }
+    supabase
+      .rpc('get_institute_logos', { p_ids: INSTITUTE_HINTS.map(h => h.id) })
+      .then(({ data, error }) => (error ? fromTable() : toMap(data, r => r.logo_url)))
   }, [])
 
   if (!loading && cards.length === 0) return null

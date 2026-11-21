@@ -1106,3 +1106,55 @@ html[data-nav-hidden] .subnav { top: 12px; }
   }
 }
 @media (prefers-reduced-motion: reduce) { .subnav { transition: none; } }
+
+/* خطوات «الفكرة في لمحة» في المدونة: أعمدة بعدد الخطوات على الشاشة الواسعة */
+@media (min-width: 640px) { .glance-steps { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); } }
+
+/* ══════════════════════════════════════════════════════════════════
+   الأدوات المجانية: الطباعة وPDF (src/components/tools/print.jsx)
+   الورقة تُرسم في .print-root تحت <body> لحظة الطباعة، وكل ما سواها يختفي.
+   الخطة A4 عمودي، والشهادة A4 أفقي بلا هوامش (صفحة مسمّاة cert).
+   ══════════════════════════════════════════════════════════════════ */
+@media screen { .print-root { display: none; } }
+@page { size: A4; margin: 12mm 12mm 16mm; }
+@page cert { size: A4 landscape; margin: 0; }
+@media print {
+  body:has(> .print-root) > *:not(.print-root) { display: none !important; }
+  body:has(> .print-root) { background: #fff !important; }
+  .print-root { display: block; color: #1A2E28; font-family: var(--font-arabic); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-root.print-landscape { page: cert; }
+  .print-cert-wrap { position: relative; width: 297mm; height: 209.5mm; break-inside: avoid; overflow: hidden; }
+  .print-cert { width: 100%; height: 100%; display: block; object-fit: fill; }
+  /* منطقة نقر شفافة فوق سطر ihkaam.app في الصورة: تُحفظ رابطاً حقيقياً في PDF */
+  .print-cert-link { position: absolute; display: block; }
+}
+.print-sheet { font-size: 11pt; line-height: 1.55; }
+.print-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12pt; padding-bottom: 8pt; border-bottom: 1.5pt solid #B8863A; margin-bottom: 10pt; }
+.print-title { font-weight: 800; font-size: 17pt; color: #0B3B33; }
+.print-sub { font-size: 10pt; color: #4A5D56; margin-top: 2pt; }
+.print-name { font-weight: 800; font-size: 14pt; color: #8A6425; }
+.print-facts { display: flex; flex-wrap: wrap; gap: 6pt; margin-bottom: 10pt; }
+.print-facts > div { border: 0.75pt solid #E6DFCF; border-radius: 6pt; padding: 4pt 9pt; background: #FBF8F1; }
+.print-facts b { display: block; font-size: 11.5pt; color: #0B3B33; }
+.print-facts span { font-size: 8.5pt; color: #5E6E67; }
+.print-table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+.print-table th { background: #0B3B33; color: #F8F5EC; font-weight: 700; padding: 5pt 6pt; text-align: start; }
+.print-table td { border-bottom: 0.5pt solid #E6DFCF; padding: 4.5pt 6pt; vertical-align: top; }
+.print-table tr { break-inside: avoid; }
+.print-table tr.is-soft td { background: #FBF3E2; color: #7A5A2E; }
+.print-table tr.is-week td { border-top: 1.2pt solid #B8863A; }
+.print-table .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.print-table .check { width: 22pt; text-align: center; color: #C9BFA9; }
+.print-table tfoot td.print-credit { border: 0; padding: 14pt 0 6pt; text-align: center; }
+.print-credit-pill { display: inline-block; padding: 5pt 16pt; border: 0.75pt solid rgba(184, 134, 58, 0.55); border-radius: 99pt; background: #FBF3E2; font-size: 10pt; font-weight: 600; color: #8A6425; }
+.print-credit-link { direction: ltr; unicode-bidi: isolate; font-weight: 800; color: #0B3B33; text-decoration: underline; text-underline-offset: 2pt; }
+
+/* جدول النتيجة على الشاشة: رأسٌ ثابت داخل لوح التمرير */
+.tool-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+.tool-table thead th { position: sticky; top: 0; z-index: 1; background: #0B3B33; color: #F8F5EC; font-weight: 700; padding: 10px 12px; text-align: start; white-space: nowrap; }
+.tool-table thead th:first-child { border-start-start-radius: 14px; }
+.tool-table thead th:last-child { border-start-end-radius: 14px; }
+.tool-table td { padding: 10px 12px; border-bottom: 1px solid #EFE9DC; vertical-align: top; color: #1A2E28; }
+.tool-table tr.is-soft td { background: #FBF3E2; color: #7A5A2E; }
+.tool-table tr.is-week td { border-top: 2px solid rgba(184, 134, 58, 0.45); }
+.tool-table .num { font-variant-numeric: tabular-nums; white-space: nowrap; }

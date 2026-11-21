@@ -2,36 +2,18 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  CheckCircle2, Loader2, ChevronDown, AlertCircle, ExternalLink,
+  CheckCircle2, Loader2, ChevronDown, AlertCircle, ExternalLink, Check,
   Server, MessageCircle, LayoutDashboard, ArrowRight,
 } from 'lucide-react'
 import { supabase } from '../../config/supabaseClient'
-import { usePricingRates } from '../../hooks/usePricingRates'
 import { useFormGuard } from '../../hooks/useFormGuard'
 import { getStoredRef } from '../../hooks/useAffiliateRef'
-import { readPricingDraft, clearPricingDraft } from '../../config/pricingDraft'
-import { PAID_ADDON_IDS } from '../../config/addons'
+import { readPricingDraft, writePricingDraft, clearPricingDraft } from '../../config/pricingDraft'
+import { withSitePrices, ADDONS_BUNDLE_USD } from '../../config/addons'
+import { PLANS, getPlan, isPaid, planPrice, addonPrice, addonsTotal, usd, TRIAL_DAYS, PAYMENT_METHOD } from '../../config/plans'
+import { IHKAAM_WHATSAPP, waLink, orderMessage } from '../../config/whatsappOrder'
 
-const TIERS = [
-  { max: 200,  name: 'المراكز الناشئة'   },
-  { max: 500,  name: 'المعاهد المتوسطة' },
-  { max: 1000, name: 'المجمعات الكبرى'  },
-]
 
-function getTier(students) {
-  return TIERS.find(t => students <= t.max) ?? TIERS[TIERS.length - 1]
-}
-
-const GOVERNORATES = [
-  'دمشق', 'ريف دمشق', 'حلب', 'حمص', 'حماة', 'اللاذقية',
-  'طرطوس', 'إدلب', 'دير الزور', 'الرقة', 'الحسكة', 'درعا',
-  'السويداء', 'القنيطرة',
-]
-
-/* `lengths` = allowed national-number lengths (after stripping the trunk 0).
-   `starts`  = allowed first digits for a mobile line in that country.
-   Together these catch the mistakes that actually break a wa.me link:
-   a missing digit, a pasted trunk zero, or a landline. */
 const ARAB_COUNTRIES = [
   { code: '+963', flag: '🇸🇾', name: 'سوريا',       placeholder: '9XXXXXXXX',  hint: 'بدون الصفر الأول',   lengths: [9],     starts: ['9']           },
   { code: '+966', flag: '🇸🇦', name: 'السعودية',    placeholder: '5XXXXXXXX',  hint: 'بدون الصفر الأول',   lengths: [9],     starts: ['5']           },
@@ -109,29 +91,45 @@ function checkWhatsAppNumber(countryCode, rawPhone, customCode) {
   return { state: 'valid', e164: `${country.code}${national}`, national }
 }
 
+/* 2026-11-20: تجربة مجانية قبل الدفع، وواتساب يُفتح برسالة الطلب فور الإرسال */
 const NEXT_STEPS = [
-  { icon: Server,          text: 'نستلم طلبك ونراجعه.' },
-  { icon: MessageCircle,   text: 'نتواصل معك على واتساب لتأكيد الاشتراك وطريقة الدفع.' },
-  { icon: LayoutDashboard, text: 'بعد تأكيد الدفع نجهّز حساب معهدك ونسلّمك بيانات الدخول خلال 24 ساعة.' },
+  { icon: MessageCircle,   text: 'يُفتح واتساب برسالة طلبك جاهزة، فأرسلها لنبدأ.' },
+  { icon: Server,          text: `نفعّل معهدك خلال 24 ساعة، وتبدأ تجربتك المجانية ${TRIAL_DAYS} يوماً.` },
+  { icon: LayoutDashboard, text: `في آخر التجربة تدفع عبر ${PAYMENT_METHOD} إن أردت الاستمرار، أو تتوقف بلا التزام.` },
 ]
 
-/* ─── Shared input styles ────────────────────────────────────────────── */
+/* ─── ألوان الصفحة (الهوية الفاتحة: كريمي + أخضر حبري + ذهب) ─────────── */
+const INK = '#0B3B33', GOLD_TXT = '#8A6425'
+const ease = [0.22, 1, 0.36, 1]
+
+/* ─── Shared input styles ────────────────────────────────────────────────
+   حقلٌ أكبر وأدفأ: خلفية بيج، وعند التركيز يبيضّ ويُحاط بهالةٍ خضراء ناعمة
+   بدل تغيّر لون الحدّ وحده. */
+const FIELD_BG = '#F6F1E6'
 const inputBase = {
-  background  : '#F8F5EC',
-  border      : '1px solid rgba(11, 59, 51, 0.22)',
-  borderRadius: '12px',
-  padding     : '0.82rem 1rem',
+  background  : FIELD_BG,
+  border      : '1px solid rgba(11, 59, 51, 0.12)',
+  borderRadius: '14px',
+  padding     : '0.95rem 1.1rem',
   color       : '#1A2E28',
   caretColor  : '#1F6F52',
   width       : '100%',
   outline     : 'none',
   fontSize    : '1rem',
   fontFamily  : 'Qomra, sans-serif',
-  transition  : 'border-color 200ms ease',
+  transition  : 'border-color 200ms ease, box-shadow 200ms ease, background 200ms ease',
   textAlign   : 'right',
 }
-const iFocus = e => (e.target.style.borderColor = 'rgba(31, 111, 82, 0.55)')
-const iBlur  = e => (e.target.style.borderColor = 'rgba(11, 59, 51, 0.22)')
+const iFocus = e => {
+  e.target.style.borderColor = '#1F6F52'
+  e.target.style.boxShadow   = '0 0 0 4px rgba(31, 111, 82, 0.12)'
+  e.target.style.background  = '#FFFFFF'
+}
+const iBlur = e => {
+  e.target.style.borderColor = 'rgba(11, 59, 51, 0.12)'
+  e.target.style.boxShadow   = 'none'
+  e.target.style.background  = FIELD_BG
+}
 
 /* ─── Country picker ─────────────────────────────────────────────────────
    A native <select> can't show a long option in a narrow box — it just
@@ -262,286 +260,222 @@ function CountryPicker({ value, onChange }) {
 }
 
 /* ─── Field label wrapper ─────────────────────────────────────────────── */
-function Field({ label, children }) {
+function Field({ label, hint, children }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label
-        className="text-[10px] font-bold uppercase tracking-[0.14em]"
-        style={{ color: '#5E6E67' }}
-      >
-        {label}
+    <div className="flex flex-col gap-2">
+      <label className="flex items-baseline justify-between gap-3 text-[14px] font-bold" style={{ color: '#2F4540' }}>
+        <span>{label}</span>
+        {hint && <span className="text-[12.5px] font-semibold" style={{ color: '#7A8B84' }}>{hint}</span>}
       </label>
       {children}
     </div>
   )
 }
 
-/* ─── Invoice-style line item row ────────────────────────────────────── */
-function SummaryRow({ label, value, suffix, labelColor = '#4A5D56', valueColor = '#33463F', className = '' }) {
-  return (
-    <div
-      className={`flex items-center justify-between gap-4 px-4 py-2.5 rounded-xl ${className}`}
-      style={{ background: 'rgba(11, 59, 51, 0.025)' }}
-    >
-      <span style={{ color: labelColor, fontSize: '0.80rem', lineHeight: 1.4 }}>{label}</span>
-      <div className="flex items-baseline gap-1.5 flex-shrink-0">
-        <span dir="ltr" className="tabular-nums font-bold" style={{ color: valueColor, fontSize: '0.88rem' }}>
-          {value}
-        </span>
-        {suffix && <span style={{ color: '#ABC9BE', fontSize: '0.65rem' }}>{suffix}</span>}
-      </div>
-    </div>
-  )
-}
-
-/* ─── Order Summary block ─────────────────────────────────────────────── */
-const CHECKOUT_PERIOD_LABEL = { 1: 'شهر', 3: '3 أشهر', 6: '6 أشهر', 12: 'سنة' }
-
-function OrderSummary({
-  tierName, students, duration, addonsMonthlyTotal = 0, baseFee, perStudent, discounts,
-  selectedFeatureList = [],
-}) {
-  const discountFrac  = discounts[duration] ?? 0
-  const discountPct   = Math.round(discountFrac * 100)
-  const studentFeeM   = students * perStudent
-  const monthlyTotal  = baseFee + studentFeeM + addonsMonthlyTotal
-  const undiscounted  = monthlyTotal * duration
-  const grandTotal    = undiscounted * (1 - discountFrac)
-  const periodLabel   = CHECKOUT_PERIOD_LABEL[duration] ?? `${duration} أشهر`
-  const isMonthly     = duration === 1
+/* ─── ملخص الطلب ──────────────────────────────────────────────────────
+   بطاقةٌ داكنة بنقش الختمة، كبطاقة «الأكثر اختياراً» في صفحة الباقات، فيربط
+   العين بين اختيار الباقة وإتمام الطلب. الإضافات تُختار هنا، والتجربة تجعل
+   «المستحق اليوم» صفراً: أكبر ما يوقف المدير هنا سؤال «هل سأدفع الآن؟». */
+function OrderSummary({ plan, cycle, onCycle, features = [], selected, onToggle, grandTotal, bundleSaving = 0 }) {
+  const paid     = isPaid(plan)
+  const isAnnual = cycle === 'annual'
+  const unit     = isAnnual ? 'سنوياً' : 'شهرياً'
+  const CREAM    = '#F8F5EC'
+  const MUTED    = 'rgba(248, 245, 236, 0.68)'
+  const tile     = { background: 'rgba(248, 245, 236, 0.06)', boxShadow: 'inset 0 0 0 1px rgba(224, 181, 98, 0.20)' }
 
   return (
-    <div className="flex flex-col h-full" dir="rtl">
+    <div className="relative section-dark rounded-[26px] overflow-hidden" dir="rtl" style={{ boxShadow: 'var(--shadow-lg)' }}>
+      <div className="pattern-layer pattern-khatam" aria-hidden />
+      <div aria-hidden className="absolute -top-20 -left-16 w-64 h-64 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(closest-side, rgba(224,181,98,.22), transparent)' }} />
 
-      {/* ── HEADER: title + badges. The eyebrow said "ملخص الطلب" and the
-           title said "تفاصيل باقة الاشتراك" — same sentence twice. ── */}
-      <div>
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h2 className="font-black" style={{ color: '#1A2E28', fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)' }}>
-            ملخص الطلب
-          </h2>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span
-              className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
-              style={{
-                background: !isMonthly ? 'rgba(184, 134, 58, 0.09)' : 'rgba(241, 236, 223, 0.18)',
-                border    : `1px solid ${!isMonthly ? 'rgba(184, 134, 58, 0.22)' : 'rgba(11, 59, 51, 0.22)'}`,
-                color     : !isMonthly ? '#7A6440' : '#1F6F52',
-              }}
-            >
-              {periodLabel}
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
-              style={{ background: 'rgba(31, 111, 82, 0.10)', border: '1px solid rgba(31, 111, 82, 0.28)' }}
-            >
-              <span
-                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                style={{ background: '#1F6F52', boxShadow: '0 0 6px rgba(31, 111, 82, 0.65)' }}
-              />
-              <span className="text-xs font-bold" style={{ color: '#1F6F52' }}>{tierName}</span>
-            </span>
-          </div>
-        </div>
-      </div>
+      <div className="relative p-6 sm:p-7 flex flex-col gap-5">
 
-      {/* ── MIDDLE: what the subscription covers — scope, not a price breakdown.
-           The "مدة الاشتراك" row is gone: the period badge above states it, and
-           the total's own label repeats it ("إجمالي ما يُدفع لـ 6 أشهر"). ── */}
-      <div className="flex-1 flex flex-col gap-2 py-4">
-        <SummaryRow
-          label="سعة الطلاب النشطين"
-          value={students}
-          suffix="طالب"
-          valueColor="#1F6F52"
-        />
-        {/* Itemised add-ons. Each amount is that feature's own share of the
-            grand total — monthly price × الفترة × (1 − الخصم) — so the lines
-            sum to the number at the bottom. Name and price only. */}
-        {selectedFeatureList.length > 0 && (
-          <div className="rounded-xl overflow-hidden" style={{ background: 'rgba(11, 59, 51, 0.025)' }}>
-            <div className="flex items-center justify-between gap-3 px-4 pt-2.5 pb-2">
-              <span style={{ color: '#4A5D56', fontSize: '0.80rem', lineHeight: 1.4 }}>
-                الميزات المتقدمة
-              </span>
-              <span dir="ltr" className="tabular-nums" style={{ color: '#94C2B1', fontSize: '0.68rem' }}>
-                {selectedFeatureList.length}
-              </span>
-            </div>
-            {selectedFeatureList.map(f => (
-              <div
-                key={f.id}
-                className="flex items-start justify-between gap-3 px-4 py-2"
-                style={{ borderTop: '1px solid rgba(11, 59, 51, 0.045)' }}
-              >
-                <span style={{ color: '#47806B', fontSize: '0.75rem', lineHeight: 1.5 }}>
-                  {f.name}
-                </span>
-                <span
-                  dir="ltr"
-                  className="tabular-nums flex-shrink-0"
-                  style={{ color: '#1F6F52', fontSize: '0.78rem', fontWeight: 700, lineHeight: 1.5 }}
-                >
-                  ${((f.price_usd_monthly || 0) * duration * (1 - discountFrac)).toFixed(2)}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ── FOOTER: grand total. Stacked until lg — side by side, the long
-           multi-month labels ("إجمالي ما يُدفع لـ 6 أشهر") wrapped into the
-           price and the two collided. ── */}
-      <div
-        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-4 pt-4 border-t"
-        style={{ borderColor: 'rgba(11, 59, 51, 0.06)' }}
-      >
-
-        {/* Right (RTL start): stacked text labels */}
-        <div className="flex flex-col gap-1 min-w-0">
-          {discountPct > 0 && (
-            <p style={{ color: '#ABC9BE', fontSize: '0.70rem', lineHeight: 1.4 }}>
-              قبل الخصم:&nbsp;
-              <span
-                dir="ltr"
-                className="tabular-nums"
-                style={{ textDecoration: 'line-through', opacity: 0.35 }}
-              >
-                ${undiscounted.toFixed(2)}
-              </span>
-            </p>
-          )}
-          <p style={{ color: '#527568', fontWeight: 700, fontSize: '0.84rem', lineHeight: 1.3 }}>
-            {isMonthly ? 'إجمالي الاشتراك' : `الإجمالي لـ ${periodLabel}`}
+        {/* الباقة وسعتها */}
+        <div>
+          <span className="text-[13px] font-bold" style={{ color: '#E0B562' }}>ملخص طلبك</span>
+          <h2 className="font-bold text-[24px] mt-1.5" style={{ color: CREAM }}>باقة {plan.name}</h2>
+          <p className="text-[15px] mt-1" style={{ color: MUTED }}>
+            حتى <span className="font-bold tabular-nums" style={{ color: '#E0B562', fontFamily: 'cairo-latin, inherit' }}>{plan.max}</span> {plan.max % 100 >= 11 ? 'طالباً' : 'طالب'}
+            {plan.note ? ` · ${plan.note}` : ''}
           </p>
         </div>
 
-        {/* Left (RTL end): badge + price */}
-        <div className="flex items-center gap-2.5 flex-shrink-0">
-          {discountPct > 0 && (
-            <span
-              className="rounded-full flex-shrink-0"
-              style={{
-                padding   : '0.22rem 0.65rem',
-                background: 'rgba(46, 122, 90, 0.12)',
-                border    : '1px solid rgba(46, 122, 90, 0.28)',
-                color     : '#0B3B33',
-                fontSize  : '0.70rem',
-                fontWeight: 700,
-                lineHeight: 1.5,
-              }}
-            >
-              <span dir="rtl" style={{ unicodeBidi: 'isolate' }}>
-                وفّر&nbsp;<span dir="ltr">{discountPct}%</span>
-              </span>
-            </span>
-          )}
-          <motion.span
-            key={grandTotal}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
-            dir="ltr"
-            className="font-black tabular-nums"
-            style={{
-              color        : isMonthly ? '#1F6F52' : '#1A2E28',
-              fontSize     : 'clamp(1.75rem, 2.8vw, 2.25rem)',
-              lineHeight   : 1,
-              letterSpacing: '-0.03em',
-            }}
-          >
-            ${grandTotal.toFixed(2)}
-          </motion.span>
+        {/* الدورة */}
+        {paid && (
+          <div className="grid grid-cols-2 gap-1 rounded-2xl p-1" style={{ background: 'rgba(248, 245, 236, 0.07)' }} role="group" aria-label="دورة الدفع">
+            {[['monthly', 'شهري'], ['annual', 'سنوي · شهران مجاناً']].map(([id, label]) => {
+              const on = cycle === id
+              return (
+                <button key={id} type="button" onClick={() => onCycle(id)} aria-pressed={on}
+                  className="rounded-xl py-2.5 text-[14px] font-bold cursor-pointer transition-colors duration-200"
+                  style={{ background: on ? '#E0B562' : 'transparent', color: on ? INK : 'rgba(248,245,236,.82)', border: 'none' }}>
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* سعر الباقة */}
+        <div className="flex items-center justify-between gap-3 rounded-2xl px-4 py-3.5" style={tile}>
+          <span className="text-[15px]" style={{ color: MUTED }}>سعر الباقة</span>
+          <span className="font-bold" style={{ color: CREAM }}>
+            {paid ? (
+              <>
+                <span dir="ltr" className="text-[19px] tabular-nums" style={{ fontFamily: 'cairo-latin, inherit' }}>{usd(planPrice(plan, cycle))}</span>
+                <span className="text-[13px] font-semibold" style={{ color: MUTED }}> {unit}</span>
+              </>
+            ) : 'مجاناً'}
+          </span>
         </div>
 
+        {/* الإضافات */}
+        {paid && features.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-2.5">
+              <span className="text-[14px] font-bold" style={{ color: CREAM }}>إضافات اختيارية</span>
+              {bundleSaving > 0
+                ? <span className="text-[12.5px] font-bold" style={{ color: '#E0B562' }}>سعر الثلاث معاً · وفّرت <span dir="ltr" className="tabular-nums">{usd(bundleSaving)}</span></span>
+                : <span className="text-[12.5px]" style={{ color: MUTED }}>الثلاث معاً بـ <span dir="ltr" className="font-bold tabular-nums" style={{ color: '#E0B562' }}>{usd(addonPrice(ADDONS_BUNDLE_USD, cycle))}</span></span>}
+            </div>
+            <div className="flex flex-col gap-2">
+              {features.map(f => {
+                const on = selected.has(f.id)
+                return (
+                  <button key={f.id} type="button" onClick={() => onToggle(f.id)} aria-pressed={on}
+                    className="w-full flex items-center justify-between gap-3 rounded-2xl px-4 py-3 cursor-pointer text-right transition-colors duration-200"
+                    style={{ ...tile, background: on ? 'rgba(224, 181, 98, 0.14)' : tile.background, boxShadow: on ? 'inset 0 0 0 1.5px rgba(224, 181, 98, 0.65)' : tile.boxShadow, border: 'none' }}>
+                    <span className="flex items-center gap-3">
+                      <span className="w-5 h-5 rounded-md grid place-items-center shrink-0 transition-colors duration-200"
+                        style={{ background: on ? '#E0B562' : 'transparent', boxShadow: on ? 'none' : 'inset 0 0 0 1.5px rgba(248,245,236,.4)' }}>
+                        {on && <Check size={13} strokeWidth={3} style={{ color: INK }} />}
+                      </span>
+                      <span className="text-[15px]" style={{ color: CREAM, fontWeight: on ? 700 : 500 }}>{f.name}</span>
+                    </span>
+                    <span dir="ltr" className="text-[14px] font-bold tabular-nums shrink-0" style={{ color: on ? '#E0B562' : MUTED }}>
+                      +{usd(addonPrice(f.price_usd_monthly, cycle))}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* الإجمالي */}
+        <div className="pt-5" style={{ borderTop: '1px solid rgba(248, 245, 236, 0.14)' }}>
+          <div className="flex items-end justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-[14px] font-bold" style={{ color: CREAM }}>{paid ? 'الإجمالي بعد التجربة' : 'الإجمالي'}</div>
+              {paid && isAnnual && <div className="text-[12.5px] mt-1" style={{ color: MUTED }}>تدفع عشرة أشهر وتحصل على سنة كاملة</div>}
+            </div>
+            <motion.div key={`${cycle}-${grandTotal}`} initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+              className="flex items-baseline gap-1.5 shrink-0">
+              <span dir={paid ? 'ltr' : 'rtl'} className="font-bold leading-none tabular-nums" style={{ color: '#E0B562', fontSize: '2.5rem', fontFamily: 'cairo-latin, inherit', letterSpacing: '-0.02em' }}>
+                {paid ? usd(grandTotal) : 'مجاناً'}
+              </span>
+              {paid && <span className="text-[13px] font-semibold" style={{ color: MUTED }}>{unit}</span>}
+            </motion.div>
+          </div>
+
+          {paid && (
+            <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl px-4 py-3" style={{ background: 'rgba(224, 181, 98, 0.16)', boxShadow: 'inset 0 0 0 1px rgba(224, 181, 98, 0.45)' }}>
+              <span className="flex items-center gap-2 text-[14.5px] font-bold" style={{ color: CREAM }}>
+                <Check size={16} strokeWidth={3} style={{ color: '#E0B562' }} /> المستحق اليوم
+              </span>
+              <span dir="ltr" className="text-[20px] font-bold tabular-nums" style={{ color: '#E0B562', fontFamily: 'cairo-latin, inherit' }}>$0</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
 }
 
 /* ─── Success screen ──────────────────────────────────────────────────── */
-function SuccessScreen({ onHome }) {
+function SuccessScreen({ onHome, order }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col items-center justify-center text-center px-6 gap-8"
-      style={{ minHeight: '85vh' }}
-    >
+    <div className="px-4 sm:px-6 py-10 flex items-center justify-center" style={{ minHeight: '85vh' }} dir="rtl">
       <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.18, type: 'spring', stiffness: 190, damping: 16 }}
-        className="rounded-full flex items-center justify-center"
-        style={{
-          width     : '100px',
-          height    : '100px',
-          background: 'rgba(31, 111, 82, 0.10)',
-          border    : '2px solid rgba(31, 111, 82, 0.32)',
-        }}
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease }}
+        className="relative section-dark w-full max-w-xl rounded-[28px] overflow-hidden text-center"
+        style={{ boxShadow: 'var(--shadow-lg)' }}
       >
-        <CheckCircle2 size={46} style={{ color: '#1F6F52' }} strokeWidth={1.4} />
+        <div className="pattern-layer pattern-khatam" aria-hidden />
+        <div aria-hidden className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, rgba(224,181,98,.25), transparent)' }} />
+
+        <div className="relative px-6 sm:px-10 py-10 sm:py-12 flex flex-col items-center gap-5">
+          <motion.div
+            initial={{ scale: 0 }} animate={{ scale: 1 }}
+            transition={{ delay: 0.18, type: 'spring', stiffness: 190, damping: 16 }}
+            className="rounded-full grid place-items-center"
+            style={{ width: 88, height: 88, background: 'rgba(224,181,98,.14)', boxShadow: 'inset 0 0 0 2px rgba(224,181,98,.55)' }}
+          >
+            <CheckCircle2 size={42} style={{ color: '#E0B562' }} strokeWidth={1.6} />
+          </motion.div>
+
+          <h2 className="font-bold" style={{ color: '#F8F5EC', fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}>
+            تم استلام <span className="title-mark">طلبك</span>
+          </h2>
+
+          {order?.ref && (
+            <span className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[14px] font-bold"
+              style={{ background: 'rgba(248,245,236,.08)', boxShadow: 'inset 0 0 0 1px rgba(224,181,98,.35)', color: '#F8F5EC' }}>
+              رقم الطلب
+              <span dir="ltr" className="tabular-nums" style={{ color: '#E0B562' }}>{order.ref}</span>
+            </span>
+          )}
+
+          <p className="text-[16px] leading-[2]" style={{ color: 'rgba(248,245,236,.82)', maxWidth: 440 }}>
+            فتحنا لك واتساب برسالة طلبك، فأرسلها. نفعّل معهدك خلال 24 ساعة وتبدأ تجربتك المجانية {TRIAL_DAYS} يوماً،
+            ولن تدفع شيئاً قبل نهايتها.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-1 w-full">
+            {order?.wa && (
+              <a href={order.wa} target="_blank" rel="noopener noreferrer"
+                className="btn-cta inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-bold text-[15px]">
+                <MessageCircle size={18} /> لم يُفتح واتساب؟ أرسلها من هنا
+              </a>
+            )}
+            <button type="button" onClick={onHome}
+              className="btn-outline inline-flex items-center justify-center rounded-xl px-6 py-3.5 font-bold text-[15px] border cursor-pointer">
+              العودة للرئيسية
+            </button>
+          </div>
+        </div>
       </motion.div>
-
-      <div className="flex flex-col gap-4 max-w-md">
-        <h2 className="font-black" style={{ color: '#1A2E28', fontSize: 'clamp(1.4rem, 2.8vw, 1.9rem)' }}>
-          تم استلام طلبك بنجاح!
-        </h2>
-        <p className="text-sm leading-[2.1]" style={{ color: '#4A5D56' }}>
-          سنتواصل معك قريباً عبر الواتساب لإتمام تفعيل مركزك.
-        </p>
-      </div>
-
-      {/* كانت هنا دعوة لبرنامج التسويق بالعمولة عند لحظة الحماس بعد
-         الطلب. أُلغي البرنامج بالكامل: اسم إحكام لا يُقدَّم إلا ممن
-         نعرفه، والسمعة عند المدراء أغلى من اشتراك يُشترى بعمولة. */}
-
-      <button
-        onClick={onHome}
-        className="rounded-xl px-8 py-3 text-sm font-bold cursor-pointer transition-all duration-200"
-        style={{ background: 'transparent', border: '1px solid rgba(31, 111, 82, 0.22)', color: '#5E6E67' }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.06)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-      >
-        العودة للرئيسية
-      </button>
-    </motion.div>
+    </div>
   )
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
    MAIN EXPORT
-   Reads `students` and `duration` from router state (sent by IhkaamPricing).
-   Falls back to sensible defaults if the user lands here directly.
+   Reads `planId` and `cycle` from router state (sent by IhkaamPricing),
+   or from the saved draft after a reload. No plan at all → back to /request.
    ───────────────────────────────────────────────────────────────────────── */
 export default function IhkaamCheckout() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  /* Router state is the primary source; the saved draft covers a reload of
-     /checkout, which would otherwise silently reprice the order at defaults. */
   const [draft] = useState(readPricingDraft)
 
-  const students = location.state?.students ?? draft?.students ?? 150
-  const tier     = getTier(students)
+  /* العرض الخاص (فوق 500 طالب) يذهب إلى /contact لا إلى هنا، وباقةٌ مفقودة تعود إلى «معهد متوسط» */
+  const fromState = getPlan(location.state?.planId ?? draft?.planId)
+  const plan      = isPaid(fromState) ? fromState : PLANS.find(p => p.popular)
+  const paid      = isPaid(plan)
 
-  const { baseFee, perStudent, discounts, enabledDurations } = usePricingRates()
+  const [cycleRaw, setCycle] = useState(() => location.state?.cycle ?? draft?.cycle ?? 'monthly')
+  const cycle = paid && cycleRaw === 'annual' ? 'annual' : 'monthly'
 
-  /* المدة تصل من حالة الموجّه أو من مسوّدةٍ محفوظة — وكلاهما قد يحمل مدةً
-     عطّلها السوبر أدمن بعد أن بناها الزائر. بلا هذا الحدّ يمرّ الطلب بمدةٍ
-     لم تعد تُباع، ويُكتب billing_cycle عليها في السطر أدناه.
-     مشتقٌّ لا حالة: يُعاد حسابه حين يصل الإعداد بعد أول رسم. */
-  const rawDuration = location.state?.duration ?? draft?.duration ?? 1
-  const duration    = enabledDurations.includes(rawDuration)
-    ? rawDuration
-    : (enabledDurations[0] ?? 1)
-
-  /* Add-ons state — pre-populate from pricing page selections if available */
   const [storeFeatures,    setStoreFeatures]    = useState([])
-  const [selectedFeatures] = useState(
-    () => new Set(location.state?.selectedFeatureIds ?? draft?.selectedFeatureIds ?? [])
+  const [selectedFeatures, setSelectedFeatures] = useState(
+    () => new Set(paid ? (location.state?.selectedFeatureIds ?? draft?.selectedFeatureIds ?? []) : [])
   )
 
   useEffect(() => {
@@ -551,27 +485,32 @@ export default function IhkaamCheckout() {
       .eq('is_visible', true)
       .eq('is_deleted', false)
       /* ISS-46: الإضافات المدفوعة ثلاث فقط، مهما أعادت القاعدة. */
-      .then(({ data }) => { if (data) setStoreFeatures(data.filter(f => PAID_ADDON_IDS.includes(f.id))) })
+      .then(({ data }) => { if (data) setStoreFeatures(withSitePrices(data)) })
   }, [])
 
-  const selectedFeatureList = storeFeatures.filter(f => selectedFeatures.has(f.id))
+  /* المسوّدة تتبع كل تعديلٍ هنا، فالرجوع إلى /request ثم العودة لا يضيّعه */
+  useEffect(() => {
+    writePricingDraft({ planId: plan.id, cycle, selectedFeatureIds: [...selectedFeatures] })
+  }, [plan.id, cycle, selectedFeatures])
 
-  const addonsMonthlyTotal = selectedFeatureList
-    .reduce((sum, f) => sum + (f.price_usd_monthly || 0), 0)
+  function toggleFeature(id) {
+    setSelectedFeatures(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
-  /* Math — all values computed from usePricingRates() with fallback */
-  const discountFrac      = discounts[duration] ?? 0
-  const multiplier        = duration * (1 - discountFrac)
-  const monthlyBaseTotal  = baseFee + (students * perStudent)
-  const periodBaseTotal   = monthlyBaseTotal * multiplier
-  const periodAddonsTotal = addonsMonthlyTotal * multiplier
-  const grandTotal        = periodBaseTotal + periodAddonsTotal
+  const selectedFeatureList = paid ? storeFeatures.filter(f => selectedFeatures.has(f.id)) : []
+  const addons      = addonsTotal(selectedFeatureList, cycle)
+  const grandTotal  = (planPrice(plan, cycle) || 0) + addons.total
 
   /* Form state */
-  const [form, setForm]               = useState({ schoolName: '', managerName: '', governorate: '', phone: '', email: '', countryCode: '+963', customCode: '' })
+  const [form, setForm]               = useState({ schoolName: '', managerName: '', phone: '', email: '', countryCode: '+963', customCode: '' })
   const [formError,    setFormError]  = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess,    setIsSuccess]  = useState(false)
+  const [order,        setOrder]      = useState(null)
 
   const { honeypotProps, guardSubmit, markSubmitted } = useFormGuard('tenant-request')
 
@@ -583,17 +522,15 @@ export default function IhkaamCheckout() {
   }
 
   async function handleSubmit() {
-    const { schoolName, managerName, governorate, phone, email, countryCode, customCode } = form
-    const isSyria       = countryCode === '+963'
+    const { schoolName, managerName, phone, email, countryCode, customCode } = form
     const isOther       = countryCode === 'other'
     const effectiveCode = isOther ? customCode.trim() : countryCode
 
-    if (!schoolName.trim() || !managerName.trim() || (isSyria && !governorate) || !phone.trim()) {
-      setFormError('يرجى ملء جميع حقول معلومات المؤسسة.')
-      return
-    }
-    if (!email.trim()) {
-      setFormError('يرجى إدخال البريد الإلكتروني.')
+    /* ثلاثة حقول إلزامية فقط (اسم المعهد والمشرف والواتساب)، والبريد اختياري.
+       المحافظة حُذفت: كانت قائمةً سورية تطرد كل معهد خارج سوريا، ومفتاح
+       الدولة في الرقم يكفي. */
+    if (!schoolName.trim() || !managerName.trim() || !phone.trim()) {
+      setFormError('اكتب اسم المعهد واسم المشرف ورقم الواتساب.')
       return
     }
     if (isOther && !effectiveCode) {
@@ -614,6 +551,11 @@ export default function IhkaamCheckout() {
       return
     }
 
+    /* نافذة واتساب تُفتح الآن، داخل النقرة نفسها: لو فُتحت بعد انتظار الحفظ
+       لحجبها المتصفح بوصفها نافذةً منبثقة. نوجّهها إلى الرسالة بعد الحفظ،
+       ونغلقها إن فشل. */
+    const waWin = window.open('', '_blank')
+
     setFormError('')
     setIsSubmitting(true)
     try {
@@ -624,19 +566,25 @@ export default function IhkaamCheckout() {
       const selectedFeatureObjects = selectedFeatureList
         .map(({ id, name, price_usd_monthly }) => ({ id, name, price_usd_monthly }))
 
+      /* المعرّف يُولَّد هنا لا في القاعدة: الزائر لا يملك صلاحية قراءة الجدول،
+         فلا يعود إليه المعرّف بعد الإدراج، ورقم الطلب في رسالة واتساب يُشتقّ منه. */
+      const id  = crypto.randomUUID()
+      const ref = 'IH-' + id.slice(0, 6).toUpperCase()
+
       const payload = {
+        id,
         institute_name     : schoolName,
         supervisor_name    : managerName,
         phone              : formattedPhone,
-        requested_quota    : students,
+        requested_quota    : plan.max,
         status             : 'pending',
-        subscription_tier  : tier.name,
-        billing_cycle      : duration === 1 ? 'monthly' : duration === 12 ? 'annual' : `${duration}_months`,
+        subscription_tier  : plan.name,
+        billing_cycle      : cycle,
         total_amount       : grandTotal,
         requested_features : selectedFeatureObjects,
+        notes              : `رقم الطلب ${ref} · تجربة مجانية ${TRIAL_DAYS} يوماً`,
       }
-      if (governorate.trim()) payload.governorate = governorate.trim()
-      payload.email = email.trim()
+      if (email.trim()) payload.email = email.trim()
       /* رمز شريكٍ أحال هذا المعهد: محفوظ 30 يوماً من نقرته على رابطه */
       const refCode = getStoredRef()
       if (refCode) payload.referral_code = refCode
@@ -650,10 +598,18 @@ export default function IhkaamCheckout() {
          it from the client silently failed. See
          supabase/migrations/20260727_fix_lead_conversion_tracking.sql */
 
-      setForm({ schoolName: '', managerName: '', governorate: '', phone: '', email: '', countryCode: '+963', customCode: '' })
+      const wa = waLink(IHKAAM_WHATSAPP, orderMessage({
+        ref, plan, cycle, features: selectedFeatureList, total: grandTotal,
+        institute: schoolName.trim(), manager: managerName.trim(),
+      }))
+      if (waWin) waWin.location.href = wa
+
+      setForm({ schoolName: '', managerName: '', phone: '', email: '', countryCode: '+963', customCode: '' })
       clearPricingDraft()   /* the plan is submitted — don't resurrect it later */
+      setOrder({ ref, wa })
       setIsSuccess(true)
     } catch (err) {
+      if (waWin) waWin.close()
       console.error('Lead submission error:', err)
       setFormError('حدث خطأ أثناء الإرسال. يرجى المحاولة مجدداً.')
     } finally {
@@ -662,435 +618,271 @@ export default function IhkaamCheckout() {
   }
 
   if (isSuccess) {
-    return <SuccessScreen onHome={() => navigate('/')} />
+    return <SuccessScreen onHome={() => navigate('/')} order={order} />
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
-     STICKY RECEIPT LAYOUT
-     12-col grid on desktop (lg):
-       • Left  (col-span-8, order-2 in RTL auto-placement): Add-ons + Form
-       • Right (col-span-4, order-1 in RTL auto-placement): Sticky Summary + CTA
-     Mobile: single column — left col (order-1) on top, right col (order-2) below.
+     تخطيط الصفحة (2026-11-20): بطاقتان. النموذج (يمين) وملخص الطلب الداكن (يسار،
+     يلازم الشاشة عند التمرير). على الجوال يأتي الملخص أولاً كي يُختار كل شيء
+     قبل ملء الحقول والضغط على الزر.
      ═══════════════════════════════════════════════════════════════════════ */
   return (
-    <div className="px-4 py-6 md:px-8 md:py-10" dir="rtl">
-      <div className="max-w-6xl mx-auto">
+    <div className="relative px-4 sm:px-6 pt-8 md:pt-12 pb-16" dir="rtl">
+      <div className="absolute inset-x-0 top-0 h-[380px] pattern-khatam-ink pointer-events-none" aria-hidden
+        style={{ opacity: 0.035, maskImage: 'radial-gradient(ellipse 60% 70% at 50% 0%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(ellipse 60% 70% at 50% 0%, #000, transparent 75%)' }} />
 
-        {/* Page eyebrow */}
-        <div className="mb-7 md:mb-12">
-          {/* Back capsule — RTL start = visual right */}
-          <div className="flex justify-start mb-4 md:mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200"
-              style={{
-                background: 'rgba(11, 59, 51, 0.02)',
-                border    : '1px solid rgba(11, 59, 51, 0.10)',
-                color     : '#1F6F52',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.05)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(11, 59, 51, 0.02)')}
-            >
-              <span>العودة لتعديل الباقة</span>
-              <ArrowRight size={14} />
+      <div className="relative max-w-6xl mx-auto">
+
+        {/* الرأس */}
+        <div className="mb-8 md:mb-11">
+          <div className="flex justify-start mb-5">
+            <button type="button" onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-bold cursor-pointer transition-colors duration-200 hover:bg-[#F1ECDF]"
+              style={{ background: '#FDFBF7', color: INK, boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+              <ArrowRight size={15} /> العودة لتعديل الباقة
             </button>
           </div>
           <div className="text-center">
-            <p
-              className="hidden md:block text-[10px] font-bold uppercase tracking-[0.26em] mb-3"
-              style={{ color: '#7A5A2E' }}
-            >
-              اشترك في إحكام
-            </p>
-            <h1
-              className="font-black leading-tight"
-              style={{ color: '#1A2E28', fontSize: 'clamp(1.15rem, 2vw, 1.55rem)' }}
-            >
-              خطوة واحدة لتفعيل مؤسستك القرآنية
+            <span className="eyebrow">اشترك في إحكام</span>
+            <h1 className="font-bold text-[#1A2E28] mt-4" style={{ fontSize: 'clamp(1.7rem, 3.6vw, 2.6rem)', lineHeight: 1.3 }}>
+              خطوة واحدة <span className="title-mark">لتفعيل معهدك</span>
             </h1>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-6 lg:gap-8 items-start">
 
-          {/* ═══════════════════════════════════════════════════════
-              LEFT COLUMN (lg:col-span-8)
-              Mobile: order-1 (top)   Desktop: visual left in RTL
-              Add-ons section → Customer form
-              ═══════════════════════════════════════════════════════ */}
-          <div className="order-1 md:order-2 flex flex-col">
+          {/* ── النموذج ── */}
+          <div className="order-2 md:order-1 rounded-[26px] p-6 sm:p-8"
+            style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-md), inset 0 0 0 1px var(--line-warm)' }}>
+            <div className="mb-6">
+              <h2 className="font-bold text-[22px] text-[#1A2E28]">بيانات معهدك</h2>
+              <p className="text-[14.5px] text-[#4A5D56] mt-1">ثلاثة حقول فقط، ونكمل معك على واتساب.</p>
+            </div>
 
-            {/* ── Customer Form ── */}
-            <div
-              className="rounded-[22px] px-5 py-6 md:px-8 md:py-8 flex flex-col gap-5 md:gap-6 h-full"
-              style={{ background: '#FFFFFF', border: '1px solid rgba(184, 134, 58, 0.08)' }}
-            >
-              {/* Eyebrow dropped — "معلومات المؤسسة" and "بيانات المعهد
-                  والمشرف" were the same label stacked on itself. */}
-              <h2 className="font-black text-[0.98rem]" style={{ color: '#1A2E28' }} dir="rtl">
-                بيانات المعهد والمشرف
-              </h2>
+            <div className="flex flex-col gap-5">
 
-              <div className="flex flex-col gap-4 md:gap-5">
+              <Field label="اسم المعهد / المدرسة">
+                <input
+                  type="text"
+                  value={form.schoolName}
+                  onChange={e => setField('schoolName', e.target.value)}
+                  placeholder="مثال: معهد إقرأ لتحفيظ القرآن الكريم"
+                  dir="rtl"
+                  style={inputBase}
+                  onFocus={iFocus}
+                  onBlur={iBlur}
+                />
+              </Field>
 
-                <Field label="اسم المعهد / المدرسة">
-                  <input
-                    type="text"
-                    value={form.schoolName}
-                    onChange={e => setField('schoolName', e.target.value)}
-                    placeholder="مثال: معهد إقرأ لتحفيظ القرآن الكريم"
-                    dir="rtl"
-                    style={inputBase}
-                    onFocus={iFocus}
-                    onBlur={iBlur}
-                  />
-                </Field>
+              <Field label="اسم المشرف الكامل">
+                <input
+                  type="text"
+                  value={form.managerName}
+                  onChange={e => setField('managerName', e.target.value)}
+                  placeholder="الاسم الكامل للمشرف"
+                  dir="rtl"
+                  style={inputBase}
+                  onFocus={iFocus}
+                  onBlur={iBlur}
+                />
+              </Field>
 
-                <Field label="اسم المشرف الكامل">
-                  <input
-                    type="text"
-                    value={form.managerName}
-                    onChange={e => setField('managerName', e.target.value)}
-                    placeholder="الاسم الكامل للمشرف"
-                    dir="rtl"
-                    style={inputBase}
-                    onFocus={iFocus}
-                    onBlur={iBlur}
-                  />
-                </Field>
+              <Field label="رقم الواتساب">
+                <div className="flex gap-2">
 
-                <Field label="رقم الواتساب">
-                  <div className="flex gap-2">
-
-                    {/* ── Country code: select OR custom text input ── */}
-                    <div className="relative flex-shrink-0">
-                      {form.countryCode === 'other' ? (
-                        <>
-                          <input
-                            type="text"
-                            value={form.customCode}
-                            onChange={e => setField('customCode', e.target.value.replace(/[^\d+]/g, ''))}
-                            placeholder="+XX"
-                            dir="ltr"
-                            maxLength={5}
-                            style={{
-                              ...inputBase,
-                              width             : '5rem',
-                              textAlign         : 'center',
-                              background        : 'rgba(184, 134, 58, 0.07)',
-                              border            : '1px solid rgba(184, 134, 58, 0.20)',
-                              color             : '#7A6440',
-                              fontWeight        : '700',
-                              fontSize          : '1rem',
-                              paddingInlineStart: '0.5rem',
-                              paddingInlineEnd  : '0.5rem',
-                            }}
-                            onFocus={iFocus}
-                            onBlur={iBlur}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => { setField('countryCode', '+963'); setField('customCode', '') }}
-                            className="absolute -bottom-[1.15rem] start-0 text-[10px] cursor-pointer whitespace-nowrap transition-colors duration-150"
-                            style={{ color: '#5E6E67' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#1F6F52')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#5E6E67')}
-                          >
-                            ← تغيير
-                          </button>
-                        </>
-                      ) : (
-                        <CountryPicker
-                          value={form.countryCode}
-                          onChange={code => {
-                            setField('countryCode', code)
-                            setField('governorate', '')
+                  {/* ── Country code: select OR custom text input ── */}
+                  <div className="relative flex-shrink-0">
+                    {form.countryCode === 'other' ? (
+                      <>
+                        <input
+                          type="text"
+                          value={form.customCode}
+                          onChange={e => setField('customCode', e.target.value.replace(/[^\d+]/g, ''))}
+                          placeholder="+XX"
+                          dir="ltr"
+                          maxLength={5}
+                          style={{
+                            ...inputBase,
+                            width             : '5rem',
+                            textAlign         : 'center',
+                            background        : 'rgba(184, 134, 58, 0.07)',
+                            border            : '1px solid rgba(184, 134, 58, 0.20)',
+                            color             : '#7A6440',
+                            fontWeight        : '700',
+                            fontSize          : '1rem',
+                            paddingInlineStart: '0.5rem',
+                            paddingInlineEnd  : '0.5rem',
                           }}
+                          onFocus={iFocus}
+                          onBlur={iBlur}
                         />
-                      )}
-                    </div>
-
-                    {/* ── Phone number ── */}
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={e => setField('phone', e.target.value)}
-                      placeholder={
-                        form.countryCode === 'other'
-                          ? 'XXXXXXXXX'
-                          : (ARAB_COUNTRIES.find(c => c.code === form.countryCode)?.placeholder ?? 'XXXXXXXXX')
-                      }
-                      dir="ltr"
-                      style={{ ...inputBase, textAlign: 'left', flex: '1 1 0%', minWidth: 0 }}
-                      onFocus={iFocus}
-                      onBlur={iBlur}
-                    />
+                        <button
+                          type="button"
+                          onClick={() => { setField('countryCode', '+963'); setField('customCode', '') }}
+                          className="absolute -bottom-[1.25rem] start-0 text-[12px] cursor-pointer whitespace-nowrap transition-colors duration-150"
+                          style={{ color: '#5E6E67' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = '#1F6F52')}
+                          onMouseLeave={e => (e.currentTarget.style.color = '#5E6E67')}
+                        >
+                          ← تغيير
+                        </button>
+                      </>
+                    ) : (
+                      <CountryPicker
+                        value={form.countryCode}
+                        onChange={code => setField('countryCode', code)}
+                      />
+                    )}
                   </div>
 
-                  {/* ── Live status: the country's full name lives here (where
-                       there's room for it), then the shape check, then the
-                       wa.me test link once the number is well-formed. ── */}
-                  {phoneCheck.state === 'empty' && (
-                    <p className="text-[11px] leading-[1.7]" style={{ color: '#5E6E67' }} dir="rtl">
-                      {form.countryCode === 'other'
-                        ? 'اكتب مفتاح دولتك مع الإشارة + (مثال: +44)'
-                        : (selectedCountry?.hint ?? 'بدون مفتاح الدولة')}
-                    </p>
-                  )}
-
-                  {phoneCheck.state === 'invalid' && (
-                    <p
-                      className="flex items-start gap-1.5 text-[11px] leading-[1.7]"
-                      style={{ color: '#8A6425' }}
-                      dir="rtl"
-                    >
-                      <AlertCircle size={12} className="flex-shrink-0 mt-[3px]" />
-                      <span>{phoneCheck.message}</span>
-                    </p>
-                  )}
-
-                  {phoneCheck.state === 'valid' && (
-                    <div className="flex items-center justify-between gap-2 flex-wrap" dir="rtl">
-                      <span
-                        className="flex items-center gap-1.5 text-[11px]"
-                        style={{ color: '#1F6F52' }}
-                      >
-                        <CheckCircle2 size={12} className="flex-shrink-0" />
-                        <span dir="ltr" className="tabular-nums font-bold">{phoneCheck.e164}</span>
-                      </span>
-                      <a
-                        href={`https://wa.me/${phoneCheck.e164.replace('+', '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[11px] font-bold rounded-full px-2.5 py-1 transition-colors duration-200"
-                        style={{
-                          background: 'rgba(31, 111, 82, 0.10)',
-                          border    : '1px solid rgba(31, 111, 82, 0.28)',
-                          color     : '#1F6F52',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.18)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.10)')}
-                      >
-                        <ExternalLink size={11} />
-                        جرّب الرقم على واتساب
-                      </a>
-                    </div>
-                  )}
-                </Field>
-
-                {/* Bot trap — invisible to humans */}
-                <input {...honeypotProps} />
-
-                <Field label="البريد الإلكتروني">
+                  {/* ── Phone number ── */}
                   <input
-                    type="email"
-                    value={form.email}
-                    onChange={e => setField('email', e.target.value)}
-                    placeholder="example@domain.com"
+                    type="tel"
+                    value={form.phone}
+                    onChange={e => setField('phone', e.target.value)}
+                    placeholder={
+                      form.countryCode === 'other'
+                        ? 'XXXXXXXXX'
+                        : (ARAB_COUNTRIES.find(c => c.code === form.countryCode)?.placeholder ?? 'XXXXXXXXX')
+                    }
                     dir="ltr"
-                    required
-                    style={{ ...inputBase, textAlign: 'left' }}
+                    style={{ ...inputBase, textAlign: 'left', flex: '1 1 0%', minWidth: 0 }}
                     onFocus={iFocus}
                     onBlur={iBlur}
                   />
-                </Field>
-
-                {form.countryCode === '+963' ? (
-                  <Field label="المحافظة">
-                    <div className="relative">
-                      <select
-                        value={form.governorate}
-                        onChange={e => setField('governorate', e.target.value)}
-                        style={{
-                          ...inputBase,
-                          appearance      : 'none',
-                          WebkitAppearance: 'none',
-                          MozAppearance   : 'none',
-                          cursor          : 'pointer',
-                          paddingInlineEnd: '2.5rem',
-                        }}
-                        onFocus={iFocus}
-                        onBlur={iBlur}
-                      >
-                        <option value="" disabled style={{ background: '#F8F5EC', color: '#A0C3B6' }}>
-                          اختر المحافظة
-                        </option>
-                        {GOVERNORATES.map(g => (
-                          <option key={g} value={g} style={{ background: '#F8F5EC', color: '#1A2E28' }}>
-                            {g}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        size={15}
-                        className="pointer-events-none absolute top-1/2 -translate-y-1/2"
-                        style={{ color: '#5E6E67', insetInlineEnd: '1rem' }}
-                      />
-                    </div>
-                  </Field>
-                ) : (
-                  <Field label="المدينة / المنطقة (اختياري)">
-                    <input
-                      type="text"
-                      value={form.governorate}
-                      onChange={e => setField('governorate', e.target.value)}
-                      placeholder="مثال: الرياض، دبي، القاهرة..."
-                      dir="rtl"
-                      style={inputBase}
-                      onFocus={iFocus}
-                      onBlur={iBlur}
-                    />
-                  </Field>
-                )}
-
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* ═══════════════════════════════════════════════════════
-              RIGHT COLUMN (lg:col-span-4) — STICKY RECEIPT
-              Summary only — CTA + timeline are full-width below
-              ═══════════════════════════════════════════════════════ */}
-          {/* self-start + sticky: the receipt is short by design, so stretching
-              it to the form's height only opened a void between the rows and
-              the total. It now hugs its content and follows the scroll. */}
-          <div className="order-2 md:order-1 flex flex-col md:self-start md:sticky md:top-6">
-
-            {/* ── Receipt card ── */}
-            <div
-              className="rounded-[22px] p-5 md:p-7 flex flex-col"
-              style={{ background: '#FFFFFF', border: '1px solid rgba(184, 134, 58, 0.08)' }}
-            >
-              <OrderSummary
-                tierName={tier.name}
-                students={students}
-                duration={duration}
-                addonsMonthlyTotal={addonsMonthlyTotal}
-                selectedFeatureList={selectedFeatureList}
-                baseFee={baseFee}
-                perStudent={perStudent}
-                discounts={discounts}
-              />
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ── Full-width activation CTA — anchors both columns below ── */}
-        <div className="mt-5 mb-7 md:mt-8 md:mb-10 flex flex-col gap-3">
-          <p className="text-[11px] text-center leading-[1.85]" style={{ color: '#A0C3B6' }}>
-            بتأكيد الطلب أنت توافق على{' '}
-            <Link
-              to="/privacy"
-              className="underline underline-offset-2 transition-colors duration-200"
-              style={{ color: '#1F6F52' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#2B5F4C')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#1F6F52')}
-            >
-              سياسة الخصوصية
-            </Link>
-            {' '}و{' '}
-            <Link
-              to="/terms"
-              className="underline underline-offset-2 transition-colors duration-200"
-              style={{ color: '#1F6F52' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#2B5F4C')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#1F6F52')}
-            >
-              الشروط والأحكام
-            </Link>
-            .
-          </p>
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="w-full rounded-xl py-4 font-black text-base flex items-center justify-center gap-2.5 disabled:opacity-55 cursor-pointer"
-            /* Brand primary action — same treatment as "أكمل طلب الاشتراك" */
-            style={{
-              background   : '#1F6F52',
-              color        : '#FFFFFF',
-              border       : 'none',
-              outline      : 'none',
-              letterSpacing: '0.02em',
-              boxShadow    : '0 8px 24px rgba(31, 111, 82, 0.18)',
-              transition   : 'box-shadow 200ms ease, transform 150ms ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(31, 111, 82, 0.30)'
-              e.currentTarget.style.transform = 'scale(1.005)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(31, 111, 82, 0.18)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-          >
-            {isSubmitting && <Loader2 size={15} className="animate-spin" />}
-            أرسل الطلب
-          </button>
-          {formError && (
-            <p className="text-[11px] font-semibold text-center" style={{ color: '#8A6425' }}>
-              {formError}
-            </p>
-          )}
-        </div>
-
-        {/* ── Full-width horizontal timeline ── */}
-        {/* Each step used to stack a 40px bubble, a 2rem ghost numeral and the
-            text — three rows deep, ×3 steps. On a phone they now read as one
-            compact line each; the ghost numeral stays where there's room. */}
-        <div
-          className="rounded-2xl p-5 md:p-8"
-          style={{ background: 'rgba(11, 59, 51, 0.01)', border: '1px solid rgba(11, 59, 51, 0.05)' }}
-          dir="rtl"
-        >
-          <p
-            className="text-[9px] font-bold uppercase tracking-[0.22em] mb-5 md:mb-8 text-center"
-            style={{ color: '#7A5A2E' }}
-          >
-            ماذا يحدث بعد الطلب؟
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 items-start text-right">
-            {NEXT_STEPS.map(({ icon: Icon, text }, i) => (
-              <div key={i} className="relative flex flex-row md:flex-col items-center md:items-stretch gap-3">
-
-                {/* Connector guide-line between steps */}
-                {i < NEXT_STEPS.length - 1 && (
-                  <div
-                    className="hidden md:block absolute top-5 h-px pointer-events-none"
-                    style={{
-                      insetInlineStart: '2.65rem',
-                      width           : 'calc(100% - 0.5rem)',
-                      background      : 'linear-gradient(to left, transparent, rgba(31, 111, 82, 0.14))',
-                    }}
-                  />
-                )}
-
-                {/* Icon bubble + ghost step number (desktop only) */}
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <div
-                    className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{
-                      background: 'rgba(11, 59, 51, 0.16)',
-                      border    : '1px solid rgba(31, 111, 82, 0.18)',
-                    }}
-                  >
-                    <Icon size={16} style={{ color: '#1F6F52' }} strokeWidth={1.6} />
-                  </div>
-                  <span
-                    className="hidden md:block font-black tabular-nums select-none"
-                    style={{ color: 'rgba(31, 111, 82, 0.20)', fontSize: '2rem', lineHeight: 1 }}
-                  >
-                    <span dir="ltr">{i + 1}</span>
-                  </span>
                 </div>
 
-                <p className="text-[0.8rem] md:text-sm leading-[1.7] md:leading-[1.9]" style={{ color: '#75B59E' }}>
-                  {text}
+                {/* ── Live status: the country's full name lives here (where
+                     there's room for it), then the shape check, then the
+                     wa.me test link once the number is well-formed. ── */}
+                {phoneCheck.state === 'empty' && (
+                  <p className="text-[13px] leading-[1.7]" style={{ color: '#6B7C75' }} dir="rtl">
+                    {form.countryCode === 'other'
+                      ? 'اكتب مفتاح دولتك مع الإشارة + (مثال: +44)'
+                      : (selectedCountry?.hint ?? 'بدون مفتاح الدولة')}
+                  </p>
+                )}
+
+                {phoneCheck.state === 'invalid' && (
+                  <p className="flex items-start gap-1.5 text-[13px] leading-[1.7]" style={{ color: '#8A6425' }} dir="rtl">
+                    <AlertCircle size={14} className="flex-shrink-0 mt-[4px]" />
+                    <span>{phoneCheck.message}</span>
+                  </p>
+                )}
+
+                {phoneCheck.state === 'valid' && (
+                  <div className="flex items-center justify-between gap-2 flex-wrap" dir="rtl">
+                    <span className="flex items-center gap-1.5 text-[13px]" style={{ color: '#1F6F52' }}>
+                      <CheckCircle2 size={14} className="flex-shrink-0" />
+                      <span dir="ltr" className="tabular-nums font-bold">{phoneCheck.e164}</span>
+                    </span>
+                    <a
+                      href={`https://wa.me/${phoneCheck.e164.replace('+', '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-[12.5px] font-bold rounded-full px-3 py-1.5 transition-colors duration-200"
+                      style={{ background: 'rgba(31, 111, 82, 0.08)', boxShadow: 'inset 0 0 0 1px rgba(31, 111, 82, 0.25)', color: '#1F6F52' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.16)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'rgba(31, 111, 82, 0.08)')}
+                    >
+                      <ExternalLink size={12} />
+                      جرّب الرقم على واتساب
+                    </a>
+                  </div>
+                )}
+              </Field>
+
+              {/* Bot trap — invisible to humans */}
+              <input {...honeypotProps} />
+
+              <Field label="البريد الإلكتروني" hint="اختياري">
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={e => setField('email', e.target.value)}
+                  placeholder="example@domain.com"
+                  dir="ltr"
+                  style={{ ...inputBase, textAlign: 'left' }}
+                  onFocus={iFocus}
+                  onBlur={iBlur}
+                />
+              </Field>
+            </div>
+
+            {/* ── الزر ── */}
+            <div className="mt-8 flex flex-col gap-4">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="btn-cta w-full inline-flex items-center justify-center gap-2.5 rounded-xl py-4 font-bold text-[17px] disabled:opacity-60 cursor-pointer"
+              >
+                {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <MessageCircle size={19} />}
+                ابدأ تجربتك المجانية {TRIAL_DAYS} يومًا
+              </button>
+
+              {formError && (
+                <p className="flex items-start gap-2 rounded-xl px-4 py-3 text-[14px] font-semibold leading-[1.7]"
+                  style={{ background: 'rgba(184, 134, 58, 0.10)', color: GOLD_TXT, boxShadow: 'inset 0 0 0 1px rgba(184, 134, 58, 0.30)' }}>
+                  <AlertCircle size={16} className="shrink-0 mt-[3px]" /> {formError}
                 </p>
-              </div>
+              )}
+
+              {/* أكبر ما يوقف المدير هنا سؤال «هل سأدفع الآن؟» — يُجاب قبل أن يتراجع */}
+              <p className="flex items-start gap-2.5 text-[14.5px] leading-[1.9]" style={{ color: '#2F4540' }}>
+                <span className="shrink-0 w-6 h-6 rounded-full grid place-items-center mt-0.5" style={{ background: 'rgba(31,111,82,.12)', color: '#1F6F52' }}>
+                  <Check size={14} strokeWidth={3} />
+                </span>
+                <span>لن تدفع شيئًا الآن. نفعّل معهدك خلال 24 ساعة، والدفع بعد التجربة عبر {PAYMENT_METHOD}.</span>
+              </p>
+
+              <p className="text-[12.5px] leading-[1.9] text-center" style={{ color: '#7A8B84' }}>
+                بالضغط أنت توافق على{' '}
+                <Link to="/privacy" className="underline underline-offset-4 hover:text-[#1F6F52]" style={{ color: '#4A5D56' }}>سياسة الخصوصية</Link>
+                {' '}و{' '}
+                <Link to="/terms" className="underline underline-offset-4 hover:text-[#1F6F52]" style={{ color: '#4A5D56' }}>الشروط والأحكام</Link>.
+              </p>
+            </div>
+          </div>
+
+          {/* ── ملخص الطلب ── */}
+          <div className="order-1 md:order-2 md:sticky md:top-6">
+            <OrderSummary
+              plan={plan}
+              cycle={cycle}
+              onCycle={setCycle}
+              features={storeFeatures}
+              selected={selectedFeatures}
+              onToggle={toggleFeature}
+              grandTotal={grandTotal}
+              bundleSaving={addons.full - addons.total}
+            />
+          </div>
+        </div>
+
+        {/* ── ماذا يحدث بعد الضغط؟ ── */}
+        <div className="mt-14 md:mt-16">
+          <h2 className="text-center font-bold text-[#1A2E28] mb-7" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.8rem)' }}>
+            ماذا يحدث <span className="title-mark">بعد الضغط؟</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+            {NEXT_STEPS.map(({ icon: Icon, text }, i) => (
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.5, ease, delay: i * 0.08 }}
+                className="relative rounded-[22px] p-5 sm:p-6 flex md:flex-col items-start gap-4"
+                style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+                <div className="flex items-center justify-between md:w-full shrink-0">
+                  <span className="w-12 h-12 rounded-2xl grid place-items-center" style={{ background: INK, color: '#E0B562' }}>
+                    <Icon size={21} strokeWidth={1.8} />
+                  </span>
+                  <span aria-hidden className="hidden md:block font-bold tabular-nums select-none" style={{ color: 'rgba(184,134,58,.35)', fontSize: '2.4rem', lineHeight: 1, fontFamily: 'cairo-latin, inherit' }}>
+                    {i + 1}
+                  </span>
+                </div>
+                <p className="text-[15px] leading-[1.95]" style={{ color: '#2F4540' }}>{text}</p>
+              </motion.div>
             ))}
           </div>
         </div>

@@ -41,7 +41,15 @@ for (const f of files) {
   const ldRaw = [...h.matchAll(/<script type="application\/ld\+json"([^>]*)>([\s\S]*?)<\/script>/g)]
   let ldBad = false
   const ldText = ldRaw.map(m => m[2]).join('\n')
-  for (const m of ldRaw) { try { JSON.parse(m[2]) } catch { ldBad = true } }
+  const ldVideos = []   // VideoObject في JSON-LD
+  for (const m of ldRaw) {
+    try {
+      const j = JSON.parse(m[2])
+      for (const n of (j['@graph'] || [j])) if (n['@type'] === 'VideoObject') ldVideos.push(n)
+    } catch { ldBad = true }
+  }
+  /* فيديو ظاهر = عنصر LiteYouTube في HTML (data-video-id) */
+  const shownVideos = [...body.matchAll(/data-video-id="([^"]+)"/g)].map(m => m[1])
   rows.push({
     rel, title, desc, canon,
     ogTitle: attr(h, /<meta property="og:title" content="([^"]*)"/),
@@ -52,9 +60,15 @@ for (const f of files) {
     h1: (body.match(/<h1[\s>]/g) || []).length,
     ld: /data-page-ld/.test(h),
     ldBad,
-    ldForbidden: /"(offers|price|priceCurrency|aggregateRating|Person)"/.test(ldText),
+    ldForbidden: /"(offers|price|priceCurrency|aggregateRating)"/.test(ldText),
     keywords: /<meta name="keywords"/.test(h),
     noindex: /<meta name="robots" content="[^"]*noindex/.test(h),
+    /* ISS-18: كل صورة في HTML لها width وheight؛ وISS-25: العنوان H1 لا يُكتب شفافاً ينتظر JavaScript */
+    imgNoDim: (body.match(/<img\b[^>]*>/g) || []).filter(t => !/\swidth=/.test(t) || !/\sheight=/.test(t)).length,
+    h1Hidden: /<h1[^>]*opacity:0[;"]/.test(body),
+    /* iframe في HTML المولَّد يعني تحميل يوتيوب مع الصفحة (يضرّ LCP): يجب أن يُنشأ عند النقر فقط */
+    ytIframe: /<iframe[\s>]/.test(body),
+    shownVideos, ldVideos,
   })
   byTitle.set(title, (byTitle.get(title) || []).concat(rel))
   byDesc.set(desc, (byDesc.get(desc) || []).concat(rel))
@@ -79,8 +93,26 @@ add('وسوم og لا تطابق الصفحة (title/description/url)', real.fil
 add('og:image غير مطلقة', real.filter(r => !r.ogImg || !r.ogImg.startsWith('https://')).map(r => r.rel))
 add('وسم keywords متبقٍّ', real.filter(r => r.keywords).map(r => r.rel))
 add('صفحة مفهرسة بلا بيانات منظَّمة', indexable.filter(r => !r.ld).map(r => r.rel))
+add('صور بلا width/height (ISS-18)', real.filter(r => r.imgNoDim).map(r => `${r.rel} (${r.imgNoDim})`))
+add('H1 مخفي بـopacity:0 حتى يعمل JavaScript (ISS-25)', real.filter(r => r.h1Hidden).map(r => r.rel))
 add('JSON-LD غير صالح', real.filter(r => r.ldBad).map(r => r.rel))
-add('JSON-LD فيه سعر/تقييم/شخص (ممنوع)', real.filter(r => r.ldForbidden).map(r => r.rel))
+add('JSON-LD فيه سعر/تقييم (ممنوع؛ المؤسس Person مسموح منذ 2026-11-20)', real.filter(r => r.ldForbidden).map(r => r.rel))
+
+/* ── الفيديو (UX-03 وAI-03): كل فيديو ظاهر له VideoObject مكتمل، ولا VideoObject لفيديو غير ظاهر ── */
+const VIDEO_FIELDS = ['name', 'description', 'thumbnailUrl', 'uploadDate', 'duration', 'embedUrl']
+const idOf = (embed) => (embed || '').split('/embed/')[1]
+add('iframe في HTML المولَّد (يجب أن يُنشأ عند النقر فقط)', real.filter(r => r.ytIframe).map(r => r.rel))
+add('فيديو ظاهر بلا VideoObject', real.flatMap(r =>
+  r.shownVideos.filter(id => !r.ldVideos.some(v => idOf(v.embedUrl) === id)).map(id => `${r.rel}: ${id}`)))
+add('VideoObject لفيديو غير ظاهر في الصفحة', real.flatMap(r =>
+  r.ldVideos.filter(v => !r.shownVideos.includes(idOf(v.embedUrl))).map(v => `${r.rel}: ${idOf(v.embedUrl)}`)))
+add('VideoObject ناقص الحقول أو غلافه غير موجود', real.flatMap(r => r.ldVideos.flatMap(v => {
+  const miss = VIDEO_FIELDS.filter(f => !v[f])
+  const thumb = String(v.thumbnailUrl || '').replace(ORIGIN, '')
+  if (!miss.length && !fs.existsSync(path.join(DIST, thumb))) miss.push('الغلاف ' + thumb)
+  return miss.length ? [`${r.rel}: ${idOf(v.embedUrl)} ← ${miss.join('، ')}`] : []
+})))
+notes.push(`الفيديو: ${real.reduce((n, r) => n + r.shownVideos.length, 0)} فيديو ظاهر في ${real.filter(r => r.shownVideos.length).length} صفحة`)
 
 /* ── خريطة الموقع: كل صفحة مفهرسة فيها، ولا شيء غير مفهرس ── */
 const sitemapFile = path.join(DIST, 'sitemap.xml')

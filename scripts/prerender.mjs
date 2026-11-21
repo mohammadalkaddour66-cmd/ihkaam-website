@@ -247,6 +247,38 @@ function buildPage(htmlBody, meta) {
   return inlineCss(out, htmlBody)
 }
 
+/* ── أبعاد الصور (ISS-18) ──
+   كل <img> محلي بلا width/height يأخذ أبعاد ملفه الحقيقية، فيحجز المتصفح
+   مكانه قبل التحميل ولا يزيح التخطيط (CLS). المكوّنات الجديدة تُنسى فيها
+   الأبعاد بسهولة، فالضمان هنا في البناء لا في كل مكوّن. لا أثر بصري:
+   preflight في Tailwind يجعل height:auto، والأصناف (w-6، h-full…) تتقدّم
+   على السمتين. */
+const { default: sharp } = await import('sharp')
+const dimCache = new Map()
+async function imgSize(src) {
+  if (dimCache.has(src)) return dimCache.get(src)
+  let size = null
+  const file = path.join(DIST, decodeURIComponent(src.split(/[?#]/)[0]).replace(/^\//, ''))
+  if (fs.existsSync(file)) {
+    try { const m = await sharp(file).metadata(); if (m.width && m.height) size = [m.width, m.height] } catch { /* ليست صورة نقطية */ }
+  }
+  dimCache.set(src, size)
+  return size
+}
+async function addImgDims(html) {
+  const tags = [...new Set(html.match(/<img\b[^>]*>/g) || [])]
+  for (const tag of tags) {
+    if (/\swidth=/.test(tag) && /\sheight=/.test(tag)) continue
+    const src = tag.match(/\ssrc="(\/[^"]+)"/)?.[1]
+    if (!src) continue
+    const size = await imgSize(src)
+    if (!size) continue
+    const fixed = tag.replace(/\s(width|height)="[^"]*"/g, '').replace(/^<img\b/, `<img width="${size[0]}" height="${size[1]}"`)
+    html = html.split(tag).join(fixed)
+  }
+  return html
+}
+
 /* ── التصيير ── */
 const routes   = getRoutes()
 const rendered = []
@@ -254,8 +286,9 @@ const failures = []
 
 for (const r of routes) {
   try {
-    const { html, meta } = await render(r.path)
-    if (!html || html.length < 500) throw new Error('HTML فارغ أو قصير جداً')
+    const { html: raw, meta } = await render(r.path)
+    if (!raw || raw.length < 500) throw new Error('HTML فارغ أو قصير جداً')
+    const html = await addImgDims(raw)
     if (!meta.title || !meta.description) throw new Error(`وسوم ناقصة (title=${!!meta.title}, description=${!!meta.description})`)
     if (meta.url !== ORIGIN + (r.path === '/' ? '/' : r.path)) throw new Error(`رابط معياري غير متوقَّع: ${meta.url}`)
     rendered.push({ route: r, page: buildPage(html, meta), meta })
@@ -267,7 +300,7 @@ for (const r of routes) {
 let notFound
 try {
   const { html, meta } = await render('/__not-found__')
-  notFound = buildPage(html, { ...meta, noindex: true, url: undefined, jsonLd: undefined })
+  notFound = buildPage(await addImgDims(html),{ ...meta, noindex: true, url: undefined, jsonLd: undefined })
 } catch (err) {
   failures.push({ path: '/__not-found__ (404.html)', error: err })
 }
@@ -366,7 +399,8 @@ for (const { route, page } of indexable) {
   manifest[route.path] = { hash, lastmod }
 }
 /* لا يُكتب الملف في CI: نسخته هناك تُرمى بعد البناء، والمرجع نسخةُ git. */
-if (!inCI) fs.writeFileSync(LASTMOD_FILE, JSON.stringify(manifest, null, 2) + '\n')
+/* ولا في بناء SITE_TODAY: محاكاةٌ ليومٍ آخر لا تُسجَّل في ذاكرة الخريطة. */
+if (!inCI && !process.env.SITE_TODAY) fs.writeFileSync(LASTMOD_FILE, JSON.stringify(manifest, null, 2) + '\n')
 
 /* ── خريطة الموقع (ISS-11/12/13) ──
    كل صفحةٍ مصيَّرة غير موسومة بـnoindex تدخل الخريطة: الرئيسية والمنصة
@@ -404,7 +438,8 @@ const staticLlms = fs.readFileSync(path.join(ROOT, 'public', 'llms.txt'), 'utf8'
 const intro = staticLlms.split(/^## /m)[0].trimEnd()
 const llms = [
   intro + '\n',
-  section('الصفحات الرئيسية', ['/', '/ihkaam', '/request', '/about', '/contact', '/affiliate', '/blog', '/help', '/terms', '/privacy']),
+  section('الصفحات الرئيسية', ['/', '/ihkaam', '/request', '/about', '/contact', '/affiliate', '/tools', '/blog', '/help', '/terms', '/privacy']),
+  section('أدوات مجانية (تعمل في المتصفح بلا تسجيل)', outline.tools || []),
   section('ميزات النظام', [...outline.core, ...outline.addons]),
   section('مقالات المدونة', outline.blog),
   section('شروحات مركز المساعدة', outline.help),

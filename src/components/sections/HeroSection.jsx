@@ -337,10 +337,10 @@ export default function HeroSection() {
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
             <Link
               to="/request"
-              className="btn-cta inline-flex items-center gap-2.5 rounded-full"
-              style={{ fontSize: '1.05rem', padding: '1rem 2.4rem' }}
+              className="btn-cta inline-flex items-center justify-center gap-2.5 rounded-full min-w-[16rem]"
+              style={{ fontSize: '1.05rem', padding: '1.05rem 2.8rem' }}
             >
-              احسب اشتراك معهدك
+              اختر باقة معهدك
               <ArrowLeft size={18} />
             </Link>
             <button
@@ -348,8 +348,8 @@ export default function HeroSection() {
               onClick={openForm}
               onPointerEnter={prefetchDemoForm}
               onFocus={prefetchDemoForm}
-              className="btn-outline inline-flex items-center gap-2 rounded-full"
-              style={{ fontSize: '1.05rem', padding: '1rem 2rem' }}
+              className="btn-outline inline-flex items-center justify-center gap-2 rounded-full min-w-[16rem]"
+              style={{ fontSize: '1.05rem', padding: '1.05rem 2.8rem' }}
             >
               اطلب تجربة مجانية
             </button>

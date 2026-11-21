@@ -8,6 +8,7 @@ const PRIMARY_LINKS = [
   { label: 'المنصة',   to: '/ihkaam'  },
   { label: 'من نحن',   to: '/about'   },
   { label: 'المدونة',  to: '/blog'    },
+  { label: 'أدوات مجانية', to: '/tools' },
   { label: 'الأسعار',   to: '/request' },
   { label: 'تواصل بنا', to: '/contact' },
   { label: 'الدعم',     to: '/help'    },
@@ -105,12 +106,12 @@ export default function Navbar() {
           />
           <div className="flex flex-col leading-tight" dir="rtl">
             <span className="font-black text-sm tracking-wide" style={{ color: '#1A2E28' }}>منصة إحكام</span>
-            <span className="text-xs font-medium" style={{ color: '#5E6E67' }}>لإدارة المعاهد القرآنية</span>
+            <span className="hidden lg:block text-xs font-medium" style={{ color: '#5E6E67' }}>لإدارة المعاهد القرآنية</span>
           </div>
         </Link>
 
         {/* ── Desktop nav ─────────────────────────────── */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-3.5 lg:gap-6">
           {PRIMARY_LINKS.map(l => {
             const [linkPath, linkHash] = l.to.split('#')
             const alreadyOnPage = linkHash && pathname === linkPath
@@ -142,12 +143,12 @@ export default function Navbar() {
         </nav>
 
         {/* ── Right cluster: CTA ──────────────────────── */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <Link
             to="/request"
             className="btn-cta text-xs px-5 py-2 rounded-xl whitespace-nowrap"
           >
-            احسب اشتراك معهدك
+            اختر باقة معهدك
           </Link>
         </div>
 
@@ -203,7 +204,7 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
             className="btn-cta text-sm py-2.5 rounded-xl text-center mt-1 w-full block"
           >
-            احسب اشتراك معهدك
+            اختر باقة معهدك
           </Link>
         </div>
       )}

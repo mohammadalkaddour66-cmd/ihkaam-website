@@ -1,262 +1,286 @@
 {
   "/": {
-    "hash": "2c4438450a256c77",
-    "lastmod": "2026-11-19"
+    "hash": "bbf0c81f41500a49",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam": {
-    "hash": "c3e7ec7dd500f3d3",
-    "lastmod": "2026-11-19"
+    "hash": "c2cd73632514f863",
+    "lastmod": "2026-11-21"
   },
   "/about": {
-    "hash": "fbb9f05e60b0123e",
-    "lastmod": "2026-11-13"
+    "hash": "36ccd7a3d27dff75",
+    "lastmod": "2026-11-20"
   },
   "/contact": {
-    "hash": "17576c7d5391ce0d",
-    "lastmod": "2026-11-13"
+    "hash": "02de59bf24c87924",
+    "lastmod": "2026-11-20"
   },
   "/request": {
-    "hash": "2b702da2fd1794c2",
-    "lastmod": "2026-11-13"
+    "hash": "0cdf26a706d0714c",
+    "lastmod": "2026-11-20"
+  },
+  "/affiliate": {
+    "hash": "b15ce40c0d0f7e1b",
+    "lastmod": "2026-11-20"
   },
   "/review": {
-    "hash": "49e36eb220659370",
-    "lastmod": "2026-11-13"
+    "hash": "8b3aa74036022073",
+    "lastmod": "2026-11-20"
   },
   "/terms": {
-    "hash": "70bbb48ef43ef70c",
-    "lastmod": "2026-11-13"
+    "hash": "a9a6da9215bdc051",
+    "lastmod": "2026-11-20"
   },
   "/privacy": {
     "hash": "50de0aeb8059db7b",
     "lastmod": "2026-11-13"
   },
   "/blog": {
-    "hash": "5835b56541c47be8",
-    "lastmod": "2026-11-13"
+    "hash": "be46fa075fdd8ef0",
+    "lastmod": "2026-11-19"
   },
   "/blog/how-long-to-memorize-quran": {
-    "hash": "57585bb1c653cb87",
+    "hash": "a280a8c2a21288e0",
     "lastmod": "2026-11-13"
   },
   "/blog/quran-review-schedule": {
-    "hash": "6ceb52877d1fc1e2",
+    "hash": "2c79bd981e556ed8",
     "lastmod": "2026-11-13"
   },
   "/blog/first-90-days-director": {
-    "hash": "fe7e341a06e86fdd",
+    "hash": "4cbbface103a39b6",
     "lastmod": "2026-11-13"
   },
   "/blog/why-centers-fail-to-scale": {
-    "hash": "d28631aa93b021b1",
+    "hash": "23221aabbf2cf414",
     "lastmod": "2026-11-13"
   },
   "/blog/delivering-bad-news-to-parents": {
-    "hash": "ee872a2341c1575f",
+    "hash": "f76c1417293f93d2",
     "lastmod": "2026-11-13"
   },
   "/blog/digital-transformation-quran-centers": {
-    "hash": "6069598162ef7754",
+    "hash": "411a62135125de16",
     "lastmod": "2026-11-13"
   },
   "/blog/reading-recitation-data": {
-    "hash": "5a900d15a2eae9f9",
+    "hash": "0537123b85cfa1a0",
     "lastmod": "2026-11-13"
   },
   "/blog/reputation-as-marketing": {
-    "hash": "df8dbce1313baefb",
+    "hash": "404d7b641b58a604",
     "lastmod": "2026-11-13"
   },
   "/blog/motivating-teachers": {
-    "hash": "9a5a18311f335543",
+    "hash": "dd0a353a32846085",
     "lastmod": "2026-11-13"
   },
   "/blog/setting-tuition-fees": {
-    "hash": "b0e4bdf7c6c5a4fc",
+    "hash": "ce54ce69f976720c",
     "lastmod": "2026-11-13"
   },
   "/blog/weekly-memorization-plan": {
-    "hash": "a4cd64c4b199caed",
+    "hash": "dda9f31efe38ca8c",
     "lastmod": "2026-11-13"
   },
   "/blog/fair-recitation-system": {
-    "hash": "e9029345acecfa88",
+    "hash": "485a16ffb4836f57",
     "lastmod": "2026-11-13"
   },
   "/blog/handling-chronic-absentees": {
-    "hash": "bff5d6e3ab836841",
+    "hash": "48f8241d322044e4",
     "lastmod": "2026-11-13"
   },
   "/blog/organizing-circles-medium-center": {
-    "hash": "aef7032abd7f8aa3",
+    "hash": "00a21a1e616e9e2a",
     "lastmod": "2026-11-13"
   },
   "/blog/angry-parent-trust-moment": {
-    "hash": "1850a943a9b64398",
+    "hash": "0fd885fdf9bdfba2",
     "lastmod": "2026-11-13"
   },
   "/blog/how-to-know-teacher-is-working": {
-    "hash": "636428f8901ec25f",
+    "hash": "d805818844b60976",
     "lastmod": "2026-11-13"
   },
   "/blog/financial-chaos-not-money": {
-    "hash": "76cc49d8d76c4f1b",
+    "hash": "f289ac3bde82cdf8",
     "lastmod": "2026-11-13"
   },
   "/blog/monthly-reports-time-trap": {
-    "hash": "1326fdac27f086a5",
+    "hash": "ac9cbcf2a2643a3b",
     "lastmod": "2026-11-13"
   },
   "/blog/why-students-leave": {
-    "hash": "2898a1d5de0047da",
+    "hash": "e80c25a7198f5af2",
     "lastmod": "2026-11-13"
   },
   "/ihkaam/features/admin": {
-    "hash": "a19c25fb577aeec4",
-    "lastmod": "2026-11-13"
+    "hash": "b791e64559b422fc",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/academic": {
-    "hash": "eeaa1b40c92fe138",
-    "lastmod": "2026-11-13"
+    "hash": "0f8604529fe01685",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/daily": {
-    "hash": "b6a861e0ad4e8912",
-    "lastmod": "2026-11-13"
+    "hash": "b9edb14629b21acd",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/insights": {
-    "hash": "ea8242ea08fbd3a1",
-    "lastmod": "2026-11-13"
+    "hash": "8da9ca918c0e081a",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/parents": {
-    "hash": "39466fc9664d5cd4",
-    "lastmod": "2026-11-13"
+    "hash": "2731f0381f0ad477",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/reports": {
-    "hash": "87b2da1352946b94",
-    "lastmod": "2026-11-13"
+    "hash": "b93738084cb298c7",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/library": {
-    "hash": "fb2b16af4ed3654e",
-    "lastmod": "2026-11-13"
+    "hash": "64a3f2cd6aee198a",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/exams": {
-    "hash": "9bb3fdfc6207511d",
-    "lastmod": "2026-11-13"
+    "hash": "97407275834965ea",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/features/messages": {
-    "hash": "58a09556ee524de7",
-    "lastmod": "2026-11-13"
+    "hash": "9df5404c00ad49ad",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/addons/finance": {
-    "hash": "c0c8d86f49088853",
-    "lastmod": "2026-11-13"
+    "hash": "9e57fa6ab6015165",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/addons/subjects": {
-    "hash": "86086b1dddd06b80",
-    "lastmod": "2026-11-13"
+    "hash": "b355af1ca24aaac0",
+    "lastmod": "2026-11-20"
   },
   "/ihkaam/addons/star": {
-    "hash": "e7fd70ccd46287c1",
-    "lastmod": "2026-11-13"
+    "hash": "09fc549eb4d2ae37",
+    "lastmod": "2026-11-20"
+  },
+  "/tools": {
+    "hash": "5cb2b37b654d15b4",
+    "lastmod": "2026-11-21"
+  },
+  "/tools/hifz-plan": {
+    "hash": "9197ac8fbfe6c377",
+    "lastmod": "2026-11-21"
+  },
+  "/tools/review-plan": {
+    "hash": "75137c53f5717748",
+    "lastmod": "2026-11-21"
+  },
+  "/tools/khatm-calculator": {
+    "hash": "62d9167dd669c14d",
+    "lastmod": "2026-11-21"
+  },
+  "/tools/certificate": {
+    "hash": "50c9c64912c00817",
+    "lastmod": "2026-11-21"
   },
   "/help": {
-    "hash": "a44fe2671db16d74",
-    "lastmod": "2026-11-13"
+    "hash": "3141f9380956d600",
+    "lastmod": "2026-11-20"
   },
   "/help/login": {
-    "hash": "7fc4adf8a1cc64d6",
-    "lastmod": "2026-11-13"
+    "hash": "462b58dd76b16eab",
+    "lastmod": "2026-11-20"
   },
   "/help/dashboard-overview": {
-    "hash": "245b18a6c12ec571",
-    "lastmod": "2026-11-13"
+    "hash": "817458e65c59e9e6",
+    "lastmod": "2026-11-20"
   },
   "/help/signup": {
-    "hash": "25427a29aa3fd7f0",
-    "lastmod": "2026-11-13"
+    "hash": "5539b85a9462f8b7",
+    "lastmod": "2026-11-20"
   },
   "/help/payment": {
-    "hash": "66c9c4cd63252e80",
-    "lastmod": "2026-11-13"
+    "hash": "f6a3b87d1c946a76",
+    "lastmod": "2026-11-20"
   },
   "/help/install-home-screen": {
-    "hash": "c6b64954c9658984",
-    "lastmod": "2026-11-13"
+    "hash": "a7e965e63993d43f",
+    "lastmod": "2026-11-20"
   },
   "/help/moving-student-data": {
-    "hash": "5a4f318b29285a20",
-    "lastmod": "2026-11-13"
+    "hash": "2945c1bbc582ba15",
+    "lastmod": "2026-11-20"
   },
   "/help/student-registration": {
-    "hash": "121159f30b35012c",
-    "lastmod": "2026-11-13"
+    "hash": "e24e79b7d967d949",
+    "lastmod": "2026-11-20"
   },
   "/help/groups-management": {
-    "hash": "22d979dd385f6740",
-    "lastmod": "2026-11-13"
+    "hash": "ecc4ffbee53c09b4",
+    "lastmod": "2026-11-20"
   },
   "/help/student-transfer": {
-    "hash": "59d7b4dd1cce2634",
-    "lastmod": "2026-11-13"
+    "hash": "b62d08313ae16ccd",
+    "lastmod": "2026-11-20"
   },
   "/help/attendance-batch": {
-    "hash": "88c67a2b8521e3f8",
-    "lastmod": "2026-11-13"
+    "hash": "9c49595d781ff423",
+    "lastmod": "2026-11-20"
   },
   "/help/attendance-staff": {
-    "hash": "910e0164a6c7c596",
-    "lastmod": "2026-11-13"
+    "hash": "9f16cd90a4a27bb8",
+    "lastmod": "2026-11-20"
   },
   "/help/daily-recitation": {
-    "hash": "36a75f8231b3032c",
-    "lastmod": "2026-11-13"
+    "hash": "f4074584a172bdec",
+    "lastmod": "2026-11-20"
   },
   "/help/tests": {
-    "hash": "fcd7cf8697e9ae60",
-    "lastmod": "2026-11-13"
+    "hash": "d2f7abd2c0fea767",
+    "lastmod": "2026-11-20"
   },
   "/help/exam-queue": {
-    "hash": "c8f336c44689fa7d",
-    "lastmod": "2026-11-13"
+    "hash": "574ab154e4253553",
+    "lastmod": "2026-11-20"
   },
   "/help/monthly-eval": {
-    "hash": "979bab6636bf06e1",
-    "lastmod": "2026-11-13"
+    "hash": "9d685e2a93084ff2",
+    "lastmod": "2026-11-20"
   },
   "/help/finance-tuitions": {
-    "hash": "a928822714641cf3",
-    "lastmod": "2026-11-13"
+    "hash": "e71a7dafb8d57bcc",
+    "lastmod": "2026-11-20"
   },
   "/help/finance-ledger": {
-    "hash": "df5e6aad118547cb",
-    "lastmod": "2026-11-13"
+    "hash": "5e79d3a454d2cdf9",
+    "lastmod": "2026-11-20"
   },
   "/help/reports-overview": {
-    "hash": "42b14b485b4f1c08",
-    "lastmod": "2026-11-13"
+    "hash": "10dd4598e4b59201",
+    "lastmod": "2026-11-20"
   },
   "/help/archiving": {
-    "hash": "7823ff5b9b3bf1a1",
-    "lastmod": "2026-11-13"
+    "hash": "7072f74b9b858bc2",
+    "lastmod": "2026-11-20"
   },
   "/help/parent-portal": {
-    "hash": "d04c60040e8a854c",
-    "lastmod": "2026-11-13"
+    "hash": "3347bcbfa199ad24",
+    "lastmod": "2026-11-20"
   },
   "/help/staff-management": {
-    "hash": "f2a30614e6de9a49",
-    "lastmod": "2026-11-13"
+    "hash": "e18f0b15e736b19a",
+    "lastmod": "2026-11-20"
   },
   "/help/star-of-week": {
-    "hash": "10a7b80d06f7fda2",
-    "lastmod": "2026-11-13"
+    "hash": "0256fd2c34616cc0",
+    "lastmod": "2026-11-20"
   },
   "/help/smart-insights": {
-    "hash": "3712d603f8176d91",
-    "lastmod": "2026-11-13"
+    "hash": "da08934c4b10057e",
+    "lastmod": "2026-11-20"
   },
   "/help/insights-metrics": {
-    "hash": "8078d1fb9357982f",
-    "lastmod": "2026-11-13"
+    "hash": "1978e3d58161a09c",
+    "lastmod": "2026-11-20"
   }
 }

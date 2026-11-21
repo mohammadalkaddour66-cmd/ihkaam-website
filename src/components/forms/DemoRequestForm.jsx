@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { X, Loader2, CheckCircle2, ChevronDown } from 'lucide-react'
 import { supabase } from '../../config/supabaseClient'
@@ -124,16 +125,19 @@ export default function DemoRequestForm({ onClose }) {
     }
   }
 
-  return (
+  /* Portal إلى <body>: Layout يضع المحتوى داخل div بـzIndex:10 فيبقى الـoverlay
+     حبيس سياقه، ويطفو الـNavbar (z-50) وزر واتساب فوق اللوحة ويقصّان رأسها.
+     overflow-y-auto + m-auto على اللوحة: تتوسّط إن وسعتها الشاشة، وتُمرَّر إن ضاقت. */
+  return createPortal(
     <motion.div
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[99999] flex overflow-y-auto p-4"
       style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(12px)' }}
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
         dir="rtl"
-        className="relative w-full max-w-md rounded-2xl p-8"
+        className="relative w-full max-w-md rounded-2xl p-8 m-auto"
         style={{ background: 'linear-gradient(160deg,#FFFFFF 0%,#F8F5EC 100%)', border: '1px solid rgba(31, 111, 82, 0.18)', boxShadow: '0 40px 100px rgba(11, 59, 51, 0.21)' }}
         initial={{ opacity: 0, scale: 0.92, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -275,7 +279,7 @@ export default function DemoRequestForm({ onClose }) {
                             ...inputStyle,
                             appearance        : 'none',
                             WebkitAppearance  : 'none',
-                            width             : '5.25rem',
+                            width             : '8.6rem',
                             flexShrink        : 0,
                             overflow          : 'hidden',
                             textOverflow      : 'ellipsis',
@@ -293,7 +297,7 @@ export default function DemoRequestForm({ onClose }) {
                           {ARAB_COUNTRIES.map(c => (
                             <option key={c.code} value={c.code}
                               style={{ background: '#F8F5EC', color: '#1A2E28', fontWeight: 'normal' }}>
-                              {c.flag} {c.name} ({c.code})
+                              {c.name} ({c.code})
                             </option>
                           ))}
                           <option value="other"
@@ -355,6 +359,7 @@ export default function DemoRequestForm({ onClose }) {
           </>
         )}
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }

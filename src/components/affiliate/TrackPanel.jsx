@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { Search, Users, BadgeCheck, Wallet, TrendingUp, Clock } from 'lucide-react'
+import { useState } from 'react'
+import { Search, Users, BadgeCheck, Wallet, TrendingUp, Clock, Copy, Check, Link2 } from 'lucide-react'
 import { supabase } from '../../config/supabaseClient'
-import { AFFILIATE_PCT } from '../../config/affiliate'
+import { AFFILIATE_PCT, AFFILIATE_WINDOW_D, AFFILIATE_UPGRADE_D, affiliateLink } from '../../config/affiliate'
 
 const INK = '#0B3B33'
 
@@ -32,6 +32,7 @@ const STATE_NOTE = {
   awaiting_payment: 'بانتظار الدفع',
   not_annual      : 'لا عمولة على الشهري',
   repeat          : 'تجديد: لا عمولة',
+  outside_window  : `ترقية بعد ${AFFILIATE_UPGRADE_D} يوماً: لا عمولة`,
   pending         : 'بانتظار الدفع',
   rejected        : 'لم يكتمل',
 }
@@ -55,8 +56,20 @@ export default function TrackPanel({ prefill = '' }) {
   const [loading, setLoading] = useState(false)
   const [err,     setErr]     = useState('')
   const [res,     setRes]     = useState(null)
+  const [copied,  setCopied]  = useState('')
 
-  useEffect(() => { if (prefill) setCode(prefill) }, [prefill])
+  function copy(what, text) {
+    const done = () => { setCopied(what); setTimeout(() => setCopied(''), 2200) }
+    if (navigator.clipboard?.writeText) { navigator.clipboard.writeText(text).then(done).catch(() => {}) }
+  }
+
+  /* رمزٌ جديد من الرابط يملأ الحقل: يُضبط أثناء التصيير لا في effect
+     (النمط الذي توصي به React بدل setState متزامن داخل effect). */
+  const [lastPrefill, setLastPrefill] = useState(prefill)
+  if (prefill !== lastPrefill) {
+    setLastPrefill(prefill)
+    if (prefill) setCode(prefill)
+  }
 
   async function lookup(e) {
     e.preventDefault()
@@ -65,11 +78,15 @@ export default function TrackPanel({ prefill = '' }) {
     setLoading(true); setErr(''); setRes(null)
     const { data, error } = await supabase.rpc('get_affiliate_stats', { p_code: clean })
     setLoading(false)
-    if (error || !data?.affiliate) {
+    if (error) {
+      setErr('تعذّر الاتصال بالخدمة الآن. حاول بعد قليل، وإن استمر الأمر راسلنا من صفحة التواصل.')
+      return
+    }
+    if (!data?.affiliate) {
       setErr('لم نجد هذا الرمز. تأكد من كتابته كما وصلك، مثل IHK-AB12CD.')
       return
     }
-    setRes(data)
+    setRes({ ...data, code: clean })
   }
 
   /* القاعدة الجارية: العمولة على أول اشتراك سنوي معتمد فقط. الدالة في القاعدة تحسب
@@ -109,8 +126,40 @@ export default function TrackPanel({ prefill = '' }) {
             <span className="rounded-full px-3.5 py-1.5 text-[12.5px] font-bold" style={{ background: '#FDFBF7', color: aff.fg }}>{aff.label}</span>
           </div>
 
+          {/* رابط الشريك ورمزه حاضران دائماً في ملفه، مهما كانت حالة طلبه، ليجد ما ينسخه متى شاء */}
+          <div className="rounded-2xl p-5" style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+            <div className="grid md:grid-cols-[1.4fr_1fr] gap-5">
+              <div>
+                <div className="text-[14px] font-black mb-1" style={{ color: INK }}>الرابط: للمشاركة مع غيرك</div>
+                <p className="text-[12.5px] leading-[1.8] text-[#4A5D56] mb-3">
+                  أرسله لمن يدير معهداً. كل من يفتحه ثم يطلب النظام يُسجَّل لك تلقائياً لمدة {AFFILIATE_WINDOW_D} يوماً، دون أن يكتب شيئاً.
+                </p>
+                <div dir="ltr" className="rounded-xl px-4 py-3 text-[13px] truncate select-all mb-2"
+                  style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)', color: '#1A2E28' }}>{affiliateLink(res.code)}</div>
+                <button type="button" onClick={() => copy('link', affiliateLink(res.code))}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[13px] font-bold cursor-pointer w-full sm:w-auto"
+                  style={{ background: INK, color: '#F8F5EC' }}>
+                  {copied === 'link' ? <><Check size={14} /> نُسخ</> : <><Link2 size={14} /> نسخ الرابط</>}
+                </button>
+              </div>
+              <div>
+                <div className="text-[14px] font-black mb-1" style={{ color: INK }}>الرمز: مفتاح ملفك أنت</div>
+                <p className="text-[12.5px] leading-[1.8] text-[#4A5D56] mb-3">
+                  تكتبه في هذه الصفحة لتتابع إحالاتك وعمولتك. هو لك وحدك، فلا تعطه لأحد، وإن ضاع فراسلنا.
+                </p>
+                <div dir="ltr" className="rounded-xl px-4 py-3 text-[13px] font-black tracking-[0.1em] text-center select-all mb-2"
+                  style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)', color: INK }}>{res.code}</div>
+                <button type="button" onClick={() => copy('code', res.code)}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[13px] font-bold cursor-pointer w-full sm:w-auto"
+                  style={{ background: '#F8F5EC', color: INK, boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+                  {copied === 'code' ? <><Check size={14} /> نُسخ</> : <><Copy size={14} /> نسخ الرمز</>}
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <Stat icon={Users}      label="معاهد سجّلت برمزك"     value={res.total ?? refs.length} />
+            <Stat icon={Users}     label="معاهد سجّلت برمزك"     value={res.total ?? refs.length} />
             <Stat icon={BadgeCheck} label="اشتراكات محتسبة لك" value={counted.length} tone="#1F6F52" />
             <Stat icon={TrendingUp} label="عمولتك المستحقة"       value={money(earned)} tone="#8A6425" />
             <Stat icon={Wallet}     label="المتبقي لك"            value={money(remaining)} tone="#8A6425" />
@@ -133,6 +182,11 @@ export default function TrackPanel({ prefill = '' }) {
                         <div className="text-[12.5px] text-[#5E6E67]">
                           {r.tier || 'باقة'} · {annual ? 'سنوي' : 'شهري'} · {dateAr(r.date)}
                         </div>
+                        {r.upgrade_by && (
+                          <div className="text-[12.5px] font-bold mt-1" style={{ color: '#8A6425' }}>
+                            إن رُقّي إلى سنوي قبل {dateAr(r.upgrade_by)} تُحتسب لك {AFFILIATE_PCT}%.
+                          </div>
+                        )}
                       </div>
                       <span className="rounded-full px-3 py-1 text-[12px] font-bold" style={{ background: st.bg, color: st.fg }}>{st.label}</span>
                       <div className="min-w-[96px] text-end text-[14px] font-black" style={{ color: '#8A6425', unicodeBidi: 'plaintext' }}>
@@ -148,7 +202,7 @@ export default function TrackPanel({ prefill = '' }) {
               </ul>
             )}
           </div>
-          <p className="text-[12.5px] text-center text-[#5E6E67]">العمولة {AFFILIATE_PCT}% من أول اشتراك سنوي، وتُحتسب بعد استلام الدفعة الفعلية.</p>
+          <p className="text-[12.5px] text-center text-[#5E6E67]">العمولة {AFFILIATE_PCT}% من أول اشتراك سنوي، وتُحتسب بعد استلام الدفعة الفعلية. وإن بدأ المعهد شهرياً ثم دفع سنوياً وأكّدنا استلام دفعته خلال {AFFILIATE_UPGRADE_D} يوماً من تفعيل حسابه (وتدخل فيها أيام التجربة)، تُحتسب لك تلقائياً.</p>
         </div>
       )}
     </div>

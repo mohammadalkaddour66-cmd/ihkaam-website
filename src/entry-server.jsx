@@ -5,6 +5,8 @@ import { SITE, ROUTE_SEO, buildTitle, clampDescription, blogSeo } from './config
 import { BLOG_POSTS, BLOG_CATEGORIES, countWords } from './data/blogContent'
 import { FEATURES, CORE, ADDONS } from './data/featureDetails'
 import { CATEGORIES, ARTICLES } from './data/helpContent'
+import { TOOLS, TOOLS_HUB, getTool } from './config/tools'
+import { ADDON_FEATURES, videosForPath, isoDuration } from './data/videos'
 
 /* ══════════════════════════════════════════════════════════════════
    مدخل الخادم — يُستعمل وقت البناء فقط (scripts/prerender.mjs).
@@ -159,6 +161,28 @@ function postLd(post, meta) {
   }
 }
 
+/* فيديو يوتيوب ظاهر في الصفحة (LiteYouTube). الغلاف مستضاف عندنا، فيقرؤه
+   الزاحف بلا طلب إلى يوتيوب. لا contentUrl: رابط المشاهدة ليس ملف وسائط،
+   وGoogle يكتفي بـ embedUrl لما يُضمَّن. */
+function videoLd(path, v) {
+  return {
+    '@type': 'VideoObject',
+    '@id': `${abs(path)}#video-${v.key}`,
+    name: v.name,
+    description: v.desc,
+    thumbnailUrl: `${O}${v.poster}`,
+    uploadDate: v.uploaded,
+    duration: isoDuration(v.seconds),
+    embedUrl: v.embedUrl,
+    inLanguage: 'ar',
+    publisher: ORG_REF,
+  }
+}
+
+if (ADDON_FEATURES.join() !== ADDONS.join()) {
+  throw new Error('ADDON_FEATURES في videos.js لا تطابق ADDONS في featureDetails.js: حدّثهما معاً')
+}
+
 const HOME = ['الرئيسية', '/']
 
 function pageGraph(path, meta) {
@@ -207,6 +231,42 @@ function pageGraph(path, meta) {
     return [
       webPage('WebPage', path, meta, { about: APP_REF }),
       crumbs([HOME, ['منصة إحكام', '/ihkaam'], [bare(meta.title), path]]),
+    ]
+  }
+
+  /* الأدوات المجانية: الصفحة الجامعة قائمةٌ بها، وكل أداة WebApplication
+     مجاني بلا سعر ولا offers (قاعدة المخطط أعلاه)، يعمل في المتصفح. */
+  if (path === TOOLS_HUB.path) return [
+    webPage('CollectionPage', path, meta, {
+      publisher: ORG_REF,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: TOOLS.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: abs(t.path) })),
+      },
+    }),
+    crumbs([HOME, [TOOLS_HUB.name, path]]),
+  ]
+
+  if ((m = path.match(/^\/tools\/([^/]+)$/))) {
+    const t = getTool(m[1])
+    if (!t) return null
+    return [
+      webPage('WebPage', path, meta, { mainEntity: { '@id': `${abs(path)}#app` } }),
+      {
+        '@type': 'WebApplication',
+        '@id': `${abs(path)}#app`,
+        name: t.name,
+        url: abs(path),
+        description: meta.description,
+        applicationCategory: 'EducationalApplication',
+        operatingSystem: 'Any',
+        browserRequirements: 'Requires JavaScript',
+        isAccessibleForFree: true,
+        inLanguage: 'ar',
+        image: meta.image,
+        publisher: ORG_REF,
+      },
+      crumbs([HOME, [TOOLS_HUB.name, TOOLS_HUB.path], [t.name, path]]),
     ]
   }
 
@@ -290,6 +350,15 @@ export function finalizeMeta(url, meta, html) {
   const faq = extractFaq(html)
   if (faq.length >= 2) graph.push(faqLd(path, faq))
 
+  /* الفيديوهات الظاهرة في الصفحة (data/videos.js هو مصدر الصفحة والبيانات معاً).
+     يُربط كلٌّ منها بالصفحة نفسها (WebPage أو HowTo) بخاصية video. */
+  const videos = videosForPath(path)
+  if (videos.length) {
+    const nodes = videos.map(v => videoLd(path, v))
+    graph[0] = { ...graph[0], video: nodes.map(n => ({ '@id': n['@id'] })) }
+    graph.push(...nodes)
+  }
+
   out.jsonLd = { '@context': 'https://schema.org', '@graph': graph }
   return out
 }
@@ -317,6 +386,9 @@ export function getRoutes() {
     }
   }
 
+  routes.push({ path: TOOLS_HUB.path, priority: 0.8 })
+  for (const t of TOOLS) routes.push({ path: t.path, priority: 0.8 })
+
   routes.push({ path: '/help', priority: 0.6 })
   for (const c of CATEGORIES) {
     routes.push({ path: `/help/category/${c.id}`, priority: 0.4 })
@@ -336,5 +408,6 @@ export function getSiteOutline() {
     addons: ADDONS.filter(s => FEATURES[s]).map(s => `/ihkaam/addons/${s}`),
     blog  : BLOG_POSTS.map(p => `/blog/${p.slug}`),
     help  : Object.keys(ARTICLES).map(s => `/help/${s}`),
+    tools : TOOLS.map(t => t.path),
   }
 }

@@ -79,6 +79,7 @@ const navGroups = [
       { label: 'الرئيسية',         to: '/'          },
       { label: 'منصة إحكام',       to: '/ihkaam'    },
       { label: 'من نحن',           to: '/about'     },
+      { label: 'أدوات مجانية',     to: '/tools'     },
       { label: 'تواصل معنا',       to: '/contact'   },
       { label: 'الدعم الفني',      to: '/help'      },
     ],

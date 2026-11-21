@@ -1,17 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import {
-  ChevronLeft, Lightbulb, AlertTriangle, CheckCircle2, MessageCircle,
-} from 'lucide-react'
-import { getArticle, getCategoryForArticle, ARTICLES, CATEGORIES } from '../data/helpContent'
+import { motion, useScroll, useSpring } from 'framer-motion'
+import { ChevronLeft, ArrowLeft, Lightbulb, AlertTriangle, CheckCircle2, ListOrdered, Plus, MessageCircle, Clock } from 'lucide-react'
+import { getArticle, getCategoryForArticle, ARTICLES } from '../data/helpContent'
+import { ARTICLE_VISUAL } from '../data/helpVisuals'
+import { BrowserFrame, PhoneFrame } from '../components/help/ShotFrame'
 import PageMeta from '../components/layout/PageMeta'
-import { SITE, composeDescription } from '../config/seo'
+import { SITE, composeDescription, FEATURE_SEO } from '../config/seo'
+import VideoCard from '../components/video/VideoCard'
+import { helpVideos, featuresOfVideo, featurePath } from '../data/videos'
 
-/* ─── Step card ──────────────────────────────────────────── */
+const INK = '#0B3B33', GREEN = '#1F6F52', GOLD = '#B8863A', GOLD_TXT = '#8A6425'
 
-/* يحوّل نص الخطوة إلى كتل: أسطر «•» المتتالية تصير قائمة واحدة،
-   وما عداها فقرات. الأسطر الفارغة تُهمَل حتى لا تولّد فراغات وهمية. */
+/* يحوّل نص الخطوة إلى كتل: أسطر «•» المتتالية قائمة واحدة، وما عداها فقرات */
 function parseBody(body) {
   const blocks = []
   for (const raw of body.split('\n')) {
@@ -21,70 +22,47 @@ function parseBody(body) {
       const text = line.replace(/^•\s*/, '')
       if (blocks.at(-1)?.type === 'list') blocks.at(-1).items.push(text)
       else blocks.push({ type: 'list', items: [text] })
-    } else {
-      blocks.push({ type: 'text', text: line })
-    }
+    } else blocks.push({ type: 'text', text: line })
   }
   return blocks
 }
 
-function StepCard({ step, num, color, isLast }) {
+/* ─── خطوة: رقمٌ كبير على خطٍّ واصل، ثم النص ─── */
+function Step({ step, num, isLast }) {
   const blocks = parseBody(step.body)
   return (
-    <div className="relative flex gap-4 sm:gap-5">
-      <div className="flex-shrink-0 flex flex-col items-center">
-        <div
-          className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm"
-          style={{ background: color + '22', color, border: `2px solid ${color}40` }}
-        >
-          {num}
-        </div>
-        {/* لا خطّ واصل بعد الخطوة الأخيرة — كان يتدلّى بلا وجهة */}
-        {!isLast && <div className="flex-1 w-px mt-2" style={{ background: color + '20' }} />}
+    <div id={`s-${num}`} className="relative flex gap-4 sm:gap-6 scroll-mt-28">
+      <div className="flex flex-col items-center shrink-0">
+        <span className="w-11 h-11 rounded-xl grid place-items-center font-bold text-[17px] tabular-nums"
+          style={{ background: INK, color: '#E0B562', fontFamily: 'cairo-latin, inherit', boxShadow: '0 8px 18px -8px rgba(8,44,38,.6)' }}>{num}</span>
+        {!isLast && <span className="flex-1 w-[2px] mt-2 rounded-full" style={{ background: 'linear-gradient(180deg, rgba(184,134,58,.55), rgba(184,134,58,.08))' }} />}
       </div>
-
-      <div className={`flex-1 min-w-0 ${isLast ? 'pb-2' : 'pb-7'}`}>
-        <h3 className="text-[#1A2E28] font-bold text-base mb-2">{step.title}</h3>
-
-        <div className="text-[#1A2E28]/65 text-sm leading-relaxed space-y-2">
-          {blocks.map((block, i) =>
-            block.type === 'text' ? (
-              <p key={i}>{block.text}</p>
-            ) : (
-              /* قائمة حقيقية: علامة ملوّنة + إزاحة معلّقة تُبقي الأسطر
-                 الملتفّة محاذية للنص لا للعلامة */
-              <ul key={i} className="space-y-1.5 pt-0.5">
-                {block.items.map((item, j) => (
-                  <li key={j} className="flex items-start gap-2.5">
-                    <span
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[0.5em]"
-                      style={{ background: color }}
-                    />
-                    <span className="flex-1 text-[#1A2E28]/60">{item}</span>
+      <div className={`flex-1 min-w-0 ${isLast ? '' : 'pb-9'}`}>
+        <h3 className="font-bold text-[19px] leading-snug text-[#1A2E28] mb-2.5 pt-1.5">{step.title}</h3>
+        <div className="space-y-3 text-[16.5px] leading-[1.95] text-[#2F4540]">
+          {blocks.map((b, i) => b.type === 'text'
+            ? <p key={i}>{b.text}</p>
+            : (
+              <ul key={i} className="space-y-2">
+                {b.items.map((it, j) => (
+                  <li key={j} className="flex gap-3">
+                    <span aria-hidden className="mt-[0.75em] w-2 h-2 rotate-45 shrink-0" style={{ background: GOLD }} />
+                    <span className="flex-1">{it}</span>
                   </li>
                 ))}
               </ul>
-            )
-          )}
+            ))}
         </div>
-
         {step.note && (
-          <div
-            className="mt-3 rounded-xl px-4 py-3 flex gap-3 items-start"
-            style={{ background: '#1F6F52' + '14', border: '1px solid #1F6F52' + '30' }}
-          >
-            <CheckCircle2 size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#1F6F52' }} />
-            <p className="text-[#1A2E28]/75 text-xs leading-relaxed">{step.note}</p>
+          <div className="mt-4 rounded-2xl px-4 py-3.5 flex gap-3 items-start" style={{ background: 'rgba(31,111,82,.08)', boxShadow: 'inset 0 0 0 1px rgba(31,111,82,.22)' }}>
+            <CheckCircle2 size={17} className="shrink-0 mt-0.5" style={{ color: GREEN }} />
+            <p className="text-[14.5px] leading-[1.85] text-[#1A2E28]">{step.note}</p>
           </div>
         )}
-
         {step.warning && (
-          <div
-            className="mt-3 rounded-xl px-4 py-3 flex gap-3 items-start"
-            style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.25)' }}
-          >
-            <AlertTriangle size={15} className="flex-shrink-0 mt-0.5 text-[#C0392B]" />
-            <p className="text-[#1A2E28]/75 text-xs leading-relaxed">{step.warning}</p>
+          <div className="mt-4 rounded-2xl px-4 py-3.5 flex gap-3 items-start" style={{ background: 'rgba(192,57,43,.07)', boxShadow: 'inset 0 0 0 1px rgba(192,57,43,.22)' }}>
+            <AlertTriangle size={17} className="shrink-0 mt-0.5 text-[#C0392B]" />
+            <p className="text-[14.5px] leading-[1.85] text-[#1A2E28]">{step.warning}</p>
           </div>
         )}
       </div>
@@ -92,163 +70,122 @@ function StepCard({ step, num, color, isLast }) {
   )
 }
 
-/* ─── Sidebar ────────────────────────────────────────────── */
-function HelpSidebar({ article, catColor }) {
-  const related = article.related?.map(s => ARTICLES[s]).filter(Boolean) || []
-  /* بقية مقالات القسم نفسه: ربطٌ داخلي بين المقالات المتجاورة */
-  const siblings = Object.values(ARTICLES).filter(
-    a => a.category === article.category && a.slug !== article.slug && !related.includes(a),
-  )
-  /* ثلاث مقالات تالية من بقية الأقسام، دورانياً: كل مقالة تصلها روابط من غيرها */
-  const all = Object.values(ARTICLES)
-  const at = all.findIndex(a => a.slug === article.slug)
-  const more = [1, 2, 3]
-    .map(n => all[(at + n) % all.length])
-    .filter(a => a && a.slug !== article.slug && !related.includes(a) && !siblings.includes(a))
+/* ─── فهرس الخطوات مع تتبّع الخطوة الظاهرة ─── */
+function useActiveStep(count) {
+  const [active, setActive] = useState(1)
+  useEffect(() => {
+    if (!count) return
+    const els = Array.from({ length: count }, (_, i) => document.getElementById(`s-${i + 1}`)).filter(Boolean)
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+      if (vis[0]) setActive(Number(vis[0].target.id.slice(2)))
+    }, { rootMargin: '-15% 0px -70% 0px' })
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [count])
+  return active
+}
 
+function StepsToc({ steps, active }) {
   return (
-    <aside className="space-y-5">
-
-      {/* Steps overview — تكرارٌ محض على الموبايل: الخطوات كاملةً فوقه مباشرة */}
-      <div
-        className="hidden lg:block rounded-2xl p-5 border border-[#0B3B33]/7"
-        style={{ background: 'rgba(11, 59, 51, 0.025)' }}
-      >
-        <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
-          الخطوات ({article.steps.length})
-        </h3>
-        <ol className="space-y-2.5">
-          {article.steps.map((step, i) => (
-            <li key={i} className="flex items-start gap-2.5">
-              <span
-                className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 mt-0.5"
-                style={{ background: catColor + '20', color: catColor }}
-              >
-                {i + 1}
-              </span>
-              <span className="text-[#1A2E28]/70 text-xs leading-snug">{step.title}</span>
+    <nav aria-label="خطوات الشرح">
+      <div className="flex items-center gap-2 mb-3 text-[13px] font-bold" style={{ color: GOLD_TXT }}>
+        <ListOrdered size={15} /> خطوات الشرح
+      </div>
+      <ol className="space-y-0.5" style={{ borderInlineStart: '2px solid var(--line-warm)' }}>
+        {steps.map((s, i) => {
+          const on = active === i + 1
+          return (
+            <li key={i}>
+              <a href={`#s-${i + 1}`} className="relative flex gap-2.5 ps-4 py-1.5 text-[13.5px] leading-snug transition-colors"
+                style={{ color: on ? INK : '#5E6E67', fontWeight: on ? 700 : 500 }}>
+                {on && <motion.span layoutId="step-bar" className="absolute top-0 bottom-0 w-[2px]" style={{ insetInlineStart: -2, background: GOLD }} />}
+                <span className="tabular-nums" style={{ color: GOLD_TXT }}>{i + 1}</span>{s.title}
+              </a>
             </li>
-          ))}
-        </ol>
-      </div>
-
-      {/* Related articles */}
-      {related.length > 0 && (
-        <div
-          className="rounded-2xl p-5 border border-[#0B3B33]/7"
-          style={{ background: 'rgba(11, 59, 51, 0.025)' }}
-        >
-          <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
-            مقالات ذات صلة
-          </h3>
-          <div className="space-y-3">
-            {related.map(a => {
-              return (
-                <Link
-                  key={a.slug}
-                  to={`/help/${a.slug}`}
-                  className="group flex items-start gap-2.5"
-                >
-                  <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
-                  <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">
-                    {a.title}
-                  </p>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Same category */}
-      {siblings.length > 0 && (
-        <div
-          className="rounded-2xl p-5 border border-[#0B3B33]/7"
-          style={{ background: 'rgba(11, 59, 51, 0.025)' }}
-        >
-          <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
-            من القسم نفسه
-          </h3>
-          <div className="space-y-3">
-            {siblings.map(a => (
-              <Link key={a.slug} to={`/help/${a.slug}`} className="group flex items-start gap-2.5">
-                <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
-                <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">{a.title}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* More articles + categories */}
-      <div
-        className="rounded-2xl p-5 border border-[#0B3B33]/7"
-        style={{ background: 'rgba(11, 59, 51, 0.025)' }}
-      >
-        {more.length > 0 && (
-          <>
-            <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
-              مقالات أخرى في الدعم
-            </h3>
-            <div className="space-y-3 mb-5">
-              {more.map(a => (
-                <Link key={a.slug} to={`/help/${a.slug}`} className="group flex items-start gap-2.5">
-                  <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
-                  <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">{a.title}</p>
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
-        <h3 className="text-[#1A2E28]/70 text-xs font-bold uppercase tracking-widest mb-4">
-          أقسام الدعم
-        </h3>
-        <div className="space-y-3">
-          {CATEGORIES.map(c => (
-            <Link key={c.id} to={`/help/category/${c.id}`} className="group flex items-start gap-2.5">
-              <ChevronLeft size={14} className="text-[#1A2E28]/60 flex-shrink-0 mt-0.5 group-hover:text-[#1A2E28]/70 transition-colors" />
-              <p className="text-[#1A2E28]/60 text-xs leading-snug group-hover:text-[#1A2E28] transition-colors">{c.label}</p>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Need help */}
-      <div
-        className="rounded-2xl p-5 border text-center"
-        style={{ background: catColor + '08', borderColor: catColor + '25' }}
-      >
-        <MessageCircle size={20} className="mx-auto mb-2" style={{ color: catColor }} />
-        <p className="text-[#1A2E28]/60 text-xs leading-relaxed mb-3">
-          المقالة لم تحل مشكلتك؟ تواصل مع الدعم مباشرة.
-        </p>
-        <Link
-          to="/contact"
-          className="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg"
-          style={{ background: catColor + '20', color: catColor }}
-        >
-          تواصل معنا
-        </Link>
-      </div>
-    </aside>
+          )
+        })}
+      </ol>
+    </nav>
   )
 }
 
-/* ─── Main ───────────────────────────────────────────────── */
+/* ─── صورة الشرح: الشاشة الحقيقية، وهاتفها يتراكب على حافتها ─── */
+function ArticleVisual({ visual }) {
+  if (!visual) return null
+  const { main, side } = visual
+  return (
+    <div className="relative max-w-4xl mx-auto mt-10">
+      {main.kind === 'phone' ? (
+        <div className="flex justify-center"><PhoneFrame shot={main} width={240} eager /></div>
+      ) : main.kind === 'scene' ? (
+        <div className="rounded-[26px] overflow-hidden aspect-[21/9]" style={{ boxShadow: 'var(--shadow-lg)', background: '#E9E3D5' }}>
+          <img src={main.src} alt="" className="w-full h-full object-cover" />
+        </div>
+      ) : (
+        <>
+          <BrowserFrame shot={main} eager />
+          {side && (
+            <div className="hidden sm:block absolute -bottom-8 left-[-2%] md:left-[-5%]">
+              <PhoneFrame shot={side} width={128} />
+            </div>
+          )}
+        </>
+      )}
+      {main.caption && (
+        <p className="text-[13px] leading-relaxed text-[#5E6E67] text-center max-w-xl mx-auto mt-5">{main.caption}</p>
+      )}
+    </div>
+  )
+}
+
+function MiniCard({ a }) {
+  const v = ARTICLE_VISUAL[a.slug]?.main
+  return (
+    <Link to={`/help/${a.slug}`} className="group flex items-center gap-3 rounded-2xl p-3 transition-all hover:-translate-y-0.5"
+      style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+      {v && (
+        <span className="shrink-0 w-16 h-12 rounded-lg overflow-hidden" style={{ background: '#F1ECDF' }}>
+          <img src={v.srcSm} alt="" loading="lazy" className="w-full h-full object-cover" style={{ objectPosition: v.kind === 'phone' ? 'top' : 'right top' }} />
+        </span>
+      )}
+      <span className="flex-1 text-[14px] font-bold leading-snug text-[#1A2E28] group-hover:text-[#1F6F52] transition-colors">{a.title}</span>
+      <ChevronLeft size={15} className="text-[#5E6E67] shrink-0 transition-transform group-hover:-translate-x-1" />
+    </Link>
+  )
+}
+
+/* ─── الصفحة ─── */
 export default function HelpArticle() {
-  const { slug } = useParams()
+  const { slug }  = useParams()
   const navigate  = useNavigate()
   const article   = getArticle(slug)
   const cat       = getCategoryForArticle(slug)
 
-  useEffect(() => {
-    if (!article) navigate('/help', { replace: true })
-  }, [article, navigate])
+  useEffect(() => { if (!article) navigate('/help', { replace: true }) }, [article, navigate])
+
+  const stepCount = article?.steps.length || 0
+  const active    = useActiveStep(stepCount)
+  const { scrollYProgress } = useScroll()
+  const progress  = useSpring(scrollYProgress, { stiffness: 160, damping: 30, restDelta: 0.001 })
+
+  const more = useMemo(() => {
+    if (!article) return []
+    const related = (article.related || []).map(s => ARTICLES[s]).filter(Boolean)
+    const siblings = Object.values(ARTICLES).filter(a => a.category === article.category && a.slug !== article.slug && !related.includes(a))
+    const all = Object.values(ARTICLES)
+    const at = all.findIndex(a => a.slug === article.slug)
+    const next = [1, 2, 3].map(n => all[(at + n) % all.length])
+      .filter(a => a && a.slug !== article.slug && !related.includes(a) && !siblings.includes(a))
+    return [...related, ...siblings, ...next].slice(0, 6)
+  }, [article])
 
   if (!article) return null
 
-  const catColor = cat?.color || '#1F6F52'
-  const Icon     = cat?.icon
+  const Icon   = cat?.icon
+  const visual = ARTICLE_VISUAL[article.slug]
+  const faq    = article.faq || []
+  const videos = helpVideos(slug)
 
   return (
     <div dir="rtl" style={{ background: '#F8F5EC', minHeight: '100vh' }}>
@@ -272,185 +209,158 @@ export default function HelpArticle() {
                 { '@type': 'ListItem', position: 3, name: article.title },
               ],
             },
-            ...(article.faq?.length ? [{
+            ...(faq.length ? [{
               '@type': 'FAQPage',
-              mainEntity: article.faq.map(f => ({
-                '@type': 'Question',
-                name: f.q,
-                acceptedAnswer: { '@type': 'Answer', text: f.a },
-              })),
+              mainEntity: faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
             }] : []),
           ],
         }}
       />
 
-      {/* ─── Hero ───────────────────────────────────── */}
-      <div
-        className="relative pt-24 sm:pt-28 pb-8 sm:pb-12 px-5 sm:px-6 overflow-hidden"
-        style={{
-          background: `radial-gradient(ellipse 70% 50% at 50% -5%, ${catColor}14 0%, transparent 70%)`,
-        }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `
-              linear-gradient(${catColor}05 1px, transparent 1px),
-              linear-gradient(90deg, ${catColor}05 1px, transparent 1px)
-            `,
-            backgroundSize: '48px 48px',
-          }}
-        />
-        <div
-          className="absolute top-0 inset-x-0 h-1"
-          style={{ background: `linear-gradient(90deg, transparent, ${catColor}80, transparent)` }}
-        />
+      <motion.div aria-hidden className="fixed top-0 inset-x-0 h-[3px] z-[60] origin-right"
+        style={{ scaleX: progress, background: `linear-gradient(270deg, ${GOLD}, #E0B562)` }} />
 
-        <div className="relative max-w-6xl mx-auto">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-[#1A2E28]/60 mb-6 flex-wrap">
-            <Link to="/help" className="hover:text-[#1A2E28]/70 transition-colors">الدعم الفني</Link>
+      {/* ─── الرأس ─── */}
+      <header className="relative pt-28 sm:pt-32 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          <nav className="flex items-center gap-1.5 text-[12px] text-[#5E6E67] mb-6 flex-wrap" aria-label="مسار التنقل">
+            <Link to="/help" className="hover:text-[#1A2E28]">مركز المساعدة</Link>
             <ChevronLeft size={12} />
-            {cat && (
-              <>
-                <Link to={`/help/category/${cat.id}`} className="hover:text-[#1A2E28]/70 transition-colors">
-                  {cat.label}
-                </Link>
-                <ChevronLeft size={12} />
-              </>
-            )}
-            <span className="text-[#1A2E28]/70">{article.title}</span>
+            {cat && <><Link to={`/help/category/${cat.id}`} className="hover:text-[#1A2E28]">{cat.label}</Link><ChevronLeft size={12} /></>}
+            <span className="text-[#1A2E28]">{article.title}</span>
           </nav>
-
-          {cat && Icon && (
-            <div
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold mb-4"
-              style={{ background: catColor + '20', color: catColor }}
-            >
-              <Icon size={12} />
-              {cat.label}
+          <div className="max-w-4xl page-enter">
+            {cat && <span className="eyebrow">{Icon && <Icon size={14} />} {cat.label}</span>}
+            <h1 className="font-bold text-[#1A2E28] mt-5 mb-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.9rem)', lineHeight: 1.25 }}>{article.title}</h1>
+            <p className="text-[17px] sm:text-[19px] leading-[1.85] text-[#4A5D56] max-w-3xl">{article.description}</p>
+            <div className="flex items-center gap-x-4 gap-y-2 flex-wrap text-[13px] text-[#5E6E67] mt-6">
+              <span className="flex items-center gap-1.5 font-bold" style={{ color: GOLD_TXT }}><Clock size={14} /> {article.steps.length} خطوات</span>
+              {article.whoFor?.length > 0 && <>
+                <span className="w-1 h-1 rounded-full bg-[#0B3B33]/25" />
+                <span>لـ {article.whoFor.join('، ')}</span>
+              </>}
             </div>
-          )}
-
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#1A2E28] text-3xl md:text-4xl font-black mb-3 max-w-3xl"
-            style={{ lineHeight: 1.25 }}
-          >
-            {article.title}
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0, transition: { delay: 0.08, duration: 0.5 } }}
-            className="text-[#1A2E28]/70 text-sm sm:text-base leading-relaxed mb-5 max-w-2xl"
-          >
-            {article.description}
-          </motion.p>
-
-          {article.whoFor?.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              <span className="text-[#1A2E28]/60 text-xs self-center">مناسب لـ:</span>
-              {article.whoFor.map(w => (
-                <span
-                  key={w}
-                  className="text-xs px-2.5 py-1 rounded-full border font-medium"
-                  style={{ borderColor: catColor + '40', color: catColor + 'cc', background: catColor + '0e' }}
-                >
-                  {w}
-                </span>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+        <div className="pb-6"><ArticleVisual visual={visual} /></div>
+      </header>
 
-      {/* ─── Two-column body ────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-5 sm:px-6 pb-20 sm:pb-28">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-14">
+      {/* ─── المتن ─── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-10 lg:gap-16">
+          <main className="min-w-0 max-w-[720px]">
+            {article.intro && <p className="text-[19px] leading-[1.95] text-[#1A2E28] font-medium mb-10">{article.intro}</p>}
 
-          {/* Main content */}
-          <main className="flex-1 min-w-0 pt-8 sm:pt-10">
-            {article.intro && (
-              <p className="text-[#1A2E28]/70 text-base leading-loose mb-8 sm:mb-10">
-                {article.intro}
-              </p>
+            {videos.length > 0 && (
+              <section className="mb-12" aria-labelledby="watch-h">
+                <h2 id="watch-h" className="font-bold text-[#1A2E28] mb-5" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.7rem)' }}>
+                  شاهد الشرح <span className="title-mark">مصوّراً</span>
+                </h2>
+                <div className="space-y-10">
+                  {videos.map(v => (
+                    <VideoCard
+                      key={v.key}
+                      video={v}
+                      links={featuresOfVideo(v.key).filter(f => FEATURE_SEO[f]).map(f => [featurePath(f), `عن الميزة: ${FEATURE_SEO[f].title}`])}
+                    />
+                  ))}
+                </div>
+              </section>
             )}
-            <h2 className="text-[#1A2E28] font-bold text-xl mb-6 sm:mb-8 flex items-center gap-3">
-              <span
-                className="w-1 h-6 rounded-full inline-block"
-                style={{ background: catColor }}
-              />
-              خطوة بخطوة: {article.title}
-            </h2>
+
+            <details className="lg:hidden mb-8 rounded-2xl px-5 py-4" style={{ background: '#FDFBF7', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+              <summary className="cursor-pointer font-bold text-[14px] flex items-center gap-2" style={{ color: INK }}>
+                <ListOrdered size={16} /> الخطوات ({article.steps.length})
+              </summary>
+              <ol className="mt-3 space-y-2">
+                {article.steps.map((s, i) => (
+                  <li key={i}><a href={`#s-${i + 1}`} className="flex gap-3 text-[14px] text-[#2F4540]">
+                    <span className="tabular-nums font-bold" style={{ color: GOLD_TXT }}>{i + 1}</span>{s.title}
+                  </a></li>
+                ))}
+              </ol>
+            </details>
 
             <div>
-              {article.steps.map((step, i) => (
-                <StepCard key={i} step={step} num={i + 1} color={catColor}
-                  isLast={i === article.steps.length - 1} />
-              ))}
+              {article.steps.map((s, i) => <Step key={i} step={s} num={i + 1} isLast={i === article.steps.length - 1} />)}
             </div>
 
-            {/* Tips */}
             {article.tips?.length > 0 && (
-              <div
-                className="mt-8 sm:mt-10 rounded-2xl p-5 sm:p-6"
-                style={{ background: 'rgba(255,213,75,0.06)', border: '1px solid rgba(255,213,75,0.18)' }}
-              >
-                <h3 className="font-bold text-base mb-4 flex items-center gap-2" style={{ color: '#8A6425' }}>
-                  <Lightbulb size={18} />
-                  نصائح مفيدة
-                </h3>
-                <ul className="space-y-2.5">
-                  {article.tips.map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-[#1A2E28]/65 text-sm leading-relaxed">
-                      <span
-                        className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
-                        style={{ background: '#B8863A' }}
-                      />
-                      {tip}
+              <aside className="relative mt-12 rounded-[22px] p-6 sm:p-7 overflow-hidden" style={{ background: '#F1ECDF', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+                <span aria-hidden className="absolute inset-y-0 right-0 w-1.5" style={{ background: `linear-gradient(180deg, ${GOLD}, ${GREEN})` }} />
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="flex items-center gap-1.5 text-[12px] font-bold rounded-full px-3 py-1" style={{ background: INK, color: '#E0B562' }}>
+                    <Lightbulb size={13} /> نصائح
+                  </span>
+                </div>
+                <ul className="space-y-3">
+                  {article.tips.map((t, i) => (
+                    <li key={i} className="flex gap-3 text-[16px] leading-[1.9] text-[#1A2E28]">
+                      <span aria-hidden className="mt-[0.75em] w-2 h-2 rotate-45 shrink-0" style={{ background: GOLD }} />{t}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </aside>
             )}
-            {/* FAQ */}
-            {article.faq?.length > 0 && (
-              <section className="mt-10 sm:mt-12">
-                <h2 className="text-[#1A2E28] font-bold text-xl mb-5 flex items-center gap-3">
-                  <span
-                    className="w-1 h-6 rounded-full inline-block"
-                    style={{ background: catColor }}
-                  />
-                  أسئلة شائعة: {article.title}
-                </h2>
-                <div className="space-y-4">
-                  {article.faq.map((f, i) => (
-                    <div
-                      key={i}
-                      className="rounded-2xl p-5 border border-[#0B3B33]/8"
-                      style={{ background: 'rgba(11, 59, 51, 0.03)' }}
-                    >
-                      <h3 className="text-[#1A2E28] font-bold text-base mb-2">{f.q}</h3>
-                      <p className="text-[#1A2E28]/60 text-sm leading-relaxed">{f.a}</p>
-                    </div>
+
+            {faq.length > 0 && (
+              <section className="mt-14">
+                <h2 className="font-bold text-[#1A2E28] mb-5" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.7rem)' }}>أسئلة شائعة</h2>
+                <div className="space-y-2.5">
+                  {faq.map((f, i) => (
+                    <details key={i} className="group rounded-2xl px-5 py-4 open:pb-5" style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
+                      <summary className="flex items-center justify-between gap-4 cursor-pointer list-none font-bold text-[16px] text-[#1A2E28] [&::-webkit-details-marker]:hidden">
+                        {f.q}
+                        <span className="shrink-0 w-8 h-8 rounded-full grid place-items-center transition-transform group-open:rotate-45" style={{ background: '#F1ECDF', color: INK }}><Plus size={16} /></span>
+                      </summary>
+                      <p className="text-[15.5px] leading-[1.9] text-[#2F4540] mt-3">{f.a}</p>
+                    </details>
                   ))}
                 </div>
               </section>
             )}
           </main>
 
-          {/* Sticky sidebar */}
-          <div className="lg:w-64 xl:w-72 flex-shrink-0">
-            <div className="lg:sticky lg:top-24 lg:pt-10">
-              <HelpSidebar article={article} catColor={catColor} />
+          <aside className="hidden lg:block">
+            <div className="sticky top-28 space-y-6">
+              <StepsToc steps={article.steps} active={active} />
+              <div className="section-dark rounded-[20px] p-5 overflow-hidden">
+                <div className="pattern-layer pattern-khatam" aria-hidden />
+                <MessageCircle size={20} className="relative mb-2" style={{ color: '#E0B562' }} />
+                <div className="relative text-[15px] font-bold mb-1.5" style={{ color: '#F8F5EC' }}>لم يحلّ الشرح مشكلتك؟</div>
+                <p className="relative text-[13px] leading-relaxed mb-4" style={{ color: 'rgba(248,245,236,.75)' }}>اسأل فريق إحكام مباشرةً.</p>
+                <Link to="/contact" className="btn-cta relative flex items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-bold">
+                  تواصل معنا <ArrowLeft size={14} />
+                </Link>
+              </div>
             </div>
-          </div>
-
+          </aside>
         </div>
       </div>
+
+      {/* ─── شروح أخرى ─── */}
+      {more.length > 0 && (
+        <section className="px-4 sm:px-6 pb-16">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="font-bold text-[#1A2E28] mb-6" style={{ fontSize: 'clamp(1.4rem, 2.6vw, 1.9rem)' }}>
+              اقرأ <span className="title-mark">بعده</span>
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {more.map(a => <MiniCard key={a.slug} a={a} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* شريط تواصل للجوال (الجانب مخفيّ هناك) */}
+      <section className="lg:hidden px-4 sm:px-6 pb-20">
+        <div className="section-dark rounded-[22px] p-6 overflow-hidden">
+          <div className="pattern-layer pattern-khatam" aria-hidden />
+          <div className="relative font-bold text-[17px] mb-1.5" style={{ color: '#F8F5EC' }}>لم يحلّ الشرح مشكلتك؟</div>
+          <p className="relative text-[14px] mb-4" style={{ color: 'rgba(248,245,236,.75)' }}>اسأل فريق إحكام مباشرةً.</p>
+          <Link to="/contact" className="btn-cta relative inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-bold">تواصل معنا <ArrowLeft size={15} /></Link>
+        </div>
+      </section>
     </div>
   )
 }

@@ -1,19 +1,18 @@
 /* ─────────────────────────────────────────────────────────────────────────
    PRICING DRAFT
-   The configurator's state (duration / students / add-ons) survives a trip to
-   checkout and back. Without this, pressing "العودة لتعديل الباقة" — or the
-   browser's own back gesture — remounted the configurator at its defaults and
-   the user had to rebuild their plan from scratch.
+   The visitor's choice (plan / billing cycle / add-ons) survives a trip to
+   checkout and back, so "العودة لتعديل الباقة" — or the browser's own back
+   gesture — doesn't reset the page.
 
    sessionStorage, not localStorage: a plan is scoped to the visit, and it
    should not greet the user weeks later as if it were still current.
+
+   2026-11-20: الباقات حلّت محلّ الحاسبة، فالمسوّدة تحمل planId وcycle بدل
+   students وduration. مسوّدةٌ قديمة بالشكل السابق تُهمل بهدوء.
    ───────────────────────────────────────────────────────────────────────── */
+import { getPlan, CYCLES } from './plans'
 
 const KEY = 'ihkaam:pricing-draft'
-
-const ALLOWED_DURATIONS = [1, 3, 6, 12]
-const MIN_STUDENTS = 10
-const MAX_STUDENTS = 1000
 
 /* Anything on the client can be edited by hand, so treat a stored draft as
    untrusted input and fall back rather than propagate a bad value into the
@@ -26,16 +25,14 @@ export function readPricingDraft() {
     const draft = JSON.parse(raw)
     if (!draft || typeof draft !== 'object') return null
 
-    const duration = ALLOWED_DURATIONS.includes(draft.duration) ? draft.duration : null
-    const students = Number.isFinite(draft.students)
-      ? Math.min(MAX_STUDENTS, Math.max(MIN_STUDENTS, Math.round(draft.students / 10) * 10))
-      : null
+    const plan  = getPlan(draft.planId)
+    const cycle = CYCLES[draft.cycle] ? draft.cycle : null
     const selectedFeatureIds = Array.isArray(draft.selectedFeatureIds)
       ? draft.selectedFeatureIds.filter(id => typeof id === 'string' || Number.isFinite(id))
       : []
 
-    if (duration === null && students === null && !selectedFeatureIds.length) return null
-    return { duration, students, selectedFeatureIds }
+    if (!plan && !cycle && !selectedFeatureIds.length) return null
+    return { planId: plan?.id ?? null, cycle, selectedFeatureIds }
   } catch {
     /* Private-mode Safari throws on sessionStorage access; a lost draft is
        not worth breaking the page over. */

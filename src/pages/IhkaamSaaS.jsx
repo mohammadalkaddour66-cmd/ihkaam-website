@@ -13,6 +13,8 @@ import IhkaamConfigurator    from '../components/ihkaam/IhkaamConfigurator'
 import IhkaamFAQ             from '../components/ihkaam/IhkaamFAQ'
 import IhkaamByNumbers       from '../components/ihkaam/IhkaamByNumbers'
 import LeadMagnetSection     from '../components/sections/LeadMagnetSection'
+import LiteYouTube           from '../components/video/LiteYouTube'
+import { VIDEOS, INTRO_VIDEO, CHANNEL_URL, durationLabel } from '../data/videos'
 
 /* الشريطان معاً (الرئيسي 76px + الفرعي) ينتهيان قرب 132px */
 const SCROLL_OFFSET = 140
@@ -34,6 +36,7 @@ function scrollToSection(id) {
 /* ── Internal nav items ── */
 const SUB_NAV = [
   { label: 'نظرة عامة',    id: 'overview'  },
+  { label: 'شاهد',         id: 'video'     },
   { label: 'المعرض',       id: 'gallery'   },
   { label: 'الميزات',      id: 'features'  },
   { label: 'التحليل الذكي', id: 'insights'  },
@@ -57,7 +60,12 @@ function SubNav() {
     return () => { root.removeAttribute('data-subnav'); root.removeAttribute('data-nav-hidden') }
   }, [])
 
+  /* لا تمرير للشريط عند التحميل الأول: أي تمرير قبل أن يُسجَّل «أكبر عنصر
+     مرئي» يوقف Chrome عن تسجيله، فكانت الصفحة تظهر في Lighthouse بلا LCP
+     (NO_LCP) في أغلب القياسات على الجوال. التوسيط يبدأ من أول تغيّر للقسم. */
+  const firstRun = useRef(true)
   useEffect(() => {
+    if (firstRun.current) { firstRun.current = false; return }
     const t = track.current
     const b = t && t.querySelector(`[data-id="${active}"]`)
     if (!t || !b || t.scrollWidth <= t.clientWidth) return
@@ -130,19 +138,6 @@ const sectionIn = {
   },
 }
 
-const heroContainer = {
-  hidden : {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.10 } },
-}
-const heroItem = {
-  hidden : { opacity: 0, y: 24 },
-  visible: {
-    opacity   : 1,
-    y         : 0,
-    transition: { duration: 0.70, ease: [0.22, 1, 0.36, 1] },
-  },
-}
-
 
 export default function IhkaamSaaS() {
   const { hash } = useLocation()
@@ -202,62 +197,91 @@ export default function IhkaamSaaS() {
       >
         <div className="pointer-events-none absolute inset-0 pattern-khatam-ink" style={{ opacity: 0.035 }} aria-hidden />
         <div className="relative max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <motion.div className="lg:col-span-5 text-center lg:text-right" variants={heroContainer} initial="hidden" animate="visible">
-            <motion.span variants={heroItem} className="eyebrow">نظام إحكام السحابي</motion.span>
-            <motion.h1
-              variants={heroItem}
-              className="font-bold leading-[1.25] mt-6 mb-6"
-              style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.8rem)', color: '#1A2E28' }}
+          {/* دخول الهيرو بـCSS (hero-lift: إزاحة بلا شفافية) لا بـframer: كان
+              العنوان والصورة يُكتبان في HTML المولَّد بـopacity:0 فلا يُرسم شيء
+              قبل تحميل JavaScript، ولا يجد Lighthouse «أكبر عنصر مرئي» (ISS-25). */}
+          <div className="lg:col-span-5 text-center lg:text-right">
+            <span className="eyebrow hero-lift"style={{ '--rise-delay': '0.10s' }}>نظام إحكام السحابي</span>
+            <h1
+              className="font-bold leading-[1.25] mt-6 mb-6 hero-lift"
+              style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.8rem)', color: '#1A2E28', '--rise-delay': '0.22s' }}
             >
               كل ما يحتاجه معهدك، <span className="title-mark">في مكانٍ واحد.</span>
-            </motion.h1>
-            <motion.p
-              variants={heroItem}
-              className="text-lg mb-9 mx-auto lg:mx-0"
-              style={{ color: '#4A5D56', lineHeight: 1.95, maxWidth: 520 }}
+            </h1>
+            <p
+              className="text-lg mb-9 mx-auto lg:mx-0 hero-lift"
+              style={{ color: '#4A5D56', lineHeight: 1.95, maxWidth: 520, '--rise-delay': '0.34s' }}
             >
               تسميعٌ موثّق، وحضورٌ يُسجَّل بلمسة، وأولياء أمورٍ على علمٍ دائم.
               إحكام يجمع يوم المعهد كلّه، فيبقى وقت الكادر لطلابه.
-            </motion.p>
-            <motion.div variants={heroItem} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 hero-lift" style={{ '--rise-delay': '0.46s' }}>
               <Link to="/request" className="btn-cta inline-flex items-center gap-2.5 rounded-full w-full sm:w-auto justify-center px-8 py-4" style={{ fontSize: '1rem' }}>
-                احسب اشتراك معهدك <ArrowLeft size={17} strokeWidth={2.2} />
+                اختر باقة معهدك <ArrowLeft size={17} strokeWidth={2.2} />
               </Link>
               <button onClick={() => scrollToSection('gallery')} className="btn-outline inline-flex items-center gap-2 rounded-full w-full sm:w-auto justify-center px-8 py-4" style={{ fontSize: '1rem' }}>
                 تصفّح الواجهات <ArrowLeft size={17} strokeWidth={2.2} />
               </button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div
-            className="lg:col-span-7 relative"
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          >
+          {/* الصورة أكبر عنصر مرئي: إزاحة فقط بلا شفافية. البطاقتان العائمتان
+              ليستا كذلك فيصحّ أن تبدآ شفافتين (hero-rise). */}
+          <div className="lg:col-span-7 relative hero-lift" style={{ '--rise-delay': '0.25s' }}>
             <div className="relative rounded-[28px] overflow-hidden" style={{ boxShadow: 'var(--shadow-lg), inset 0 0 0 1px var(--line-warm)' }}>
               <img src="/scenes/platform-hero.webp" alt="شاشة لوحة التحكم في إحكام على حاسوب، وتفقّد الحضور على الجوال، بجانب مصحفٍ على رحل"
                    width={1280} height={720} fetchPriority="high" decoding="async" className="block w-full h-auto" />
             </div>
-            <motion.div className="hidden sm:flex absolute -bottom-6 right-6 items-center gap-3 rounded-2xl bg-white px-4 py-3"
-              style={{ boxShadow: 'var(--shadow-md), inset 0 0 0 1px var(--line-warm)' }}
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="hidden sm:flex absolute -bottom-6 right-6 items-center gap-3 rounded-2xl bg-white px-4 py-3 hero-rise"
+              style={{ boxShadow: 'var(--shadow-md), inset 0 0 0 1px var(--line-warm)', '--rise-delay': '0.9s', '--rise-y': '16px' }}>
               <span className="w-10 h-10 rounded-xl flex items-center justify-center font-bold" style={{ background: '#0B3B33', color: '#E0B562' }}>35+</span>
               <span className="text-sm font-bold leading-tight" style={{ color: '#0B3B33' }}>واجهة لكل<br />أدوار المعهد</span>
-            </motion.div>
-            <motion.div className="hidden sm:flex absolute -top-5 left-6 items-center gap-2 rounded-full px-4 py-2"
-              style={{ background: '#0B3B33', color: '#F8F5EC', boxShadow: 'var(--shadow-md)' }}
-              initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+            </div>
+            <div className="hidden sm:flex absolute -top-5 left-6 items-center gap-2 rounded-full px-4 py-2 hero-rise"
+              style={{ background: '#0B3B33', color: '#F8F5EC', boxShadow: 'var(--shadow-md)', '--rise-delay': '1.1s', '--rise-y': '-12px' }}>
               <span className="w-2 h-2 rounded-full" style={{ background: '#A8D5BA' }} />
               <span className="text-sm font-bold">يعمل من المتصفح والجوال</span>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* الأرقام والشركاء أُزيلا من هنا (2026-11-19 ج): مكرّران من الرئيسية،
           والأرقام في «إحكام بالأرقام» أسفل الصفحة. */}
 
+
+      {/* ════════════════════════════════════════════
+          4 — الفيديو التعريفي (UX-03)
+          غلافٌ مستضاف عندنا وزر تشغيل: لا iframe ولا طلب إلى يوتيوب قبل
+          النقر، فلا يمسّ الهيرو (LCP). VideoObject يُكتب من entry-server.
+          ════════════════════════════════════════════ */}
+      <section id="video" dir="rtl" className="relative px-6 pb-20 sm:pb-24" style={{ scrollMarginTop: '90px' }}>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          <div className="lg:col-span-5 text-center lg:text-right">
+            <span className="eyebrow">شاهد قبل أن تقرّر</span>
+            <h2 className="font-bold mt-5 mb-4 leading-[1.3]" style={{ fontSize: 'clamp(1.7rem, 3.2vw, 2.4rem)', color: '#1A2E28' }}>
+              إحكام في <span className="title-mark">أقل من دقيقتين</span>
+            </h2>
+            <p className="text-[17px] mb-6 mx-auto lg:mx-0" style={{ color: '#4A5D56', lineHeight: 1.95, maxWidth: 460 }}>
+              عرضٌ مصوّر قصير يقدّم النظام. وإن أردت الدخول إلى التفاصيل فسلسلة «شرح إحكام» على قناتنا تشرح كل بوّابة في حلقة.
+            </p>
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3 text-[14px] font-bold">
+              <a href={CHANNEL_URL} target="_blank" rel="noopener" className="underline underline-offset-4" style={{ color: '#1F6F52' }}>
+                قناة إحكام في يوتيوب
+              </a>
+              <Link to="/help" className="underline underline-offset-4" style={{ color: '#1F6F52' }}>
+                الشرح المكتوب في مركز المساعدة
+              </Link>
+            </div>
+          </div>
+          <div className="lg:col-span-7">
+            <LiteYouTube video={VIDEOS[INTRO_VIDEO]} />
+            <p className="mt-3 text-[13px] text-center lg:text-right" style={{ color: '#5E6E67' }}>
+              {VIDEOS[INTRO_VIDEO].name} · {durationLabel(VIDEOS[INTRO_VIDEO].seconds)}
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ════════════════════════════════════════════
           5 — GALLERY (Desktop screenshots)
@@ -299,7 +323,7 @@ export default function IhkaamSaaS() {
               رأيت كيف يخدم إحكام كل دور في معهدك؟
             </p>
             <p className="text-sm" style={{ color: '#4A5D56' }}>
-              الخطوة التالية: احسب اشتراك معهدك، وفريقنا يرافقك من أول يوم.
+              الخطوة التالية: اختر باقة معهدك، وفريقنا يرافقك من أول يوم.
             </p>
           </div>
           <Link
@@ -307,7 +331,7 @@ export default function IhkaamSaaS() {
             className="btn-cta flex-shrink-0 rounded-xl whitespace-nowrap"
             style={{ fontSize: '0.9rem', padding: '0.9rem 2rem' }}
           >
-            احسب اشتراك معهدك
+            اختر باقة معهدك
           </Link>
         </div>
       </div>
@@ -413,7 +437,7 @@ export default function IhkaamSaaS() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/request" className="btn-cta inline-flex items-center gap-3 rounded-full w-full sm:w-auto justify-center px-9 py-4" style={{ fontSize: '1rem' }}>
-              احسب اشتراك معهدك <ArrowLeft size={18} strokeWidth={2} />
+              اختر باقة معهدك <ArrowLeft size={18} strokeWidth={2} />
             </Link>
             <button onClick={() => setFormOpen(true)} className="btn-outline inline-flex items-center gap-2 rounded-full w-full sm:w-auto justify-center px-9 py-4" style={{ fontSize: '1rem' }}>
               اطلب تجربة مجانية

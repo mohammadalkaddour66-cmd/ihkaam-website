@@ -65,7 +65,7 @@ export default function IhkaamCTABanner() {
             className="btn-cta inline-flex items-center gap-2.5 rounded-full whitespace-nowrap"
             style={{ fontSize: '1.05rem', padding: '1.05rem 2.6rem' }}
           >
-            احسب اشتراك معهدك
+            اختر باقة معهدك
             <ArrowLeft size={17} strokeWidth={2} />
           </Link>
         </div>

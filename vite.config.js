@@ -1,6 +1,30 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { siteToday, readMeta, isLive, listPosts } from './scripts/lib/blog-schedule.mjs'
+
+/* ── جدولة المقالات ──
+   اليوم بتوقيت دمشق وقت البناء (أو SITE_TODAY). المقال الذي لم يحن موعده أو
+   المسودة يُستبدل ملفه بمدخل فارغ (slug وstatus وdate وtitle وأقسام فارغة):
+   فلا يظهر نصه في حزمة JS التي يقرؤها الزائر، ولا يدخل الصفحات. والمقالات
+   الظاهرة تُعرَّف slugاتها في __LIVE_POSTS__ لما يحتاج أن يعرف (روابط الأدوات).
+   القاعدة في scripts/lib/blog-schedule.mjs. */
+const TODAY = siteToday()
+const LIVE_POSTS = listPosts().filter(p => isLive(p, TODAY)).map(p => p.slug)
+
+function blogSchedule() {
+  return {
+    name: 'ihkaam-blog-schedule',
+    enforce: 'pre',
+    transform(code, id) {
+      const file = id.split('?')[0].replaceAll('\\', '/')
+      if (!/\/src\/data\/blog\/[^/]+\.js$/.test(file)) return null
+      const meta = readMeta(code, file)
+      if (isLive(meta, TODAY)) return null
+      return { code: `export default ${JSON.stringify({ ...meta, sections: [] })}`, map: null }
+    },
+  }
+}
 
 /* المكتبات في حزمٍ مستقلة عن كود الموقع.
  *
@@ -27,7 +51,12 @@ const VENDOR_GROUPS = [
 ]
 
 export default defineConfig({
+  define: {
+    __SITE_TODAY__: JSON.stringify(TODAY),
+    __LIVE_POSTS__: JSON.stringify(LIVE_POSTS),
+  },
   plugins: [
+    blogSchedule(),
     react(),
     tailwindcss(),
   ],

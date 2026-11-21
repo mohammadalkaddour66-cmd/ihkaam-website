@@ -85,4 +85,9 @@ if (broken.size) {
   for (const [t, s] of broken) console.log(`  - ${t}  <-  ${[...s].slice(0, 3).join(', ')}${s.size > 3 ? ' ...' : ''}`)
 }
 
-process.exit(orphans.length || weak.length ? 1 : 0)
+/* رابط مكسور إلى مقال: يفشل الفحص (مقال مجدول لم يحن موعده يظهر رابطه في مقال سابق). */
+const brokenPosts = [...broken.keys()].filter(t => t.startsWith('/blog/'))
+if (brokenPosts.length) console.log(`
+✖ روابط إلى مقالات غير موجودة: ${brokenPosts.length}`)
+
+process.exit(orphans.length || weak.length || brokenPosts.length ? 1 : 0)

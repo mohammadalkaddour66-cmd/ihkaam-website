@@ -35,6 +35,8 @@
   #               (الخط قمرة مستضاف ذاتياً في /fonts، فلا أصل خارجياً للخطوط)
   #   font-src    'self'                          ملفات الخط من /fonts
   #   img-src     Supabase                        شعارات المعاهد وصور الواجهات
+  #   frame-src   youtube-nocookie.com            فيديوهات قناة إحكام: iframe لا يُنشأ إلا عند نقر الزائر
+  #                                               على الفيديو (LiteYouTube)؛ الأغلفة مستضافة عندنا فلا img-src جديد
   #   connect-src Supabase (https و wss)          الأرقام والبيانات
   #               cloudflareinsights.com          إرسال قياسات Web Analytics
   #
@@ -55,7 +57,7 @@
   #
   # لا report-to هنا: لا عنوان عندنا يستقبل التقارير، وترويسةٌ تشير إلى
   # عنوانٍ غير موجود لا تنفع.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://kulpesdycuwdemjwzjyx.supabase.co; connect-src 'self' https://kulpesdycuwdemjwzjyx.supabase.co wss://kulpesdycuwdemjwzjyx.supabase.co https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://kulpesdycuwdemjwzjyx.supabase.co; connect-src 'self' https://kulpesdycuwdemjwzjyx.supabase.co wss://kulpesdycuwdemjwzjyx.supabase.co https://cloudflareinsights.com; frame-src https://www.youtube-nocookie.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 
 # أسماء هذه الملفات تحمل بصمة المحتوى (Vite)، فتُخزَّن سنة كاملة.
 /assets/*
