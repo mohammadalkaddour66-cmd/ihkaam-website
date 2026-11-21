@@ -6,6 +6,7 @@ import { CATEGORIES, ARTICLES } from '../data/helpContent'
 import { CAT_VISUAL, ARTICLE_VISUAL } from '../data/helpVisuals'
 import { BrowserFrame, PhoneFrame, ShotThumb } from '../components/help/ShotFrame'
 import PageMeta from '../components/layout/PageMeta'
+import SceneFrame from '../components/layout/SceneFrame'
 import { composeDescription } from '../config/seo'
 
 const INK = '#0B3B33', GOLD = '#B8863A', GOLD_TXT = '#8A6425'
@@ -84,6 +85,11 @@ export default function HelpCategory() {
           </div>
         </div>
       </section>
+
+      {/* ─── مشهد القسم: زخرفي بإطار الهوية ─── */}
+      <div className="px-4 sm:px-6 pb-12">
+        <SceneFrame src={`/scenes/help-${cat.id}.webp`} aspect="aspect-[21/7] sm:aspect-[21/6]" className="max-w-6xl mx-auto" />
+      </div>
 
       {/* ─── قبل أن تبدأ ─── */}
       {cat.points?.length > 0 && (

@@ -5,6 +5,7 @@ import { ChevronLeft, ArrowLeft, Lightbulb, AlertTriangle, CheckCircle2, ListOrd
 import { getArticle, getCategoryForArticle, ARTICLES } from '../data/helpContent'
 import { ARTICLE_VISUAL } from '../data/helpVisuals'
 import { BrowserFrame, PhoneFrame } from '../components/help/ShotFrame'
+import StepShot from '../components/help/StepShot'
 import PageMeta from '../components/layout/PageMeta'
 import { SITE, composeDescription, FEATURE_SEO } from '../config/seo'
 import VideoCard from '../components/video/VideoCard'
@@ -28,7 +29,7 @@ function parseBody(body) {
 }
 
 /* ─── خطوة: رقمٌ كبير على خطٍّ واصل، ثم النص ─── */
-function Step({ step, num, isLast }) {
+function Step({ step, num, isLast, slug }) {
   const blocks = parseBody(step.body)
   return (
     <div id={`s-${num}`} className="relative flex gap-4 sm:gap-6 scroll-mt-28">
@@ -53,6 +54,7 @@ function Step({ step, num, isLast }) {
               </ul>
             ))}
         </div>
+        <StepShot slug={slug} n={num} />
         {step.note && (
           <div className="mt-4 rounded-2xl px-4 py-3.5 flex gap-3 items-start" style={{ background: 'rgba(31,111,82,.08)', boxShadow: 'inset 0 0 0 1px rgba(31,111,82,.22)' }}>
             <CheckCircle2 size={17} className="shrink-0 mt-0.5" style={{ color: GREEN }} />
@@ -282,7 +284,7 @@ export default function HelpArticle() {
             </details>
 
             <div>
-              {article.steps.map((s, i) => <Step key={i} step={s} num={i + 1} isLast={i === article.steps.length - 1} />)}
+              {article.steps.map((s, i) => <Step key={i} step={s} num={i + 1} isLast={i === article.steps.length - 1} slug={article.slug} />)}
             </div>
 
             {article.tips?.length > 0 && (
