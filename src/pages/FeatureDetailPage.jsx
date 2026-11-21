@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ChevronLeft, Plus, ListChecks, Lightbulb } from 'lucide-react'
 import { FEATURES } from '../data/featureDetails'
 import { FEATURE_VISUAL } from '../data/helpVisuals'
+import SceneFrame from '../components/layout/SceneFrame'
 import { BrowserFrame, PhoneFrame } from '../components/help/ShotFrame'
 import PageMeta from '../components/layout/PageMeta'
 import { FEATURE_SEO, SITE } from '../config/seo'
@@ -120,6 +121,22 @@ function Hero({ f }) {
         </div>
       </div>
     </header>
+  )
+}
+
+/* مشهد الميزة: زخرفي بإطار الهوية، وسطره من أول أرقام الميزة نفسها. للميزات التي لا مشهد لها في الترويسة. */
+const FEATURE_SCENE = {
+  admin: 'feature-admin', academic: 'feature-academic', daily: 'feature-daily',
+  parents: 'feature-parents', reports: 'feature-reports', insights: 'feature-insights',
+}
+function SceneBanner({ f }) {
+  const name = FEATURE_SCENE[f.slug]
+  if (!name) return null
+  const s = f.stats?.[0]
+  return (
+    <Wrap className="!pt-0 !pb-6">
+      <SceneFrame src={`/scenes/${name}.webp`} line={s ? `${s.value} ${s.label}` : undefined} />
+    </Wrap>
   )
 }
 
@@ -545,6 +562,7 @@ export default function FeatureDetailPage() {
         }}
       />
       <Hero f={f} />
+      <SceneBanner f={f} />
       <FlowStrip f={f} />
       <Stats f={f} />
       <Body f={f} />

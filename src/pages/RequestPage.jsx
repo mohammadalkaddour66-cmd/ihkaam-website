@@ -1,5 +1,6 @@
 import IhkaamPricing from '../components/ihkaam/IhkaamPricing'
 import PageNotes from '../components/sections/PageNotes'
+import SceneFrame from '../components/layout/SceneFrame'
 
 const NOTES = [
   { q: 'ماذا يحدث بعد إرسال الطلب؟', a: 'يُحفظ طلبك ويُفتح واتساب برسالة جاهزة فيها رقم الطلب والباقة والمجموع، فترسلها ونفعّل معهدك خلال 24 ساعة. تبدأ بتجربة مجانية 14 يوماً لا تدفع فيها شيئاً، وتقرّر في آخرها.' },
@@ -10,6 +11,9 @@ const NOTES = [
 export default function RequestPage() {
   return (
     <div style={{ background: '#F8F5EC', minHeight: '100svh', paddingTop: '72px' }}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+        <SceneFrame src="/scenes/page-request.webp" aspect="aspect-[21/7] sm:aspect-[21/6]" line="تبدأ بتجربة مجانية 14 يوماً" sub="لا تدفع فيها شيئاً، وتقرّر في آخرها." eager />
+      </div>
       <IhkaamPricing />
       <PageNotes title="أسئلة قبل الطلب" items={NOTES} />
     </div>

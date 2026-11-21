@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import PageMeta from '../components/layout/PageMeta'
+import SceneFrame from '../components/layout/SceneFrame'
 
 export default function NotFoundPage() {
   return (
@@ -18,6 +19,7 @@ export default function NotFoundPage() {
       />
 
       <div className="relative flex flex-col items-center gap-6">
+        <SceneFrame src="/scenes/page-404.webp" aspect="aspect-[16/7]" className="w-full max-w-lg" eager />
 
         {/* 404 number */}
         <span

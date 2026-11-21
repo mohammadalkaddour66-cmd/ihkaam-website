@@ -182,7 +182,7 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="relative hidden sm:block">
-              <img src="/scenes/feat-messages.webp" alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+              <img src="/scenes/page-contact.webp" alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
             </div>
           </div>
           {/* الدعم الفني */}

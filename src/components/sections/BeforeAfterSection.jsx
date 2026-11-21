@@ -132,6 +132,8 @@ function PainTag({ children, className = '', i, reduce }) {
 function BeforeScene({ reduce }) {
   return (
     <div className="absolute inset-0 ba-wood">
+      <img src="/scenes/home-before.webp" alt="" width={1280} height={720} loading="lazy" decoding="async" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
+      <span aria-hidden className="absolute inset-0" style={{ background: 'rgba(30,18,8,.28)' }} />
       <Piece i={0} rotate={-6} reduce={reduce} className="right-[3%] top-[5%] sm:right-[8%] sm:top-[12%]"><PaperSheet /></Piece>
       <Piece i={1} rotate={4}  reduce={reduce} className="left-[3%] top-[38%] sm:left-[8%] sm:top-[8%]"><ChatBubble /></Piece>
       <Piece i={2} rotate={8}  reduce={reduce} className="z-10 right-[6%] top-[70%] sm:right-[24%] sm:top-[58%]"><StickyNote /></Piece>
@@ -158,7 +160,8 @@ function AfterScene({ reduce }) {
   })
   return (
     <div className="section-dark flex items-center justify-center" style={{ position: 'absolute', inset: 0 }}>
-      <div className="pattern-layer pattern-khatam" aria-hidden />
+      <img src="/scenes/home-after.webp" alt="" width={1280} height={720} loading="lazy" decoding="async" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
+      <span aria-hidden className="absolute inset-0" style={{ background: 'rgba(8,44,38,.42)' }} />
       <motion.div
         className="relative bg-white rounded-[calc(var(--u)*2)] overflow-hidden"
         style={{ width: 'min(92%, calc(var(--u) * 52))', boxShadow: '0 calc(var(--u) * 4) calc(var(--u) * 7) -calc(var(--u) * 3) rgba(8,44,38,0.45), 0 0 0 1px rgba(184,134,58,0.30)' }}
