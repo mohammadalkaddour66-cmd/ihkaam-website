@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Divide, BookOpenCheck, MoonStar, Sunrise, Repeat, CalendarClock, Loader2, Settings2, Table2, CheckCircle2 } from 'lucide-react'
 import ToolLayout from '../../components/tools/ToolLayout'
 import { KhatmVisual } from '../../components/tools/ToolVisuals'
-import { Field, NumberInput, DateInput, Select, Segmented, Toggle, Panel, Stat } from '../../components/tools/controls'
+import { Field, NumberInput, DateInput, Select, Segmented, Toggle, Panel, Stat, Step, MoreOptions, ResultBar } from '../../components/tools/controls'
 import { useQuranIndex, useDateField, useToday, usePrint } from '../../components/tools/hooks'
 import { PrintPortal, PlanSheet, PrintFoot } from '../../components/tools/print'
 import ResultActions from '../../components/tools/ResultActions'
@@ -117,15 +117,15 @@ export default function KhatmTool() {
       faq={FAQ}
     >
       <div className="grid lg:grid-cols-[380px_minmax(0,1fr)] gap-6 items-start">
-        <Panel title="بيانات الختمة" icon={Settings2} className="lg:sticky lg:top-24">
-          <div className="space-y-5">
-            <Segmented label="ماذا تعرف؟" value={mode} onChange={setMode} size="sm" options={[
+        <Panel title="بيانات الختمة" icon={Settings2} className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+          <Step n={1} title="ماذا تعرف؟" hint="اختر ما تعرفه، وتحسب الأداة الباقي.">
+            <Segmented value={mode} onChange={setMode} size="sm" options={[
               { value: 'duration', label: 'المدة', sub: 'فاحسب الورد' },
               { value: 'pace', label: 'الورد اليومي', sub: 'فاحسب المدة' },
             ]} />
             {mode === 'duration' ? (
               <>
-                <Segmented value={durKind} onChange={setDurKind} size="sm" options={[
+                <Segmented label="أريد أن أختم في" value={durKind} onChange={setDurKind} size="sm" options={[
                   { value: 'ramadan', label: 'رمضان' },
                   { value: 'days', label: 'عدد أيام' },
                   { value: 'endDate', label: 'حتى تاريخ' },
@@ -151,6 +151,9 @@ export default function KhatmTool() {
                 <NumberInput id="kh-ppd" value={pagesPerDay} min={1} max={604} onChange={setPagesPerDay} />
               </Field>
             )}
+          </Step>
+
+          <Step n={2} title="كم ختمة، ومتى تبدأ؟">
             <Field label="عدد الختمات" htmlFor="kh-k">
               <Select id="kh-k" value={khatmas} onChange={(v) => setKhatmas(Number(v))}>
                 {[1, 2, 3, 4, 5, 10].map((k) => <option key={k} value={k}>{count(k, 'khatma')}</option>)}
@@ -159,13 +162,18 @@ export default function KhatmTool() {
             {!useRamadan && (
               <Field label="أبدأ في" htmlFor="kh-start"><DateInput id="kh-start" value={ownStart} onChange={setOwnStart} /></Field>
             )}
-            <Toggle label="قسّم ورد اليوم على الصلوات الخمس" checked={prayers} onChange={setPrayers}
-              hint="خمسة أجزاء متقاربة، كل واحد ينتهي عند نهاية آية أو صفحة." />
-            <Toggle label="أظهر التاريخ الهجري" checked={hijri} onChange={setHijri} />
-          </div>
+          </Step>
+
+          <Step n={3} title="تفصيل إضافي">
+            <MoreOptions title="الصلوات والتاريخ الهجري">
+              <Toggle label="قسّم ورد اليوم على الصلوات الخمس" checked={prayers} onChange={setPrayers}
+                hint="خمسة أجزاء متقاربة، كل واحد ينتهي عند نهاية آية أو صفحة." />
+              <Toggle label="أظهر التاريخ الهجري" checked={hijri} onChange={setHijri} />
+            </MoreOptions>
+          </Step>
         </Panel>
 
-        <div className="min-w-0 space-y-5">
+        <div id="tool-result" className="min-w-0 space-y-5 scroll-mt-24">
           {!result && (
             <Panel>
               <div className="flex items-center gap-3 text-[15px] text-[#4A5D56] py-6 justify-center">
@@ -201,13 +209,13 @@ export default function KhatmTool() {
               </Panel>
 
               <Panel title="الورد يوماً بيوم" icon={Table2}>
-                <div className="overflow-auto max-h-[680px] rounded-[14px]">
+                <div className="sm:overflow-auto sm:max-h-[680px] rounded-[14px]">
                   <table className="tool-table">
                     <thead><tr><th>اليوم</th><th>التاريخ</th><th>الورد</th><th>يبدأ من</th></tr></thead>
                     <tbody>
                       {visibleRows.map((r) => (
                         <tr key={r.day} className={r.endsKhatma ? 'is-soft' : ''}>
-                          <td className="num font-bold text-[#8A6425]">{r.day}</td>
+                          <td className="num font-bold text-[#8A6425]" aria-label="اليوم">{r.day}</td>
                           <td className="num"><span className="font-bold">{dayName(r.date)}</span> <span className="text-[#5E6E67]">{gDate(r.date)}</span>{hijri && <span className="block text-[12px] text-[#8A6425]">{hDate(r.date)}</span>}</td>
                           <td>
                             <span className="font-bold">{wirdText(r, unit)}</span>
@@ -219,7 +227,7 @@ export default function KhatmTool() {
                               </ul>
                             )}
                           </td>
-                          <td>{startText(r)}</td>
+                          <td data-label="يبدأ من">{startText(r)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -260,6 +268,7 @@ export default function KhatmTool() {
           </PlanSheet>
         </PrintPortal>
       )}
+      <ResultBar targetId="tool-result" label={s ? `${title} · الختم ${gDate(s.endDate, true)}` : ''} value={s ? daily : ''} cta="الجدول" />
     </ToolLayout>
   )
 }

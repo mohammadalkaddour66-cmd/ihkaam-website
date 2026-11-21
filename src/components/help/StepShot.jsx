@@ -15,8 +15,8 @@ export default function StepShot({ slug, n }) {
   const caption = `من شاشة «${c.screen}»`
   const alt = `${caption}: ${c.labels.map(l => `«${l}»`).join('، ')}`
   return (
-    <figure className="mt-4 mb-1 rounded-2xl overflow-hidden bg-white"
-      style={{ width: `${Math.min(100, Math.round(c.w / 11))}%`, boxShadow: '0 18px 36px -22px rgba(8,44,38,.45), 0 0 0 1px rgba(11,59,51,.10)' }}>
+    <figure className="mt-4 mb-1 rounded-2xl overflow-hidden bg-white w-full sm:w-[var(--shot-w)]"
+      style={{ '--shot-w': `${Math.min(100, Math.round(c.w / 11))}%`, boxShadow: '0 18px 36px -22px rgba(8,44,38,.45), 0 0 0 1px rgba(11,59,51,.10)' }}>
       <div className="relative">
         <img src={c.src} alt={alt} width={c.w} height={c.h} loading="lazy" decoding="async" className="block w-full h-auto" />
         {c.marks.map((m, i) => (
@@ -31,7 +31,7 @@ export default function StepShot({ slug, n }) {
       </div>
       <figcaption className="px-4 py-2.5 text-[13px] leading-[1.8] text-[#5C6B66]" style={{ background: '#FBF9F3', borderTop: '1px solid rgba(11,59,51,.08)' }}>
         {caption}: {c.labels.map((l, i) => (
-          <span key={i} className="whitespace-nowrap">
+          <span key={i}>
             {many && <b className="tabular-nums" style={{ color: GOLD }}>{i + 1} </b>}«{l}»{i < c.labels.length - 1 ? '، ' : ''}{' '}
           </span>
         ))}

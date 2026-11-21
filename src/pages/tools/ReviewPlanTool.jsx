@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { ChevronRight, ChevronLeft, Layers, ArrowDownUp, Clock3, Sparkle, CalendarCheck, Loader2, Settings2, Table2, Gauge } from 'lucide-react'
 import ToolLayout from '../../components/tools/ToolLayout'
 import { ReviewVisual } from '../../components/tools/ToolVisuals'
-import { Field, TextInput, NumberInput, DateInput, Select, Segmented, Chips, WeekdayPicker, Toggle, Panel, Stat, INK } from '../../components/tools/controls'
+import { Field, TextInput, NumberInput, DateInput, Select, Segmented, Chips, WeekdayPicker, Toggle, Panel, Stat, Step, MoreOptions, ResultBar, INK } from '../../components/tools/controls'
 import { useQuranIndex, useDateField, usePrint } from '../../components/tools/hooks'
 import { PrintPortal, PlanSheet, PrintFoot } from '../../components/tools/print'
 import ResultActions from '../../components/tools/ResultActions'
@@ -53,6 +53,7 @@ export default function ReviewPlanTool() {
   const [name, setName] = useState('')
   const [hijri, setHijri] = useState(false)
   const [week, setWeek] = useState(0)
+  const [showAll, setShowAll] = useState(false)
   const [scope, setScope] = useState('all')
   const { printing, print } = usePrint()
 
@@ -81,6 +82,7 @@ export default function ReviewPlanTool() {
   const curWeek = Math.min(week, Math.max(0, weeksCount - 1))
   const weekRowsList = plan ? plan.rows.filter((r) => weekOf(r.date) === curWeek) : []
   const sab = plan?.rows[0]?.sabaqi
+  const visibleRows = plan ? (showAll ? plan.rows : plan.rows.slice(0, 36)) : []
   const memorizedLabel = s ? (s.memorized.juzFrom === s.memorized.juzTo ? `الجزء ${s.memorized.juzFrom}` : `الأجزاء ${s.memorized.juzFrom}–${s.memorized.juzTo}`) : ''
 
   const printRows = !plan ? [] : scope === 'week' ? weekRowsList : scope === 'cycle' ? plan.rows.filter((r) => r.cycle === 1) : plan.rows
@@ -111,9 +113,9 @@ export default function ReviewPlanTool() {
       faq={FAQ}
     >
       <div className="grid lg:grid-cols-[380px_minmax(0,1fr)] gap-6 items-start">
-        <Panel title="بيانات المراجعة" icon={Settings2} className="lg:sticky lg:top-24">
-          <div className="space-y-5">
-            <Segmented label="المحفوظ بـ" value={rangeType} onChange={setRangeType} size="sm"
+        <Panel title="بيانات المراجعة" icon={Settings2} className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+          <Step n={1} title="ما الذي حفظه الطالب؟" hint="حدّد المحفوظ الذي ستدور عليه المراجعة.">
+            <Segmented label="أحدّده بـ" value={rangeType} onChange={setRangeType} size="sm"
               options={[{ value: 'juz', label: 'الأجزاء' }, { value: 'pages', label: 'الصفحات' }]} />
             {rangeType === 'juz' ? (
               <div className="grid grid-cols-2 gap-3">
@@ -135,7 +137,11 @@ export default function ReviewPlanTool() {
               </div>
             )}
             <Segmented label="كيف حفظ الطالب؟" value={order} onChange={setOrder} options={ORDERS} size="sm" />
+          </Step>
+
+          <Step n={2} title="كم يراجع في اليوم؟" hint="المقدار وأيام الحلقة في الأسبوع.">
             <Chips label="مقدار المراجعة اليومي" value={amountId} onChange={setAmountId} options={AMOUNTS.map((a) => ({ value: a.id, label: a.label }))} />
+            <WeekdayPicker value={weekdays} onChange={setWeekdays} />
             <div className="rounded-2xl p-4 space-y-3" style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
               <Toggle label="أضف المراجعة القريبة (السبقي)" checked={sabaqi} onChange={setSabaqi}
                 hint="آخر ما حفظه الطالب يُراجَع كل يوم إلى جانب الدورة." />
@@ -145,7 +151,9 @@ export default function ReviewPlanTool() {
                 </Field>
               )}
             </div>
-            <WeekdayPicker value={weekdays} onChange={setWeekdays} />
+          </Step>
+
+          <Step n={3} title="متى تبدأ؟">
             <div className="grid grid-cols-2 gap-3">
               <Field label="تاريخ البدء" htmlFor="rp-date"><DateInput id="rp-date" value={startDate} onChange={setStartDate} /></Field>
               <Field label="عدد الدورات" htmlFor="rp-cyc">
@@ -154,12 +162,14 @@ export default function ReviewPlanTool() {
                 </Select>
               </Field>
             </div>
-            <Field label="اسم الطالب" htmlFor="rp-name"><TextInput id="rp-name" value={name} onChange={setName} placeholder="اختياري" maxLength={40} /></Field>
-            <Toggle label="أظهر التاريخ الهجري" checked={hijri} onChange={setHijri} hint="بتقويم أم القرى، وقد يختلف يوماً عن رؤية بلدك." />
-          </div>
+            <MoreOptions title="الاسم والتاريخ الهجري" hint="اختيارية: الاسم يظهر على الورقة المطبوعة">
+              <Field label="اسم الطالب" htmlFor="rp-name"><TextInput id="rp-name" value={name} onChange={setName} placeholder="اختياري" maxLength={40} /></Field>
+              <Toggle label="أظهر التاريخ الهجري" checked={hijri} onChange={setHijri} hint="بتقويم أم القرى، وقد يختلف يوماً عن رؤية بلدك." />
+            </MoreOptions>
+          </Step>
         </Panel>
 
-        <div className="min-w-0 space-y-5">
+        <div id="tool-result" className="min-w-0 space-y-5 scroll-mt-24">
           {!result && (
             <Panel>
               <div className="flex items-center gap-3 text-[15px] text-[#4A5D56] py-6 justify-center">
@@ -230,24 +240,29 @@ export default function ReviewPlanTool() {
               </Panel>
 
               <Panel title="الجدول كاملاً" icon={Table2}>
-                <div className="overflow-auto max-h-[640px] rounded-[14px]">
+                <div className="sm:overflow-auto sm:max-h-[640px] rounded-[14px]">
                   <table className="tool-table">
                     <thead><tr><th>#</th><th>اليوم</th><th>المراجعة</th><th>تبدأ من</th></tr></thead>
                     <tbody>
-                      {plan.rows.map((r, i) => {
-                        const sep = i > 0 && (weekOf(r.date) !== weekOf(plan.rows[i - 1].date) || r.cycle !== plan.rows[i - 1].cycle)
+                      {visibleRows.map((r, i) => {
+                        const sep = i > 0 && (weekOf(r.date) !== weekOf(visibleRows[i - 1].date) || r.cycle !== visibleRows[i - 1].cycle)
                         return (
                           <tr key={r.date} className={sep ? 'is-week' : ''}>
-                            <td className="num text-[#8A6425] font-bold">{cycles > 1 ? `${r.cycle}/${r.index}` : r.index}</td>
+                            <td className="num text-[#8A6425] font-bold" aria-label="الترتيب">{cycles > 1 ? `${r.cycle}/${r.index}` : r.index}</td>
                             <td className="num"><span className="font-bold">{dayName(r.date)}</span> <span className="text-[#5E6E67]">{gDate(r.date)}</span>{hijri && <span className="block text-[12px] text-[#8A6425]">{hDate(r.date)}</span>}</td>
                             <td className="font-bold">{reviewText(r.review)}</td>
-                            <td>{r.review.start.name} {r.review.start.ayah}<span className="block text-[12px] text-[#5E6E67]">الجزء {r.review.start.juz}</span></td>
+                            <td data-label="تبدأ من">{r.review.start.name} {r.review.start.ayah}<span className="text-[12px] text-[#5E6E67]"> · الجزء {r.review.start.juz}</span></td>
                           </tr>
                         )
                       })}
                     </tbody>
                   </table>
                 </div>
+                {plan.rows.length > visibleRows.length && (
+                  <button type="button" onClick={() => setShowAll(true)} className="mt-4 w-full rounded-xl py-3 text-[14px] font-bold cursor-pointer" style={{ background: '#F1ECDF', color: INK }}>
+                    اعرض كل الأيام ({count(plan.rows.length, 'day')})
+                  </button>
+                )}
               </Panel>
             </>
           )}
@@ -279,6 +294,7 @@ export default function ReviewPlanTool() {
           </PlanSheet>
         </PrintPortal>
       )}
+      <ResultBar targetId="tool-result" label={s ? 'تختم مراجعة محفوظك كل' : ''} value={s ? count(s.cycleCalendarDays, 'day') : ''} cta="الجدول" />
     </ToolLayout>
   )
 }

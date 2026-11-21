@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { ChevronRight, ChevronLeft, Ruler, Scissors, BookMarked, Repeat2, ArrowUpFromLine, CalendarRange, Loader2, Settings2, Table2 } from 'lucide-react'
 import ToolLayout from '../../components/tools/ToolLayout'
 import { HifzVisual } from '../../components/tools/ToolVisuals'
-import { Field, TextInput, NumberInput, DateInput, Select, Segmented, Chips, WeekdayPicker, Toggle, Panel, Stat, INK } from '../../components/tools/controls'
+import { Field, TextInput, NumberInput, DateInput, Select, Segmented, Chips, WeekdayPicker, Toggle, Panel, Stat, Step, MoreOptions, ResultBar, INK } from '../../components/tools/controls'
 import { SurahAyahPicker, SurahSelect } from '../../components/tools/SurahPicker'
 import { SURAHS } from '../../components/tools/surahs'
 import { useQuranIndex, useDateField, usePrint } from '../../components/tools/hooks'
@@ -167,11 +167,14 @@ export default function HifzPlanTool() {
     >
       <div className="grid lg:grid-cols-[380px_minmax(0,1fr)] gap-6 items-start">
         {/* ── المدخلات ── */}
-        <Panel title="بيانات الخطة" icon={Settings2} className="lg:sticky lg:top-24">
-          <div className="space-y-5">
-            <Segmented label="نوع الخطة" value={kind} onChange={changeKind} size="sm"
+        <Panel title="بيانات الخطة" icon={Settings2} className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+          <Step n={1} title="ما نوع الخطة؟" hint="اختر ما يناسبك، ويُضبط الباقي تلقائياً.">
+            <Segmented value={kind} onChange={changeKind} size="sm"
               options={[{ value: 'hifz', label: 'خطة حفظ', sub: 'للطلاب في الحلقات' }, { value: 'tilawa', label: 'خطة تلاوة', sub: 'ورد قراءة للكبار' }]} />
-            <Segmented label="اتجاه الحفظ" value={direction} onChange={changeDirection} options={DIRECTIONS} size="sm" />
+            <Segmented label="من أين يسير؟" value={direction} onChange={changeDirection} options={DIRECTIONS} size="sm" />
+          </Step>
+
+          <Step n={2} title="من أين تبدأ وإلى أين تصل؟">
             <SurahAyahPicker label="يبدأ من" surah={start.surah} ayah={start.ayah} onChange={setStart} reverse={direction === 'reverse'} />
             <Field label="ويصل إلى" htmlFor="hp-target">
               <Select id="hp-target" value={targetType} onChange={setTargetType}>
@@ -192,6 +195,9 @@ export default function HifzPlanTool() {
                 <NumberInput id="hp-tpages" value={targetPages} min={1} max={604} onChange={setTargetPages} />
               </Field>
             )}
+          </Step>
+
+          <Step n={3} title={kind === 'hifz' ? 'كم يحفظ في اليوم؟' : 'كم يقرأ في اليوم؟'} hint="المقدار وأيام الحلقة في الأسبوع.">
             <Chips label={kind === 'hifz' ? 'المقدار اليومي' : 'الورد اليومي'} value={amountId} onChange={setAmountId} options={HIFZ_AMOUNTS.map((a) => ({ value: a.id, label: a.label }))} />
             <WeekdayPicker value={weekdays} onChange={setWeekdays} marked={cDay} markLabel={K.toggle} />
             <div className="rounded-2xl p-4 space-y-3" style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
@@ -202,20 +208,23 @@ export default function HifzPlanTool() {
                 </Select>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="تاريخ البدء" htmlFor="hp-date">
-                <DateInput id="hp-date" value={startDate} onChange={setStartDate} />
-              </Field>
+          </Step>
+
+          <Step n={4} title="متى تبدأ؟">
+            <Field label="تاريخ البدء" htmlFor="hp-date">
+              <DateInput id="hp-date" value={startDate} onChange={setStartDate} />
+            </Field>
+            <MoreOptions title="الاسم والتاريخ الهجري" hint="اختيارية: الاسم يظهر على الورقة المطبوعة">
               <Field label={K.who} htmlFor="hp-name">
                 <TextInput id="hp-name" value={name} onChange={setName} placeholder="اختياري" maxLength={40} />
               </Field>
-            </div>
-            <Toggle label="أظهر التاريخ الهجري" checked={hijri} onChange={setHijri} hint="بتقويم أم القرى، وقد يختلف يوماً عن رؤية بلدك." />
-          </div>
+              <Toggle label="أظهر التاريخ الهجري" checked={hijri} onChange={setHijri} hint="بتقويم أم القرى، وقد يختلف يوماً عن رؤية بلدك." />
+            </MoreOptions>
+          </Step>
         </Panel>
 
         {/* ── النتيجة ── */}
-        <div className="min-w-0 space-y-5">
+        <div id="tool-result" className="min-w-0 space-y-5 scroll-mt-24">
           {!result && (
             <Panel>
               <div className="flex items-center gap-3 text-[15px] text-[#4A5D56] py-6 justify-center">
@@ -281,7 +290,7 @@ export default function HifzPlanTool() {
               </Panel>
 
               <Panel title="الجدول كاملاً" icon={Table2}>
-                <div className="overflow-auto max-h-[640px] rounded-[14px] -mx-1 px-1">
+                <div className="sm:overflow-auto sm:max-h-[640px] rounded-[14px]">
                   <table className="tool-table">
                     <thead>
                       <tr><th>#</th><th>اليوم</th><th>{K.col}</th><th>الصفحة</th><th>الأسطر</th></tr>
@@ -291,11 +300,11 @@ export default function HifzPlanTool() {
                         const newWeek = i > 0 && weekOf(r.date) !== weekOf(visibleRows[i - 1].date)
                         return r.type === 'new' ? (
                           <tr key={r.date} className={newWeek ? 'is-week' : ''}>
-                            <td className="num text-[#8A6425] font-bold">{r.index}</td>
+                            <td className="num text-[#8A6425] font-bold" aria-label="الترتيب">{r.index}</td>
                             <td className="num">{dateCell(r.date)}</td>
                             <td className="font-bold">{formatPieces(r.pieces)}</td>
-                            <td className="num">{pagesLabel(r.pieces[0].fromPage, r.pieces[r.pieces.length - 1].toPage)}</td>
-                            <td className="num">{r.lines}</td>
+                            <td className="num" data-label="الصفحة">{pagesLabel(r.pieces[0].fromPage, r.pieces[r.pieces.length - 1].toPage)}</td>
+                            <td className="num" data-label="الأسطر">{r.lines}</td>
                           </tr>
                         ) : (
                           <tr key={r.date} className={`is-soft${newWeek ? ' is-week' : ''}`}>
@@ -353,6 +362,7 @@ export default function HifzPlanTool() {
           </PlanSheet>
         </PrintPortal>
       )}
+      <ResultBar targetId="tool-result" label={s ? `${K.lastDay}` : ''} value={s ? `${gDate(s.endDate, true)} · ${spanLabel(s.calendarDays)}` : ''} cta="الخطة" />
     </ToolLayout>
   )
 }

@@ -6,6 +6,7 @@ import { CATEGORIES, ARTICLES } from '../data/helpContent'
 import { CAT_VISUAL, ARTICLE_VISUAL } from '../data/helpVisuals'
 import { BrowserFrame, PhoneFrame, ShotThumb } from '../components/help/ShotFrame'
 import PageMeta from '../components/layout/PageMeta'
+import Crumbs from '../components/layout/Crumbs'
 import SceneFrame from '../components/layout/SceneFrame'
 import { composeDescription } from '../config/seo'
 
@@ -60,11 +61,7 @@ export default function HelpCategory() {
         <div className="absolute inset-0 pattern-khatam-ink pointer-events-none" aria-hidden
           style={{ opacity: 0.035, maskImage: 'radial-gradient(ellipse 60% 60% at 70% 20%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(ellipse 60% 60% at 70% 20%, #000, transparent 75%)' }} />
         <div className="relative max-w-6xl mx-auto">
-          <nav className="flex items-center gap-1.5 text-[12px] text-[#5E6E67] mb-7" aria-label="مسار التنقل">
-            <Link to="/help" className="hover:text-[#1A2E28]">مركز المساعدة</Link>
-            <ChevronLeft size={12} />
-            <span>{cat.label}</span>
-          </nav>
+          <Crumbs size="text-[12px]" className="mb-7" items={[{ to: '/help', label: 'مركز المساعدة' }, { label: cat.label }]} />
 
           <div className="grid lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-center">
             <div className="page-enter">

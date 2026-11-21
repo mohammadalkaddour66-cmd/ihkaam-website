@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, ChevronLeft, ChevronDown, Sparkles, Printer, FileDown, ImageDown, ShieldCheck, BookOpenText, HeartHandshake } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Sparkles, Printer, FileDown, ImageDown, ShieldCheck, BookOpenText, HeartHandshake } from 'lucide-react'
 import PageMeta from '../components/layout/PageMeta'
+import Crumbs from '../components/layout/Crumbs'
 import { TrustChips } from '../components/tools/ToolLayout'
 import { HifzVisual, ReviewVisual, KhatmVisual, CertificateVisual, ToolGlyph } from '../components/tools/ToolVisuals'
 import { SITE } from '../config/seo'
@@ -57,11 +58,7 @@ export default function ToolsHub() {
         <div className="absolute inset-0 pattern-khatam-ink pointer-events-none" aria-hidden
           style={{ opacity: 0.04, maskImage: 'radial-gradient(ellipse 65% 60% at 50% 0%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(ellipse 65% 60% at 50% 0%, #000, transparent 75%)' }} />
         <div className="relative max-w-6xl mx-auto">
-          <nav className="flex items-center gap-1.5 text-[12.5px] text-[#5E6E67] mb-6" aria-label="مسار التنقل">
-            <Link to="/" className="hover:text-[#1A2E28]">الرئيسية</Link>
-            <ChevronLeft size={12} />
-            <span className="text-[#1A2E28] font-bold">{TOOLS_HUB.name}</span>
-          </nav>
+          <Crumbs items={[{ to: '/', label: 'الرئيسية' }, { label: TOOLS_HUB.name }]} />
           <div className="max-w-3xl page-enter">
             <span className="eyebrow"><Sparkles size={14} /> مجانية، بلا تسجيل</span>
             <h1 className="font-bold text-[#1A2E28] mt-5 mb-5" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.1rem)', lineHeight: 1.28 }}>

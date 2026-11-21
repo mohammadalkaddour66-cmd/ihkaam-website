@@ -7,11 +7,15 @@
    الشرح الذي لا لقطة لشاشته يبقى بلا صورة: لا نضع لقطة شاشةٍ أخرى مكانها.
    التعليق تحت اللقطة يُؤخذ حرفياً من appShots.js (قاعدة لقطات العرض).
    ══════════════════════════════════════════════════════════════════ */
+import { MousePointerClick, Building2, UserRound, Send, MessageCircle, Package, KeyRound, Wallet, ReceiptText, RefreshCw } from 'lucide-react'
 import { DESKTOP_SHOTS, HELP_SHOTS, MOBILE_SHOTS, desktopSrc, mobileSrc } from './appShots'
 
 export const desk  = (id) => { const s = [...DESKTOP_SHOTS, ...HELP_SHOTS].find(x => x.id === id); return { kind: 'desktop', id, src: desktopSrc(id), srcSm: desktopSrc(id, true), title: s.title, caption: s.caption } }
 export const phone = (id) => { const s = [...MOBILE_SHOTS, ...HELP_SHOTS].find(x => x.id === id);  return { kind: 'phone', id, src: mobileSrc(id), srcSm: mobileSrc(id), title: s.title, caption: s.caption } }
 export const scene = (src) => ({ kind: 'scene', src, srcSm: src })
+/* مخطط خطوات لشرحٍ لا شاشة له في نسخة العرض (الاشتراك والدفع تجريان على الموقع وواتساب):
+   رسم يشرح المسار، لا لقطة شاشة. عناوينه هي عناوين خطوات الشرح نفسها. */
+export const flow = (items, caption) => ({ kind: 'flow', items, caption })
 
 export const CAT_VISUAL = {
   'getting-started': desk('dashboard'),
@@ -27,6 +31,21 @@ export const CAT_VISUAL = {
 
 /* اللقطة الرئيسية لكل شرح، ولقطة جوال مرافقة حين توجد للشاشة نفسها */
 export const ARTICLE_VISUAL = {
+  signup: { main: flow([
+    { icon: MousePointerClick, label: 'افتح صفحة الطلب' },
+    { icon: Building2, label: 'بيانات المعهد' },
+    { icon: UserRound, label: 'بيانات المشرف' },
+    { icon: Send, label: 'أرسل الطلب' },
+    { icon: MessageCircle, label: 'انتظر التواصل' },
+  ], 'خمس خطوات قصيرة من الموقع إلى واتساب.') },
+  payment: { main: flow([
+    { icon: Package, label: 'اختر الباقة' },
+    { icon: MessageCircle, label: 'أرسل الطلب' },
+    { icon: KeyRound, label: 'ابدأ التجربة' },
+    { icon: Wallet, label: 'ادفع بعدها' },
+    { icon: ReceiptText, label: 'أرسل الإيصال' },
+    { icon: RefreshCw, label: 'جدّد قبل الانتهاء' },
+  ], 'من اختيار الباقة إلى التجديد.') },
   'attendance-staff'    : { main: desk('attendance-staff') },
   login                 : { main: phone('login') },
   'staff-management'    : { main: desk('staff-register') },

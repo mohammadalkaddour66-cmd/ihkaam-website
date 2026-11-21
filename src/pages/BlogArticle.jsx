@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, useScroll, useSpring } from 'framer-motion'
-import { Clock, ChevronLeft, ArrowLeft, CheckCircle, Copy, Download, Plus, ListOrdered, Printer } from 'lucide-react'
+import { Clock, ArrowLeft, CheckCircle, Copy, Download, Plus, ListOrdered, Printer } from 'lucide-react'
 import { getPost, getCategoryById, getRelatedPosts, readTimeLabel, featureHref } from '../data/blogContent'
 import { BLOG_COVER, BLOG_VISUALS } from '../data/blogVisuals'
 import { FEATURE_SEO, SITE, blogSeo } from '../config/seo'
 import PageMeta from '../components/layout/PageMeta'
+import Crumbs from '../components/layout/Crumbs'
 import GlanceVisual from '../components/blog/GlanceVisual'
 import BlogSubscribe from '../components/blog/BlogSubscribe'
 import { ToolGlyph } from '../components/tools/ToolVisuals'
@@ -390,12 +391,7 @@ export default function BlogArticle() {
       {/* ─── الرأس ─── */}
       <header className="relative pt-28 sm:pt-32 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <nav className="flex items-center gap-1.5 text-[12px] text-[#5E6E67] mb-6 flex-wrap" aria-label="مسار التنقل">
-            <Link to="/" className="hover:text-[#1A2E28]">الرئيسية</Link>
-            <ChevronLeft size={12} />
-            <Link to="/blog" className="hover:text-[#1A2E28]">المدونة</Link>
-            {cat && <><ChevronLeft size={12} /><span>{cat.label}</span></>}
-          </nav>
+          <Crumbs size="text-[12px]" items={[{ to: '/', label: 'الرئيسية' }, { to: '/blog', label: 'المدونة' }, ...(cat ? [{ label: cat.label }] : [])]} />
           <div className="max-w-4xl page-enter">
             {cat && <span className="eyebrow mb-5">{cat.label}</span>}
             <h1 className="font-bold text-[#1A2E28] mt-5 mb-5" style={{ fontSize: 'clamp(1.9rem, 4.2vw, 3.1rem)', lineHeight: 1.25 }}>

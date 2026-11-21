@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import ToolLayout from '../../components/tools/ToolLayout'
 import { CertificateVisual } from '../../components/tools/ToolVisuals'
-import { Field, TextInput, TextArea, DateInput, Select, Segmented, Toggle, Panel } from '../../components/tools/controls'
+import { Field, TextInput, TextArea, DateInput, Select, Segmented, Toggle, Panel, Step, MoreOptions, ResultBar } from '../../components/tools/controls'
 import { SurahSelect } from '../../components/tools/SurahPicker'
 import { surahName } from '../../components/tools/surahs'
 import { useDateField, usePrint, useCanShareFiles } from '../../components/tools/hooks'
@@ -187,10 +187,12 @@ export default function CertificateTool() {
       method={METHOD}
       faq={FAQ}
     >
+      {/* على الهاتف تُرتَّب اللوحات بحسب مسار الزائر: بياناته ثم معاينة الشهادة وتحميلها ثم تعديل العبارات (order)؛ وعلى الحاسوب عمودان. */}
       <div className="grid lg:grid-cols-[400px_minmax(0,1fr)] gap-6 items-start">
-        <div className="space-y-6">
-          <Panel title="بيانات الشهادة" icon={Settings2}>
-            <div className="space-y-5">
+        <div className="contents lg:block lg:space-y-6">
+          <Panel title="بيانات الشهادة" icon={Settings2} className="order-1 lg:order-none">
+            <div>
+              <Step n={1} title="لمن الشهادة؟" hint="وما الذي يُكرَّم عليه.">
               <Segmented value={mode} onChange={setMode} size="sm"
                 options={[{ value: 'single', label: 'شهادة واحدة' }, { value: 'bulk', label: 'توليد جماعي للمعهد' }]} />
               <Segmented value={gender} onChange={setGender} size="sm" options={[{ value: 'm', label: 'طالب' }, { value: 'f', label: 'طالبة' }]} />
@@ -227,11 +229,13 @@ export default function CertificateTool() {
                   <TextInput id="ct-custom" value={custom} onChange={setCustom} placeholder={gender === 'm' ? 'تميّزه في التسميع خلال الفصل الأول' : 'تميّزها في التسميع خلال الفصل الأول'} maxLength={90} />
                 </Field>
               )}
+              </Step>
+
+              <Step n={2} title="اسم المعهد والتاريخ" hint="يظهران على الشهادة.">
               <Field label="اسم المعهد" htmlFor="ct-inst" hint="يُكتب كما هو: «معهد النور لتحفيظ القرآن».">
                 <TextInput id="ct-inst" value={institute} onChange={setInstitute} placeholder="معهد النور لتحفيظ القرآن" maxLength={60} />
               </Field>
-              <Field label="الحلقة" htmlFor="ct-halaqa"><TextInput id="ct-halaqa" value={halaqa} onChange={setHalaqa} placeholder="اختياري" maxLength={40} /></Field>
-              <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-3">
                 <Field label="التاريخ" htmlFor="ct-date"><DateInput id="ct-date" value={date} onChange={setDate} /></Field>
                 <Field label="يُكتب" htmlFor="ct-dmode">
                   <Select id="ct-dmode" value={dateMode} onChange={setDateMode}>
@@ -257,10 +261,14 @@ export default function CertificateTool() {
                 )}
                 <p className="text-[12px] text-[#5E6E67] mt-1.5">{logoErr || 'يبقى الشعار في جهازك ولا يُرفع إلى أي خادم. الأفضل PNG بخلفية شفافة.'}</p>
               </div>
+              <MoreOptions title="اسم الحلقة" hint="اختياري">
+                <Field label="الحلقة" htmlFor="ct-halaqa"><TextInput id="ct-halaqa" value={halaqa} onChange={setHalaqa} placeholder="مثال: حلقة الشيخ أحمد" maxLength={40} /></Field>
+              </MoreOptions>
+              </Step>
             </div>
           </Panel>
 
-          <Panel title="نصوص الشهادة: اكتب فوقها كما تشاء" icon={PencilLine}>
+          <Panel title="عدّل عبارات الشهادة (اختياري)" icon={PencilLine} className="order-5 lg:order-none">
             <div className="space-y-5">
               <p className="text-[13px] leading-[1.8] text-[#5E6E67] -mt-2">الحقول مملوءة بصيغة الأداة. غيّر أي عبارة فتصير عبارتك هي المطبوعة، ويمكنك إعادة الصيغة الجاهزة في أي وقت. اترك الحقل فارغاً ليختفي سطره.</p>
 
@@ -316,27 +324,29 @@ export default function CertificateTool() {
           </Panel>
 
           {bulk && (
-            <Panel title="قائمة الطلاب" icon={Users}>
+            <Panel title="قائمة الطلاب" icon={Users} className="order-2 lg:order-none">
               <CertBulk students={students} setStudents={setStudents} previewIdx={previewIdx} setPreviewIdx={setPreviewIdx} />
             </Panel>
           )}
         </div>
 
-        <div className="min-w-0 space-y-5 lg:sticky lg:top-24">
-          <Panel>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4" role="radiogroup" aria-label="تصميم الشهادة">
-              {DESIGNS.map((d) => (
-                <button key={d.id} type="button" role="radio" aria-checked={design === d.id} onClick={() => pickDesign(d.id)}
-                  className="rounded-xl p-1.5 text-center cursor-pointer transition-shadow"
-                  style={design === d.id ? { background: '#0B3B33', color: '#F8F5EC' } : { background: '#FDFBF7', color: '#1A2E28', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
-                  {d.thumb
-                    ? <img src={d.thumb} alt="" width="360" height="255" loading="lazy" className="w-full h-auto rounded-md" />
-                    : <DesignSwatch id={d.id} />}
-                  <span className="block font-black text-[12px] mt-1.5 leading-tight">{d.label}</span>
-                </button>
-              ))}
-            </div>
-            <div className="rounded-[16px] overflow-hidden" style={{ boxShadow: 'var(--shadow-md), inset 0 0 0 1px var(--line-warm)', background: '#EFE9DC' }}>
+        <div className="contents lg:block lg:min-w-0 lg:space-y-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:p-1">
+          <Panel id="cert-preview" className="order-3 lg:order-none min-w-0">
+            <Step n={3} title="اختر تصميم الإطار" hint="تتغير الشهادة أدناه فوراً.">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2" role="radiogroup" aria-label="تصميم الشهادة">
+                {DESIGNS.map((d) => (
+                  <button key={d.id} type="button" role="radio" aria-checked={design === d.id} onClick={() => pickDesign(d.id)}
+                    className="rounded-xl p-1.5 text-center cursor-pointer transition-shadow"
+                    style={design === d.id ? { background: '#0B3B33', color: '#F8F5EC' } : { background: '#FDFBF7', color: '#1A2E28', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+                    {d.thumb
+                      ? <img src={d.thumb} alt="" width="360" height="255" loading="lazy" className="w-full h-auto rounded-md" />
+                      : <DesignSwatch id={d.id} />}
+                    <span className="block font-black text-[12px] mt-1.5 leading-tight">{d.label}</span>
+                  </button>
+                ))}
+              </div>
+            </Step>
+            <div className="mt-5 rounded-[16px] overflow-hidden" style={{ boxShadow: 'var(--shadow-md), inset 0 0 0 1px var(--line-warm)', background: '#EFE9DC' }}>
               <canvas ref={canvasRef} width={CERT_W} height={CERT_H} className="block w-full h-auto"
                 role="img" aria-label={date ? certificatePlainText(opts) : 'معاينة الشهادة'} />
             </div>
@@ -348,7 +358,7 @@ export default function CertificateTool() {
             </div>
           </Panel>
 
-          <Panel title={bulk ? 'ملف الشهادات' : 'حمّل شهادتك'} icon={bulk ? Layers : SlidersHorizontal}>
+          <Panel title={bulk ? 'ملف الشهادات' : 'حمّل شهادتك'} icon={bulk ? Layers : SlidersHorizontal} className="order-4 lg:order-none min-w-0">
             {!bulk ? (
               <div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -407,6 +417,7 @@ export default function CertificateTool() {
           </div>
         )}
       </PrintPortal>
+      <ResultBar targetId="cert-preview" label="تتغير الشهادة أمامك مباشرة" value={bulk ? 'معاينة الشهادات' : (name.trim() || 'معاينة شهادتك')} cta="المعاينة" />
     </ToolLayout>
   )
 }

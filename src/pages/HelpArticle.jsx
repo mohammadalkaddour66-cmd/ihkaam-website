@@ -4,9 +4,10 @@ import { motion, useScroll, useSpring } from 'framer-motion'
 import { ChevronLeft, ArrowLeft, Lightbulb, AlertTriangle, CheckCircle2, ListOrdered, Plus, MessageCircle, Clock } from 'lucide-react'
 import { getArticle, getCategoryForArticle, ARTICLES } from '../data/helpContent'
 import { ARTICLE_VISUAL } from '../data/helpVisuals'
-import { BrowserFrame, PhoneFrame } from '../components/help/ShotFrame'
+import { BrowserFrame, PhoneFrame, FlowArt } from '../components/help/ShotFrame'
 import StepShot from '../components/help/StepShot'
 import PageMeta from '../components/layout/PageMeta'
+import Crumbs from '../components/layout/Crumbs'
 import { SITE, composeDescription, FEATURE_SEO } from '../config/seo'
 import VideoCard from '../components/video/VideoCard'
 import { helpVideos, featuresOfVideo, featurePath } from '../data/videos'
@@ -32,15 +33,15 @@ function parseBody(body) {
 function Step({ step, num, isLast, slug }) {
   const blocks = parseBody(step.body)
   return (
-    <div id={`s-${num}`} className="relative flex gap-4 sm:gap-6 scroll-mt-28">
+    <div id={`s-${num}`} className="relative flex gap-3 sm:gap-6 scroll-mt-28">
       <div className="flex flex-col items-center shrink-0">
-        <span className="w-11 h-11 rounded-xl grid place-items-center font-bold text-[17px] tabular-nums"
+        <span className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl grid place-items-center font-bold text-[15px] sm:text-[17px] tabular-nums"
           style={{ background: INK, color: '#E0B562', fontFamily: 'cairo-latin, inherit', boxShadow: '0 8px 18px -8px rgba(8,44,38,.6)' }}>{num}</span>
         {!isLast && <span className="flex-1 w-[2px] mt-2 rounded-full" style={{ background: 'linear-gradient(180deg, rgba(184,134,58,.55), rgba(184,134,58,.08))' }} />}
       </div>
       <div className={`flex-1 min-w-0 ${isLast ? '' : 'pb-9'}`}>
-        <h3 className="font-bold text-[19px] leading-snug text-[#1A2E28] mb-2.5 pt-1.5">{step.title}</h3>
-        <div className="space-y-3 text-[16.5px] leading-[1.95] text-[#2F4540]">
+        <h3 className="font-bold text-[18px] sm:text-[19px] leading-snug text-[#1A2E28] mb-2.5 pt-1 sm:pt-1.5">{step.title}</h3>
+        <div className="space-y-3 text-[16px] sm:text-[16.5px] leading-[1.9] sm:leading-[1.95] text-[#2F4540]">
           {blocks.map((b, i) => b.type === 'text'
             ? <p key={i}>{b.text}</p>
             : (
@@ -118,7 +119,9 @@ function ArticleVisual({ visual }) {
   const { main, side } = visual
   return (
     <div className="relative max-w-4xl mx-auto mt-10">
-      {main.kind === 'phone' ? (
+      {main.kind === 'flow' ? (
+        <FlowArt shot={main} />
+      ) : main.kind === 'phone' ? (
         <div className="flex justify-center"><PhoneFrame shot={main} width={240} eager /></div>
       ) : main.kind === 'scene' ? (
         <div className="rounded-[26px] overflow-hidden aspect-[21/9]" style={{ boxShadow: 'var(--shadow-lg)', background: '#E9E3D5' }}>
@@ -146,7 +149,7 @@ function MiniCard({ a }) {
   return (
     <Link to={`/help/${a.slug}`} className="group flex items-center gap-3 rounded-2xl p-3 transition-all hover:-translate-y-0.5"
       style={{ background: '#FDFBF7', boxShadow: 'var(--shadow-sm), inset 0 0 0 1px var(--line-warm)' }}>
-      {v && (
+      {v?.srcSm && (
         <span className="shrink-0 w-16 h-12 rounded-lg overflow-hidden" style={{ background: '#F1ECDF' }}>
           <img src={v.srcSm} alt="" loading="lazy" className="w-full h-full object-cover" style={{ objectPosition: v.kind === 'phone' ? 'top' : 'right top' }} />
         </span>
@@ -225,12 +228,7 @@ export default function HelpArticle() {
       {/* ─── الرأس ─── */}
       <header className="relative pt-28 sm:pt-32 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <nav className="flex items-center gap-1.5 text-[12px] text-[#5E6E67] mb-6 flex-wrap" aria-label="مسار التنقل">
-            <Link to="/help" className="hover:text-[#1A2E28]">مركز المساعدة</Link>
-            <ChevronLeft size={12} />
-            {cat && <><Link to={`/help/category/${cat.id}`} className="hover:text-[#1A2E28]">{cat.label}</Link><ChevronLeft size={12} /></>}
-            <span className="text-[#1A2E28]">{article.title}</span>
-          </nav>
+          <Crumbs size="text-[12px]" items={[{ to: '/help', label: 'مركز المساعدة' }, ...(cat ? [{ to: `/help/category/${cat.id}`, label: cat.label }] : []), { label: article.title }]} />
           <div className="max-w-4xl page-enter">
             {cat && <span className="eyebrow">{Icon && <Icon size={14} />} {cat.label}</span>}
             <h1 className="font-bold text-[#1A2E28] mt-5 mb-4" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.9rem)', lineHeight: 1.25 }}>{article.title}</h1>

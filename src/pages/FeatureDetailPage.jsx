@@ -7,6 +7,7 @@ import { FEATURE_VISUAL } from '../data/helpVisuals'
 import SceneFrame from '../components/layout/SceneFrame'
 import { BrowserFrame, PhoneFrame } from '../components/help/ShotFrame'
 import PageMeta from '../components/layout/PageMeta'
+import Crumbs from '../components/layout/Crumbs'
 import { FEATURE_SEO, SITE } from '../config/seo'
 import { BLOG_POSTS } from '../data/blogContent'
 import { getArticle } from '../data/helpContent'
@@ -57,13 +58,7 @@ function Head({ eyebrow, title, center = false }) {
 /* ─── الرأس ─── */
 function Breadcrumb({ f }) {
   return (
-    <nav className="flex items-center gap-1.5 text-[12px] text-[#5E6E67] mb-7 flex-wrap" aria-label="مسار التنقل">
-      <Link to="/ihkaam" className="hover:text-[#1A2E28]">منصة إحكام</Link>
-      <ChevronLeft size={12} />
-      <span>{f.type === 'addon' ? 'الوحدات الإضافية' : 'الميزات الأساسية'}</span>
-      <ChevronLeft size={12} />
-      <span className="text-[#1A2E28]">{f.title.split('.')[0].split('—')[0].trim()}</span>
-    </nav>
+    <Crumbs size="text-[12px]" className="mb-7" items={[{ to: '/ihkaam', label: 'منصة إحكام' }, { label: f.type === 'addon' ? 'الوحدات الإضافية' : 'الميزات الأساسية' }, { label: f.title.split('.')[0].split('—')[0].trim() }]} />
   )
 }
 

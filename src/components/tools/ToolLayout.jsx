@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { ChevronLeft, ChevronDown, ArrowLeft, ShieldCheck, Gift, BookOpenText, Sparkles } from 'lucide-react'
+import { ChevronDown, ArrowDown, ArrowLeft, ShieldCheck, Gift, BookOpenText, Sparkles } from 'lucide-react'
 import PageMeta from '../layout/PageMeta'
+import Crumbs from '../layout/Crumbs'
 import { SITE, FEATURE_SEO } from '../../config/seo'
 import { TOOLS, TOOLS_HUB, POST_TITLES } from '../../config/tools'
 import { featureHrefOf } from './toolLinks'
@@ -60,13 +61,7 @@ export default function ToolLayout({ tool, lead, visual, children, method, faq }
         <div className="absolute inset-0 pattern-khatam-ink pointer-events-none" aria-hidden
           style={{ opacity: 0.035, maskImage: 'radial-gradient(ellipse 60% 60% at 70% 0%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(ellipse 60% 60% at 70% 0%, #000, transparent 75%)' }} />
         <div className="relative max-w-6xl mx-auto">
-          <nav className="flex items-center gap-1.5 text-[12.5px] text-[#5E6E67] mb-6 flex-wrap" aria-label="مسار التنقل">
-            <Link to="/" className="hover:text-[#1A2E28]">الرئيسية</Link>
-            <ChevronLeft size={12} />
-            <Link to={TOOLS_HUB.path} className="hover:text-[#1A2E28]">{TOOLS_HUB.name}</Link>
-            <ChevronLeft size={12} />
-            <span className="text-[#1A2E28] font-bold">{tool.name}</span>
-          </nav>
+          <Crumbs items={[{ to: '/', label: 'الرئيسية' }, { to: TOOLS_HUB.path, label: TOOLS_HUB.name }, { label: tool.name }]} />
           <div className="grid lg:grid-cols-[1.25fr_1fr] gap-8 lg:gap-12 items-center">
             <div className="page-enter">
               <span className="eyebrow"><Sparkles size={14} /> أداة مجانية من إحكام</span>
@@ -75,6 +70,7 @@ export default function ToolLayout({ tool, lead, visual, children, method, faq }
               </h1>
               <p className="text-[16.5px] leading-[1.95] text-[#4A5D56] max-w-2xl mb-6">{lead}</p>
               <TrustChips />
+              <a href="#tool" className="btn-cta lg:hidden mt-6 w-full rounded-xl gap-2 py-3.5 text-[15px] min-h-[48px]">ابدأ الآن <ArrowDown size={16} /></a>
             </div>
             <div className="hidden lg:block">{visual}</div>
           </div>

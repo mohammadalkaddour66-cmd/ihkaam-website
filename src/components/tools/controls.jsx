@@ -1,4 +1,5 @@
-import { useId } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { ChevronDown, ArrowDown } from 'lucide-react'
 import { WEEKDAYS_AR } from '../../tools/quran/dates.js'
 
 /* عناصر نموذج الأدوات: ورقٌ أبيض بحدّ بيج، والمختار أخضر حبري. كلها بلمسة
@@ -9,7 +10,7 @@ export const GOLD = '#B8863A'
 export const GOLD_TXT = '#8A6425'
 
 const inputBase =
-  'w-full rounded-xl px-3.5 py-2.5 text-[15px] text-[#1A2E28] bg-[#FDFBF7] outline-none transition-shadow focus:shadow-[inset_0_0_0_1.5px_#1F6F52]'
+  'w-full rounded-xl px-3.5 py-2.5 min-h-[46px] text-[16px] text-[#1A2E28] bg-[#FDFBF7] outline-none transition-shadow focus:shadow-[inset_0_0_0_1.5px_#1F6F52]'
 const inputRing = { boxShadow: 'inset 0 0 0 1px var(--line-warm)' }
 
 export function Field({ label, hint, children, htmlFor, className = '' }) {
@@ -168,9 +169,9 @@ export function Toggle({ label, checked, onChange, hint }) {
 }
 
 /* بطاقة النموذج: ورقة بيضاء فيها حقول الأداة */
-export function Panel({ children, className = '', title, icon: Icon }) {
+export function Panel({ children, className = '', title, icon: Icon, id }) {
   return (
-    <div className={`rounded-[24px] p-5 sm:p-6 ${className}`}
+    <div id={id} className={`rounded-[24px] p-5 sm:p-6 scroll-mt-24 ${className}`}
       style={{ background: '#FFFFFF', boxShadow: 'var(--shadow-md), inset 0 0 0 1px var(--line-warm)' }}>
       {title && (
         <div className="flex items-center gap-2.5 mb-5">
@@ -189,6 +190,80 @@ export function Stat({ value, label, accent = false }) {
     <div className="rounded-2xl px-4 py-3.5" style={{ background: accent ? INK : '#FDFBF7', boxShadow: accent ? 'none' : 'inset 0 0 0 1px var(--line-warm)' }}>
       <div className="font-black leading-tight text-[19px] sm:text-[21px]" style={{ color: accent ? '#E0B562' : '#1A2E28' }}>{value}</div>
       <div className="text-[12.5px] font-bold mt-1" style={{ color: accent ? 'rgba(248,245,236,.75)' : '#5E6E67' }}>{label}</div>
+    </div>
+  )
+}
+
+/* خطوة مرقّمة في نموذج الأداة: الرقم ثم السؤال الذي تجيب عنه حقول الخطوة،
+   فيعرف الزائر على الهاتف ماذا يملأ أولاً وما التالي. */
+export function Step({ n, title, hint, children }) {
+  const id = useId()
+  return (
+    <section aria-labelledby={id} className="tool-step">
+      <div className="flex items-start gap-3 mb-4">
+        <span aria-hidden className="shrink-0 w-8 h-8 rounded-full grid place-items-center font-black text-[15px] tabular-nums" style={{ background: INK, color: '#E0B562' }}>{n}</span>
+        <div className="min-w-0 pt-0.5">
+          <h3 id={id} className="font-black text-[16px] leading-snug text-[#1A2E28]">{title}</h3>
+          {hint && <p className="text-[13px] leading-[1.7] text-[#5E6E67] mt-0.5">{hint}</p>}
+        </div>
+      </div>
+      <div className="space-y-5">{children}</div>
+    </section>
+  )
+}
+
+/* خيارات ثانوية مطويّة حتى لا تزدحم الشاشة بما لا يحتاجه أغلب الزوار */
+export function MoreOptions({ title = 'خيارات إضافية', hint = 'اختيارية، يمكنك تجاهلها', children }) {
+  return (
+    <details className="group rounded-2xl" style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+      <summary className="flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer list-none min-h-[48px] [&::-webkit-details-marker]:hidden">
+        <span>
+          <span className="block text-[14px] font-bold text-[#1A2E28]">{title}</span>
+          {hint && <span className="block text-[12.5px] text-[#5E6E67] mt-0.5">{hint}</span>}
+        </span>
+        <ChevronDown size={18} className="shrink-0 transition-transform group-open:rotate-180" color={GOLD} />
+      </summary>
+      <div className="px-4 pb-4 pt-1 space-y-4">{children}</div>
+    </details>
+  )
+}
+
+/* شريط سفلي على الهاتف: يلخّص النتيجة ويقفز إليها ما دامت تحت الشاشة.
+   النتيجة تُحسب حيّة وتظهر أسفل النموذج، فبلا هذا الشريط لا يعرف الزائر أنها وُلدت. */
+export function ResultBar({ targetId, label, value, cta = 'اعرض النتيجة' }) {
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    /* يظهر حين يبلغ الزائر النموذج والنتيجة ما زالت تحت الشاشة، لا قبل ذلك */
+    const check = () => {
+      const res = document.getElementById(targetId)
+      const form = document.getElementById('tool')
+      if (!res || !form) return
+      const vh = window.innerHeight
+      setShow(form.getBoundingClientRect().top < vh * 0.55 && res.getBoundingClientRect().top > vh * 0.8)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => { window.removeEventListener('scroll', check); window.removeEventListener('resize', check) }
+  }, [targetId])
+  const on = show && !!value
+  useEffect(() => {
+    const root = document.documentElement
+    if (on) root.style.setProperty('--wa-lift', '6rem')
+    return () => root.style.removeProperty('--wa-lift')
+  }, [on])
+  if (!on) return null
+  return (
+    <div className="lg:hidden fixed inset-x-3 bottom-3 z-[900] flex items-center gap-3 rounded-2xl ps-4 pe-2 py-2"
+      style={{ background: INK, color: '#F8F5EC', boxShadow: '0 18px 40px -12px rgba(8,44,38,.7)' }} role="status">
+      <div className="min-w-0 flex-1">
+        <div className="text-[11.5px] opacity-75 leading-tight">{label}</div>
+        <div className="font-black text-[15px] leading-snug truncate" style={{ color: '#E0B562' }}>{value}</div>
+      </div>
+      <button type="button" onClick={() => document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        className="btn-cta shrink-0 inline-flex items-center gap-1.5 rounded-xl px-4 min-h-[44px] text-[14px] font-bold cursor-pointer">
+        {cta} <ArrowDown size={15} />
+      </button>
     </div>
   )
 }
