@@ -1,31 +1,31 @@
 {
   "/": {
-    "hash": "bbf0c81f41500a49",
-    "lastmod": "2026-11-20"
+    "hash": "e0758a346233a4e5",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam": {
-    "hash": "c2cd73632514f863",
+    "hash": "d2476c15c01434bd",
     "lastmod": "2026-11-21"
   },
   "/about": {
-    "hash": "36ccd7a3d27dff75",
-    "lastmod": "2026-11-20"
+    "hash": "47378aa2d82b7670",
+    "lastmod": "2026-11-21"
   },
   "/contact": {
     "hash": "02de59bf24c87924",
     "lastmod": "2026-11-20"
   },
   "/request": {
-    "hash": "0cdf26a706d0714c",
-    "lastmod": "2026-11-20"
+    "hash": "447202baccea4920",
+    "lastmod": "2026-11-21"
   },
   "/affiliate": {
     "hash": "b15ce40c0d0f7e1b",
     "lastmod": "2026-11-20"
   },
   "/review": {
-    "hash": "8b3aa74036022073",
-    "lastmod": "2026-11-20"
+    "hash": "b12885ad294fd8b3",
+    "lastmod": "2026-11-21"
   },
   "/terms": {
     "hash": "a9a6da9215bdc051",
@@ -116,28 +116,28 @@
     "lastmod": "2026-11-13"
   },
   "/ihkaam/features/admin": {
-    "hash": "b791e64559b422fc",
-    "lastmod": "2026-11-20"
+    "hash": "2353632c0abaf9b1",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam/features/academic": {
-    "hash": "0f8604529fe01685",
-    "lastmod": "2026-11-20"
+    "hash": "6a53f06222780773",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam/features/daily": {
-    "hash": "b9edb14629b21acd",
-    "lastmod": "2026-11-20"
+    "hash": "bed3da0a1685b293",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam/features/insights": {
-    "hash": "8da9ca918c0e081a",
-    "lastmod": "2026-11-20"
+    "hash": "e51fcc4987a465a9",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam/features/parents": {
-    "hash": "2731f0381f0ad477",
-    "lastmod": "2026-11-20"
+    "hash": "98aa134bfe07d7b2",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam/features/reports": {
-    "hash": "b93738084cb298c7",
-    "lastmod": "2026-11-20"
+    "hash": "25f1497553b425e5",
+    "lastmod": "2026-11-21"
   },
   "/ihkaam/features/library": {
     "hash": "64a3f2cd6aee198a",
@@ -188,16 +188,16 @@
     "lastmod": "2026-11-20"
   },
   "/help/login": {
-    "hash": "462b58dd76b16eab",
-    "lastmod": "2026-11-20"
+    "hash": "26129008dc752ef3",
+    "lastmod": "2026-11-21"
   },
   "/help/dashboard-overview": {
-    "hash": "817458e65c59e9e6",
-    "lastmod": "2026-11-20"
+    "hash": "59a09c742310d707",
+    "lastmod": "2026-11-21"
   },
   "/help/signup": {
-    "hash": "5539b85a9462f8b7",
-    "lastmod": "2026-11-20"
+    "hash": "38f88082d21a713a",
+    "lastmod": "2026-11-21"
   },
   "/help/payment": {
     "hash": "f6a3b87d1c946a76",
@@ -208,79 +208,79 @@
     "lastmod": "2026-11-20"
   },
   "/help/moving-student-data": {
-    "hash": "2945c1bbc582ba15",
-    "lastmod": "2026-11-20"
+    "hash": "343ab9e82cf541ae",
+    "lastmod": "2026-11-21"
   },
   "/help/student-registration": {
-    "hash": "e24e79b7d967d949",
-    "lastmod": "2026-11-20"
+    "hash": "0a75ed838c44ac1d",
+    "lastmod": "2026-11-21"
   },
   "/help/groups-management": {
-    "hash": "ecc4ffbee53c09b4",
-    "lastmod": "2026-11-20"
+    "hash": "6398dd7822a56983",
+    "lastmod": "2026-11-21"
   },
   "/help/student-transfer": {
-    "hash": "b62d08313ae16ccd",
-    "lastmod": "2026-11-20"
+    "hash": "23de164fc50b49b6",
+    "lastmod": "2026-11-21"
   },
   "/help/attendance-batch": {
-    "hash": "9c49595d781ff423",
-    "lastmod": "2026-11-20"
+    "hash": "a08f21c8ab1c5ff4",
+    "lastmod": "2026-11-21"
   },
   "/help/attendance-staff": {
-    "hash": "9f16cd90a4a27bb8",
-    "lastmod": "2026-11-20"
+    "hash": "e6147baa840062f9",
+    "lastmod": "2026-11-21"
   },
   "/help/daily-recitation": {
-    "hash": "f4074584a172bdec",
-    "lastmod": "2026-11-20"
+    "hash": "c4e50c5b28717b29",
+    "lastmod": "2026-11-21"
   },
   "/help/tests": {
-    "hash": "d2f7abd2c0fea767",
-    "lastmod": "2026-11-20"
+    "hash": "53e6e60da3e045e2",
+    "lastmod": "2026-11-21"
   },
   "/help/exam-queue": {
-    "hash": "574ab154e4253553",
-    "lastmod": "2026-11-20"
+    "hash": "5db369aae4e44f5c",
+    "lastmod": "2026-11-21"
   },
   "/help/monthly-eval": {
-    "hash": "9d685e2a93084ff2",
-    "lastmod": "2026-11-20"
+    "hash": "e2ba337e00d49145",
+    "lastmod": "2026-11-21"
   },
   "/help/finance-tuitions": {
-    "hash": "e71a7dafb8d57bcc",
-    "lastmod": "2026-11-20"
+    "hash": "6b89178906a76898",
+    "lastmod": "2026-11-21"
   },
   "/help/finance-ledger": {
-    "hash": "5e79d3a454d2cdf9",
-    "lastmod": "2026-11-20"
+    "hash": "46954af8dbeda076",
+    "lastmod": "2026-11-21"
   },
   "/help/reports-overview": {
-    "hash": "10dd4598e4b59201",
-    "lastmod": "2026-11-20"
+    "hash": "590569857358f196",
+    "lastmod": "2026-11-21"
   },
   "/help/archiving": {
-    "hash": "7072f74b9b858bc2",
-    "lastmod": "2026-11-20"
+    "hash": "76b04ebd9efed11c",
+    "lastmod": "2026-11-21"
   },
   "/help/parent-portal": {
-    "hash": "3347bcbfa199ad24",
-    "lastmod": "2026-11-20"
+    "hash": "dfe01e55653665cc",
+    "lastmod": "2026-11-21"
   },
   "/help/staff-management": {
-    "hash": "e18f0b15e736b19a",
-    "lastmod": "2026-11-20"
+    "hash": "625d66d199eead18",
+    "lastmod": "2026-11-21"
   },
   "/help/star-of-week": {
-    "hash": "0256fd2c34616cc0",
-    "lastmod": "2026-11-20"
+    "hash": "aa5c03f5d85f7a40",
+    "lastmod": "2026-11-21"
   },
   "/help/smart-insights": {
-    "hash": "da08934c4b10057e",
-    "lastmod": "2026-11-20"
+    "hash": "35b500482449ebda",
+    "lastmod": "2026-11-21"
   },
   "/help/insights-metrics": {
-    "hash": "1978e3d58161a09c",
-    "lastmod": "2026-11-20"
+    "hash": "7b70538fd9a55595",
+    "lastmod": "2026-11-21"
   }
 }
