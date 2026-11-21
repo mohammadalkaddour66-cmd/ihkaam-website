@@ -7,8 +7,11 @@
    الموقع): BLOG_POSTS و BLOG_CATEGORIES و getPost و getCategoryById، ومعها
    BLOG_CLUSTERS و BLOG_DRAFTS و getRelatedPosts و featureHref و readTimeLabel.
 
-   إضافة مقال: أنشئ الملف بنسخ أي مقالٍ قائم، ثم أضف سطر import وأدرجه في
-   ALL أدناه. المسودة (status: 'draft') لا تظهر في الموقع ولا في الخريطة.
+   إضافة مقال: أنشئ الملف في ./blog بنسخ أي مقالٍ قائم، وانتهى (يُحمَّل وحده).
+   متى يظهر: status ≠ 'draft' و date ≤ اليوم بتوقيت دمشق وقت البناء. فالمقال
+   المكتمل بتاريخٍ مستقبلي «مجدول»: لا صفحة ولا خريطة ولا نص في حزمة JS حتى
+   يوم نشره، ويُبنى الموقع صباح ذلك اليوم تلقائياً (docs/scheduled-publishing-proposal.md).
+   المسودة (status: 'draft') لا تُنشر وحدها مهما كان تاريخها.
 
    ── شكل الملف ──────────────────────────────────────────────────
    slug           رابط المقال /blog/<slug>. لا يتغيّر بعد النشر (تغييره يحتاج
@@ -46,27 +49,9 @@
 
 import { ADDONS } from './featureDetails'
 
-import whyStudentsLeave          from './blog/why-students-leave'
-import monthlyReportsTimeTrap    from './blog/monthly-reports-time-trap'
-import financialChaosNotMoney    from './blog/financial-chaos-not-money'
-import howToKnowTeacherIsWorking from './blog/how-to-know-teacher-is-working'
-import angryParentTrustMoment    from './blog/angry-parent-trust-moment'
-import organizingCirclesMedium   from './blog/organizing-circles-medium-center'
-import handlingChronicAbsentees  from './blog/handling-chronic-absentees'
-import fairRecitationSystem      from './blog/fair-recitation-system'
-import weeklyMemorizationPlan    from './blog/weekly-memorization-plan'
-import settingTuitionFees        from './blog/setting-tuition-fees'
-import motivatingTeachers        from './blog/motivating-teachers'
-import reputationAsMarketing     from './blog/reputation-as-marketing'
-import readingRecitationData     from './blog/reading-recitation-data'
-import digitalTransformation     from './blog/digital-transformation-quran-centers'
-import deliveringBadNews         from './blog/delivering-bad-news-to-parents'
-import whyCentersFailToScale     from './blog/why-centers-fail-to-scale'
-import first90DaysDirector       from './blog/first-90-days-director'
-import howLongToMemorizeQuran    from './blog/how-long-to-memorize-quran'
-import quranReviewSchedule       from './blog/quran-review-schedule'
-import attendanceRegisterTemplate from './blog/attendance-register-template'
-import quranCertificateWording   from './blog/quran-certificate-wording'
+/* كل ملف في ./blog مقال: يُحمَّل تلقائياً، فلا قائمة تُحدَّث عند إضافة مقال.
+   (scripts/lib/blog-schedule.mjs يشرح متى يظهر، و vite.config.js يُفرغ ما لم يحن موعده.) */
+const MODULES = import.meta.glob('./blog/*.js', { eager: true, import: 'default' })
 
 export const BLOG_CATEGORIES = [
   { id: 'retention',   label: 'استبقاء الطلاب', color: '#1F6F52' },
@@ -88,29 +73,7 @@ export const BLOG_CLUSTERS = [
   { id: 'tech',       label: 'التقنية والقوالب' },
 ]
 
-const ALL = [
-  whyStudentsLeave,
-  monthlyReportsTimeTrap,
-  financialChaosNotMoney,
-  howToKnowTeacherIsWorking,
-  angryParentTrustMoment,
-  organizingCirclesMedium,
-  handlingChronicAbsentees,
-  fairRecitationSystem,
-  weeklyMemorizationPlan,
-  settingTuitionFees,
-  motivatingTeachers,
-  reputationAsMarketing,
-  readingRecitationData,
-  digitalTransformation,
-  deliveringBadNews,
-  whyCentersFailToScale,
-  first90DaysDirector,
-  howLongToMemorizeQuran,
-  quranReviewSchedule,
-  attendanceRegisterTemplate,
-  quranCertificateWording,
-]
+const ALL = Object.values(MODULES)
 
 /* ── مدة القراءة من عدد الكلمات ───────────────────────────────── */
 const WORDS_PER_MINUTE = 180
@@ -155,8 +118,13 @@ function normalize(post) {
 /* الأحدث أولاً. */
 const byDateDesc = (a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)
 
-export const BLOG_POSTS  = ALL.filter(p => p.status !== 'draft').map(normalize).sort(byDateDesc)
-export const BLOG_DRAFTS = ALL.filter(p => p.status === 'draft').map(normalize)
+/* يظهر المقال حين لا يكون مسودة ويحين تاريخه (اليوم بتوقيت دمشق وقت البناء). */
+const TODAY = typeof __SITE_TODAY__ === 'undefined' ? new Date().toISOString().slice(0, 10) : __SITE_TODAY__
+const isLive = (p) => p.status !== 'draft' && p.date <= TODAY
+
+export const BLOG_POSTS     = ALL.filter(isLive).map(normalize).sort(byDateDesc)
+export const BLOG_DRAFTS    = ALL.filter(p => p.status === 'draft').map(normalize)
+export const BLOG_SCHEDULED = ALL.filter(p => p.status !== 'draft' && !isLive(p)).map(normalize)
 
 /* ── Helpers ─────────────────────────────────────────────────── */
 export function getPost(slug) {

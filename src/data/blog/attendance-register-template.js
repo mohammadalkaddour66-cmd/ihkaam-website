@@ -1,10 +1,10 @@
 /* سجل حضور وغياب الطلاب في حلقات التحفيظ: نموذج جاهز وطريقة استخدامه
    مقال في مدونة إحكام. شكل الملف وقواعد الكتابة في رأس src/data/blogContent.js.
-   مسودة حتى يوم نشره في docs/content-calendar.md (ديسمبر 2026). */
+   مجدول ليوم نشره في docs/content-calendar.md (ديسمبر 2026). */
 
 export default {
   slug          : 'attendance-register-template',
-  status        : 'draft',
+  status        : 'published',
   category      : 'retention',
   cluster       : 'teaching',
   targetQuery   : 'سجل حضور وغياب الطلاب',

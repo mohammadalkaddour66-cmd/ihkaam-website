@@ -1,10 +1,10 @@
 /* شهادة تقدير حفظ القرآن: عبارات وصيغ جاهزة لكل مناسبة
    مقال في مدونة إحكام. شكل الملف وقواعد الكتابة في رأس src/data/blogContent.js.
-   مسودة حتى يوم نشره في docs/content-calendar.md (ديسمبر 2026). */
+   مجدول ليوم نشره في docs/content-calendar.md (ديسمبر 2026). */
 
 export default {
   slug          : 'quran-certificate-wording',
-  status        : 'draft',
+  status        : 'published',
   category      : 'parents',
   cluster       : 'parents',
   targetQuery   : 'شهادة تقدير حفظ القرآن',

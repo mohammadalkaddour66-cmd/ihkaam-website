@@ -1,0 +1,55 @@
+# نشر المقالات المجدولة: كل صباح 06:00 بتوقيت دمشق (03:00 UTC).
+# يفحص أن في المستودع مقالاً حان موعده ولا يظهر بعد في الخريطة الحيّة، فيوقظ
+# بناء Cloudflare Pages (Deploy Hook)، وينتظر ظهوره، ثم يرسل IndexNow.
+# لا مقال مستحق ← ينتهي في ثوانٍ بلا بناء.
+# الشرح الكامل والإعداد: docs/scheduled-publishing-proposal.md
+name: publish-scheduled-posts
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-posts
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: مقالات حان موعدها
+        id: due
+        run: node scripts/due-posts.mjs
+
+      - name: إيقاظ بناء Cloudflare
+        if: steps.due.outputs.slugs != ''
+        env:
+          CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
+        run: |
+          test -n "$CF_DEPLOY_HOOK" || { echo "السر CF_DEPLOY_HOOK غير مضبوط"; exit 1; }
+          curl -fsS -X POST "$CF_DEPLOY_HOOK" > /dev/null
+          echo "أُطلق البناء"
+
+      - name: انتظار ظهورها في الخريطة الحيّة
+        if: steps.due.outputs.slugs != ''
+        run: node scripts/due-posts.mjs --wait ${{ steps.due.outputs.slugs }}
+
+      - name: IndexNow
+        if: steps.due.outputs.slugs != ''
+        run: |
+          paths="/blog"
+          for s in ${{ steps.due.outputs.slugs }}; do paths="$paths /blog/$s"; done
+          node scripts/indexnow.mjs $paths

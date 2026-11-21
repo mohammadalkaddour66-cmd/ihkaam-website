@@ -1,6 +1,6 @@
 # تقويم نشر مدونة إحكام
 
-آخر تحديث: 2026-11-13
+آخر تحديث: 2026-11-21 (ديسمبر إلى مايو مجدولة)
 
 نُشرت مقالات المدونة العشرون كلها بين 1 و20 يوليو 2026، ثم لم يُنشر شيء أربعة أشهر. تقرير التحليل (المشكلة 58) يعدّ هذا علامة على محتوى بالجملة، ويوصي بإيقاع ثابت من مقالين إلى أربعة في الشهر. هذا الملف هو ذلك الإيقاع للأشهر الستة القادمة.
 
@@ -10,10 +10,11 @@
 
 - لا يزيد الشهر على أربعة مقالات جديدة ولا يقل عن اثنين.
 - تاريخ المقال (`date`) هو اليوم الذي يظهر فيه فعلاً في الموقع، لا يوم كتابته، ولا تاريخ قديم أبداً.
-- يجوز كتابة المقال قبل موعده: يبقى `status: 'draft'` حتى يومه، ثم يصير `'published'` ويُكتب التاريخ.
+- يُكتب المقال قبل موعده بـ`status: 'published'` و`date` يوم النشر المراد: هذا **جدولة**، ويظهر المقال وحده صباح ذلك اليوم (06:00 دمشق) بلا push ولا جلسة (`docs/scheduled-publishing-proposal.md`). `'draft'` لا يُنشر وحده مهما كان تاريخه، فيُستعمل لما لم يُراجَع بعد.
+- قبل push دفعة مجدولة: `npm run check:scheduled`.
 - كل مقال جديد يُضاف إلى `src/data/blog/` ويُسجَّل في `src/data/blogContent.js`، بالشكل المشروح في رأس ذلك الملف.
 - لا أرقام بلا مصدر، ولا أسماء منافسين، ولا شهادات أو حالات معاهد إلا بإذن مكتوب من المعهد.
-- الروابط الداخلية إلى صفحات الميزات القائمة (`/ihkaam/features/...` و`/ihkaam/addons/...`). صفحات الأدوات والقوالب المذكورة في الشيت (`/tools/...` و`/templates/...`) غير موجودة، فلا يُربط بها.
+- الروابط الداخلية إلى صفحات الميزات القائمة (`/ihkaam/features/...` و`/ihkaam/addons/...`)، وإلى الأدوات المجانية (`/tools` وأدواتها الأربع، منذ 2026-11-21). صفحات القوالب (`/templates/...`) غير موجودة، فلا يُربط بها.
 
 ## الجدول
 
@@ -44,8 +45,13 @@
 
 مقالات رمضان في يناير لأن رمضان 1448 يبدأ في النصف الأول من فبراير 2027 تقريباً، ومن يبحث عنها يبحث قبل دخول الشهر.
 
-الأربعة الأولى (نوفمبر وأول اثنين في ديسمبر) ملفاتها جاهزة كمسودات في `src/data/blog/`:
-`how-long-to-memorize-quran`، `quran-review-schedule`، `attendance-register-template`، `quran-certificate-wording`.
+**ديسمبر 2026 مكتوب كله ومجدول** (2026-11-21، `status: 'published'` وتاريخ النشر في الملف، وفحصه `npm run check:scheduled` نظيف): `attendance-register-template` (1 ديسمبر)، و`quran-certificate-wording` (8 ديسمبر)، و`supervisor-weekly-follow-up` (15 ديسمبر)، و`talqeen-method-quran-beginners` (22 ديسمبر). مقالا نوفمبر (`how-long-to-memorize-quran` و`quran-review-schedule`) منشوران. **يناير 2027 مكتوب ومجدول أيضاً** (2026-11-21): `ramadan-quran-hifz-schedule` (5 يناير)، و`ramadan-circles-operation` (12)، و`ramadan-quran-competition` (19)، و`how-long-to-memorize-juz-amma` (26). صورتا المشهد في المقالين الأخيرين نسخة مؤقتة من مشهدَي `quran-certificate-wording` و`how-long-to-memorize-quran` لنفاد رصيد ElevenLabs، وتُستبدلان بصورتين خاصتين. **فبراير ومارس وأبريل ومايو 2027 مكتوبة ومجدولة كلها** (2026-11-21، 12 مقالاً، فحص `npm run check:scheduled` نظيف): `student-registration-form-quran-circle` (2 فبراير)، و`quran-circle-fee-receipt` (16)، و`jali-khafi-lahn-recitation` (23)، و`supervisory-visit-form-quran-circle` (2 مارس)، و`hifz-exam-questions-quran-circle` (16)، و`monthly-fee-collection-quran-circles` (30)، و`summer-quran-program-six-weeks` (6 أبريل)، و`hiring-quran-teacher-criteria` (13)، و`motivating-students-quran-free-ideas` (27)، و`quran-graduation-ceremony-plan` (4 مايو)، و`quran-center-operational-plan` (11)، و`quran-circle-points-system` (25). **صور المشهد (public/scenes/blog) لهذه الاثني عشر نسخ مؤقتة من مشاهد مقالات أخرى** (نفد رصيد ElevenLabs ولم يُشحن)، وتُستبدل بصور خاصة حين يتوفر الرصيد، مع الاسمين الآخرين من يناير. بهذا اكتمل تقويم ديسمبر إلى مايو، وبقي خارجه المؤجَّل بشرط.
+
+## الأدوات المجانية والنشر
+
+- الأدوات الأربع في `/tools` منذ 2026-11-21، وبقية الثماني **مؤجلة** بقرار المالك.
+- ترتيب رسائل واتساب بحسب مواعيد المقالات في `docs/whatsapp-tools-launch.md`: أداة الشهادة تُنشر يوم مقال الشهادة (8 ديسمبر)، وحاسبة الختم قبل رمضان (4 يناير).
+- النشر المجدول المجاني منفَّذ في الكود (2026-11-21): `docs/scheduled-publishing-proposal.md`. يبقى إعداد Deploy Hook ودمج الفرع في `main`.
 
 ## تحديث المقالات القائمة
 
