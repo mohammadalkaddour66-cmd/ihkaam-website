@@ -216,7 +216,7 @@ export default function ApplyForm({ onCode }) {
             {/* الشروط تُقرأ قبل الإرسال لا بعده: كل ما يحتمل خلافاً لاحقاً مكتوب هنا */}
             <section aria-labelledby="af-terms-h" className="rounded-2xl p-5"
               style={{ background: '#F8F5EC', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
-              <h4 id="af-terms-h" className="font-black text-[14.5px] mb-3" style={{ color: INK }}>شروط الشراكة قبل أن تقدّم</h4>
+              <h3 id="af-terms-h" className="font-black text-[14.5px] mb-3" style={{ color: INK }}>شروط الشراكة قبل أن تقدّم</h3>
               <ol className="space-y-3">
                 {AFFILIATE_TERMS.map((r, i) => (
                   <li key={r.t} className="flex gap-3 text-[13px] leading-[1.85]" style={{ color: '#2C423B' }}>

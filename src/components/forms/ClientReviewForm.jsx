@@ -62,6 +62,7 @@ function Field({ label, htmlFor, children }) {
 /* headingLevel: في /review العنوانُ هو H1 الصفحة، وفي /about يبقى H2
    لأن للصفحة عنوانها الرئيسي. */
 export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
+  const SubHeading = Heading === 'h1' ? 'h2' : 'h3'   // لا قفز في مستويات العناوين (ISS-16)
   const [form,    setForm]    = useState(initialForm)
   const [focused, setFocused] = useState('')
   const [sent,    setSent]    = useState(false)
@@ -271,9 +272,9 @@ export default function ClientReviewForm({ headingLevel: Heading = 'h2' }) {
           {/* ── ماذا يحدث لتقييمك ── */}
           <aside className="section-dark p-8 sm:p-10 flex flex-col justify-center" aria-label="كيف يُنشر تقييمك">
             <div className="pattern-layer pattern-khatam" aria-hidden />
-            <h3 className="font-black text-[18px] mb-7" style={{ color: '#F8F5EC' }}>
+            <SubHeading className="font-black text-[18px] mb-7" style={{ color: '#F8F5EC' }}>
               ماذا يحدث بعد الإرسال؟
-            </h3>
+            </SubHeading>
             <ol className="space-y-6">
               {STEPS.map((st, i) => (
                 <li key={st.t} className="flex gap-4">

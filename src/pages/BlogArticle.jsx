@@ -69,7 +69,7 @@ function Paragraphs({ text }) {
         <div key={j} className="relative my-5 ps-14">
           <span className="absolute right-0 top-0 w-10 h-10 rounded-xl grid place-items-center font-bold"
             style={{ background: INK, color: '#E0B562' }}>{step[1]}</span>
-          <h4 className="font-bold text-[17px] text-[#1A2E28] mb-1">{step[2]}</h4>
+          <h3 className="font-bold text-[17px] text-[#1A2E28] mb-1">{step[2]}</h3>
           <p className="text-[17px] leading-[1.95] text-[#2F4540]" dangerouslySetInnerHTML={{ __html: inline(step[3]) }} />
         </div>
       )

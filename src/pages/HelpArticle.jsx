@@ -284,6 +284,7 @@ export default function HelpArticle() {
             </details>
 
             <div>
+              <h2 className="sr-only">خطوات الشرح</h2>
               {article.steps.map((s, i) => <Step key={i} step={s} num={i + 1} isLast={i === article.steps.length - 1} slug={article.slug} />)}
             </div>
 
