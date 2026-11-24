@@ -8,7 +8,7 @@
 import { readXlsxSheets, makeWorkbook } from './xlsx.js'
 import { cleanVarName, uniqueVars, normVar } from './template.js'
 
-/* أسماء الأعمدة المعروفة: تُوحَّد إملاءاتها، وهي ترتيب لصق بلا ترويسة */
+/* أسماء مألوفة في ملفات المديرين: تُوحَّد إملاءاتها فقط إن وردت في ترويسة، ولا تُفرض عموداً */
 const KNOWN_VARS = ['الإنجاز', 'التقدير', 'الدرجة']
 
 export const MAX_STUDENTS = 200
@@ -92,13 +92,12 @@ function splitCsvLine(line, delim) {
 
 /* صفوف خام ← { students: [{ name, gender, vars }], vars: [أسماء المتغيرات] }.
    بترويسة (صف فيه عمود «اسم…»): كل عمود غير الاسم والجنس متغير باسم ترويسته، فلا يضرّ تغيير
-   الترتيب أو حذف عمود. بلا ترويسة: الاسم ثم الإنجاز والتقدير والدرجة بهذا الترتيب، وإن بدت
-   خلية كلمة «طالب» أو «طالبة» فهي الجنس. الأسطر الفارغة تُجمع. */
+   الترتيب أو حذف عمود. بلا ترويسة: العمود الأول اسم وما بعده يُهمل، إلا خلية «طالب» أو «طالبة» فهي الجنس. الأسطر الفارغة تُجمع. */
 export function rowsToStudents(matrix, defaultGender = '') {
   const rows = matrix.filter((r) => r.some((c) => String(c || '').trim()))
   let nameCol = 0
   let genderCol = -1
-  let cols = KNOWN_VARS.map((v, i) => ({ i: i + 1, name: v })) // الأعمدة المتغيرة
+  let cols = [] // الأعمدة المتغيرة: من ترويسة الملف فقط
   let headless = true
   if (rows.length && rows[0].some((c) => NAME_HEAD.test(String(c || '').trim()))) {
     headless = false
@@ -125,10 +124,11 @@ export function rowsToStudents(matrix, defaultGender = '') {
     if (!name) continue
     let gender = genderCol >= 0 ? normalizeGender(r[genderCol]) : ''
     const vars = {}
+    /* بلا ترويسة: الاسم وحده، وكلمة «طالب/طالبة» في خلية أخرى هي الجنس */
+    if (headless && !gender) gender = r.slice(1).map(normalizeGender).find(Boolean) || ''
     for (const c of cols) {
       const v = String(r[c.i] ?? '').trim()
-      if (headless && !gender && normalizeGender(v)) { gender = normalizeGender(v); continue }
-      if (v) vars[c.name] = v.slice(0, FIELD_MAX.value)
+      if (v) { vars[c.name] = v.slice(0, FIELD_MAX.value) }
     }
     students.push({ name, gender: gender || defaultGender, vars })
   }

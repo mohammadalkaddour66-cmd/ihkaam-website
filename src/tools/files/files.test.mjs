@@ -6,7 +6,7 @@ import { makeXlsx, readXlsx, readXlsxSheets } from './xlsx.js'
 import { buildPdf } from './pdf.js'
 import { reasonWithLam, reasonPlain } from './reason.js'
 import { parseStudentsText, parseStudentsFile, rowsToStudents, sampleXlsx, SAMPLE_HEADER, SAMPLE_MALE, SAMPLE_FEMALE, normalizeGender, sheetGender } from './bulk.js'
-import { extendDefault, fillTemplate, finishBody, insertToken, inspectTemplate, femaleSuggestions, replaceWord, normVar, valsOf, DEFAULT_TPL, newTemplate } from './template.js'
+import { fillTemplate, finishBody, insertToken, inspectTemplate, femaleSuggestions, replaceWord, normVar, valsOf, DEFAULT_TPL, newTemplate } from './template.js'
 
 const S = (o) => ({ name: '', gender: '', vars: {}, ...o })
 
@@ -79,9 +79,10 @@ test('bulk: لصق من Excel (تبويب) وCSV وأسطر مفردة', () => {
   ])
   assert.deepEqual(r.vars, ['الإنجاز']) // الجنس ليس متغيراً
   assert.deepEqual(parseStudentsText('أ ب\nج د\n\n').students, [S({ name: 'أ ب' }), S({ name: 'ج د' })])
+  assert.deepEqual(parseStudentsText('أ ب\nج د').vars, []) // أسماء وحدها: لا أعمدة
   assert.equal(parseStudentsText('أ ب').students[0].gender, '')
   assert.equal(parseStudentsText('أ ب', 'f').students[0].gender, 'f') // الجنس الافتراضي لمن لا جنس له
-  assert.deepEqual(parseStudentsText('"أحمد، علي","حفظ ""الملك"""\n').students, [S({ name: 'أحمد، علي', vars: { الإنجاز: 'حفظ "الملك"' } })])
+  assert.deepEqual(parseStudentsText('"أحمد، علي","حفظ ""الملك"""\n').students, [S({ name: 'أحمد، علي' })]) // بلا ترويسة: الاسم وحده
   assert.equal(parseStudentsText('﻿اسم,إنجاز\nزيد,سورة\n').students[0].name, 'زيد')
   assert.equal(rowsToStudents([[], ['', ''], ['زيد']]).students.length, 1)
   assert.equal(normalizeGender('أنثى'), 'f')
@@ -91,11 +92,12 @@ test('bulk: لصق من Excel (تبويب) وCSV وأسطر مفردة', () => {
   assert.equal(sheetGender('ملاحظات'), '')
 })
 
-test('bulk: بلا ترويسة: الاسم ثم الإنجاز والتقدير والدرجة، و«طالب/طالبة» في خلية تُقرأ جنساً', () => {
+test('bulk: بلا ترويسة: الاسم وحده بلا أعمدة افتراضية، و«طالب/طالبة» في خلية تُقرأ جنساً', () => {
   const r = rowsToStudents([['علي', 'سورة الملك', 'امتياز', '98%'], ['هدى', 'جزء عمّ', 'طالبة']])
-  assert.deepEqual(r.students[0].vars, { الإنجاز: 'سورة الملك', التقدير: 'امتياز', الدرجة: '98%' })
+  assert.deepEqual(r.students[0].vars, {})
+  assert.deepEqual(r.vars, [])
   assert.equal(r.students[1].gender, 'f')
-  assert.deepEqual(r.students[1].vars, { الإنجاز: 'جزء عمّ' })
+  assert.deepEqual(r.students[1].vars, {})
   /* اسم شخص يبدأ بـ«اسم…» ليس ترويسة */
   assert.equal(rowsToStudents([['اسماء خالد', 'سورة']]).students.length, 1)
 })
@@ -163,13 +165,9 @@ test('template: ملء الصيغة، وسقوط المتغير الفارغ م�
   assert.equal(fill('هذه الشهادة تقديراً لإنجازه: [الإنجاز] بتقدير [التقدير]', { التقدير: 'امتياز' }), 'بتقدير امتياز')
 })
 
-test('template: الجملة الجاهزة تتسع لأعمدة الملف (التقدير والدرجة وغيرهما)', () => {
-  assert.equal(extendDefault(DEFAULT_TPL.m, ['الإنجاز']), DEFAULT_TPL.m)
-  assert.equal(extendDefault(DEFAULT_TPL.m, ['الإنجاز', 'التقدير', 'الدرجة']), 'هذه الشهادة تقديراً لإنجازه: [الإنجاز] بتقدير [التقدير] وبدرجة [الدرجة]')
-  assert.equal(extendDefault(DEFAULT_TPL.f, ['الإنجاز', 'الدرجة']), 'هذه الشهادة تقديراً لإنجازها: [الإنجاز] بدرجة [الدرجة]')
-  assert.equal(extendDefault(DEFAULT_TPL.m, ['الإنجاز', 'الترتيب']), 'هذه الشهادة تقديراً لإنجازه: [الإنجاز]، الترتيب: [الترتيب]')
-  /* ما عدّله المدير بيده لا يُلمس: يُستدعى فقط حين تكون الجملة هي الجاهزة نفسها */
-  assert.equal(extendDefault('نص آخر [الدرجة]', ['الدرجة']), 'نص آخر [الدرجة]')
+test('template: الجملة الجاهزة بلا حقول ولا عبارات مرتبطة بأعمدة', () => {
+  assert.ok(!DEFAULT_TPL.m.includes('[') && !DEFAULT_TPL.f.includes('['))
+  assert.ok(!/إنجاز|تقدير|درجة/.test(DEFAULT_TPL.m.replace('تقديراً', '')))
 })
 
 test('template: خاتمة الجملة نقطة، أو فاصلة إن كان التاريخ بعدها', () => {

@@ -2,7 +2,7 @@
    نموذج مساحة عمل الشهادات: الطالب، وخيارات شهادته، وحفظ إعدادات المعهد في المتصفح.
    لا واجهة هنا، فالمنطق كله قابل للاختبار بمعزل عن React.
    ══════════════════════════════════════════════════════════════════ */
-import { valsOf, normVar, fillTemplate, finishBody, inspectTemplate } from '../../../tools/files/template.js'
+import { valsOf, normVar, fillTemplate, finishBody } from '../../../tools/files/template.js'
 import { reasonPlain } from '../../../tools/files/reason.js'
 
 export const ACH = 'الإنجاز'
@@ -37,12 +37,7 @@ export function studentOpts(base, s, templates) {
   if (own) vals[ACH_KEY] = own
   const terminal = base.datePos === 'inline' && base.date ? '،' : '.'
   const tpl = gender === 'f' ? tp.f : tp.m
-  /* اسم الحلقة: حقل مشترك [الحلقة]، وإن لم تذكره الصيغة أُلحق بآخر الجملة «في حلقة …» */
-  const hal = (base.halaqa || '').trim()
-  const HAL = normVar('الحلقة')
-  if (hal) vals[HAL] = hal
   let body = fillTemplate(tpl, vals)
-  if (hal && body && !inspectTemplate(tpl).used.has(HAL)) body = `${body.replace(/[\s.،,؛:]+$/u, '')} في حلقة ${hal}`
   body = finishBody(body, terminal)
   return {
     ...base,

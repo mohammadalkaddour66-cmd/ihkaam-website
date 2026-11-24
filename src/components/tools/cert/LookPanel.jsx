@@ -1,4 +1,4 @@
-import { RotateCcw } from 'lucide-react'
+import { RotateCcw, ImagePlus, X } from 'lucide-react'
 import { Segmented, Toggle, Select, Field } from '../controls'
 import { DESIGNS, DEFAULT_COLOR, SPACINGS } from '../certificate'
 
@@ -16,9 +16,27 @@ function DesignSwatch({ id }) {
 }
 
 /* الخطوة 4: شكل الشهادة. الإطار واللون، وأدناهما التباعد والختم. */
-export default function LookPanel({ design, pickDesign, colorLive, setColorLive, colorSet, spacing, setSpacing, sealSpot, setSealSpot, datePos, setDatePos }) {
+export default function LookPanel({ logo, onLogo, clearLogo, logoErr, design, pickDesign, colorLive, setColorLive, colorSet, spacing, setSpacing, sealSpot, setSealSpot, datePos, setDatePos }) {
   return (
     <div className="space-y-5">
+      <div>
+        <div className="text-[13.5px] font-bold text-[#1A2E28] mb-1.5">شعار المعهد (اختياري)</div>
+        <input type="file" accept="image/*" onChange={onLogo} className="sr-only" id="in-logo" />
+        {logo ? (
+          <div className="flex items-center gap-3 rounded-xl p-2.5" style={{ background: '#FDFBF7', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+            <img src={logo.src} alt="شعار المعهد" width="48" height="48" className="w-12 h-12 object-contain" />
+            <span className="flex-1 text-[13px] text-[#4A5D56]">يظهر في رأس الشهادة.</span>
+            <button type="button" onClick={clearLogo} aria-label="إزالة الشعار" className="w-10 h-10 rounded-lg grid place-items-center cursor-pointer" style={{ background: '#F1ECDF' }}><X size={16} /></button>
+          </div>
+        ) : (
+          <label htmlFor="in-logo" className="flex items-center justify-center gap-2 rounded-xl py-3 text-[14px] font-bold cursor-pointer min-h-[46px]"
+            style={{ background: '#FDFBF7', color: '#0B3B33', boxShadow: 'inset 0 0 0 1.5px rgba(184,134,58,.45)', borderStyle: 'dashed' }}>
+            <ImagePlus size={17} /> ارفع الشعار
+          </label>
+        )}
+        <p className="text-[12px] text-[#5E6E67] mt-1.5">{logoErr || 'يبقى في جهازك ولا يُرفع إلى أي خادم. الأفضل PNG بخلفية شفافة.'}</p>
+      </div>
+
       <div>
         <div className="text-[13.5px] font-bold text-[#1A2E28] mb-2">الإطار</div>
         <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="تصميم الشهادة">

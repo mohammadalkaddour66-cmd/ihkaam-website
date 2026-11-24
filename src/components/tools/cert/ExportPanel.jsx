@@ -16,7 +16,7 @@ export default function ExportPanel({ count, blocked, busy, progress, onPdf, onC
         {blocked.length > 0 && (
           <p className="flex items-start gap-1.5 text-[12.5px] leading-[1.7] font-bold text-[#8A4B14] mt-2">
             <AlertTriangle size={14} className="mt-1 shrink-0" />
-            صيغة الطالبات في «{blocked.map((t) => t.name).join('» و«')}» تنتظر «تمام» في خطوة الصياغة، حتى لا تُطبع شهادة طالبة بضمير الطلاب.
+            نص الطالبات ينتظر «تمام» في خطوة الصياغة، حتى لا تُطبع شهادة طالبة بضمير الطلاب.
           </p>
         )}
         {progress && (
