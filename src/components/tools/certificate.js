@@ -60,7 +60,8 @@ export const SPACINGS = [
   { id: 'normal', label: 'متوازن' },
   { id: 'wide', label: 'متباعد' },
 ]
-const SPACING_K = { tight: 0.7, normal: 1, wide: 1.45 }
+/* متقارب ومتباعد بفرق ظاهر عن التلقائي: يحدّه الحاجز أدناه إن لم يتسع المتن */
+const SPACING_K = { tight: 0.35, normal: 1, wide: 2.6 }
 
 const G = {
   m: { student: 'الطالب', hifz: 'لحفظه', lahu: 'له', ilm: 'علمه', zada: 'وزاده', yuthabbit: 'يثبّته', yajal: 'ويجعله' },
@@ -399,7 +400,7 @@ export async function drawCertificate(canvas, o) {
   const kLines = T.kicker.split('\n').map((s) => s.trim()).filter(Boolean)
   function build(sc) {
     const items = []
-    const add = (h, gap, draw) => items.push({ h, gap, draw })
+    const add = (h, gap, draw, key) => items.push({ h, gap, draw, key })
     const S = (n) => Math.round(n * sc)
 
     if (o.logo && design.id !== 'band') {
@@ -416,7 +417,7 @@ export async function drawCertificate(canvas, o) {
 
     if (o.institute?.trim()) {
       const f = text(o.institute.trim(), { weight: 700, max: S(58), min: S(36) })
-      add(f.size * 1.05, 26, (y) => { ctx.font = font(700, f.size); ctx.fillStyle = P.name; ctx.fillText(f.lines[0], cx, y + f.size * 0.82) })
+      add(f.size * 1.05, 26, (y) => { ctx.font = font(700, f.size); ctx.fillStyle = P.name; ctx.fillText(f.lines[0], cx, y + f.size * 0.82) }, 'institute')
     }
 
     if (kLines.length) {
@@ -426,22 +427,22 @@ export async function drawCertificate(canvas, o) {
         ctx.fillStyle = P.soft
         let yy = y
         fs.forEach((f) => { ctx.font = font(400, f.size); ctx.fillText(f.lines[0], cx, yy + f.size * 0.95); yy += f.size * 1.4 })
-      })
+      }, 'kicker')
     }
 
     if (T.title.trim()) {
       const tt = text(T.title.trim(), { weight: 700, max: S(150), min: S(72) })
-      add(tt.size * 0.95, 22, (y) => { ctx.font = font(700, tt.size); ctx.fillStyle = P.title; ctx.fillText(tt.lines[0], cx, y + tt.size * 0.78) })
+      add(tt.size * 0.95, 22, (y) => { ctx.font = font(700, tt.size); ctx.fillStyle = P.title; ctx.fillText(tt.lines[0], cx, y + tt.size * 0.78) }, 'title')
       add(24, 62, (y) => ornamentLine(ctx, cx, y + 12, 300 * sc, P.frame))
     }
 
     if (T.intro.trim()) {
       const f = text(T.intro.trim(), { max: S(52), min: S(34) })
-      add(f.size * 1.1, 38, (y) => { ctx.font = font(400, f.size); ctx.fillStyle = P.text; ctx.fillText(f.lines[0], cx, y + f.size * 0.85) })
+      add(f.size * 1.1, 38, (y) => { ctx.font = font(400, f.size); ctx.fillStyle = P.text; ctx.fillText(f.lines[0], cx, y + f.size * 0.85) }, 'intro')
     }
 
     const nm = text(T.name, { weight: 700, max: S(124), min: S(64) })
-    add(nm.size * 1.05, 44, (y) => { ctx.font = font(700, nm.size); ctx.fillStyle = P.name; ctx.fillText(nm.lines[0], cx, y + nm.size * 0.85) })
+    add(nm.size * 1.05, 44, (y) => { ctx.font = font(700, nm.size); ctx.fillStyle = P.name; ctx.fillText(nm.lines[0], cx, y + nm.size * 0.85) }, 'name')
 
     let bodySize = S(46)
     if (T.body.trim()) {
@@ -451,11 +452,11 @@ export async function drawCertificate(canvas, o) {
       add((bd.lines.length - 1) * lh + bd.size * 1.05, 14, (y) => {
         ctx.font = font(400, bd.size); ctx.fillStyle = P.text
         bd.lines.forEach((l, i) => ctx.fillText(l, cx, y + bd.size * 0.85 + i * lh))
-      })
+      }, 'body')
     }
     if (T.when.trim() && !dateBottom) {
       const wn = text(T.when.trim(), { max: bodySize, min: S(30) })
-      add(wn.size * 1.05, 22, (y) => { ctx.font = font(400, wn.size); ctx.fillStyle = P.text; ctx.fillText(wn.lines[0], cx, y + wn.size * 0.85) })
+      add(wn.size * 1.05, 22, (y) => { ctx.font = font(400, wn.size); ctx.fillStyle = P.text; ctx.fillText(wn.lines[0], cx, y + wn.size * 0.85) }, 'when')
     }
     if (T.grade) {
       const gr = text(T.grade, { weight: 700, max: S(46), min: S(30) })
@@ -463,7 +464,7 @@ export async function drawCertificate(canvas, o) {
     }
     if (T.dua.trim()) {
       const f = text(T.dua.trim(), { weight: 300, max: S(44), min: S(28) })
-      add(f.size * 1.1, 0, (y) => { ctx.font = font(300, f.size); ctx.fillStyle = P.soft; ctx.fillText(f.lines[0], cx, y + f.size * 0.85) })
+      add(f.size * 1.1, 0, (y) => { ctx.font = font(300, f.size); ctx.fillStyle = P.soft; ctx.fillText(f.lines[0], cx, y + f.size * 0.85) }, 'dua')
     }
     const sumH = items.reduce((n, i) => n + i.h, 0)
     const gapsBase = items.slice(0, -1).reduce((n, i) => n + i.gap, 0)
@@ -489,7 +490,9 @@ export async function drawCertificate(canvas, o) {
   if (sumH + gapsBase * k > avail) k = Math.max(0.3, (avail - sumH) / (gapsBase || 1))
   const used = sumH + gapsBase * k
   let y = topY + Math.max(0, (avail - used) / 2)
+  const rects = {} // مواضع الأسطر على اللوحة: تُستعمل لتعديل السطر بالنقر عليه
   items.forEach((it, i) => {
+    if (it.key) rects[it.key] = { x: cx - textW / 2, y, w: textW, h: it.h }
     it.draw(y)
     y += it.h + (i < items.length - 1 ? it.gap * k : 0)
   })
@@ -501,6 +504,7 @@ export async function drawCertificate(canvas, o) {
     ctx.fillStyle = P.text
     ctx.textAlign = 'center'
     ctx.fillText(wf.lines[0], cx, sigTop - DATE_STRIP + 16)
+    rects.when = { x: cx - textW / 2, y: sigTop - DATE_STRIP - 10, w: textW, h: 62 }
   }
 
   /* ── التوقيعان ── */
@@ -510,6 +514,7 @@ export async function drawCertificate(canvas, o) {
   const half = third ? 200 : 230
   const sigs = [{ ...T.sig1, x: cx + dx }, { ...T.sig2, x: cx - dx }]
   if (third) sigs.push({ ...T.sig3, x: cx })
+  sigs.forEach((s, si) => { rects[`sig${si === 2 ? 3 : si + 1}`] = { x: s.x - half, y: sigTop, w: half * 2, h: SIG_H } })
   for (const s of sigs) {
     if (!s.role.trim() && !s.name.trim()) continue
     ctx.textAlign = 'center'
@@ -551,7 +556,7 @@ export async function drawCertificate(canvas, o) {
   const link = drawCredit(ctx, {
     cx, baseline: design.creditBottom - CREDIT_SIZE, size: CREDIT_SIZE, color: P.credit, linkColor: P.link,
   })
-  return { link }
+  return { link, rects }
 }
 
 export function loadImageFile(file) {

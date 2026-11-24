@@ -6,7 +6,10 @@
    الطالبات)، أو من عمود «طالب أم طالبة» في الملفات القديمة.
    ══════════════════════════════════════════════════════════════════ */
 import { readXlsxSheets, makeWorkbook } from './xlsx.js'
-import { DEFAULT_VARS, cleanVarName, uniqueVars, normVar } from './template.js'
+import { cleanVarName, uniqueVars, normVar } from './template.js'
+
+/* أسماء الأعمدة المعروفة: تُوحَّد إملاءاتها، وهي ترتيب لصق بلا ترويسة */
+const KNOWN_VARS = ['الإنجاز', 'التقدير', 'الدرجة']
 
 export const MAX_STUDENTS = 200
 
@@ -95,7 +98,7 @@ export function rowsToStudents(matrix, defaultGender = '') {
   const rows = matrix.filter((r) => r.some((c) => String(c || '').trim()))
   let nameCol = 0
   let genderCol = -1
-  let cols = DEFAULT_VARS.map((v, i) => ({ i: i + 1, name: v })) // الأعمدة المتغيرة
+  let cols = KNOWN_VARS.map((v, i) => ({ i: i + 1, name: v })) // الأعمدة المتغيرة
   let headless = true
   if (rows.length && rows[0].some((c) => NAME_HEAD.test(String(c || '').trim()))) {
     headless = false
@@ -111,7 +114,7 @@ export function rowsToStudents(matrix, defaultGender = '') {
       if (!clean || taken.has(k)) return
       /* «الانجاز» و«الدرجه» تُوحَّدان مع «الإنجاز» و«الدرجة»، فلا يتكرر المتغير بإملاءين */
       const bare = (x) => normVar(x).replace(/^ال(?=.)/, '')
-      const name = DEFAULT_VARS.find((d) => bare(d) === bare(clean)) || clean
+      const name = KNOWN_VARS.find((d) => bare(d) === bare(clean)) || clean
       taken.add(k)
       cols.push({ i, name })
     })

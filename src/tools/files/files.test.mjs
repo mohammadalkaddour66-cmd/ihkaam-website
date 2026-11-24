@@ -6,7 +6,7 @@ import { makeXlsx, readXlsx, readXlsxSheets } from './xlsx.js'
 import { buildPdf } from './pdf.js'
 import { reasonWithLam, reasonPlain } from './reason.js'
 import { parseStudentsText, parseStudentsFile, rowsToStudents, sampleXlsx, SAMPLE_HEADER, SAMPLE_MALE, SAMPLE_FEMALE, normalizeGender, sheetGender } from './bulk.js'
-import { fillTemplate, finishBody, insertToken, inspectTemplate, femaleSuggestions, replaceWord, normVar, valsOf, DEFAULT_TPL, newTemplate } from './template.js'
+import { extendDefault, fillTemplate, finishBody, insertToken, inspectTemplate, femaleSuggestions, replaceWord, normVar, valsOf, DEFAULT_TPL, newTemplate } from './template.js'
 
 const S = (o) => ({ name: '', gender: '', vars: {}, ...o })
 
@@ -158,6 +158,18 @@ test('template: ملء الصيغة، وسقوط المتغير الفارغ م�
   /* أسماء المتغيرات تُقارن بلا اعتبار للهمزة والتاء المربوطة */
   assert.equal(fill('[الانجاز] [الدرجه]', { الإنجاز: 'أ', الدرجة: 'ب' }), 'أ ب')
   assert.equal(normVar('الإنجاز'), normVar('الانجاز'))
+  /* طالب بلا إنجاز: تسقط المقدمة «تقديراً لإنجازه:» كلها فلا تبقى معلّقة */
+  assert.equal(fill('هذه الشهادة تقديراً لإنجازه: [الإنجاز] بتقدير [التقدير]', {}), '')
+  assert.equal(fill('هذه الشهادة تقديراً لإنجازه: [الإنجاز] بتقدير [التقدير]', { التقدير: 'امتياز' }), 'بتقدير امتياز')
+})
+
+test('template: الجملة الجاهزة تتسع لأعمدة الملف (التقدير والدرجة وغيرهما)', () => {
+  assert.equal(extendDefault(DEFAULT_TPL.m, ['الإنجاز']), DEFAULT_TPL.m)
+  assert.equal(extendDefault(DEFAULT_TPL.m, ['الإنجاز', 'التقدير', 'الدرجة']), 'هذه الشهادة تقديراً لإنجازه: [الإنجاز] بتقدير [التقدير] وبدرجة [الدرجة]')
+  assert.equal(extendDefault(DEFAULT_TPL.f, ['الإنجاز', 'الدرجة']), 'هذه الشهادة تقديراً لإنجازها: [الإنجاز] بدرجة [الدرجة]')
+  assert.equal(extendDefault(DEFAULT_TPL.m, ['الإنجاز', 'الترتيب']), 'هذه الشهادة تقديراً لإنجازه: [الإنجاز]، الترتيب: [الترتيب]')
+  /* ما عدّله المدير بيده لا يُلمس: يُستدعى فقط حين تكون الجملة هي الجاهزة نفسها */
+  assert.equal(extendDefault('نص آخر [الدرجة]', ['الدرجة']), 'نص آخر [الدرجة]')
 })
 
 test('template: خاتمة الجملة نقطة، أو فاصلة إن كان التاريخ بعدها', () => {
