@@ -11,11 +11,13 @@ import { surahName } from '../../components/tools/surahs'
 import { useDateField, usePrint, useCanShareFiles } from '../../components/tools/hooks'
 import { PrintPortal } from '../../components/tools/print'
 import CertBulk from '../../components/tools/CertBulk'
+import { DEFAULT_VARS, newTemplate, valsOf, normVar, fillTemplate, finishBody } from '../../tools/files/template.js'
+import { reasonPlain } from '../../tools/files/reason.js'
 import { canvasToBlob, saveBlob, shareBlob, safeFileName } from '../../components/tools/canvasKit'
 import { juzLabel } from '../../components/tools/format'
 import {
-  drawCertificate, loadImageFile, certificatePlainText, certificateLines, preloadDesign,
-  DESIGNS, TITLES, KICKERS, SPACINGS, CERT_W, CERT_H,
+  drawCertificate, loadImageFile, certificatePlainText, certificateLines, resolveTexts, preloadDesign, achievementText,
+  DESIGNS, DEFAULT_COLOR, TITLES, KICKERS, SPACINGS, CERT_W, CERT_H,
 } from '../../components/tools/certificate'
 import { certificatesPdf } from '../../components/tools/certificatePdf'
 import { getTool } from '../../config/tools'
@@ -23,14 +25,30 @@ import { getTool } from '../../config/tools'
 const tool = getTool('certificate')
 const JUZ = Array.from({ length: 30 }, (_, i) => i + 1)
 
-/* خيارات شهادة طالب واحد من القائمة الجماعية: اسمه، وإنجازه إن كتب له، وجنسه إن حُدِّد */
-function studentOpts(base, s) {
+const ACH_KEY = normVar('الإنجاز')
+
+/* صيغة الطالب: المرتبطة به، فإن حُذفت فالأولى */
+const tplOf = (templates, s) => templates.find((t) => t.id === s.tpl) || templates[0]
+
+/* خيارات شهادة طالب واحد من القائمة الجماعية. المتن يُملأ من صيغته (للطلاب أو للطالبات بحسب
+   جنسه) بقيم صفّه، وعنوان الشهادة من صيغته إن كتب لها عنواناً. ومن لا إنجاز له في الجدول يأخذ
+   الإنجاز العام الذي اختاره المدير. */
+function studentOpts(base, s, templates) {
+  const tp = tplOf(templates, s)
+  const gender = s.gender || 'm'
+  const vals = valsOf(s.vars)
+  const own = vals[ACH_KEY] ? reasonPlain(vals[ACH_KEY]) : ''
+  vals[ACH_KEY] = own || achievementText(base.achievement, gender, true)
+  const terminal = base.datePos === 'inline' && base.date ? '،' : '.'
+  const body = finishBody(fillTemplate(gender === 'f' ? tp.f : tp.m, vals), terminal)
   return {
     ...base,
     name: s.name,
-    gender: s.gender || base.gender,
-    achievement: s.ach ? { type: 'custom', text: s.ach } : base.achievement,
-    text: s.ach ? { ...base.text, body: null } : base.text,
+    gender,
+    achievement: own ? { type: 'custom', text: own } : base.achievement,
+    title: tp.title || base.title,
+    grade: '',
+    text: { ...base.text, body },
   }
 }
 
@@ -62,16 +80,24 @@ export default function CertificateTool() {
   const [halaqa, setHalaqa] = useState('')
   const [sig1, setSig1] = useState({ role: 'المعلم', name: '' })
   const [sig2, setSig2] = useState({ role: 'مدير المعهد', name: '' })
+  const [sig3, setSig3] = useState({ role: '', name: '' }) // توقيع ثالث اختياري في الوسط
   const [title, setTitle] = useState(TITLES[0])
   const [kicker, setKicker] = useState('')
   const [text, setText] = useState({ intro: null, body: null, when: null, dua: null })
   const [dateMode, setDateMode] = useState('both')
+  const [datePos, setDatePos] = useState('bottom') // أسفل الشهادة (حُرّر في … بتاريخ …) أو داخل المتن
+  const [place, setPlace] = useState('')
   const [design, setDesign] = useState('art-gold')
   const [spacing, setSpacing] = useState('auto')
+  const [colorLive, setColorLive] = useState(DEFAULT_COLOR) // ما يعرضه المنتقي لحظياً
+  const [color, setColor] = useState('') // ما تُرسم به الشهادة: فارغ = الأصلي، ويتأخر لحظة لأن تحويل ألوان الإطار الفني أثقل من أن يتبع كل حركة للمنتقي
   const [sealSpot, setSealSpot] = useState(true)
   const [logo, setLogo] = useState(null)
   const [logoErr, setLogoErr] = useState('')
   const [students, setStudents] = useState([])
+  const [varNames, setVarNames] = useState(DEFAULT_VARS)
+  const [templates, setTemplates] = useState(() => [newTemplate('الصيغة 1')])
+  const [activeTpl, setActiveTpl] = useState('')
   const [previewIdx, setPreviewIdx] = useState(0)
   const [printJob, setPrintJob] = useState(null) // { src, link }
   const [busy, setBusy] = useState('')
@@ -87,10 +113,20 @@ export default function CertificateTool() {
       : achType === 'surah' ? { type: 'surah', surahName: surahName(surah) }
         : achType === 'quran' ? { type: 'quran' } : { type: 'custom', text: custom }
 
-  const base = { gender, achievement, institute, halaqa, sig1, sig2, title, kicker, text, date, dateMode, design, spacing, sealSpot, logo }
+  const base = { gender, achievement, institute, halaqa, sig1, sig2, sig3, title, kicker, text, date, dateMode, datePos, place, design, color, spacing, sealSpot, logo }
   const bulk = mode === 'bulk'
   const shown = bulk ? students[Math.min(previewIdx, students.length - 1)] : null
-  const opts = bulk ? studentOpts(base, shown || { name: '', ach: '', gender: '' }) : { ...base, name }
+  const opts = bulk ? studentOpts(base, shown || { name: '', gender: 'm', vars: {} }, templates) : { ...base, name }
+
+  /* جملة المتن كما ستُطبع لأول طالب (أو طالبة) في الصيغة، وانتقال المعاينة إليه */
+  const firstOf = (tplId, g) => students.findIndex((s) => tplOf(templates, s).id === tplId && (!g || s.gender === g))
+  const sentenceFor = (tplId, g) => {
+    const i = firstOf(tplId, g)
+    return i < 0 ? null : { name: students[i].name, text: studentOpts(base, students[i], templates).text.body }
+  }
+  const onPreviewTpl = (tplId, g) => { const i = firstOf(tplId, g); if (i >= 0) setPreviewIdx(i) }
+  /* صيغة طالبات لم تُعتمد وفي الدفعة طالبات يستعملنها: لا يُولَّد الملف قبل اعتمادها */
+  const unapproved = bulk ? templates.filter((t) => !t.fOk && students.some((s) => s.gender === 'f' && s.name.trim() && tplOf(templates, s).id === t.id)) : []
   const auto = certificateLines({ ...opts, text: {} })
   const optsKey = JSON.stringify({ ...opts, logo: logo ? logo.src.length : 0 })
 
@@ -101,6 +137,14 @@ export default function CertificateTool() {
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optsKey])
+
+  /* اللون المرسوم يلحق المنتقي بعد توقف حركته نحو ثلث ثانية */
+  useEffect(() => {
+    const target = colorLive.toLowerCase() === DEFAULT_COLOR.toLowerCase() ? '' : colorLive
+    if (target === color) return
+    const t = setTimeout(() => setColor(target), 320)
+    return () => clearTimeout(t)
+  }, [colorLive, color])
 
   async function onLogo(e) {
     const f = e.target.files?.[0]
@@ -144,7 +188,10 @@ export default function CertificateTool() {
       const { cv } = await render(opts)
       const blob = await canvasToBlob(cv, 'image/png')
       const fname = `شهادة-${safeFileName(opts.name, 'تقدير')}.png`
-      try { await shareBlob(blob, fname, 'شهادة تقدير') } catch (e) { if (e?.name !== 'AbortError') saveBlob(blob, fname) }
+      /* نص مقترح للأهل: «شهادة تقدير: الاسم» ثم سطر الدعاء، ويُلحق به رابط إحكام داخل shareBlob */
+      const T = resolveTexts(opts)
+      const caption = [opts.name?.trim() ? `${T.title}: ${T.name}` : T.title, T.dua].filter((x) => x && x.trim()).join('\n')
+      try { await shareBlob(blob, fname, caption) } catch (e) { if (e?.name !== 'AbortError') saveBlob(blob, fname) }
     } catch { setMsg('تعذّر إنشاء الصورة. جرّب مرة أخرى.') } finally { setBusy('') }
   }
 
@@ -163,7 +210,7 @@ export default function CertificateTool() {
     cancelRef.current = false
     setBusy('bulk'); setMsg(''); setProgress({ done: 0, total: valid.length })
     try {
-      const blob = await certificatesPdf(valid.map((s) => studentOpts(base, s)), {
+      const blob = await certificatesPdf(valid.map((s) => studentOpts(base, s, templates)), {
         scale: 0.75, quality: 0.9, title: 'شهادات الطلاب',
         onProgress: (done, total) => setProgress({ done, total }),
         isCancelled: () => cancelRef.current,
@@ -195,13 +242,16 @@ export default function CertificateTool() {
               <Step n={1} title="لمن الشهادة؟" hint="وما الذي يُكرَّم عليه.">
               <Segmented value={mode} onChange={setMode} size="sm"
                 options={[{ value: 'single', label: 'شهادة واحدة' }, { value: 'bulk', label: 'توليد جماعي للمعهد' }]} />
-              <Segmented value={gender} onChange={setGender} size="sm" options={[{ value: 'm', label: 'طالب' }, { value: 'f', label: 'طالبة' }]} />
+              {!bulk && <Segmented value={gender} onChange={setGender} size="sm" options={[{ value: 'm', label: 'طالب' }, { value: 'f', label: 'طالبة' }]} />}
               {!bulk && (
                 <Field label={gender === 'm' ? 'اسم الطالب' : 'اسم الطالبة'} htmlFor="ct-name" hint="الاسم الثلاثي كما في سجل المعهد.">
                   <TextInput id="ct-name" value={name} onChange={setName} placeholder="عبد الله محمد أحمد" maxLength={48} />
                 </Field>
               )}
-              <Field label={bulk ? 'الإنجاز العام (لمن لا إنجاز مكتوباً له في الجدول)' : 'الإنجاز'} htmlFor="ct-ach">
+              {(() => {
+                const ach = (
+                  <>
+                    <Field label={bulk ? 'الإنجاز الموحّد' : 'الإنجاز'} htmlFor="ct-ach">
                 <Select id="ct-ach" value={achType} onChange={setAchType}>
                   <option value="juz">حفظ جزء</option>
                   <option value="juzRange">حفظ عدة أجزاء</option>
@@ -229,6 +279,10 @@ export default function CertificateTool() {
                   <TextInput id="ct-custom" value={custom} onChange={setCustom} placeholder={gender === 'm' ? 'تميّزه في التسميع خلال الفصل الأول' : 'تميّزها في التسميع خلال الفصل الأول'} maxLength={90} />
                 </Field>
               )}
+                  </>
+                )
+                return bulk ? <MoreOptions title="إنجاز موحّد لمن لا إنجاز له في الملف" hint="اختياري">{ach}</MoreOptions> : ach
+              })()}
               </Step>
 
               <Step n={2} title="اسم المعهد والتاريخ" hint="يظهران على الشهادة.">
@@ -241,6 +295,16 @@ export default function CertificateTool() {
                   <Select id="ct-dmode" value={dateMode} onChange={setDateMode}>
                     <option value="both">هجري وميلادي</option><option value="hijri">هجري</option><option value="gregorian">ميلادي</option>
                   </Select>
+                </Field>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="مكان التاريخ" htmlFor="ct-dpos">
+                  <Select id="ct-dpos" value={datePos} onChange={setDatePos}>
+                    <option value="bottom">أسفل الشهادة</option><option value="inline">داخل المتن</option>
+                  </Select>
+                </Field>
+                <Field label="مكان التحرير" htmlFor="ct-place" hint="اختياري: «حُرّر في الرياض بتاريخ…».">
+                  <TextInput id="ct-place" value={place} onChange={setPlace} placeholder="الرياض" maxLength={30} />
                 </Field>
               </div>
 
@@ -260,6 +324,19 @@ export default function CertificateTool() {
                   </label>
                 )}
                 <p className="text-[12px] text-[#5E6E67] mt-1.5">{logoErr || 'يبقى الشعار في جهازك ولا يُرفع إلى أي خادم. الأفضل PNG بخلفية شفافة.'}</p>
+              </div>
+              <div>
+                <label htmlFor="ct-color" className="block text-[13.5px] font-bold text-[#1A2E28] mb-1.5">لون الشهادة</label>
+                <div className="flex items-center gap-3 rounded-xl p-2.5" style={{ background: '#FDFBF7', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }}>
+                  <input id="ct-color" type="color" value={colorLive} onChange={(e) => setColorLive(e.target.value)}
+                    className="w-12 h-10 shrink-0 rounded-lg cursor-pointer bg-transparent border-0 p-0" />
+                  <span className="flex-1 text-[13px] text-[#4A5D56]">اختر لون معهدك: يلوّن الإطار والعنوان والزخارف في كل التصاميم، ويبقى الذهب.</span>
+                  {color && (
+                    <button type="button" onClick={() => setColorLive(DEFAULT_COLOR)} className="shrink-0 inline-flex items-center gap-1 text-[12.5px] font-bold text-[#8A6425] cursor-pointer min-h-[36px] px-2">
+                      <RotateCcw size={13} /> الأصلي
+                    </button>
+                  )}
+                </div>
               </div>
               <MoreOptions title="اسم الحلقة" hint="اختياري">
                 <Field label="الحلقة" htmlFor="ct-halaqa"><TextInput id="ct-halaqa" value={halaqa} onChange={setHalaqa} placeholder="مثال: حلقة الشيخ أحمد" maxLength={40} /></Field>
@@ -296,10 +373,12 @@ export default function CertificateTool() {
                 <TextInput id="ct-intro" value={shownT('intro')} onChange={setT('intro')} maxLength={90} />
                 <ResetLink show={text.intro != null} onClick={resetT('intro')} />
               </Field>
-              <Field label="نص المتن" htmlFor="ct-body">
-                <TextArea id="ct-body" value={shownT('body')} onChange={setT('body')} rows={3} maxLength={300} />
-                <ResetLink show={text.body != null} onClick={resetT('body')} />
-              </Field>
+              {!bulk && (
+                <Field label="نص المتن" htmlFor="ct-body">
+                  <TextArea id="ct-body" value={shownT('body')} onChange={setT('body')} rows={3} maxLength={300} />
+                  <ResetLink show={text.body != null} onClick={resetT('body')} />
+                </Field>
+              )}
               <Field label="سطر التاريخ" htmlFor="ct-when">
                 <TextInput id="ct-when" value={shownT('when')} onChange={setT('when')} maxLength={120} />
                 <ResetLink show={text.when != null} onClick={resetT('when')} />
@@ -308,24 +387,29 @@ export default function CertificateTool() {
                 <TextInput id="ct-dua" value={shownT('dua')} onChange={setT('dua')} maxLength={120} />
                 <ResetLink show={text.dua != null} onClick={resetT('dua')} />
               </Field>
-              {bulk && <p className="text-[12.5px] leading-[1.7] text-[#8A6425] font-bold">في التوليد الجماعي: إن بقيت الحقول بصيغة الأداة تتغير لكل طالب (اسمه وجنسه وإنجازه). وإن كتبتَ فيها فكتابتك تسري على الجميع.</p>}
+              {bulk && <p className="text-[12.5px] leading-[1.7] text-[#8A6425] font-bold">في التوليد الجماعي: المقدمة والتاريخ والدعاء هنا تسري على كل الشهادات، فلا تكتب فيها ضميراً يخص الطلاب دون الطالبات. أما المتن فيُكتب في لوحة «صيغة الشهادة» بنسختين للطلاب وللطالبات.</p>}
 
               <div>
-                <div className="text-[13.5px] font-bold text-[#1A2E28] mb-2">التوقيعان (الصفة والاسم)</div>
+                <div className="text-[13.5px] font-bold text-[#1A2E28] mb-2">التواقيع (الصفة والاسم)</div>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="الصفة الأولى" htmlFor="ct-r1"><TextInput id="ct-r1" value={sig1.role} onChange={(v) => setSig1({ ...sig1, role: v })} maxLength={30} placeholder="المعلم" /></Field>
                   <Field label="الاسم" htmlFor="ct-n1"><TextInput id="ct-n1" value={sig1.name} onChange={(v) => setSig1({ ...sig1, name: v })} maxLength={40} placeholder="اختياري" /></Field>
                   <Field label="الصفة الثانية" htmlFor="ct-r2"><TextInput id="ct-r2" value={sig2.role} onChange={(v) => setSig2({ ...sig2, role: v })} maxLength={30} placeholder="مدير المعهد" /></Field>
                   <Field label="الاسم" htmlFor="ct-n2"><TextInput id="ct-n2" value={sig2.name} onChange={(v) => setSig2({ ...sig2, name: v })} maxLength={40} placeholder="اختياري" /></Field>
+                  <Field label="الصفة الثالثة (اختيارية)" htmlFor="ct-r3"><TextInput id="ct-r3" value={sig3.role} onChange={(v) => setSig3({ ...sig3, role: v })} maxLength={30} placeholder="المشرف" /></Field>
+                  <Field label="الاسم" htmlFor="ct-n3"><TextInput id="ct-n3" value={sig3.name} onChange={(v) => setSig3({ ...sig3, name: v })} maxLength={40} placeholder="اختياري" /></Field>
                 </div>
-                <p className="text-[12.5px] text-[#5E6E67] mt-1.5">امسح الصفة والاسم معاً لإخفاء التوقيع.</p>
+                <p className="text-[12.5px] text-[#5E6E67] mt-1.5">امسح الصفة والاسم معاً لإخفاء التوقيع. التوقيع الثالث يظهر في الوسط ويحلّ محل مكان الختم.</p>
               </div>
             </div>
           </Panel>
 
           {bulk && (
-            <Panel title="قائمة الطلاب" icon={Users} className="order-2 lg:order-none">
-              <CertBulk students={students} setStudents={setStudents} previewIdx={previewIdx} setPreviewIdx={setPreviewIdx} />
+            <Panel title="شهادات المعهد" icon={Users} className="order-2 lg:order-none">
+              <CertBulk students={students} setStudents={setStudents} previewIdx={previewIdx} setPreviewIdx={setPreviewIdx}
+                varNames={varNames} setVarNames={setVarNames} templates={templates} setTemplates={setTemplates}
+                activeTpl={activeTpl} setActiveTpl={setActiveTpl} globalTitle={title}
+                sentenceFor={sentenceFor} onPreview={onPreviewTpl} />
             </Panel>
           )}
         </div>
@@ -383,10 +467,15 @@ export default function CertificateTool() {
               </div>
             ) : (
               <div>
-                <button type="button" disabled={!!busy || !validCount} onClick={onBulkPdf} className={actionBtn + ' btn-cta w-full'}>
+                <button type="button" disabled={!!busy || !validCount || unapproved.length > 0} onClick={onBulkPdf} className={actionBtn + ' btn-cta w-full'}>
                   {busy === 'bulk' ? <Loader2 size={17} className="animate-spin" /> : <FileDown size={17} />}
-                  {validCount ? `ولّد PDF واحداً لـ ${validCount} ${validCount === 1 ? 'شهادة' : 'شهادات'}` : 'أضف أسماء الطلاب أولاً'}
+                  {!validCount ? 'أضف أسماء الطلاب أولاً' : unapproved.length ? 'اعتمد صيغة الطالبات أولاً' : `ولّد PDF واحداً لـ ${validCount} ${validCount === 1 ? 'شهادة' : 'شهادات'}`}
                 </button>
+                {unapproved.length > 0 && (
+                  <p className="text-[12.5px] leading-[1.7] font-bold text-[#8A4B14] mt-2">
+                    صيغة الطالبات في «{unapproved.map((t) => t.name).join('» و«')}» تنتظر اعتمادك في لوحة «صيغة الشهادة»، حتى لا تُطبع شهادة طالبة بضمير الطلاب.
+                  </p>
+                )}
                 {progress && (
                   <div className="mt-3">
                     <div className="h-2.5 rounded-full overflow-hidden" style={{ background: '#F1ECDF' }} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
@@ -445,16 +534,21 @@ const METHOD = {
     { icon: PencilLine, t: 'كل نص تكتبه بنفسك', d: 'العنوان (تقدير، شكر، تفوّق، فخر، إتمام…)، ونص الرأس، والمقدمة، والمتن، والتاريخ، والدعاء، وصفة الموقّعين وأسماؤهم: كلها حقول حرة. تقترح الأداة صيغة وتبقى كتابتك هي الأصل.' },
     { icon: PenLine, t: 'بصيغة الطالب أو الطالبة', d: 'اختر «طالبة» فتتغير الضمائر كلها: «لحفظها»، «بارك الله لها في علمها وزادها حرصاً».' },
     { icon: CalendarDays, t: 'تباعد متوازن', d: 'تُحسب مساحة النص قبل رسمه ثم يتوسط بين أعلى الإطار والتوقيعين، فلا فراغ كبير فوق التوقيعين. وإن شئت اختر متقارباً أو متباعداً.' },
-    { icon: Users, t: 'شهادات الحلقة كلها في ملف واحد', d: 'ارفع ملف Excel أو الصق الأسماء، فتخرج صفحة A4 أفقية لكل طالب في PDF واحد، واسم كل طالب وإنجازه وجنسه من جدولك. الرسم في متصفحك ولا يغادره اسم.' },
+    { icon: Users, t: 'شهادات الحلقة كلها في ملف واحد', d: 'ارفع ملف Excel أو الصق الأسماء، فتخرج صفحة A4 أفقية لكل طالب في PDF واحد. اسم كل طالب وإنجازه وتقديره ودرجته من جدولك، وجملة المتن بصياغتك أنت. الرسم في متصفحك ولا يغادره اسم.' },
   ],
 }
 
 const FAQ = [
   { q: 'هل أكتب آية أو حديثاً في الشهادة؟', a: 'ليس ضرورياً. في حقل «نص في رأس الشهادة» أزرار جاهزة لآية سورة الحجر الآية 9 وحديث «خيركم من تعلّم القرآن وعلّمه» في صحيح البخاري برقم 5027 بلفظهما ومصدرهما. وإن كتبتَ نصاً آخر بنفسك فتحقق من لفظه من المصحف أو كتاب الحديث.' },
+  { q: 'أين يظهر تاريخ الشهادة، وكيف أكتب «حُرّر في…»؟', a: 'يظهر التاريخ افتراضياً أسفل الشهادة فوق التوقيعين، بالصيغة التقليدية «حُرّر في الرياض بتاريخ 14 جمادى الآخرة 1448هـ، الموافق 24 تشرين الثاني 2026م». اكتب المدينة في خانة «مكان التحرير» (اختيارية، فإن تركتها فارغة صارت «حُرّر بتاريخ…»)، واختر «يُكتب» هجري أو ميلادي أو كلاهما. وإن أردت التاريخ داخل جملة المتن فاختر «داخل المتن» من «مكان التاريخ».' },
   { q: 'كيف أحصل على أفضل جودة طباعة؟', a: 'حمّل PDF واطبعه على ورق A4 بوضع أفقي وحجم فعلي (100%) بلا هوامش، أو أرسله إلى محل الطباعة. والصورة PNG بدقة 200 نقطة في البوصة (2339×1654) تكفي لأي طباعة على A4.' },
   { q: 'هل يُرفع شعار المعهد أو اسم الطالب إلى خادم؟', a: 'لا. الشعار والأسماء وملف Excel تُقرأ في متصفحك وتُرسم في الصفحة نفسها، ولا يُرسل منها شيء. إذا أغلقت الصفحة لا يبقى شيء.' },
   { q: 'ما الفرق بين شهادة التقدير والإجازة؟', a: 'شهادة التقدير يمنحها المعهد تكريماً لإنجاز في الحلقة، مثل حفظ جزء أو ختم القرآن. والإجازة يمنحها شيخ مُجاز بسند متصل ولها شروطها، فلا تُكتب في شهادة التقدير عبارة توحي بها.' },
-  { q: 'عندي حلقة كاملة، كيف أولّد شهادات الجميع؟', a: 'اختر «توليد جماعي للمعهد»، ثم نزّل الملف النموذجي واملأه (اسم الطالب، والإنجاز اختياري، وطالب أو طالبة اختياري) وارفعه، أو الصق الأسماء مباشرة. اضبط التصميم والتوقيعين مرة واحدة، واضغط «ولّد PDF»: تأخذ ملفاً واحداً بصفحة A4 أفقية لكل طالب. الدفعة الواحدة حتى 200 طالب.' },
-  { q: 'هل أستطيع كتابة إنجاز مختلف لكل طالب؟', a: 'نعم. في العمود الثاني من الجدول اكتب إنجاز الطالب بلا «ل» في أوله، مثل «حفظ سورة الملك كاملة» أو «التميّز في التسميع»، فتكتب الأداة «تقديراً لحفظ سورة الملك كاملة». ومن لا إنجاز مكتوباً له يأخذ الإنجاز العام الذي اخترته.' },
-  { q: 'رابط ihkaam.app في أسفل الشهادة، هل أستطيع حذفه؟', a: 'يبقى سطر صغير في أسفل كل شهادة تصنعها الأداة: «صُنعت عبر أدوات إحكام المجانية»، ورابطه قابل للنقر في ملف PDF. هذا ما تأخذه إحكام مقابل أداة مجانية بلا تسجيل.' },
+  { q: 'هل أستطيع تغيير لون الشهادة إلى لون معهدي؟', a: 'نعم. في «بيانات الشهادة» خانة «لون الشهادة» فيها منتقي ألوان حر: اختر أي لون فيتغير الإطار والعنوان والزخارف في كل التصاميم، حتى الإطارات الفنية الثلاثة، ويبقى الذهب كما هو. وإن اخترت لوناً فاتحاً جداً غُمّق قليلاً ليبقى النص مقروءاً. وزر «الأصلي» يعيد الأخضر الحبري.' },
+  { q: 'عندي حلقة كاملة، كيف أولّد شهادات الجميع؟', a: 'اختر «توليد جماعي للمعهد»، ثم الصق أسماء الطلاب في الصندوق، أو نزّل الملف النموذجي واملأه وارفعه. الملف ورقتان: «الطلاب» و«الطالبات»، وأعمدتهما الاسم والإنجاز والتقدير والدرجة، والاسم وحده إلزامي. اضبط التصميم والتوقيعين مرة واحدة، واضغط «ولّد PDF»: تأخذ ملفاً واحداً بصفحة A4 أفقية لكل طالب. الدفعة الواحدة حتى 200 طالب.' },
+  { q: 'هل أستطيع كتابة إنجاز مختلف لكل طالب؟', a: 'نعم. في عمود «الإنجاز» اكتب إنجاز الطالب كما يخطر لك، مثل «حفظ سورة الملك كاملة» أو «التميّز في التسميع»، ثم تُدرجه في جملتك بقطعة [الإنجاز]. ومن لا إنجاز مكتوباً له يأخذ الإنجاز العام الذي اخترته.' },
+  { q: 'هل أستطيع إضافة أعمدة غير التقدير والدرجة؟', a: 'نعم. كل عمود تضيفه في ملفك بأي اسم، مثل «الترتيب» أو «المادة» أو «الحضور»، يصير متغيراً باسم ترويسته، فتظهر قطعته فوق مربع الصيغة وتدرجها بنقرة. ويمكنك إضافة متغير من الموقع نفسه وتعبئة قيمه في الجدول. والمتغير الفارغ عند طالب يسقط وحده مع كلماته الملاصقة، فلا تخرج جملة ناقصة.' },
+  { q: 'كيف أجعل لكل مستوى من الطلاب شهادة بصيغة مختلفة؟', a: 'في لوحة «صيغة الشهادة» اضغط «صيغة جديدة» لكل مستوى (الخاتمون، وطلاب الأجزاء، والمتفوقون…) واكتب لها جملتها وعنوانها. ثم حدّد طلاب كل مستوى من الجدول واربطهم بصيغتهم بزر «اربط». وتظهر لك الجملة كما ستُطبع لأول طالب في كل صيغة، وتعاين شهادته كاملة بنقرة.' },
+  { q: 'كيف أكتب صيغة الطالبات؟', a: 'لكل صيغة نسخة للطلاب ونسخة للطالبات. تبدأ نسخة الطالبات بنص الطلاب، وتقترح عليك الأداة كلمات قد تحتاج تأنيثاً (مثل «لإنجازه» ← «لإنجازها») وتغيّر الكلمة التي تضغطها وحدها. ثم تراجع النص وتضغط «اعتمد». ولا تُولَّد شهادات الطالبات قبل الاعتماد، حتى لا تُطبع شهادة طالبة بضمير الطلاب.' },
+  { q: 'رابط ihkaam.app في أسفل الشهادة، هل أستطيع حذفه؟', a: 'يبقى سطر صغير في أسفل كل شهادة تصنعها الأداة: «نظام إحكام لإدارة المعاهد القرآنية ihkaam.app»، بخط صغير بلا إطار لا يزاحم التوقيعين، والسطر كله قابل للنقر في ملف PDF. هذا ما تأخذه إحكام مقابل أداة مجانية بلا تسجيل.' },
 ]

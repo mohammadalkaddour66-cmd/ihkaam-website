@@ -1,25 +1,46 @@
 /* ══════════════════════════════════════════════════════════════════
    قائمة الطلاب للتوليد الجماعي: من ملف Excel/CSV أو من نص ملصوق (يُنسخ من
-   Excel فيصل مفصولاً بالتبويب). الأعمدة: اسم الطالب، ثم الإنجاز (اختياري)،
-   ثم الجنس (اختياري: طالب أو طالبة).
+   Excel فيصل مفصولاً بالتبويب). كل صف طالب، وعمود «الاسم» وحده إلزامي. وكل عمود
+   آخر متغير باسم ترويسته (الإنجاز، التقدير، الدرجة، أو أي اسم يضيفه المدير)
+   يدرجه في صيغة الشهادة بين قوسين مربعين. جنس الطالب من اسم الورقة (الطلاب أو
+   الطالبات)، أو من عمود «طالب أم طالبة» في الملفات القديمة.
    ══════════════════════════════════════════════════════════════════ */
-import { readXlsx, makeXlsx } from './xlsx.js'
+import { readXlsxSheets, makeWorkbook } from './xlsx.js'
+import { DEFAULT_VARS, cleanVarName, uniqueVars, normVar } from './template.js'
 
 export const MAX_STUDENTS = 200
 
-export const SAMPLE_ROWS = [
-  ['اسم الطالب', 'الإنجاز (اختياري)', 'طالب أم طالبة (اختياري)'],
-  ['عبد الله محمد أحمد', 'حفظ جزء عمّ كاملاً', 'طالب'],
-  ['مريم خالد يوسف', 'حفظ سورة الملك كاملة', 'طالبة'],
-  ['يوسف إبراهيم حسن', '', 'طالب'],
-  ['فاطمة عمر علي', 'التميّز في التسميع خلال الفصل الأول', 'طالبة'],
+export const FIELD_MAX = { name: 48, value: 90 }
+
+/* الملف النموذجي: ورقتان (الطلاب والطالبات) بأعمدة الاسم والإنجاز والتقدير والدرجة.
+   الأخضر أساسي، والرمادي اختياري، ويضيف المدير بعد ذلك أي عمود يشاء فيصير متغيراً. */
+export const SAMPLE_HEADER = ['الاسم', 'الإنجاز', 'التقدير', 'الدرجة']
+export const SAMPLE_MALE = [
+  ['عبد الله محمد أحمد', 'حفظ جزء عمّ كاملاً', 'امتياز', '98%'],
+  ['يوسف إبراهيم حسن', 'التميّز في التسميع خلال الفصل الأول', 'جيد جداً', '91%'],
+  ['عمر خالد سعيد', 'ختم القرآن الكريم حفظاً', 'امتياز', ''],
+]
+export const SAMPLE_FEMALE = [
+  ['مريم خالد يوسف', 'حفظ سورة الملك كاملة', 'امتياز', '97%'],
+  ['فاطمة عمر علي', 'المواظبة على الحلقة طوال العام', '', ''],
 ]
 
 export function sampleXlsx() {
-  return makeXlsx(SAMPLE_ROWS, { widths: [30, 42, 26] })
+  const common = {
+    widths: [30, 40, 18, 14],
+    colStyles: ['basic', 'basic', 'optional', 'optional'],
+    padRows: 30,
+    dropdowns: [{ col: 2, list: ['امتياز', 'جيد جداً', 'جيد', 'مقبول'] }],
+  }
+  return makeWorkbook([
+    { name: 'الطلاب', rows: [SAMPLE_HEADER, ...SAMPLE_MALE], ...common },
+    { name: 'الطالبات', rows: [SAMPLE_HEADER, ...SAMPLE_FEMALE], ...common },
+  ])
 }
 
-const HEADER = /^(اسم|الاسم|name)/i
+/* «اسم» أو «الاسم» أو «اسم الطالب»، لا «أسماء» (اسم شخص قد يُكتب بلا همزة) */
+const NAME_HEAD = /^(اسم|الاسم|name)(?![ء-يa-z])/i
+const GENDER_HEAD = /(طالب\s*أم|طالب\s*ام|جنس|gender)/i
 const FEMALE = /^(طالبة|انثى|أنثى|بنت|f|female)$/i
 const MALE = /^(طالب|ذكر|ولد|m|male)$/i
 
@@ -27,6 +48,14 @@ export function normalizeGender(v) {
   const t = String(v || '').trim()
   if (FEMALE.test(t)) return 'f'
   if (MALE.test(t)) return 'm'
+  return ''
+}
+
+/* اسم الورقة ← الجنس: «الطالبات» أنثى، و«الطلاب» ذكر، وغيرها لا يُعرف */
+export function sheetGender(name) {
+  const t = String(name || '')
+  if (/(طالبات|بنات|إناث|اناث|female|girls)/i.test(t)) return 'f'
+  if (/(طلاب|طالب|بنين|ذكور|male|boys)/i.test(t)) return 'm'
   return ''
 }
 
@@ -58,32 +87,92 @@ function splitCsvLine(line, delim) {
   return out
 }
 
-/* صفوف خام ← طلاب. يُتجاوز صف الترويسة، وتُجمع الأسطر الفارغة. */
-export function rowsToStudents(matrix) {
+/* صفوف خام ← { students: [{ name, gender, vars }], vars: [أسماء المتغيرات] }.
+   بترويسة (صف فيه عمود «اسم…»): كل عمود غير الاسم والجنس متغير باسم ترويسته، فلا يضرّ تغيير
+   الترتيب أو حذف عمود. بلا ترويسة: الاسم ثم الإنجاز والتقدير والدرجة بهذا الترتيب، وإن بدت
+   خلية كلمة «طالب» أو «طالبة» فهي الجنس. الأسطر الفارغة تُجمع. */
+export function rowsToStudents(matrix, defaultGender = '') {
   const rows = matrix.filter((r) => r.some((c) => String(c || '').trim()))
-  if (rows.length && HEADER.test(String(rows[0][0] || '').trim())) rows.shift()
-  const seen = rows.map((r) => ({
-    name: String(r[0] || '').trim(),
-    ach: String(r[1] || '').trim(),
-    gender: normalizeGender(r[2]),
-  })).filter((s) => s.name)
-  return seen
+  let nameCol = 0
+  let genderCol = -1
+  let cols = DEFAULT_VARS.map((v, i) => ({ i: i + 1, name: v })) // الأعمدة المتغيرة
+  let headless = true
+  if (rows.length && rows[0].some((c) => NAME_HEAD.test(String(c || '').trim()))) {
+    headless = false
+    const head = rows.shift()
+    nameCol = head.findIndex((c) => NAME_HEAD.test(String(c || '').trim()))
+    genderCol = head.findIndex((c, i) => i !== nameCol && GENDER_HEAD.test(String(c || '').trim()))
+    cols = []
+    const taken = new Set()
+    head.forEach((c, i) => {
+      if (i === nameCol || i === genderCol) return
+      const clean = cleanVarName(c)
+      const k = normVar(clean)
+      if (!clean || taken.has(k)) return
+      /* «الانجاز» و«الدرجه» تُوحَّدان مع «الإنجاز» و«الدرجة»، فلا يتكرر المتغير بإملاءين */
+      const bare = (x) => normVar(x).replace(/^ال(?=.)/, '')
+      const name = DEFAULT_VARS.find((d) => bare(d) === bare(clean)) || clean
+      taken.add(k)
+      cols.push({ i, name })
+    })
+  }
+  const students = []
+  for (const r of rows) {
+    const name = String(r[nameCol] ?? '').trim().slice(0, FIELD_MAX.name)
+    if (!name) continue
+    let gender = genderCol >= 0 ? normalizeGender(r[genderCol]) : ''
+    const vars = {}
+    for (const c of cols) {
+      const v = String(r[c.i] ?? '').trim()
+      if (headless && !gender && normalizeGender(v)) { gender = normalizeGender(v); continue }
+      if (v) vars[c.name] = v.slice(0, FIELD_MAX.value)
+    }
+    students.push({ name, gender: gender || defaultGender, vars })
+  }
+  return { students, vars: cols.map((c) => c.name) }
 }
 
-export function parseStudentsText(text) {
-  return rowsToStudents(parseDelimited(text))
+export function parseStudentsText(text, defaultGender = '') {
+  return rowsToStudents(parseDelimited(text), defaultGender)
+}
+
+/* مصنف Excel ← طلاب. إن سُمّيت ورقة «الطلاب» أو «الطالبات» قُرئت بجنسها، وتُهمل غيرها (ملاحظات
+   مثلاً). وإن لم تُسمَّ ورقة بذلك قُرئت الأولى وحدها، وجنسها الافتراضي defaultGender. */
+export async function parseWorkbook(buf, defaultGender = '') {
+  const sheets = await readXlsxSheets(buf)
+  const named = sheets.filter((s) => sheetGender(s.name))
+  const picked = named.length ? named : [sheets[0]]
+  const students = []
+  let vars = []
+  for (const sh of picked) {
+    const res = rowsToStudents(sh.rows, sheetGender(sh.name) || defaultGender)
+    students.push(...res.students)
+    vars = uniqueVars([...vars, ...res.vars])
+  }
+  return { students, vars }
 }
 
 /* ملف مرفوع (File) ← طلاب. xlsx يُقرأ مباشرة؛ csv وtxt نصّاً. */
-export async function parseStudentsFile(file) {
-  const name = (file.name || '').toLowerCase()
-  if (name.endsWith('.xls')) throw new Error('صيغة xls القديمة غير مدعومة. افتح الملف في Excel واحفظه بصيغة xlsx أو csv.')
-  if (name.endsWith('.xlsx')) return rowsToStudents(await readXlsx(await file.arrayBuffer()))
+export async function parseStudentsFile(file, defaultGender = '') {
   const buf = new Uint8Array(await file.arrayBuffer())
+  /* يُحكم على الملف بمحتواه لا باسمه: الجوال والتنزيلات قد تغيّر الامتداد أو تُسقطه.
+     «PK» = ZIP (xlsx)، وD0 CF 11 E0 = Excel القديم (xls)، وغير ذلك نصّ (csv). */
+  const isZip = buf[0] === 0x50 && buf[1] === 0x4b
+  const isOldXls = buf[0] === 0xd0 && buf[1] === 0xcf && buf[2] === 0x11 && buf[3] === 0xe0
+  if (isOldXls) throw new Error('هذا ملف Excel بصيغة xls القديمة وهي غير مدعومة. افتحه في Excel واحفظه باسم جديد بصيغة xlsx (مصنف Excel) أو csv، ثم ارفعه.')
+  if (isZip) {
+    try {
+      return await parseWorkbook(buf, defaultGender)
+    } catch (e) {
+      /* رسائلنا العربية تُعرض كما هي؛ أما خطأ المتصفح الخام (فكّ الضغط وغيره) فيُستبدل برسالة مفهومة */
+      if (/[؀-ۿ]/.test(e?.message || '')) throw e
+      throw new Error('تعذّرت قراءة ملف Excel. افتحه في Excel واحفظه بصيغة CSV (القيم مفصولة بفاصلة) ثم ارفع ملف CSV، أو انسخ الأسماء والصقها في الصندوق.', { cause: e })
+    }
+  }
   /* Excel العربي القديم يحفظ CSV بترميز windows-1256 أحياناً */
   let text = new TextDecoder('utf-8').decode(buf)
   if (text.includes('�')) {
     try { text = new TextDecoder('windows-1256').decode(buf) } catch { /* يبقى كما هو */ }
   }
-  return parseStudentsText(text)
+  return parseStudentsText(text, defaultGender)
 }

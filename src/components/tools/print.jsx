@@ -27,11 +27,11 @@ export function PrintFoot({ cols }) {
     <tfoot>
       <tr>
         <td colSpan={cols} className="print-credit">
-          <span className="print-credit-pill">
+          {/* رابط حقيقي يشمل السطر كله: يبقى قابلاً للنقر في ملف PDF المحفوظ من نافذة الطباعة */}
+          <a href={TOOL_CREDIT_URL} className="print-credit-pill">
             {TOOL_CREDIT_LEAD}{' '}
-            {/* رابط حقيقي: يبقى قابلاً للنقر في ملف PDF المحفوظ من نافذة الطباعة */}
-            <a href={TOOL_CREDIT_URL} className="print-credit-link">{TOOL_CREDIT_LINK}</a>
-          </span>
+            <span className="print-credit-link">{TOOL_CREDIT_LINK}</span>
+          </a>
         </td>
       </tr>
     </tfoot>

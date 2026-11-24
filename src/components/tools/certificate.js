@@ -20,7 +20,8 @@
    ══════════════════════════════════════════════════════════════════ */
 import { C, font, fitText, khatam, patternFill, ensureFonts, drawCredit } from './canvasKit'
 import { juzOrdinal, JUZ_NAMES } from './format'
-import { formatHijri, formatGregorian } from '../../tools/quran/dates.js'
+import { formatHijri, formatGregorian, GREGORIAN_MONTHS_LEVANT } from '../../tools/quran/dates.js'
+import { reasonWithLam, reasonPlain } from '../../tools/files/reason.js'
 
 export const CERT_W = 2339
 export const CERT_H = 1654
@@ -66,11 +67,13 @@ const G = {
   f: { student: 'الطالبة', hifz: 'لحفظها', lahu: 'لها', ilm: 'علمها', zada: 'وزادها', yuthabbit: 'يثبّتها', yajal: 'ويجعلها' },
 }
 
-/* «لـ» + سبب حرّ: «تميّزه…» ← «لتميّزه…»، و«الانتظام…» ← «للانتظام…» */
-const withLam = (t) => (t.startsWith('ال') ? `ل${t.slice(1)}` : `ل${t}`)
+/* «لـ» + سبب حرّ: «تميّزه…» ← «لتميّزه…»، و«الانتظام…» ← «للانتظام…»، وما كُتب بلامه أو
+   بـ«تقديراً» أو بنقطة في آخره يُضبط (reason.js) فلا يحفظ المستخدم قاعدة. */
+const withLam = reasonWithLam
 
-export function achievementText(a, g) {
-  const w = G[g]
+/* raw=true: العبارة بلا لام ولا ضمير («حفظ جزء عمّ كاملاً») لتُدرج في صيغة يكتبها المدير بنفسه */
+export function achievementText(a, g, raw = false) {
+  const w = raw ? { ...G[g], hifz: 'حفظ' } : G[g]
   switch (a.type) {
     case 'juz': {
       const j = a.juz
@@ -80,7 +83,7 @@ export function achievementText(a, g) {
       const a1 = Math.min(a.from, a.to)
       const b1 = Math.max(a.from, a.to)
       const n = b1 - a1 + 1
-      if (n === 1) return achievementText({ type: 'juz', juz: a1 }, g)
+      if (n === 1) return achievementText({ type: 'juz', juz: a1 }, g, raw)
       const nTxt = n === 2 ? 'جزأين' : n <= 10 ? `${n} أجزاء` : `${n} جزءاً`
       return `${w.hifz} ${nTxt} من كتاب الله، من الجزء ${a1} إلى الجزء ${b1}`
     }
@@ -89,7 +92,7 @@ export function achievementText(a, g) {
     case 'quran':
       return `${w.hifz} القرآن الكريم كاملاً`
     case 'custom':
-      return a.text?.trim() ? withLam(a.text.trim()) : `${w.hifz} ........`
+      return (raw ? reasonPlain(a.text) : withLam(a.text)) || `${w.hifz} ........`
     default:
       return ''
   }
@@ -98,7 +101,8 @@ export function achievementText(a, g) {
 export function dateText(date, mode) {
   if (!date) return ''
   const h = formatHijri(date)
-  const gr = `${formatGregorian(date)}م`
+  /* الشهر الميلادي بالاسم الشامي: «24 تشرين الثاني 2026م» لا «24 نوفمبر» */
+  const gr = `${formatGregorian(date, { months: GREGORIAN_MONTHS_LEVANT })}م`
   if (mode === 'hijri') return h
   if (mode === 'gregorian') return gr
   return `${h}، الموافق ${gr}`
@@ -111,12 +115,24 @@ export function certificateLines(o) {
   const intro = `يمنح ${inst} ${w.student}`
   const halaqa = o.halaqa?.trim() ? ` في حلقة ${o.halaqa.trim()}` : ''
   const date = dateText(o.date, o.dateMode)
-  const body = `هذه الشهادة تقديراً ${achievementText(o.achievement, o.gender)}${halaqa}${date ? '،' : '.'}`
-  const when = date ? `بتاريخ ${date}.` : ''
+  /* التاريخ أسفل الشهادة (الافتراضي): «حُرّر في الرياض بتاريخ …». داخل المتن: تتصل به جملة المتن بفاصلة. */
+  const inline = o.datePos === 'inline'
+  const place = o.place?.trim()
+  const body = `هذه الشهادة تقديراً ${achievementText(o.achievement, o.gender)}${halaqa}${date && inline ? '،' : '.'}`
+  const when = date ? `${place || !inline ? `حُرّر${place ? ` في ${place}` : ''} ` : ''}بتاريخ ${date}.` : ''
   const dua = o.achievement.type === 'quran'
     ? `نسأل الله أن ${w.yuthabbit} ${w.yajal} من أهل القرآن.`
     : `بارك الله ${w.lahu} في ${w.ilm} ${w.zada} حرصاً.`
   return { intro, name: o.name?.trim() || '........', body, when, dua }
+}
+
+/* سطر العلامة أو التقدير: «98 من 100» ← «العلامة: 98 من 100»، و«امتياز» ← «التقدير: امتياز».
+   وإن بدأ النص المكتوب بكلمة العلامة أو التقدير فهو سطرٌ كامل يبقى كما كُتب. */
+export function gradeText(g) {
+  const t = String(g || '').trim()
+  if (!t) return ''
+  if (/^(ال)?(علامة|درجة|تقدير|بتقدير|بعلامة|بدرجة)/.test(t)) return t
+  return /\d/.test(t) ? `العلامة: ${t}` : `التقدير: ${t}`
 }
 
 /* النصوص النهائية: ما كتبه المستخدم (إن وُجد) فوق صيغة الأداة */
@@ -135,17 +151,126 @@ export function resolveTexts(o) {
     name: L.name,
     body,
     when,
+    grade: gradeText(o.grade),
     dua: pick('dua'),
     sig1: { role: o.sig1?.role ?? 'المعلم', name: o.sig1?.name ?? '' },
     sig2: { role: o.sig2?.role ?? 'مدير المعهد', name: o.sig2?.name ?? '' },
+    /* توقيع ثالث اختياري في الوسط: فارغ افتراضياً فلا يظهر */
+    sig3: { role: o.sig3?.role ?? '', name: o.sig3?.name ?? '' },
   }
 }
 
 /* ── الرسم ── */
-const PALETTES = {
-  classic: { bg: '#FBF7EE', title: C.ink, name: C.goldDeep, text: '#2F4540', soft: '#5E6E67', frame: C.gold, frame2: 'rgba(184,134,58,.55)', star: C.ink, starLine: C.goldSoft, line: 'rgba(11,59,51,.35)', credit: C.goldDeep, link: C.ink, pillFill: 'rgba(184,134,58,.10)', pillStroke: 'rgba(184,134,58,.45)' },
-  ink: { bg: C.ink, title: '#F8F5EC', name: C.goldSoft, text: 'rgba(248,245,236,.9)', soft: 'rgba(248,245,236,.7)', frame: C.goldSoft, frame2: 'rgba(224,181,98,.5)', star: C.goldSoft, starLine: C.ink, line: 'rgba(224,181,98,.55)', credit: 'rgba(224,181,98,.92)', link: '#F8F5EC', pillFill: 'rgba(224,181,98,.10)', pillStroke: 'rgba(224,181,98,.5)' },
-  band: { bg: '#FFFFFF', title: C.ink, name: C.goldDeep, text: '#2F4540', soft: '#5E6E67', frame: C.gold, frame2: 'rgba(184,134,58,.4)', star: C.goldSoft, starLine: C.ink, line: 'rgba(11,59,51,.35)', credit: C.goldDeep, link: C.ink, pillFill: 'rgba(184,134,58,.10)', pillStroke: 'rgba(184,134,58,.45)' },
+/* لون الشهادة: منتقي لون حر (o.color بصيغة #RRGGBB، وفارغ = الأخضر الحبري الأصلي).
+   اللون المختار يحلّ محل الأخضر الحبري في كل التصاميم: العنوان والزخارف والخلفية الحبرية
+   والشريط الجانبي، ويبقى الذهب لون الزخرفة. وفي الإطارات الفنية (صور) يُحوَّل الأخضر
+   فيها وحده إلى اللون المختار ويبقى الذهب كما هو. يُغمَّق اللون المختار إلى حدٍّ يبقى معه
+   النص مقروءاً: العنوان عليه فوق الورق الفاتح، والنص الأبيض فوقه في التصميم الحبري. */
+export const DEFAULT_COLOR = '#0B3B33'
+const DEFAULT_COL = { ink: '#0B3B33', mid: '#0E4A40', deep: '#082C26', body: '#2F4540', soft: '#5E6E67', rgb: '11,59,51', h: 169, s: 0.69, l: 0.14, isDefault: true }
+
+const hexToRgb = (hex) => {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '')
+  if (!m) return null
+  const n = parseInt(m[1], 16)
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}
+/* بلا تخصيص مصفوفات داخل الحلقة: النتيجة تُكتب في o (ثلاث خانات) */
+function toHsl(r, g, b, o) {
+  r /= 255; g /= 255; b /= 255
+  const mx = Math.max(r, g, b); const mn = Math.min(r, g, b); const d = mx - mn
+  const l = (mx + mn) / 2
+  if (!d) { o[0] = 0; o[1] = 0; o[2] = l; return }
+  const s = d / (1 - Math.abs(2 * l - 1))
+  const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4
+  o[0] = (h * 60 + 360) % 360; o[1] = s; o[2] = l
+}
+function fromHsl(h, s, l, o) {
+  const c = (1 - Math.abs(2 * l - 1)) * s
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+  const m = l - c / 2
+  const k = Math.floor(h / 60) % 6
+  const r = k === 0 || k === 5 ? c : k === 1 || k === 4 ? x : 0
+  const g = k === 0 || k === 3 ? x : k === 1 || k === 2 ? c : 0
+  const b = k === 3 || k === 4 ? c : k === 2 || k === 5 ? x : 0
+  o[0] = Math.round((r + m) * 255); o[1] = Math.round((g + m) * 255); o[2] = Math.round((b + m) * 255)
+}
+const hslHex = (h, s, l) => {
+  const o = [0, 0, 0]
+  fromHsl(h, s, l, o)
+  return `#${o.map((v) => v.toString(16).padStart(2, '0')).join('')}`
+}
+
+export function colorFrom(hex) {
+  const rgb = hexToRgb(hex)
+  if (!rgb || hex.toLowerCase() === DEFAULT_COLOR.toLowerCase()) return DEFAULT_COL
+  const o = [0, 0, 0]
+  toHsl(rgb[0], rgb[1], rgb[2], o)
+  const [h, s] = o
+  const l = Math.min(o[2], 0.36)
+  const ink = hslHex(h, s, l)
+  fromHsl(h, s, l, o)
+  return {
+    ink, h, s, l, isDefault: false,
+    mid: hslHex(h, s, Math.min(0.5, l * 1.2 + 0.02)),
+    deep: hslHex(h, s, l * 0.72),
+    body: hslHex(h, s * 0.3, 0.22),
+    soft: hslHex(h, s * 0.15, 0.42),
+    rgb: o.join(','),
+  }
+}
+
+/* تحويل أخضر الإطار الفني إلى اللون المختار: بكسلات الأخضر والفيروزي (درجة 100–200) تأخذ
+   درجة اللون المختار وإشباعه وتُزاح إضاءتها بقدر فرق الإضاءة، والذهب والكريمي لا يُمسّان.
+   الانتقال بين الذهب والأخضر (75–100 و200–215) متدرّج فلا يظهر حدّ حاد. النتيجة تُخزَّن
+   (آخر أربع) فتُحسب مرة واحدة للمعاينة وللتوليد الجماعي كله. */
+const artCache = new Map()
+function recolorImage(img, col) {
+  const cv = document.createElement('canvas')
+  cv.width = img.width; cv.height = img.height
+  const x = cv.getContext('2d', { willReadFrequently: true })
+  x.drawImage(img, 0, 0)
+  const id = x.getImageData(0, 0, cv.width, cv.height)
+  const d = id.data
+  const hsl = [0, 0, 0]; const rgb = [0, 0, 0]
+  const sk = col.s / 0.69
+  const dl = (col.l - 0.14) * 0.7
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i]; const g = d[i + 1]; const b = d[i + 2]
+    if (Math.max(r, g, b) - Math.min(r, g, b) < 14) continue
+    toHsl(r, g, b, hsl)
+    const h = hsl[0]
+    if (h < 75 || h > 215 || hsl[1] < 0.1) continue
+    const w = h < 100 ? (h - 75) / 25 : h > 200 ? (215 - h) / 15 : 1
+    const nh = (col.h + (h - 169) * 0.4 + 360) % 360
+    const ns = Math.min(1, hsl[1] * sk)
+    const nl = Math.min(0.95, Math.max(0.02, hsl[2] + dl))
+    fromHsl(nh, ns, nl, rgb)
+    d[i] = r + (rgb[0] - r) * w
+    d[i + 1] = g + (rgb[1] - g) * w
+    d[i + 2] = b + (rgb[2] - b) * w
+  }
+  x.putImageData(id, 0, 0)
+  return cv
+}
+async function loadArt(src, col) {
+  const img = await loadBg(src)
+  if (!img || col.isDefault) return img
+  const key = `${src}|${col.ink}`
+  if (!artCache.has(key)) {
+    if (artCache.size >= 4) artCache.delete(artCache.keys().next().value)
+    artCache.set(key, recolorImage(img, col))
+  }
+  return artCache.get(key)
+}
+
+function buildPalette(kind, c) {
+  const line = `rgba(${c.rgb},.35)`
+  if (kind === 'ink') {
+    return { bg: c.ink, title: '#F8F5EC', name: C.goldSoft, text: 'rgba(248,245,236,.9)', soft: 'rgba(248,245,236,.7)', frame: C.goldSoft, frame2: 'rgba(224,181,98,.5)', star: C.goldSoft, starLine: c.ink, line: 'rgba(224,181,98,.55)', credit: 'rgba(224,181,98,.92)', link: '#F8F5EC' }
+  }
+  const band = kind === 'band'
+  return { bg: band ? '#FFFFFF' : '#FBF7EE', title: c.ink, name: C.goldDeep, text: c.body, soft: c.soft, frame: C.gold, frame2: band ? 'rgba(184,134,58,.4)' : 'rgba(184,134,58,.55)', star: band ? C.goldSoft : c.ink, starLine: band ? c.ink : C.goldSoft, line, credit: C.goldDeep, link: c.ink }
 }
 
 const bgCache = new Map()
@@ -196,24 +321,25 @@ export async function drawCertificate(canvas, o) {
   ctx.direction = 'rtl'
   ctx.textBaseline = 'alphabetic'
   const design = DESIGN_BY_ID[o.design] || DESIGNS[0]
-  const P = PALETTES[design.id === 'ink' ? 'ink' : design.id === 'band' ? 'band' : 'classic']
+  const col = colorFrom(o.color)
+  const P = buildPalette(design.id === 'ink' ? 'ink' : design.id === 'band' ? 'band' : 'classic', col)
 
   /* الخلفية والإطار */
-  const art = design.art ? await loadBg(design.art) : null
+  const art = design.art ? await loadArt(design.art, col) : null
   if (design.art) {
     if (art) ctx.drawImage(art, 0, 0, W, H)
     else { ctx.fillStyle = P.bg; ctx.fillRect(0, 0, W, H) }
   } else if (design.id === 'ink') {
     const g = ctx.createLinearGradient(0, 0, W, H)
-    g.addColorStop(0, '#0E4A40')
-    g.addColorStop(1, C.inkDeep)
+    g.addColorStop(0, col.mid)
+    g.addColorStop(1, col.deep)
     ctx.fillStyle = g
     ctx.fillRect(0, 0, W, H)
     patternFill(ctx, 0, 0, W, H, { tile: 150, color: C.goldSoft, alpha: 0.07, width: 1.6 })
   } else {
     ctx.fillStyle = P.bg
     ctx.fillRect(0, 0, W, H)
-    patternFill(ctx, 0, 0, W, H, { tile: 150, color: C.ink, alpha: design.id === 'band' ? 0.025 : 0.035, width: 1.6 })
+    patternFill(ctx, 0, 0, W, H, { tile: 150, color: col.ink, alpha: design.id === 'band' ? 0.025 : 0.035, width: 1.6 })
   }
 
   let left = 0
@@ -223,8 +349,8 @@ export async function drawCertificate(canvas, o) {
     left = 70
     const bw = 360
     const g = ctx.createLinearGradient(W - bw, 0, W, H)
-    g.addColorStop(0, C.ink)
-    g.addColorStop(1, C.inkDeep)
+    g.addColorStop(0, col.ink)
+    g.addColorStop(1, col.deep)
     ctx.fillStyle = g
     ctx.fillRect(W - bw, 0, bw, H)
     patternFill(ctx, W - bw, 0, bw, H, { tile: 120, color: C.goldSoft, alpha: 0.14, width: 1.6 })
@@ -255,13 +381,16 @@ export async function drawCertificate(canvas, o) {
   ctx.textAlign = 'center'
 
   /* ── مواضع الكتلة السفلية: كبسولة إحكام ثم التوقيعان فوقها ── */
-  const CREDIT_SIZE = 30
+  const CREDIT_SIZE = 24
   const creditH = CREDIT_SIZE * 1.45 + CREDIT_SIZE
   const creditTop = design.creditBottom - creditH
   const SIG_H = 160
   const sigTop = creditTop - design.sigGap - SIG_H
   const topY = design.safe.t
-  const botY = sigTop - 56
+  /* سطر «حُرّر في … بتاريخ …» أسفل الشهادة (الافتراضي): شريط فوق التوقيعين يُحجز له مكان من المتن */
+  const dateBottom = o.datePos !== 'inline' && !!T.when.trim()
+  const DATE_STRIP = dateBottom ? (design.id === 'art-floral' ? 78 : 100) : 0 // الإطار النباتي مساحته أضيق
+  const botY = sigTop - 56 - DATE_STRIP
   const avail = botY - topY
   const text = (str, { weight = 400, max, min, width = textW, lines = 1 }) => fitText(ctx, str, { weight, max, min, width, lines })
 
@@ -324,9 +453,13 @@ export async function drawCertificate(canvas, o) {
         bd.lines.forEach((l, i) => ctx.fillText(l, cx, y + bd.size * 0.85 + i * lh))
       })
     }
-    if (T.when.trim()) {
+    if (T.when.trim() && !dateBottom) {
       const wn = text(T.when.trim(), { max: bodySize, min: S(30) })
       add(wn.size * 1.05, 22, (y) => { ctx.font = font(400, wn.size); ctx.fillStyle = P.text; ctx.fillText(wn.lines[0], cx, y + wn.size * 0.85) })
+    }
+    if (T.grade) {
+      const gr = text(T.grade, { weight: 700, max: S(46), min: S(30) })
+      add(gr.size * 1.05, 22, (y) => { ctx.font = font(700, gr.size); ctx.fillStyle = P.name; ctx.fillText(gr.lines[0], cx, y + gr.size * 0.82) })
     }
     if (T.dua.trim()) {
       const f = text(T.dua.trim(), { weight: 300, max: S(44), min: S(28) })
@@ -361,32 +494,45 @@ export async function drawCertificate(canvas, o) {
     y += it.h + (i < items.length - 1 ? it.gap * k : 0)
   })
 
+  /* ── سطر التاريخ أسفل الشهادة: وسطاً فوق التوقيعين ومكان الختم ── */
+  if (dateBottom) {
+    const wf = text(T.when.trim(), { max: 36, min: 26 })
+    ctx.font = font(400, wf.size)
+    ctx.fillStyle = P.text
+    ctx.textAlign = 'center'
+    ctx.fillText(wf.lines[0], cx, sigTop - DATE_STRIP + 16)
+  }
+
   /* ── التوقيعان ── */
   const dx = Math.min(560, (design.safe.r - design.safe.l) / 2 - 290)
+  /* التوقيع الثالث (إن كُتب) يقع في الوسط فتضيق الخطوط قليلاً ليبقى بين الثلاثة فراغ، ويحلّ محل مكان الختم */
+  const third = !!(T.sig3.role.trim() || T.sig3.name.trim())
+  const half = third ? 200 : 230
   const sigs = [{ ...T.sig1, x: cx + dx }, { ...T.sig2, x: cx - dx }]
+  if (third) sigs.push({ ...T.sig3, x: cx })
   for (const s of sigs) {
     if (!s.role.trim() && !s.name.trim()) continue
     ctx.textAlign = 'center'
     if (s.role.trim()) {
       ctx.fillStyle = P.soft
-      const f = text(s.role.trim(), { weight: 700, max: 36, min: 26, width: 460 })
+      const f = text(s.role.trim(), { weight: 700, max: 36, min: 26, width: half * 2 - (third ? 20 : 0) })
       ctx.font = font(700, f.size)
       ctx.fillText(f.lines[0], s.x, sigTop + 34)
     }
     ctx.strokeStyle = P.line
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(s.x - 230, sigTop + 104); ctx.lineTo(s.x + 230, sigTop + 104)
+    ctx.moveTo(s.x - half, sigTop + 104); ctx.lineTo(s.x + half, sigTop + 104)
     ctx.stroke()
     if (s.name.trim()) {
       ctx.fillStyle = P.text
-      const sn = text(s.name.trim(), { max: 42, min: 28, width: 440 })
+      const sn = text(s.name.trim(), { max: 42, min: 28, width: half * 2 - 20 })
       ctx.font = font(400, sn.size)
       ctx.fillText(sn.lines[0], s.x, sigTop + 150)
     }
   }
   /* مكان الختم */
-  if (o.sealSpot) {
+  if (o.sealSpot && !third) {
     ctx.save()
     ctx.setLineDash([10, 12])
     ctx.strokeStyle = P.line
@@ -403,8 +549,7 @@ export async function drawCertificate(canvas, o) {
 
   /* ── سطر إحكام: كبسولة داخل الإطار بعيدة عن خطه، والرابط فيها قابل للنقر في PDF ── */
   const link = drawCredit(ctx, {
-    cx, baseline: design.creditBottom - 30, size: CREDIT_SIZE, color: P.credit, linkColor: P.link,
-    pill: { fill: P.pillFill, stroke: P.pillStroke, width: 2 },
+    cx, baseline: design.creditBottom - CREDIT_SIZE, size: CREDIT_SIZE, color: P.credit, linkColor: P.link,
   })
   return { link }
 }
@@ -427,5 +572,5 @@ export function loadImageFile(file) {
 /* للاستعمال في الملخص النصي تحت المعاينة (قارئ الشاشة يقرأ نص الشهادة) */
 export function certificatePlainText(o) {
   const T = resolveTexts(o)
-  return [T.kicker.replace(/\n/g, ' '), T.title, T.intro, T.name, T.body, T.when, T.dua].filter(Boolean).join(' ')
+  return [T.kicker.replace(/\n/g, ' '), T.title, T.intro, T.name, T.body, T.when, T.grade, T.dua].filter(Boolean).join(' ')
 }

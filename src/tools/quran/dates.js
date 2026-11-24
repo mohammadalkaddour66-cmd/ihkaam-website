@@ -67,10 +67,16 @@ export function formatHijri(str, { withYear = true } = {}) {
   return `${d} ${HIJRI_MONTHS_AR[m - 1]}${withYear ? ` ${y}هـ` : ''}`
 }
 
-/** «8 فبراير 2027» */
-export function formatGregorian(str, { withYear = true } = {}) {
+/* الأسماء الشامية للأشهر الميلادية (تشرين الثاني بدل نوفمبر) */
+export const GREGORIAN_MONTHS_LEVANT = [
+  'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+  'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول',
+]
+
+/** «8 فبراير 2027»، أو «8 شباط 2027» بـ { months: GREGORIAN_MONTHS_LEVANT } */
+export function formatGregorian(str, { withYear = true, months = GREGORIAN_MONTHS_AR } = {}) {
   const d = parseDate(str)
-  return `${d.getUTCDate()} ${GREGORIAN_MONTHS_AR[d.getUTCMonth()]}${withYear ? ` ${d.getUTCFullYear()}` : ''}`
+  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}${withYear ? ` ${d.getUTCFullYear()}` : ''}`
 }
 
 /**

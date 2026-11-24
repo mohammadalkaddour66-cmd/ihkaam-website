@@ -6,7 +6,7 @@
    الخط: قمرة (والأرقام اللاتينية من Cairo بنفس اسم العائلة، كما في
    index.css). canvas لا ينتظر الخط، فتُحمَّل الأوجه صراحةً قبل الرسم.
    ══════════════════════════════════════════════════════════════════ */
-import { TOOL_CREDIT_LEAD, TOOL_CREDIT_LINK } from '../../config/tools'
+import { TOOL_CREDIT_LEAD, TOOL_CREDIT_LINK, TOOL_SHARE_TAIL } from '../../config/tools'
 
 export const FONT = "Qomra, 'Qomra Fallback', 'Segoe UI', Tahoma, sans-serif"
 export const C = {
@@ -118,10 +118,10 @@ export function patternFill(ctx, x, y, w, h, { tile = 80, color = C.goldSoft, al
 }
 
 /* ── سطر إحكام أسفل كل مخرَج ──
-   «صُنعت عبر أدوات إحكام المجانية · زوروا موقعنا ihkaam.app»: مقطعان، العربي
-   على اليمين والرابط (لاتيني، أغمق وتحته خط) على يساره. تحيط بهما كبسولة ناعمة
-   بهوامش مريحة فلا يلتصق السطر بحدود التصميم. يعيد مستطيل الرابط بإحداثيات
-   الـcanvas ليضع ملف PDF منطقة نقر فوقه. */
+   «نظام إحكام لإدارة المعاهد القرآنية ihkaam.app»: مقطعان، العربي على اليمين
+   والرابط (لاتيني، أغمق وتحته خط) على يساره، بلا إطار (قرار 2026-11-24).
+   يعيد مستطيل السطر كله بإحداثيات الـcanvas ليضع ملف PDF منطقة نقر فوقه.
+   pill اختياري ولا يستعمله أحد الآن. */
 export function drawCredit(ctx, { cx, baseline, size = 28, color, linkColor, pill, padX, padY }) {
   const px = padX ?? size * 1.1
   const py = padY ?? size * 0.5
@@ -158,7 +158,8 @@ export function drawCredit(ctx, { cx, baseline, size = 28, color, linkColor, pil
   ctx.fillRect(xL, baseline + size * 0.14, wLink, Math.max(2, size * 0.06))
   ctx.restore()
 
-  return { x: xL - size * 0.3, y: baseline - size * 1.05, w: wLink + size * 0.6, h: size * 1.5 }
+  /* منطقة النقر تشمل السطر كله (العبارة والرابط) لا الرابط وحده */
+  return { x: xL - size * 0.3, y: baseline - size * 1.05, w: total + size * 0.6, h: size * 1.5 }
 }
 
 export function canvasToBlob(canvas, type = 'image/png', quality = 0.92) {
@@ -192,9 +193,11 @@ function detectShare() {
   } catch { return false }
 }
 
+/* المشاركة (واتساب وغيره): الصورة مع نص مقترح يُلحق به دائماً اسم إحكام ورابطه،
+   فيصل الرابط إلى من يستلم الصورة لا إلى المدير وحده. */
 export async function shareBlob(blob, filename, text) {
   const file = new File([blob], filename, { type: blob.type })
-  await navigator.share({ files: [file], text })
+  await navigator.share({ files: [file], text: [text, TOOL_SHARE_TAIL].filter(Boolean).join('\n\n') })
 }
 
 export function safeFileName(s, fallback) {
@@ -284,8 +287,7 @@ export async function drawGridCard({ eyebrow, title, headline, cells, note }) {
     ctx.font = font(400, 27)
     ctx.fillText(fitText(ctx, note, { weight: 400, max: 27, min: 20, width: W - 140 }).lines[0], W / 2, H - 150)
   }
-  drawCredit(ctx, { cx: W / 2, baseline: H - 66, size: 28, color: C.goldDeep, linkColor: C.ink,
-    pill: { fill: 'rgba(184,134,58,.10)', stroke: 'rgba(184,134,58,.42)', width: 2 } })
+  drawCredit(ctx, { cx: W / 2, baseline: H - 66, size: 24, color: C.goldDeep, linkColor: C.ink })
   return cv
 }
 
@@ -404,7 +406,6 @@ export async function drawListCard({ eyebrow, title, name, range, rows, note, em
     ctx.font = font(400, 27)
     ctx.fillText(fitText(ctx, note, { weight: 400, max: 27, min: 20, width: W - 140 }).lines[0], W / 2, H - 150)
   }
-  drawCredit(ctx, { cx: W / 2, baseline: H - 66, size: 28, color: C.goldDeep, linkColor: C.ink,
-    pill: { fill: 'rgba(184,134,58,.10)', stroke: 'rgba(184,134,58,.42)', width: 2 } })
+  drawCredit(ctx, { cx: W / 2, baseline: H - 66, size: 24, color: C.goldDeep, linkColor: C.ink })
   return cv
 }
