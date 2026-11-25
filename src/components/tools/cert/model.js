@@ -2,7 +2,7 @@
    نموذج مساحة عمل الشهادات: الطالب، وخيارات شهادته، وحفظ إعدادات المعهد في المتصفح.
    لا واجهة هنا، فالمنطق كله قابل للاختبار بمعزل عن React.
    ══════════════════════════════════════════════════════════════════ */
-import { valsOf, normVar, fillTemplate, finishBody } from '../../../tools/files/template.js'
+import { valsOf, normVar, fillTemplate, finishBody, inspectTemplate, DEFAULT_TPL } from '../../../tools/files/template.js'
 import { reasonPlain } from '../../../tools/files/reason.js'
 
 export const ACH = 'الإنجاز'
@@ -37,8 +37,9 @@ export function studentOpts(base, s, templates) {
   if (own) vals[ACH_KEY] = own
   const terminal = base.datePos === 'inline' && base.date ? '،' : '.'
   const tpl = gender === 'f' ? tp.f : tp.m
-  let body = fillTemplate(tpl, vals)
-  body = finishBody(body, terminal)
+  let body = finishBody(fillTemplate(tpl, vals), terminal)
+  /* صيغة مخصصة بحقول ولم يبقَ منها شيء لهذا الطالب (كل خاناته فارغة): الجملة الجاهزة، فلا تخرج شهادة بلا متن */
+  if (!body.trim() && inspectTemplate(tpl).used.size > 0) body = finishBody(DEFAULT_TPL[gender], terminal)
   return {
     ...base,
     name: s.name,
@@ -48,6 +49,14 @@ export function studentOpts(base, s, templates) {
     grade: '',
     text: { ...base.text, body, intro: gender === 'f' ? tp.fi : tp.mi, dua: gender === 'f' ? tp.fd : tp.md },
   }
+}
+
+/* هل ستُستعمل الجملة الجاهزة لهذا الطالب بدل صيغة المدير؟ (للتنبيه في خطوة التحميل) */
+export function usesDefaultBody(s, templates) {
+  const tp = tplOf(templates, s)
+  const tpl = s.gender === 'f' ? tp.f : tp.m
+  if (!inspectTemplate(tpl).used.size) return false
+  return !finishBody(fillTemplate(tpl, valsOf(s.vars)), '.').trim()
 }
 
 /* ── إعدادات المعهد: تُحفظ في المتصفح فلا تُكتب في كل مرة ── */

@@ -10,7 +10,7 @@ import {
 import { certificatesPdf } from '../certificatePdf'
 import { DEFAULT_VARS, newTemplate } from '../../../tools/files/template.js'
 import {
-  studentOpts, tplOf, isBlank, blankStudent, loadSettings, saveSettings, SAMPLE_NAME, SAMPLE_VARS, SINGLE_DEFAULT,
+  studentOpts, usesDefaultBody, tplOf, isBlank, blankStudent, loadSettings, saveSettings, SAMPLE_NAME, SAMPLE_VARS, SINGLE_DEFAULT,
 } from './model.js'
 import StudentsTable from './StudentsTable.jsx'
 import TextPanel from './TextPanel.jsx'
@@ -98,6 +98,7 @@ export default function CertStudio() {
     const st = f || { id: 'ex', name: SAMPLE_NAME, gender: g, vars: SAMPLE_VARS, tpl: tplId }
     return { name: st.name, text: studentOpts(base, st, tpls).text.body }
   }
+  const fallbackNames = !bulk ? [] : real.filter((x) => usesDefaultBody(x, templates)).map((x) => x.name.trim())
   const blocked = !bulk ? [] : templates.filter((t) => !t.fOk && real.some((x) => x.gender === 'f' && tplOf(templates, x).id === t.id))
 
   /* الشعار المحفوظ يُستعاد مرة واحدة */
@@ -215,7 +216,7 @@ export default function CertStudio() {
     students: <StudentsTable aud={aud} setAud={setAud} students={students} setStudents={setStudents} cur={idx} setCur={setCur} varNames={varNames} setVarNames={setVarNames} templates={templates} onImported={onImported} />,
     look: <LookPanel logo={logo} onLogo={onLogo} clearLogo={() => setLogo(null)} logoErr={logoErr} design={design} pickDesign={pickDesign} colorLive={colorLive} setColorLive={setColorLive} colorSet={!!color}
       spacing={spacing} setSpacing={setSpacing} sealSpot={sealSpot} setSealSpot={setSealSpot} datePos={datePos} setDatePos={setDatePos} />,
-    export: <ExportPanel count={real.length} blocked={blocked} busy={busy} progress={progress} onPdf={onPdf} onCancel={() => { cancelRef.current = true }}
+    export: <ExportPanel count={real.length} blocked={blocked} fallbackNames={fallbackNames} busy={busy} progress={progress} onPdf={onPdf} onCancel={() => { cancelRef.current = true }}
       onPng={onPng} onPrint={onPrint} onShare={onShare} sharable={sharable} msg={msg} currentName={sample ? '' : s.name} />,
   }
   const info = STEP_DEFS[stepKeys[stepIdx]]

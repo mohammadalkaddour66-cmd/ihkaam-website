@@ -6,6 +6,7 @@ import { makeXlsx, readXlsx, readXlsxSheets } from './xlsx.js'
 import { buildPdf } from './pdf.js'
 import { reasonWithLam, reasonPlain } from './reason.js'
 import { parseStudentsText, parseStudentsFile, rowsToStudents, sampleXlsx, SAMPLE_HEADER, SAMPLE_MALE, SAMPLE_FEMALE, normalizeGender, sheetGender } from './bulk.js'
+import { studentOpts, usesDefaultBody } from '../../components/tools/cert/model.js'
 import { fillTemplate, finishBody, insertToken, inspectTemplate, femaleSuggestions, replaceWord, normVar, valsOf, DEFAULT_TPL, newTemplate } from './template.js'
 
 const S = (o) => ({ name: '', gender: '', vars: {}, ...o })
@@ -168,6 +169,24 @@ test('template: ملء الصيغة، وسقوط المتغير الفارغ م�
 test('template: الجملة الجاهزة بلا حقول ولا عبارات مرتبطة بأعمدة', () => {
   assert.ok(!DEFAULT_TPL.m.includes('[') && !DEFAULT_TPL.f.includes('['))
   assert.ok(!/إنجاز|تقدير|درجة/.test(DEFAULT_TPL.m.replace('تقديراً', '')))
+})
+
+test('model: طالب كل خاناته فارغة يرجع إلى الجملة الجاهزة، ومن له قيمة يبقى على صيغة المدير', () => {
+  const tpl = { id: 't', m: 'هذه الشهادة تقديراً لتفوقه في [المستوى]، وحصوله على المركز [الترتيب]', f: 'هذه الشهادة تقديراً لتفوقها في [المستوى]', mi: null, fi: null, md: null, fd: null }
+  const base = { text: {}, datePos: 'bottom' }
+  const empty = { name: 'س', gender: 'm', vars: {}, tpl: 't' }
+  const empF = { name: 'ص', gender: 'f', vars: { المستوى: '  ' }, tpl: 't' }
+  const some = { name: 'ع', gender: 'm', vars: { المستوى: 'جزء عمّ' }, tpl: 't' }
+  assert.equal(studentOpts(base, empty, [tpl]).text.body, DEFAULT_TPL.m + '.')
+  assert.equal(studentOpts(base, empF, [tpl]).text.body, DEFAULT_TPL.f + '.')
+  assert.equal(studentOpts(base, some, [tpl]).text.body, 'هذه الشهادة تقديراً لتفوقه في جزء عمّ.')
+  assert.equal(usesDefaultBody(empty, [tpl]), true)
+  assert.equal(usesDefaultBody(empF, [tpl]), true)
+  assert.equal(usesDefaultBody(some, [tpl]), false)
+  /* صيغة بلا حقول (أو متن فارغ عن قصد) لا تُستبدل */
+  const plain = { ...tpl, m: 'نص ثابت', f: '' }
+  assert.equal(usesDefaultBody(empty, [plain]), false)
+  assert.equal(studentOpts(base, { ...empF, tpl: 't' }, [plain]).text.body, '')
 })
 
 test('template: خاتمة الجملة نقطة، أو فاصلة إن كان التاريخ بعدها', () => {

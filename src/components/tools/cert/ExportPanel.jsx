@@ -4,7 +4,7 @@ const big = 'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 
 const soft = { background: '#FDFBF7', color: '#0B3B33', boxShadow: 'inset 0 0 0 1px var(--line-warm)' }
 
 /* الخطوة 5: التحميل. ملف واحد لكل الشهادات، وأدوات الشهادة المعروضة وحدها (صورة، طباعة، مشاركة). */
-export default function ExportPanel({ count, blocked, busy, progress, onPdf, onCancel, onPng, onPrint, onShare, sharable, msg, currentName }) {
+export default function ExportPanel({ count, blocked, fallbackNames = [], busy, progress, onPdf, onCancel, onPng, onPrint, onShare, sharable, msg, currentName }) {
   const pct = progress ? Math.round((progress.done / progress.total) * 100) : 0
   return (
     <div className="space-y-5">
@@ -17,6 +17,15 @@ export default function ExportPanel({ count, blocked, busy, progress, onPdf, onC
           <p className="flex items-start gap-1.5 text-[12.5px] leading-[1.7] font-bold text-[#8A4B14] mt-2">
             <AlertTriangle size={14} className="mt-1 shrink-0" />
             نص الطالبات ينتظر «تمام» في خطوة الصياغة، حتى لا تُطبع شهادة طالبة بضمير الطلاب.
+          </p>
+        )}
+        {fallbackNames.length > 0 && (
+          <p className="flex items-start gap-1.5 text-[12.5px] leading-[1.8] font-bold text-[#8A4B14] mt-2 rounded-xl p-2.5" style={{ background: 'rgba(224,181,98,.22)' }} role="status">
+            <AlertTriangle size={14} className="mt-1 shrink-0" />
+            <span>
+              أعمدة هذه الأسماء فارغة كلها: {fallbackNames.slice(0, 8).map((n) => `«${n}»`).join(' و')}{fallbackNames.length > 8 ? ` و${fallbackNames.length - 8} غيرها` : ''}.
+              ستُطبع شهادة كل اسم منها بالجملة الجاهزة بدل جملتك. ولتخصيصها املأ خاناتها في خطوة «الطلاب».
+            </span>
           </p>
         )}
         {progress && (
